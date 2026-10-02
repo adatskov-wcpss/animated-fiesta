@@ -41,6 +41,7 @@ WEBUI_PORT="${FORGE_PORT:-8787}"
 WEBUI_BIND="${FORGE_BIND:-127.0.0.1}"
 WEBUI_EXPOSE=0
 WEBUI_MODE=""
+FORGE_FROM_MENU=0
 FORCE_EXTRACT=0
 
 # ---------------------------------------------------------------- colours
@@ -7000,10 +7001,14 @@ print()
   if [ "$mode" = "bg" ]; then
     printf '\n'
     ok "running in the background as pid $srv_pid"
+    info "open:          $srv_url"
     info "stop it with:  $0 --stop      (or: kill $srv_pid)"
     info "log:           $log"
-    printf '\n'
-    return 0
+    printf '\n  %syour shell is back · the forge menu has exited so the prompt is yours%s\n\n' \
+      "$DIM" "$NC"
+    # Leaving the menu running would just redraw it over the shell we were
+    # asked to hand back, which looks like the whole thing restarted.
+    exit 0
   fi
 
   printf '\n  %sholding this terminal · ctrl-c stops the web UI%s\n' "$DIM" "$NC"
@@ -7022,6 +7027,7 @@ print()
   else
     warn "the web UI exited on its own, see $log"
   fi
+  [ "$FORGE_FROM_MENU" = 1 ] && printf '  %sback to the forge menu%s\n' "$DIM" "$NC"
   printf '\n'
 }
 
@@ -7120,7 +7126,7 @@ main_menu() {
       $'doctor\tCheck this machine\tdocker, memory, disk, tunnels' \
       $'quit\tQuit\t') || return 0
     case "$choice" in
-      webui) cmd_webui ;;
+      webui) FORGE_FROM_MENU=1 cmd_webui ;;
       quick) pick_quick ;;
       family) pick_family ;;
       search) pick_search ;;
@@ -7192,7 +7198,9 @@ main() {
       ;;
   esac
 
-  singleton_check
+  case "$MODE" in
+    menu|webui) singleton_check ;;
+  esac
 
   case "$MODE" in
     webui) cmd_webui ;;
