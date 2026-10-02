@@ -20,6 +20,9 @@
 #     ./selkies-forge.sh --bg         web UI in the background, shell back
 #     ./selkies-forge.sh --fg         web UI in the foreground until ctrl-c
 #     ./selkies-forge.sh --stop       stop a backgrounded web UI
+#
+#  Piped straight from GitHub, pass options after "bash -s --":
+#     curl -fsSL <url>/docker.sh | bash -s -- --webui
 #     ./selkies-forge.sh --doctor     check this machine
 #     ./selkies-forge.sh --uninstall  remove everything it created
 #
@@ -57,6 +60,24 @@ else
   NC=""; B=""; DIM=""; IT=""
   RED=""; GRN=""; YEL=""; BLU=""; VIO=""; CYA=""; GRY=""; WHT=""
   HIDE=""; SHOW=""; CLRL=$'\r'
+fi
+
+# Where answers come from. A piped install (curl ... | bash) has the script
+# itself on stdin, so every question has to read the keyboard via /dev/tty.
+TTY_IN=""
+if [ -t 0 ]; then
+  TTY_IN="/dev/stdin"
+elif ( : </dev/tty ) 2>/dev/null; then
+  TTY_IN="/dev/tty"
+fi
+
+# How to run this script again, for the hints it prints. Under "curl | bash"
+# $0 is just "bash", so point at the published copy instead.
+FORGE_URL="https://raw.githubusercontent.com/adatskov-wcpss/animated-fiesta/main/docker.sh"
+if [ -f "$0" ] && grep -q '^FORGE_VERSION=' "$0" 2>/dev/null; then
+  FORGE_RUN="bash $0"
+else
+  FORGE_RUN="curl -fsSL $FORGE_URL | bash -s --"
 fi
 
 TRUECOLOR=0
@@ -181,11 +202,11 @@ bar() {
 # ------------------------------------------------------------------ prompts
 ask() {  # ask <prompt> <default>
   local p="$1" d="${2:-}" r
-  if [ ! -t 0 ]; then printf '%s' "$d"; return; fi
+  if [ -z "$TTY_IN" ]; then printf '%s' "$d"; return; fi
   if [ -n "$d" ]; then
-    read -r -p "  $(printf '%s%s%s %s[%s]%s ' "$B" "$p" "$NC" "$DIM" "$d" "$NC")" r
+    read -r -p "  $(printf '%s%s%s %s[%s]%s ' "$B" "$p" "$NC" "$DIM" "$d" "$NC")" r <"$TTY_IN"
   else
-    read -r -p "  $(printf '%s%s%s ' "$B" "$p" "$NC")" r
+    read -r -p "  $(printf '%s%s%s ' "$B" "$p" "$NC")" r <"$TTY_IN"
   fi
   printf '%s' "${r:-$d}"
 }
@@ -193,8 +214,8 @@ ask() {  # ask <prompt> <default>
 confirm() {  # confirm <prompt> <default y|n>
   local p="$1" d="${2:-n}" r
   [ "$ASSUME_YES" = 1 ] && return 0
-  if [ ! -t 0 ]; then [ "$d" = "y" ]; return $?; fi
-  read -r -p "  $(printf '%s%s%s %s(%s)%s ' "$B" "$p" "$NC" "$DIM" "$([ "$d" = y ] && echo 'Y/n' || echo 'y/N')" "$NC")" r
+  if [ -z "$TTY_IN" ]; then [ "$d" = "y" ]; return $?; fi
+  read -r -p "  $(printf '%s%s%s %s(%s)%s ' "$B" "$p" "$NC" "$DIM" "$([ "$d" = y ] && echo 'Y/n' || echo 'y/N')" "$NC")" r <"$TTY_IN"
   r="${r:-$d}"
   case "$r" in [yY]*) return 0 ;; *) return 1 ;; esac
 }
@@ -215,7 +236,7 @@ menu_choose() {
   local UI="/dev/stderr"
   [ -w /dev/tty ] && UI="/dev/tty"
   local interactive=0
-  { [ -r /dev/tty ] && [ -t 1 ] || [ -t 0 ]; } && interactive=1
+  [ -n "$TTY_IN" ] && interactive=1
 
   if [ "$interactive" != 1 ]; then
     local i=1
@@ -237,7 +258,7 @@ menu_choose() {
   page=$((rows - 9)); [ "$page" -lt 5 ] && page=5; [ "$page" -gt 16 ] && page=16
   [ "$page" -gt "$n" ] && page=$n
 
-  exec 9<>/dev/tty 2>/dev/null || exec 9<&0
+  exec 9<"$TTY_IN" 2>/dev/null || exec 9<&0
   printf '%s' "$HIDE" >"$UI"
   local drawn=0
   while :; do
@@ -493,13 +514,13 @@ install_extras() {
 FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
 FORGE_SHA_ENGINE_PY="5bde62d7775e37bfea0fac36d578f5dc7b996949670e99d40a36d8d7bb7e7a1e"
 FORGE_SHA_INDEX_HTML="220cc292f318046f9f8cacab221469fb13c741a033513e18fc830c841d0e744c"
-FORGE_SHA_APP_CSS="9732f6611143ec0ec3a607221a1347cda19d933b68ae79ab912d15c22dbdbbdd"
+FORGE_SHA_APP_CSS="685cd8ef93a5bfe79c5a79d950a3ec24f1327e5ea07ff14415c5fd213b405721"
 FORGE_SHA_APP_JS="c9484cf2234595a670bef18eb353ac8b350c693ff1aa6a4ac1cf8c9b3eee06db"
 FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_INFO_JSON="55b317e435e760e51ea56e39b6dfdd67c8f0266940b9769ff748d94cfa0aac57"
-FORGE_PAYLOAD_SHA="3a8daf177842b2e199c6ca6a90c0435371f1a0bad881dc5b3f3e9c68db07d7ea"
+FORGE_PAYLOAD_SHA="7c2235ab96a6c0cf87f5d963a03400acf8915fc51ab1d5950a58ad536f70fe03"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -4463,7 +4484,7 @@ body {
   position: relative;
 }
 
-.search input {
+.topbar .search input {
   width: 100%;
   height: 38px;
   padding: 0 12px 0 38px;
@@ -4476,7 +4497,7 @@ body {
   transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
 }
 
-.search input:focus {
+.topbar .search input:focus {
   border-color: var(--acc);
   box-shadow: 0 0 0 3px var(--acc-soft);
 }
@@ -5222,12 +5243,20 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
 .mc-actions {
   margin-top: auto;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) 44px;
+  /* the primary action gets a little more room so its label never wraps */
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr) 44px;
   gap: 10px;
   padding: 14px 18px 16px !important;
 }
 
-.mc-actions .btn { height: 42px; font-size: 13.5px; }
+.mc-actions .btn {
+  height: 42px;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 12px;
+}
 .mc-actions .btn svg { width: 16px; height: 16px; flex: 0 0 16px; }
 .mc-actions .iconbtn { width: 44px; height: 42px; border: 1px solid var(--line-2); border-radius: var(--r-m); }
 
@@ -9585,7 +9614,7 @@ for name, v in sorted(d.items()):
         human(v["rx_total"]), human(v["tx_total"])))
 print()
 '
-        [ -t 0 ] && read -r -p "  press enter " _
+        [ -n "$TTY_IN" ] && read -r -p "  press enter " _ <"$TTY_IN"
         ;;
       *)
         local act
@@ -9607,7 +9636,11 @@ print()
           open) print_instances ;;
           shell)
             printf '\n'; info "handing you a shell inside $pick, type exit to come back"; printf '\n'
-            docker exec -it "$pick" /bin/sh -c 'if command -v bash >/dev/null 2>&1; then exec bash -l; else exec /bin/sh -l; fi'
+            if [ -z "$TTY_IN" ]; then
+              warn "a shell needs a terminal; run this script from one"
+            else
+              docker exec -it "$pick" /bin/sh -c 'if command -v bash >/dev/null 2>&1; then exec bash -l; else exec /bin/sh -l; fi' <"$TTY_IN"
+            fi
             ;;
           logs) engine logs "$pick" --tail 120 | sed 's/^/    /' ;;
           limits)
@@ -9664,7 +9697,7 @@ except Exception: pass
             fi
             ;;
         esac
-        [ -t 0 ] && read -r -p "  press enter " _
+        [ -n "$TTY_IN" ] && read -r -p "  press enter " _ <"$TTY_IN"
         ;;
     esac
   done
@@ -9737,7 +9770,7 @@ print()
   # Background, or hold the terminal until ctrl-c?
   local mode="$WEBUI_MODE"
   if [ -z "$mode" ]; then
-    if [ -t 0 ] && [ -r /dev/tty ]; then
+    if [ -n "$TTY_IN" ]; then
       mode=$(menu_choose "Leave it running?" \
         $'bg\tRun it in the background\tyou get your shell back, the UI keeps serving' \
         $'fg\tHold this terminal\tstays in the foreground until ctrl-c') || mode="bg"
@@ -9750,7 +9783,8 @@ print()
     printf '\n'
     ok "running in the background as pid $srv_pid"
     info "open:          $srv_url"
-    info "stop it with:  $0 --stop      (or: kill $srv_pid)"
+    info "stop it with:  $FORGE_RUN --stop"
+    info "           or:  kill $srv_pid"
     info "log:           $log"
     printf '\n  %syour shell is back · the forge menu has exited so the prompt is yours%s\n\n' \
       "$DIM" "$NC"
@@ -9913,8 +9947,28 @@ main_menu() {
 
 usage() {
   banner
-  sed -n '/^#  Usage:/,/^#  MIT/p' "$0" | sed 's/^#  \{0,1\}//' | head -n -2
-  printf '\n'
+  cat <<USAGE
+Usage:
+   $FORGE_RUN              interactive menu
+   $FORGE_RUN --webui      straight to the web UI
+   $FORGE_RUN --bg         web UI in the background, shell back
+   $FORGE_RUN --fg         web UI in the foreground until ctrl-c
+   $FORGE_RUN --stop       stop a backgrounded web UI
+   $FORGE_RUN --cli        straight to the terminal picker
+   $FORGE_RUN --smart      let it choose for this machine
+   $FORGE_RUN --launch ID  forge one entry and exit
+   $FORGE_RUN --list       print the catalog
+   $FORGE_RUN --manager    manage running desktops
+   $FORGE_RUN --doctor     check this machine
+   $FORGE_RUN --uninstall  remove everything it created
+
+Options:
+   --port N       web UI port (default 8787, the next free one if taken)
+   --expose       serve the web UI beyond localhost, behind a token
+   --no-tunnel    skip the public serveo link
+   --yes, -y      accept the install prompts (Python, Docker)
+
+USAGE
 }
 
 # =========================================================================
