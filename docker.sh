@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.1.0"
+FORGE_VERSION="1.2.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -524,16 +524,16 @@ install_extras() {
 # =========================================================================
 
 FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
-FORGE_SHA_ENGINE_PY="f0864530afbc236ac7ae3452e84affead9ff5d70b7ebbc240370d490b1ecf054"
-FORGE_SHA_INDEX_HTML="220cc292f318046f9f8cacab221469fb13c741a033513e18fc830c841d0e744c"
-FORGE_SHA_APP_CSS="685cd8ef93a5bfe79c5a79d950a3ec24f1327e5ea07ff14415c5fd213b405721"
-FORGE_SHA_APP_JS="c9484cf2234595a670bef18eb353ac8b350c693ff1aa6a4ac1cf8c9b3eee06db"
+FORGE_SHA_ENGINE_PY="77b9df8adc4e6ee904901e39ec08dbcc7c9ab41df8d641d6406d24db429e81d5"
+FORGE_SHA_INDEX_HTML="de550e73a4370826d1006468e935781241018bb96a3cac90b2defed1eea6c033"
+FORGE_SHA_APP_CSS="dace2ed91118a7a7a56e39a0749421b4736dd21638403b6490f7f87bf3858c0d"
+FORGE_SHA_APP_JS="9cd44608ef31d2364760eec1f650665c030dccb543e779eaa8250e3940bbf276"
 FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_INFO_JSON="55b317e435e760e51ea56e39b6dfdd67c8f0266940b9769ff748d94cfa0aac57"
-FORGE_SHA_SELKIES_CLI="5c5e54b453ddb0db9e88faa6a70b7b368ebeefd3590bd2db9fc065d0fdc789da"
-FORGE_PAYLOAD_SHA="78569df79d42189d9e142051e6ddf3db27b832a176cc30026a497e7f308173e6"
+FORGE_SHA_SELKIES_CLI="09be93b447942793f35685a9471ebf641672ad5ce0dda69725ea6d2d25a0682e"
+FORGE_PAYLOAD_SHA="92c600883767e608186fe29709654c40e43d712b2e1ed9e793d866c7a8898928"
 FORGE_PAYLOAD_FILES="catalog.py engine.py index.html app.css app.js term.js logos.js brands.js info.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -1259,7 +1259,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import catalog  # noqa: E402
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 APPDIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.environ.get("FORGE_HOME") or os.path.join(os.path.expanduser("~"), ".selkies-forge")
 STATE = os.path.join(ROOT, "state")
@@ -3605,12 +3605,16 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as ex:
             return self._err(500, ex)
 
+    static_cache = {}
+
     def _static(self, name):
-        path = os.path.join(APPDIR, name)
-        if not os.path.isfile(path):
-            return self._err(404, "%s missing" % name)
-        with open(path, "rb") as fh:
-            data = fh.read()
+        data = self.static_cache.get(name)
+        if data is None:
+            path = os.path.join(APPDIR, name)
+            if not os.path.isfile(path):
+                return self._err(404, "%s missing" % name)
+            with open(path, "rb") as fh:
+                data = fh.read()
         ext = os.path.splitext(name)[1]
         extra = {}
         if name == "index.html" and self.require_token and self.token:
@@ -3639,6 +3643,8 @@ class Handler(BaseHTTPRequestHandler):
             })
         if route == "/api/host":
             return self._send(200, host_info(fresh=True))
+        if route == "/api/update":
+            return self._send(200, update_report())
         if route == "/api/doctor":
             return self._send(200, cli_doctor())
         if route == "/api/instances":
@@ -3684,6 +3690,12 @@ class Handler(BaseHTTPRequestHandler):
         return self._err(404, "no such endpoint")
 
     def _api_post(self, route, body):
+        if route == "/api/update/check":
+            check_update(install=True)
+            return self._send(200, update_report())
+        if route == "/api/update/restart":
+            restart_webui_detached()
+            return self._send(200, {"ok": True})
         if route == "/api/smart":
             prefs = {k: body.get(k) for k in
                      ("taste", "purpose", "family", "allow_build", "max_dl_mb", "want_tunnel")
@@ -3832,11 +3844,22 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     httpd.daemon_threads = True
     STATS.start()
 
+    global SERVE_PAYLOAD
+    SERVE_PAYLOAD = installed_payload()
+    for name in ("index.html", "app.css", "app.js", "term.js", "logos.js", "brands.js"):
+        try:
+            with open(os.path.join(APPDIR, name), "rb") as fh:
+                Handler.static_cache[name] = fh.read()
+        except OSError:
+            pass
+    threading.Thread(target=_update_loop, daemon=True).start()
+
     url = "http://%s:%d/" % ("localhost" if loopback else bind, port)
     if Handler.token:
         url += "?k=" + Handler.token
     info = {"pid": os.getpid(), "port": port, "bind": bind, "url": url,
-            "token": Handler.token, "started": time.time(), "version": VERSION}
+            "token": Handler.token, "started": time.time(), "version": VERSION,
+            "payload": SERVE_PAYLOAD}
     jsave(SERVER_JSON, info)
 
     tun = None
@@ -3966,6 +3989,132 @@ def cli_launch_stream(args):
     return 0 if done["result"] else 1
 
 
+# ===========================================================================
+# updates: check GitHub every 5 minutes, install new builds automatically
+# ===========================================================================
+
+UPDATE_JSON = os.path.join(STATE, "update.json")
+UPDATE_URL_DEFAULT = "https://raw.githubusercontent.com/adatskov-wcpss/animated-fiesta/main/docker.sh"
+UPDATE_EVERY = int(os.environ.get("FORGE_UPDATE_EVERY") or 300)
+SERVE_PAYLOAD = None            # what this web UI process was started from
+
+
+def installed_payload():
+    try:
+        with open(os.path.join(APPDIR, ".payload")) as fh:
+            return fh.read().strip() or None
+    except Exception:
+        return None
+
+
+def auto_update_enabled():
+    return os.environ.get("FORGE_AUTO_UPDATE", "1") != "0"
+
+
+def check_update(install=True, max_age=0, timeout=20):
+    """Compare GitHub's docker.sh with what is installed; install if newer.
+
+    Uses the ETag so an unchanged file costs a tiny 304, not a 560 KB download.
+    """
+    with FileLock("update", timeout=120):
+        st = jload(UPDATE_JSON, {})
+        if max_age and time.time() - float(st.get("checked_at") or 0) < max_age:
+            st["just_installed"] = False
+            return st
+        url = os.environ.get("FORGE_URL") or UPDATE_URL_DEFAULT
+        headers = {"User-Agent": "selkies-forge/" + VERSION}
+        dl = os.path.join(STATE, "update-docker.sh")
+        if st.get("etag") and st.get("url") == url and os.path.exists(dl):
+            headers["If-None-Match"] = st["etag"]
+        st.update(checked_at=time.time(), url=url, error=None, just_installed=False)
+        body = None
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                body = r.read()
+                st["etag"] = r.headers.get("ETag")
+        except urllib.error.HTTPError as ex:
+            if ex.code != 304:
+                st["error"] = "GitHub answered HTTP %s" % ex.code
+        except Exception as ex:
+            st["error"] = "could not reach GitHub (%s)" % type(ex).__name__
+        if body:
+            txt = body.decode("utf-8", "replace")
+            m = re.search(r'^FORGE_PAYLOAD_SHA="([0-9a-f]{64})"', txt, re.M)
+            v = re.search(r'^FORGE_VERSION="([^"]+)"', txt, re.M)
+            if m:
+                with open(dl, "wb") as fh:
+                    fh.write(body)
+                st["remote_sha"] = m.group(1)
+                st["remote_version"] = v.group(1) if v else None
+            else:
+                st["error"] = "the file on GitHub does not look like Selkies Forge"
+        local = installed_payload()
+        st["installed_sha"] = local
+        st["available"] = bool(st.get("remote_sha") and local and st["remote_sha"] != local)
+        if st["available"] and install and auto_update_enabled():
+            _install_update(st, dl)
+        jsave(UPDATE_JSON, {k: v for k, v in st.items() if k != "just_installed"})
+        return st
+
+
+def _install_update(st, path):
+    rc, _, _ = run(["bash", "-n", path], timeout=60)
+    if rc != 0:
+        st["error"] = "the downloaded update does not parse; skipped"
+        return
+    env = dict(os.environ, FORGE_HOME=ROOT)
+    env.pop("FORGE_AS_CLI", None)
+    with open(os.path.join(LOGDIR, "update.log"), "ab") as log:
+        log.write(("\n--- %s installing %s\n" % (time.ctime(), st.get("remote_version"))).encode())
+        log.flush()
+        try:
+            rc = subprocess.call(["bash", path, "--setup", "--yes"], stdin=subprocess.DEVNULL,
+                                 stdout=log, stderr=subprocess.STDOUT, env=env, timeout=900)
+        except Exception as ex:
+            rc = 1
+            log.write(("install crashed: %s\n" % ex).encode())
+    if rc == 0 and installed_payload() == st.get("remote_sha"):
+        st.update(available=False, just_installed=True, installed_at=time.time(),
+                  installed_version=st.get("remote_version"), installed_sha=st.get("remote_sha"))
+    else:
+        st["error"] = "the update did not install cleanly; see logs/update.log"
+
+
+def update_report():
+    st = jload(UPDATE_JSON, {})
+    running = SERVE_PAYLOAD
+    installed = installed_payload()
+    return {"running_version": VERSION, "auto": auto_update_enabled(),
+            "checked_at": st.get("checked_at"), "available": bool(st.get("available")),
+            "remote_version": st.get("remote_version"),
+            "installed_version": st.get("installed_version") or VERSION,
+            "installed_at": st.get("installed_at"), "error": st.get("error"),
+            "restart_needed": bool(running and installed and running != installed),
+            "every_s": UPDATE_EVERY}
+
+
+def _update_loop():
+    time.sleep(min(30, UPDATE_EVERY))
+    while True:
+        try:
+            check_update(install=True)
+        except Exception:
+            pass
+        time.sleep(UPDATE_EVERY)
+
+
+def restart_webui_detached():
+    """Ask selkies-cli to restart us on the same port; it outlives this process."""
+    cli = os.path.join(APPDIR, "selkies-cli")
+    # FORGE_JUST_UPDATED only stops the CLI re-checking during the restart; it
+    # must not be FORGE_AUTO_UPDATE=0, which the new server would inherit.
+    env = dict(os.environ, FORGE_HOME=ROOT, FORGE_AS_CLI="1", FORGE_JUST_UPDATED="1")
+    with open(os.path.join(LOGDIR, "restart.log"), "ab") as log:
+        subprocess.Popen(["bash", cli, "restart"], stdin=subprocess.DEVNULL, stdout=log,
+                         stderr=subprocess.STDOUT, env=env, start_new_session=True)
+
+
 def webui_status():
     """Is the web UI up?  up / stale (recorded but dead or not answering) / down."""
     info = jload(SERVER_JSON, None)
@@ -3992,6 +4141,9 @@ def webui_status():
         out["why"] = "it is running but not answering (%s)" % type(ex).__name__
     if ok:
         out["state"] = "up"
+        out["payload"] = info.get("payload")
+        inst = installed_payload()
+        out["restart_needed"] = bool(info.get("payload") and inst and info.get("payload") != inst)
     return out
 
 
@@ -4071,6 +4223,9 @@ def main(argv=None):
 
     sub.add_parser("host")
     sub.add_parser("status")
+    p = sub.add_parser("check-update")
+    p.add_argument("--install", action="store_true")
+    p.add_argument("--max-age", type=int, default=0)
     sub.add_parser("doctor")
     sub.add_parser("instances")
     sub.add_parser("stats")
@@ -4137,6 +4292,9 @@ def main(argv=None):
 
     if a.cmd == "serve":
         serve(a.bind, a.port, a.tunnel, a.quiet)
+        return 0
+    if a.cmd == "check-update":
+        print(json.dumps(check_update(install=a.install, max_age=a.max_age, timeout=12)))
         return 0
     if a.cmd == "status":
         print(json.dumps(forge_status()))
@@ -4272,6 +4430,7 @@ __FORGE_FILE_ENGINE_PY__
   </nav>
 
   <main class="main">
+    <div class="updbar" id="updBar" hidden></div>
 
     <!-- ------------------------------------------------------- browse -->
     <section class="view on" id="v-browse">
@@ -5553,6 +5712,28 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
 .lightbox .lb-cap { text-align: center; color: var(--dim); font-size: 12.5px; }
 .lightbox .lb-cap a { color: var(--acc); }
 
+/* ----------------------------------------------------------- update bar */
+.updbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: var(--r-l);
+  border: 1px solid rgba(90, 166, 255, 0.42);
+  background: linear-gradient(135deg, rgba(90, 166, 255, 0.16), rgba(139, 125, 255, 0.12));
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+}
+
+.updbar[hidden] { display: none; }
+.updbar .ic { color: #cfe3ff; display: grid; place-items: center; }
+.updbar .ic svg { width: 20px; height: 20px; }
+.updbar .msg { flex: 1; min-width: 0; font-size: 13.5px; }
+.updbar .msg b { display: block; font-size: 14px; }
+.updbar .msg small { color: var(--dim); }
+.updbar.warn { border-color: rgba(255, 194, 77, 0.45); background: rgba(255, 194, 77, 0.09); }
+
 /* ----------------------------------------------------------------- misc */
 .empty { text-align: center; padding: 54px 20px; color: var(--dim-2); }
 .empty .big { font-size: 34px; margin-bottom: 10px; opacity: 0.5; }
@@ -5799,6 +5980,7 @@ __FORGE_FILE_APP_CSS__
           '<circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg>',
     close: '<svg ' + SVG + '><path d="M6 6l12 12M18 6L6 18"/></svg>',
     fit: '<svg ' + SVG + '><path d="M4 9V4h5M20 15v5h-5M15 4h5v5M9 20H4v-5"/></svg>',
+    upd: '<svg ' + SVG + '><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>',
     eye: '<svg ' + SVG + '><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>' +
          '<circle cx="12" cy="12" r="3"/></svg>'
   };
@@ -5868,6 +6050,7 @@ __FORGE_FILE_APP_CSS__
       pollStats();
       setInterval(refreshInstances, 6000);
       setInterval(refreshHost, 15000);
+      pollUpdate();
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
         '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
@@ -6959,6 +7142,75 @@ __FORGE_FILE_APP_CSS__
     }).catch(function (e) {
       $("#hostChecks").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
     });
+  }
+
+  /* ------------------------------------------------------------- updates */
+  /* The server checks GitHub every 5 minutes and installs new builds on its
+     own; this just asks the local server whether one is waiting. */
+  function pollUpdate() {
+    api("/api/update").then(renderUpdate).catch(function () {}).then(function () {
+      setTimeout(pollUpdate, 60000);
+    });
+  }
+
+  function renderUpdate(u) {
+    var bar = $("#updBar");
+    if (!u || S.restarting) return;
+    if (u.restart_needed) {
+      bar.className = "updbar";
+      bar.innerHTML = '<span class="ic">' + I.upd + "</span>" +
+        '<div class="msg"><b>Selkies Forge ' + h(u.installed_version || "update") +
+        " is installed</b><small>Restart the web UI to start using it. Your desktops keep running.</small></div>" +
+        '<button class="btn primary sm" id="updRestart" type="button">Restart now</button>' +
+        '<button class="iconbtn" id="updHide" type="button" title="Later">' + I.close + "</button>";
+      bar.hidden = S.updHidden === "r:" + u.installed_version;
+    } else if (u.available && u.error) {
+      bar.className = "updbar warn";
+      bar.innerHTML = '<span class="ic">' + I.upd + "</span>" +
+        '<div class="msg"><b>An update' + (u.remote_version ? " (" + h(u.remote_version) + ")" : "") +
+        " is available</b><small>It could not install by itself: " + h(u.error) + "</small></div>" +
+        '<button class="btn sm" id="updRetry" type="button">Try again</button>' +
+        '<button class="iconbtn" id="updHide" type="button" title="Later">' + I.close + "</button>";
+      bar.hidden = S.updHidden === "a:" + u.remote_version;
+    } else {
+      bar.hidden = true;
+      return;
+    }
+    var hide = $("#updHide");
+    if (hide) hide.onclick = function () {
+      S.updHidden = u.restart_needed ? "r:" + u.installed_version : "a:" + u.remote_version;
+      bar.hidden = true;
+    };
+    var rs = $("#updRestart");
+    if (rs) rs.onclick = restartForUpdate;
+    var rt = $("#updRetry");
+    if (rt) rt.onclick = function () {
+      rt.disabled = true;
+      rt.textContent = "Installing\u2026";
+      api("/api/update/check", { body: {} }).then(renderUpdate)
+        .catch(function (e) { toast("Update failed", e.message, "bad"); rt.disabled = false; });
+    };
+  }
+
+  function restartForUpdate() {
+    S.restarting = true;
+    var bar = $("#updBar");
+    bar.className = "updbar";
+    bar.innerHTML = '<span class="ic">' + I.restart + '</span><div class="msg"><b>Restarting the web UI\u2026</b>' +
+      "<small>This page reloads by itself in a few seconds.</small></div>";
+    api("/api/update/restart", { body: {} }).catch(function () {});
+    var tries = 0;
+    function waitForIt() {
+      tries++;
+      fetch("/api/update", { headers: TOKEN ? { "X-Forge-Token": TOKEN } : {}, cache: "no-store" })
+        .then(function (r) { return r.json(); })
+        .then(function (u) {
+          if (!u.restart_needed) location.reload();
+          else if (tries < 90) setTimeout(waitForIt, 1500);
+        })
+        .catch(function () { if (tries < 90) setTimeout(waitForIt, 1500); });
+    }
+    setTimeout(waitForIt, 3000);
   }
 
   /* ------------------------------------------------------------ routing */
@@ -9302,7 +9554,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.1.0"
+FORGE_VERSION="1.2.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -10614,6 +10866,7 @@ print("UI_PID=" + q(w.get("pid", "")))
 print("UI_PORT=" + q(w.get("port", "")))
 print("UI_BIND=" + q(w.get("bind", "")))
 print("UI_EXPOSED=" + q(1 if w.get("tunnel") else 0))
+print("UI_RESTART=" + q(1 if w.get("restart_needed") else 0))
 print("UI_LOG=" + q(w.get("log", "")))
 print("DOCKER_OK=" + q(1 if d.get("docker") else 0))
 print("RUNNING=" + q(d.get("running", 0)))
@@ -10654,6 +10907,9 @@ if not d.get("docker", True):
 if st == "up":
     print("  %s %s  running at %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;79", "●"),
           c("1;38;5;75", w.get("url", "")), c("2", "· up " + dur(w.get("uptime_s")))))
+    if w.get("restart_needed"):
+        print("  %s %s  %s" % (c("2", "%-9s" % "Update"), c("38;5;141", "\u2726"),
+              "a new version is installed; restart the web UI to use it"))
 elif st == "stale":
     print("  %s %s  %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;221", "!"),
           c("38;5;221", "stopped unexpectedly"), c("2", "· " + (w.get("why") or ""))))
@@ -10749,6 +11005,21 @@ cmd_update() {
   fi
 }
 
+# selkies-cli keeps itself current: at most once every 5 minutes it asks
+# GitHub for a newer build, installs it, and reruns itself on the new code.
+# FORGE_AUTO_UPDATE=0 turns this off.
+auto_update_cli() {
+  [ "${FORGE_AUTO_UPDATE:-1}" = 0 ] && return 0
+  local r
+  r=$(engine check-update --install --max-age 300 2>/dev/null) || return 0
+  if printf '%s' "$r" | grep -q '"just_installed": true'; then
+    local v
+    v=$(printf '%s' "$r" | "$PY" -c 'import json,sys; print(json.load(sys.stdin).get("installed_version") or "")' 2>/dev/null)
+    ok "updated Selkies Forge to ${v:-the latest version}"
+    FORGE_JUST_UPDATED=1 exec bash "$FORGE_APP/selkies-cli" "$@"
+  fi
+}
+
 pick_new() {
   local choice
   choice=$(menu_choose "Forge a new desktop" \
@@ -10780,11 +11051,12 @@ main_menu() {
     fi
     case "$UI_STATE" in
       up)
+        [ "$UI_RESTART" = 1 ] && items+=($'uirestart\tRestart the web UI\ta new version is installed')
         items+=("open"$'\t'"Open the web UI"$'\t'"running at $UI_URL")
         [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops"$'\t'"$RUNNING running, $STOPPED stopped")
         items+=($'new\tForge a new desktop\tpick from 150+ desktops')
         items+=($'uistop\tStop the web UI\tyour desktops keep running')
-        items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
+        [ "$UI_RESTART" = 1 ] || items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
         ;;
       stale)
         items+=($'uistart\tStart the web UI again\tit stopped unexpectedly')
@@ -10864,6 +11136,7 @@ USAGE
 
 main() {
   local MODE="menu" LAUNCH_ID=""
+  local -a ORIG_ARGS=("$@")
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
     status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help)
@@ -10916,6 +11189,12 @@ main() {
   preflight
   extract_payload
   install_cli || true
+  if [ "$FORGE_AS_CLI" = 1 ] && [ "${FORGE_JUST_UPDATED:-0}" != 1 ]; then
+    case "$MODE" in
+      update|uninstall|setup) : ;;
+      *) auto_update_cli ${ORIG_ARGS[@]+"${ORIG_ARGS[@]}"} ;;
+    esac
+  fi
 
   case "$MODE" in
     setup)
@@ -11796,6 +12075,7 @@ print("UI_PID=" + q(w.get("pid", "")))
 print("UI_PORT=" + q(w.get("port", "")))
 print("UI_BIND=" + q(w.get("bind", "")))
 print("UI_EXPOSED=" + q(1 if w.get("tunnel") else 0))
+print("UI_RESTART=" + q(1 if w.get("restart_needed") else 0))
 print("UI_LOG=" + q(w.get("log", "")))
 print("DOCKER_OK=" + q(1 if d.get("docker") else 0))
 print("RUNNING=" + q(d.get("running", 0)))
@@ -11836,6 +12116,9 @@ if not d.get("docker", True):
 if st == "up":
     print("  %s %s  running at %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;79", "●"),
           c("1;38;5;75", w.get("url", "")), c("2", "· up " + dur(w.get("uptime_s")))))
+    if w.get("restart_needed"):
+        print("  %s %s  %s" % (c("2", "%-9s" % "Update"), c("38;5;141", "\u2726"),
+              "a new version is installed; restart the web UI to use it"))
 elif st == "stale":
     print("  %s %s  %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;221", "!"),
           c("38;5;221", "stopped unexpectedly"), c("2", "· " + (w.get("why") or ""))))
@@ -11931,6 +12214,21 @@ cmd_update() {
   fi
 }
 
+# selkies-cli keeps itself current: at most once every 5 minutes it asks
+# GitHub for a newer build, installs it, and reruns itself on the new code.
+# FORGE_AUTO_UPDATE=0 turns this off.
+auto_update_cli() {
+  [ "${FORGE_AUTO_UPDATE:-1}" = 0 ] && return 0
+  local r
+  r=$(engine check-update --install --max-age 300 2>/dev/null) || return 0
+  if printf '%s' "$r" | grep -q '"just_installed": true'; then
+    local v
+    v=$(printf '%s' "$r" | "$PY" -c 'import json,sys; print(json.load(sys.stdin).get("installed_version") or "")' 2>/dev/null)
+    ok "updated Selkies Forge to ${v:-the latest version}"
+    FORGE_JUST_UPDATED=1 exec bash "$FORGE_APP/selkies-cli" "$@"
+  fi
+}
+
 pick_new() {
   local choice
   choice=$(menu_choose "Forge a new desktop" \
@@ -11962,11 +12260,12 @@ main_menu() {
     fi
     case "$UI_STATE" in
       up)
+        [ "$UI_RESTART" = 1 ] && items+=($'uirestart\tRestart the web UI\ta new version is installed')
         items+=("open"$'\t'"Open the web UI"$'\t'"running at $UI_URL")
         [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops"$'\t'"$RUNNING running, $STOPPED stopped")
         items+=($'new\tForge a new desktop\tpick from 150+ desktops')
         items+=($'uistop\tStop the web UI\tyour desktops keep running')
-        items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
+        [ "$UI_RESTART" = 1 ] || items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
         ;;
       stale)
         items+=($'uistart\tStart the web UI again\tit stopped unexpectedly')
@@ -12046,6 +12345,7 @@ USAGE
 
 main() {
   local MODE="menu" LAUNCH_ID=""
+  local -a ORIG_ARGS=("$@")
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
     status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help)
@@ -12098,6 +12398,12 @@ main() {
   preflight
   extract_payload
   install_cli || true
+  if [ "$FORGE_AS_CLI" = 1 ] && [ "${FORGE_JUST_UPDATED:-0}" != 1 ]; then
+    case "$MODE" in
+      update|uninstall|setup) : ;;
+      *) auto_update_cli ${ORIG_ARGS[@]+"${ORIG_ARGS[@]}"} ;;
+    esac
+  fi
 
   case "$MODE" in
     setup)

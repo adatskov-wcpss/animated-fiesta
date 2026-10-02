@@ -80,8 +80,17 @@ For quick jobs, skip the menu:
 | `selkies-cli open` | Print the web UI's link and open it in a browser if there is one; offers to start it if it is down |
 | `selkies-cli manager` | Manage desktops in the terminal |
 | `selkies-cli new` | Forge a new desktop from the hand picked list |
-| `selkies-cli update` | Install the latest version from GitHub, then offer to restart the web UI so it uses it |
+| `selkies-cli update` | Install the latest version from GitHub now, then offer to restart the web UI so it uses it |
 | `selkies-cli uninstall` | Remove everything, including the command itself |
+
+### Automatic updates
+
+Selkies Forge keeps itself up to date from this repository:
+
+- **While the web UI runs**, it checks GitHub every 5 minutes. When there is a new build, it installs it on its own and shows a banner with a **Restart now** button. Your desktops keep running through the restart.
+- **When you run `selkies-cli`**, it checks too, at most once every 5 minutes. If there is a new build, it installs it and carries on with the new version.
+
+Each check sends GitHub the identifier of the last copy it downloaded, so an unchanged file costs a tiny "not modified" reply instead of a 560 KB download. Set `FORGE_AUTO_UPDATE=0` to turn automatic updates off; `selkies-cli update` still works by hand.
 
 `selkies-cli` goes in `~/.local/bin` (or `~/bin`) when that folder is on your `PATH`, otherwise in `/usr/local/bin` if you can write to it. If neither works it goes in `~/.local/bin`, and a short marked block is added to `~/.bashrc` (plus `~/.zshrc` and `~/.profile` if you have them) to put that folder on your `PATH`. Open a new terminal once for that to take effect. Set `FORGE_BIN_DIR` to choose the folder yourself; your shell profiles are then left alone.
 
@@ -222,7 +231,8 @@ Everything lives in `~/.selkies-forge`. Set `FORGE_HOME` to use a different fold
 - The script only connects to:
   - container registries (`lscr.io`, `ghcr.io`, Docker Hub),
   - `get.docker.com`, only if it installs Docker,
-  - `serveo.net`, only when you open a public link.
+  - `serveo.net`, only when you open a public link,
+  - `raw.githubusercontent.com`, every 5 minutes to check for updates (turn off with `FORGE_AUTO_UPDATE=0`).
 
   Your browser loads screenshots from `upload.wikimedia.org`. There is no telemetry.
 
