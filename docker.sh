@@ -491,13 +491,15 @@ install_extras() {
 # =========================================================================
 
 FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
-FORGE_SHA_ENGINE_PY="092ec3006f6c7e17b06ac12c5feedee66d5ab61254c280b9289f2e4d69c844c7"
-FORGE_SHA_INDEX_HTML="9478e1fdaf4df021dd6900610f19c6b2ead6fed6e4a2a03dba0a02effcaa88a6"
-FORGE_SHA_APP_CSS="ab1899039cc0d47d1a0a8bda2a9c162be222edf8cffb1b396177c6c9b0575577"
-FORGE_SHA_APP_JS="4e6723ba448447fd8ff07ea4d5118b73a92123a86ae86a5da7f1c9888a16f520"
+FORGE_SHA_ENGINE_PY="5bde62d7775e37bfea0fac36d578f5dc7b996949670e99d40a36d8d7bb7e7a1e"
+FORGE_SHA_INDEX_HTML="220cc292f318046f9f8cacab221469fb13c741a033513e18fc830c841d0e744c"
+FORGE_SHA_APP_CSS="9732f6611143ec0ec3a607221a1347cda19d933b68ae79ab912d15c22dbdbbdd"
+FORGE_SHA_APP_JS="c9484cf2234595a670bef18eb353ac8b350c693ff1aa6a4ac1cf8c9b3eee06db"
 FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
-FORGE_SHA_LOGOS_JS="7d210251df9e2bfca5c2caaf07377042219f18650c7ca97149d4218c29d8bbaa"
-FORGE_PAYLOAD_SHA="d8e0ca28caca5641a9fcdd50cb0f58fbe94a7185c7e8046cb49cbff5e3dae093"
+FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
+FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
+FORGE_SHA_INFO_JSON="55b317e435e760e51ea56e39b6dfdd67c8f0266940b9769ff748d94cfa0aac57"
+FORGE_PAYLOAD_SHA="3a8daf177842b2e199c6ca6a90c0435371f1a0bad881dc5b3f3e9c68db07d7ea"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -1755,7 +1757,14 @@ def plan_resources(e, host, generous=False):
     cpus = clamp(e["cpu_rec"], 1.0, max(1.0, cores - 0.5 if cores > 1 else cores))
     cpus = round(cpus * 2) / 2.0
     shm = int(clamp(mem / 4.0, 256, 2048))
-    disk = int(e["disk_mb"] + 4096)
+
+    # Give the desktop room to actually live in: the image itself plus a real
+    # working allowance, never less than 10 GB, and never more than most of
+    # what is free.
+    want = max(10240, int(e["disk_mb"] * 2.0) + 6144)
+    ceiling = int(max(5120, host.get("disk_free_mb", 0) * 0.85))
+    disk = int(clamp(want, 5120, ceiling))
+    disk = int(round(disk / 1024.0) * 1024)
     return {"memory_mb": mem, "cpus": cpus, "shm_mb": shm, "disk_mb": disk,
             "swap_mb": 0}
 
@@ -1823,6 +1832,74 @@ def _why(e, f, notes, host):
         out.append("barely registers on the CPU, idles near %s" % human_mb(e["idle_mb"]))
     out.extend(notes)
     return out[:4]
+
+
+# Descriptions and screenshots are fetched from Wikipedia when the script is
+# built (fetch_info.py) and shipped inside it, so every entry has them instantly
+# and offline, and the app never trips Wikimedia's rate limits.
+_INFO = None
+
+FALLBACK_TEXT = {
+    "remnux": "REMnux is an Ubuntu-based Linux toolkit for reverse-engineering and "
+              "analysing malicious software, bundling hundreds of free analysis tools.",
+    "generic-mac": "A clean, Mac-like layout built on Debian: a slim top panel, a dock "
+                   "along the bottom and a calm dark theme. It is ordinary Linux underneath.",
+    "generic-win": "A familiar Windows-like layout built on Debian: one taskbar along the "
+                   "bottom, a start-style menu and plain grey chrome.",
+}
+
+
+def info_db():
+    global _INFO
+    if _INFO is None:
+        try:
+            with open(os.path.join(APPDIR, "info.json")) as fh:
+                _INFO = json.load(fh)
+        except Exception:
+            _INFO = {"families": {}, "desktops": {}}
+    return _INFO
+
+
+def entry_info(e):
+    db = info_db()
+    fams, des = db.get("families", {}), db.get("desktops", {})
+    de_key = e["de"]
+    base_family = catalog.BASES[e["base"]]["family"] if e.get("base") else e["family"]
+
+    def article(src, kind):
+        if not src:
+            return None
+        return {"kind": kind, "title": src.get("title"), "url": src.get("url"),
+                "extract": src.get("extract"), "lead": src.get("lead")}
+
+    distro = fams.get(e["family"])
+    based_on = None
+    if not distro:
+        distro = fams.get(base_family)
+    elif base_family != e["family"] and fams.get(base_family):
+        based_on = fams.get(base_family)          # e.g. Mint-style built on Ubuntu
+
+    desktop = des.get(de_key)
+    out = {
+        "distro": article(distro, "distro"),
+        "based_on": article(based_on, "base"),
+        "desktop": article(desktop, "desktop"),
+        "fallback": FALLBACK_TEXT.get(e["family"]),
+        "desktop_blurb": catalog.DESKTOPS.get(de_key, {}).get("blurb"),
+        "images": [],
+        "source": db.get("source"),
+        "fetched": db.get("fetched"),
+    }
+    # What you will actually see is the desktop, so its screenshots lead.
+    seen = set()
+    for src, tag in ((desktop, "desktop"), (distro, "distro"), (based_on, "base")):
+        for img in (src or {}).get("images", []):
+            if img["src"] in seen:
+                continue
+            seen.add(img["src"])
+            out["images"].append(dict(img, about=(src or {}).get("title"), tag=tag))
+    out["images"] = out["images"][:9]
+    return out
 
 
 def public_entry(e):
@@ -1960,6 +2037,17 @@ def docker_instances():
                     pass
         note = reg.get(name) or {}
         entry_id = labels.get("%s.entry" % LABEL)
+        env = {}
+        for kv in ((c.get("Config") or {}).get("Env") or []):
+            k, _, v = kv.partition("=")
+            env[k] = v
+        if env.get("CUSTOM_USER") and env.get("PASSWORD"):
+            auth = {"user": env["CUSTOM_USER"], "password": env["PASSWORD"]}
+        elif env.get("VNC_PW"):
+            auth = {"user": "kasm_user", "password": env["VNC_PW"]}
+        else:
+            auth = None
+        restart = ((hostcfg.get("RestartPolicy") or {}).get("Name") or "no")
         cat = catalog.BY_ID.get(entry_id)
         items.append({
             "name": name,
@@ -1986,6 +2074,9 @@ def docker_instances():
                 "shm_mb": int((hostcfg.get("ShmSize") or 0) / (1024 * 1024)) or None,
             },
             "disk_cap_mb": _int_or_none(labels.get("%s.disk" % LABEL)),
+            "autostart": restart in ("always", "unless-stopped", "on-failure"),
+            "restart_policy": restart,
+            "auth": auth,
             "volume": labels.get("%s.volume" % LABEL),
             "tunnel": note.get("tunnel"),
             "local_url": None,
@@ -2575,7 +2666,10 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
     prof = entry.get("profile", "selkies")
     args = ["docker", "run", "-d", "--name", name,
             "--hostname", slug(entry["family"])[:20] or "forge",
-            "--restart", opts.get("restart", "unless-stopped"),
+            # Off by default: a desktop should only start when you start it.
+            # "unless-stopped" made every one of them come back whenever
+            # Docker (or the machine) restarted.
+            "--restart", "unless-stopped" if opts.get("autostart") else "no",
             "--shm-size", "%dm" % int(plan["shm_mb"]),
             "--label", "%s.entry=%s" % (LABEL, entry["id"]),
             "--label", "%s.title=%s" % (LABEL, entry["name"]),
@@ -2954,6 +3048,100 @@ def instance_action(name, action, opts=None):
     if rc != 0:
         raise RuntimeError((err or out).strip() or "docker %s failed" % action)
     return {"ok": True}
+
+
+def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
+                autostart=None):
+    """Change an instance's limits.
+
+    Memory, CPU and auto-start apply live. Docker cannot change /dev/shm or
+    the storage budget of a running container, so those recreate it on the
+    same image, ports, environment and /config volume: files survive.
+    """
+    if not re.match(r"^[A-Za-z0-9_.-]+$", name or ""):
+        raise RuntimeError("bad container name")
+    rc, out, err = run(["docker", "inspect", name], timeout=40)
+    if rc != 0:
+        raise RuntimeError("no such container: %s" % name)
+    c = json.loads(out)[0]
+    hostcfg = c.get("HostConfig") or {}
+    labels = (c.get("Config") or {}).get("Labels") or {}
+    cur_shm = int((hostcfg.get("ShmSize") or 0) / (1024 * 1024))
+    cur_disk = _int_or_none(labels.get("%s.disk" % LABEL))
+    need_recreate = ((shm_mb and int(shm_mb) != cur_shm) or
+                     (disk_mb and cur_disk and int(disk_mb) != cur_disk))
+
+    if not need_recreate:
+        args = ["docker", "update"]
+        if memory_mb:
+            args += ["--memory", "%dm" % int(memory_mb),
+                     "--memory-swap", "%dm" % int(memory_mb)]
+        if cpus:
+            args += ["--cpus", str(cpus)]
+        if autostart is not None:
+            args += ["--restart", "unless-stopped" if autostart else "no"]
+        if len(args) > 2:
+            args.append(name)
+            rc, out, err = run(args, timeout=90)
+            if rc != 0:
+                raise RuntimeError((err or out).strip())
+        return {"ok": True, "recreated": False}
+
+    entry = catalog.BY_ID.get(labels.get("%s.entry" % LABEL))
+    if not entry:
+        raise RuntimeError("this container was not made by the forge")
+    env = {}
+    for kv in ((c.get("Config") or {}).get("Env") or []):
+        k, _, v = kv.partition("=")
+        env[k] = v
+    ports = []
+    for cport in ((str(KASM_HTTPS),) if entry["profile"] == "kasm"
+                  else (str(SELKIES_HTTP), str(SELKIES_HTTPS))):
+        binds = ((c.get("NetworkSettings") or {}).get("Ports") or {}).get(cport + "/tcp") or \
+            (hostcfg.get("PortBindings") or {}).get(cport + "/tcp") or []
+        if binds:
+            ports.append(int(binds[0].get("HostPort")))
+    if not ports:
+        raise RuntimeError("could not read the published ports")
+    restart = ((hostcfg.get("RestartPolicy") or {}).get("Name") or "no")
+
+    plan = {
+        "memory_mb": int(memory_mb or (hostcfg.get("Memory") or 0) / (1024 * 1024) or 1024),
+        "cpus": float(cpus or (hostcfg.get("NanoCpus") or 0) / 1e9 or 1),
+        "shm_mb": int(shm_mb or cur_shm or 256),
+        "disk_mb": int(disk_mb or cur_disk or 10240),
+    }
+    opts = {"autostart": (restart != "no") if autostart is None else bool(autostart),
+            "gpu": any(d.get("PathOnHost") == "/dev/dri" for d in (hostcfg.get("Devices") or [])),
+            "seccomp_unconfined": "seccomp=unconfined" in (hostcfg.get("SecurityOpt") or [])}
+    if env.get("CUSTOM_USER") and env.get("PASSWORD"):
+        opts["username"], opts["password"] = env["CUSTOM_USER"], env["PASSWORD"]
+    if env.get("VNC_PW"):
+        opts["password"] = env["VNC_PW"]
+    if env.get("LC_ALL"):
+        opts["locale"] = env["LC_ALL"]
+    image = (c.get("Config") or {}).get("Image")
+    was_running = bool((c.get("State") or {}).get("Running"))
+
+    tunnel = (reg_load().get(name) or {}).get("tunnel")
+    tunnel_stop(name)
+    rc, out, err = run(["docker", "rm", "-f", name], timeout=120)
+    if rc != 0:
+        raise RuntimeError("could not remove the old container: %s" % (err or out).strip())
+    args, _vol = docker_run_args(entry, name, ports, plan, opts, image, host_info())
+    rc, out, err = run(args, timeout=180)
+    if rc != 0:
+        raise RuntimeError("recreate failed: %s" % (err or out).strip())
+    reg_update(name, {"plan": plan})
+    if not was_running:
+        run(["docker", "stop", name], timeout=120)
+    elif tunnel:
+        try:
+            wait_healthy(name, ports[0], entry["profile"], timeout=240)
+            tunnel_start(name, ports[0], mode=tunnel.get("mode", "http"))
+        except Exception:
+            pass
+    return {"ok": True, "recreated": True}
 
 
 def retune(name, memory_mb=None, cpus=None):
@@ -3359,7 +3547,8 @@ class Handler(BaseHTTPRequestHandler):
         route = self._route()
         if route in ("/", "/index.html"):
             return self._static("index.html")
-        if route in ("/app.css", "/app.js", "/term.js", "/logos.js", "/favicon.ico"):
+        if route in ("/app.css", "/app.js", "/term.js", "/logos.js", "/brands.js",
+                     "/favicon.ico"):
             return self._static(route.lstrip("/"))
         if not route.startswith("/api/"):
             return self._err(404, "no such path")
@@ -3434,6 +3623,12 @@ class Handler(BaseHTTPRequestHandler):
         m = re.match(r"^/api/term/([0-9a-f]+)/stream$", route)
         if m:
             return self._stream_term(m.group(1))
+        m = re.match(r"^/api/info/([A-Za-z0-9_.-]+)$", route)
+        if m:
+            e = catalog.BY_ID.get(m.group(1))
+            if not e:
+                return self._err(404, "no such entry")
+            return self._send(200, entry_info(e))
         m = re.match(r"^/api/entry/([A-Za-z0-9_.-]+)$", route)
         if m:
             e = catalog.BY_ID.get(m.group(1))
@@ -3486,7 +3681,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"job": job.snapshot(), "plan": plan})
         m = re.match(r"^/api/instance/([A-Za-z0-9_.-]+)/retune$", route)
         if m:
-            return self._send(200, retune(m.group(1), body.get("memory_mb"), body.get("cpus")))
+            return self._send(200, reconfigure(
+                m.group(1), body.get("memory_mb"), body.get("cpus"), body.get("shm_mb"),
+                body.get("disk_mb"), body.get("autostart")))
         m = re.match(r"^/api/instance/([A-Za-z0-9_.-]+)/([a-z]+)$", route)
         if m:
             return self._send(200, instance_action(m.group(1), m.group(2), body))
@@ -3679,7 +3876,7 @@ def cli_launch_stream(args):
         plan["shm_mb"] = int(args.shm)
     if args.disk:
         plan["disk_mb"] = int(args.disk)
-    opts = {"tunnel": not args.no_tunnel, "name": args.name,
+    opts = {"tunnel": not args.no_tunnel, "name": args.name, "autostart": args.autostart,
             "gpu": args.gpu, "seccomp_unconfined": args.seccomp,
             "health_timeout": args.timeout}
     if args.user and args.password:
@@ -3830,6 +4027,8 @@ def main(argv=None):
     p.add_argument("--gpu", action="store_true")
     p.add_argument("--seccomp", action="store_true")
     p.add_argument("--timeout", type=int, default=300)
+    p.add_argument("--autostart", action="store_true",
+                   help="start this desktop again whenever Docker starts")
 
     p = sub.add_parser("do")
     p.add_argument("name")
@@ -3842,6 +4041,9 @@ def main(argv=None):
     p.add_argument("name")
     p.add_argument("--memory", type=int)
     p.add_argument("--cpus", type=float)
+    p.add_argument("--shm", type=int)
+    p.add_argument("--disk", type=int)
+    p.add_argument("--autostart", choices=["on", "off"])
 
     p = sub.add_parser("logs")
     p.add_argument("name")
@@ -3927,7 +4129,8 @@ def main(argv=None):
             return 1
     if a.cmd == "retune":
         try:
-            print(json.dumps(retune(a.name, a.memory, a.cpus)))
+            auto = None if a.autostart is None else (a.autostart == "on")
+            print(json.dumps(reconfigure(a.name, a.memory, a.cpus, a.shm, a.disk, auto)))
             return 0
         except Exception as ex:
             print(json.dumps({"error": str(ex)}))
@@ -3987,39 +4190,55 @@ __FORGE_FILE_ENGINE_PY__
     <!-- ------------------------------------------------------- browse -->
     <section class="view on" id="v-browse">
       <h1 class="h1">Pick a desktop</h1>
-      <p class="sub">Every entry here is a real, running Linux desktop streamed to your browser.
-        <b id="count">-</b> &middot; prebuilt images pull in minutes, the rest are built on this machine.</p>
+      <p class="sub">Real Linux desktops, streamed to your browser. <b id="count">-</b>.
+        Prebuilt ones pull in minutes; the rest are built on this machine.</p>
 
       <div class="panel">
-        <h3>Let it choose <span class="hint">scored against this machine's actual free memory, cores and disk</span></h3>
-        <div class="row" style="align-items:flex-start;gap:20px">
-          <div style="min-width:200px">
-            <div class="what" style="font-size:11px;color:var(--dim-2);margin-bottom:6px">WHAT MATTERS MOST</div>
-            <div class="chips" id="tasteChips"></div>
+        <h3>Not sure? Let it choose <span class="hint">scored against this machine's free memory, cores and disk</span></h3>
+        <div class="smart-row">
+          <div class="grp">
+            <span class="sec-k">What matters most</span>
+            <div class="seg" id="tasteSeg"></div>
           </div>
-          <div style="min-width:200px">
-            <div class="what" style="font-size:11px;color:var(--dim-2);margin-bottom:6px">WHAT FOR</div>
-            <div class="chips" id="purposeChips"></div>
+          <div class="grp">
+            <span class="sec-k">What it is for</span>
+            <select id="purposeSel" style="width:auto;min-width:170px">
+              <option value="general">Anything</option>
+              <option value="dev">Writing code</option>
+              <option value="security">Security work</option>
+              <option value="retro">Retro and tiny</option>
+              <option value="media">Media</option>
+            </select>
           </div>
           <div class="spacer"></div>
           <button class="btn primary" id="smartBtn">Choose for me</button>
         </div>
-        <div id="smartOut" style="margin-top:14px"></div>
+        <div id="smartOut"></div>
       </div>
 
-      <div class="panel tight">
-        <div class="chips" id="famChips" style="margin-bottom:9px"></div>
-        <div class="row">
-          <div class="chips" id="wChips"></div>
-          <div class="spacer"></div>
-          <select id="sort" style="width:auto">
-            <option value="beauty">Sort: best looking</option>
-            <option value="light">Sort: lightest</option>
-            <option value="fast">Sort: snappiest</option>
-            <option value="small">Sort: smallest download</option>
-            <option value="name">Sort: name</option>
-          </select>
+      <div class="toolbar">
+        <select id="famSel" aria-label="Distro family"></select>
+        <div class="seg" id="weightSeg">
+          <button data-w="" class="on">Any weight</button>
+          <button data-w="feather">Feather</button>
+          <button data-w="light">Light</button>
+          <button data-w="balanced">Balanced</button>
+          <button data-w="full">Full</button>
+          <button data-w="heavy">Heavy</button>
         </div>
+        <div class="seg" id="kindSeg">
+          <button data-kind="" class="on">All</button>
+          <button data-kind="pull">Ready to run</button>
+          <button data-kind="build">Built here</button>
+        </div>
+        <div class="spacer"></div>
+        <select id="sort" aria-label="Sort">
+          <option value="beauty">Best looking</option>
+          <option value="light">Lightest</option>
+          <option value="fast">Snappiest</option>
+          <option value="small">Smallest download</option>
+          <option value="name">Name</option>
+        </select>
       </div>
 
       <div class="grid" id="grid"></div>
@@ -4027,18 +4246,22 @@ __FORGE_FILE_ENGINE_PY__
 
     <!-- ---------------------------------------------------- configure -->
     <section class="view" id="v-configure">
-      <button class="btn sm ghost" data-back="browse" style="margin-bottom:12px">&larr; back to the catalog</button>
-      <div class="panel" id="cfgHero"></div>
-      <div class="cfg">
+      <button class="btn sm ghost" data-back="browse" style="margin-bottom:14px">&larr; All desktops</button>
+      <div class="panel" id="dHero"></div>
+      <div class="panel" id="dGallery" hidden></div>
+      <div class="dgrid">
         <div>
           <div class="panel" id="cfgTune"></div>
-          <div class="panel" id="cfgGo"></div>
-        </div>
-        <div>
-          <div class="panel" id="cfgSpecs"></div>
+          <div class="panel" id="cfgAuth"></div>
           <div class="panel" id="cfgOpts"></div>
         </div>
+        <div>
+          <div class="panel" id="dAbout"></div>
+          <div class="panel" id="cfgSpecs"></div>
+          <div class="panel" id="dDocker" hidden></div>
+        </div>
       </div>
+      <div class="gobar" id="goBar"></div>
     </section>
 
     <!-- ------------------------------------------------------- launch -->
@@ -4065,9 +4288,9 @@ __FORGE_FILE_ENGINE_PY__
     <!-- ------------------------------------------------------ manager -->
     <section class="view" id="v-manager">
       <h1 class="h1">Running desktops</h1>
-      <p class="sub">Live CPU, memory and the bandwidth each instance has pulled through its tunnel.</p>
-      <div class="chips" id="instTotals" style="margin-bottom:14px"></div>
-      <div id="instList"></div>
+      <p class="sub">Live CPU, memory and bandwidth. Open a shell without leaving the card.</p>
+      <div class="stat-strip" id="instStats"></div>
+      <div class="inst-grid" id="instList"></div>
     </section>
 
     <!-- -------------------------------------------------------- shell -->
@@ -4099,8 +4322,8 @@ __FORGE_FILE_ENGINE_PY__
   </main>
 </div>
 
-<div id="modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(3,7,14,.7);place-items:center;padding:24px">
-  <div class="panel" style="max-width:860px;width:100%;margin:0" onclick="event.stopPropagation()">
+<div id="modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(3,7,14,.72);place-items:center;padding:24px">
+  <div class="panel" id="modalPanel" style="max-width:860px;width:100%;margin:0;max-height:90vh;overflow:auto">
     <div class="row" style="margin-bottom:10px">
       <h3 id="modalTitle" style="margin:0">-</h3>
       <div class="spacer"></div>
@@ -4110,8 +4333,21 @@ __FORGE_FILE_ENGINE_PY__
   </div>
 </div>
 
+<div class="lightbox" id="lightbox" hidden>
+  <div class="lb-top">
+    <span id="lbCount"></span>
+    <div class="spacer"></div>
+    <button class="btn sm" id="lbPrev" type="button">&larr; Prev</button>
+    <button class="btn sm" id="lbNext" type="button">Next &rarr;</button>
+    <button class="btn sm" id="lbClose" type="button">Close</button>
+  </div>
+  <div class="lb-img"><img id="lbImg" alt=""></div>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
 <div class="toasts" id="toasts"></div>
 
+<script src="/brands.js"></script>
 <script src="/logos.js"></script>
 <script src="/term.js"></script>
 <script src="/app.js"></script>
@@ -4497,6 +4733,7 @@ body {
 
 /* --------------------------------------------------------------- buttons */
 .btn {
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -4530,6 +4767,7 @@ body {
 .btn.danger { color: #ffd4da; border-color: rgba(255, 107, 126, 0.42); }
 .btn.danger:hover { background: rgba(255, 107, 126, 0.14); border-color: var(--bad); }
 .btn.sm { padding: 6px 11px; font-size: 12px; border-radius: 9px; }
+.btn svg { width: 14px; height: 14px; flex: 0 0 14px; }
 .btn.wide { width: 100%; }
 
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -4786,43 +5024,440 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 .link-row.hero-link { border-color: rgba(90, 166, 255, 0.4); background: var(--acc-soft); }
 
 /* ------------------------------------------------------------- instances */
-.inst {
+.stat-strip {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1.4fr) minmax(0, 1fr) auto;
-  gap: 14px;
-  align-items: center;
-  padding: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 900px) { .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.stat {
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  background: var(--glass-2);
+  padding: 14px 16px;
+  display: grid;
+  gap: 4px;
+}
+
+.stat .k, .sec-k {
+  font-size: 10.5px;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: var(--dim-2);
+  font-weight: 650;
+}
+
+.stat .v { font-size: 20px; font-weight: 660; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.stat .s { font-size: 11.5px; color: var(--dim-2); }
+
+.inst-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(470px, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 1060px) { .inst-grid { grid-template-columns: 1fr; } }
+
+.mc {
   border: 1px solid var(--line);
   border-radius: var(--r-l);
   background: var(--glass);
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
-  margin-bottom: 12px;
+  box-shadow: var(--sh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.18s var(--ease);
 }
 
-@media (max-width: 920px) { .inst { grid-template-columns: 52px 1fr; } }
+.mc.up { border-color: rgba(61, 220, 151, 0.24); }
+.mc.busy { border-color: rgba(90, 166, 255, 0.45); }
+.mc.busy .mc-actions { opacity: 0.55; pointer-events: none; }
+.mc > section { padding: 16px 18px; }
+.mc > section + section { border-top: 1px solid var(--line); }
 
-.inst .logo { width: 48px; height: 48px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line); display: grid; place-items: center; }
-.inst .logo svg { width: 32px; height: 32px; }
-.inst .nm { font-weight: 640; }
-.inst .sub2 { font-size: 11.5px; color: var(--dim-2); font-family: var(--mono); }
+.mc-head { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 14px; align-items: center; }
 
-.dot-state { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; }
-.dot-state i { width: 8px; height: 8px; border-radius: 50%; }
-.dot-state.up i { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
-.dot-state.down i { background: var(--dim-2); }
-.dot-state.bad i { background: var(--bad); }
+.mc-head .logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+}
 
-.gauges { display: grid; gap: 7px; min-width: 0; }
-.gauge { display: grid; grid-template-columns: 34px 1fr 76px; gap: 8px; align-items: center; font-size: 11px; }
-.gauge span { color: var(--dim-2); }
-.gauge b { text-align: right; font-variant-numeric: tabular-nums; color: var(--dim); font-weight: 550; }
+.mc-head .logo svg { width: 32px; height: 32px; }
+.mc-head .nm { font-weight: 660; font-size: 16px; line-height: 1.25; }
 
-.spark { display: block; width: 100%; height: 26px; }
-.spark path { fill: none; stroke: var(--acc); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
-.spark path.fill { fill: rgba(90, 166, 255, 0.14); stroke: none; }
+.mc-head .sub2 {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--dim-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-.inst-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 620;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--dim-2); flex: 0 0 7px; }
+.pill.up { color: #9bf0cd; border-color: rgba(61, 220, 151, 0.34); background: rgba(61, 220, 151, 0.1); }
+.pill.up i { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+.pill.bad { color: #ffb0bb; border-color: rgba(255, 107, 126, 0.34); background: rgba(255, 107, 126, 0.1); }
+.pill.bad i { background: var(--bad); }
+
+.mc-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.m { display: grid; gap: 6px; min-width: 0; }
+.m .k { font-size: 10.5px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim-2); font-weight: 650; }
+.m .v { font-size: 15px; font-weight: 630; font-variant-numeric: tabular-nums; line-height: 1.15; white-space: nowrap; }
+.m .v small { font-size: 11.5px; color: var(--dim-2); font-weight: 500; }
+.m .bar { height: 4px; }
+.sparkbox { height: 22px; }
+
+svg.spark { display: block; width: 100%; height: 22px; overflow: visible; }
+svg.spark path { fill: none; stroke: var(--acc); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
+
+.mc-access { display: grid; gap: 8px; }
+
+.arow {
+  display: grid;
+  grid-template-columns: 30px 74px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 8px 6px 10px;
+  border-radius: var(--r-m);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.arow.pub { border-color: rgba(90, 166, 255, 0.3); background: rgba(90, 166, 255, 0.07); }
+.arow.down { opacity: 0.62; }
+.arow .ic { display: grid; place-items: center; color: var(--dim); }
+.arow .ic svg { width: 17px; height: 17px; }
+.arow .lab { font-size: 12px; color: var(--dim-2); font-weight: 600; }
+
+.arow .val {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--txt);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.arow .val .muted { color: var(--dim-2); }
+.arow .acts { display: flex; gap: 4px; }
+
+.iconbtn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  transition: background 0.14s var(--ease), color 0.14s var(--ease), border-color 0.14s var(--ease);
+}
+
+.iconbtn:hover { background: rgba(255, 255, 255, 0.08); color: var(--txt); border-color: var(--line); }
+.iconbtn svg { width: 16px; height: 16px; }
+.iconbtn.on { color: var(--acc); background: var(--acc-soft); }
+
+.mc-limits { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+
+/* Five fixed columns: the limits read as one tidy row instead of wrapping chips. */
+.limits-line {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  overflow: hidden;
+}
+
+.lchip {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.lchip + .lchip { border-left: 1px solid var(--line); }
+.lchip span { font-size: 10px; font-weight: 650; color: var(--dim-2); text-transform: uppercase; letter-spacing: 0.45px; }
+.lchip.on { color: #9bf0cd; }
+
+.mc-actions {
+  margin-top: auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 44px;
+  gap: 10px;
+  padding: 14px 18px 16px !important;
+}
+
+.mc-actions .btn { height: 42px; font-size: 13.5px; }
+.mc-actions .btn svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.mc-actions .iconbtn { width: 44px; height: 42px; border: 1px solid var(--line-2); border-radius: var(--r-m); }
+
+.menu-wrap { position: relative; }
+
+.menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  min-width: 200px;
+  padding: 6px;
+  border-radius: var(--r-m);
+  border: 1px solid var(--line-2);
+  background: rgba(12, 20, 36, 0.98);
+  box-shadow: 0 16px 44px rgba(2, 6, 16, 0.72);
+  z-index: 12;
+  display: grid;
+  gap: 2px;
+}
+
+.menu[hidden] { display: none; }
+
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--dim);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu button:hover { background: rgba(255, 255, 255, 0.07); color: var(--txt); }
+.menu button svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.menu button.danger { color: #ffb0bb; }
+.menu button.danger:hover { background: rgba(255, 107, 126, 0.14); }
+.menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; }
+
+.drawer { border-top: 1px solid var(--line); background: #04070e; }
+.drawer .term { height: 320px; }
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px 6px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(14, 22, 40, 0.85);
+  font-size: 11.5px;
+  color: var(--dim-2);
+  font-family: var(--mono);
+}
+
+/* ------------------------------------------------------------ browse bar */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  position: sticky;
+  top: -20px;
+  z-index: 5;
+}
+
+.toolbar select { width: auto; min-width: 170px; height: 36px; }
+.toolbar .sep { width: 1px; height: 24px; background: var(--line); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+
+.seg button {
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--dim);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button:hover { color: var(--txt); background: rgba(255, 255, 255, 0.04); }
+.seg button.on { background: var(--acc-soft); color: #dbeaff; }
+
+.smart-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.smart-row .grp { display: grid; gap: 6px; }
+
+/* ------------------------------------------------------------ detail page */
+.dhero { display: grid; grid-template-columns: 76px minmax(0, 1fr) 250px; gap: 20px; align-items: start; }
+@media (max-width: 900px) { .dhero { grid-template-columns: 64px 1fr; } .dhero .go { grid-column: 1 / -1; } }
+
+.dhero .logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+}
+
+.dhero .logo svg { width: 48px; height: 48px; }
+.dhero h2 { margin: 0; font-size: 22px; font-weight: 690; letter-spacing: -0.2px; }
+.dhero .tag { margin-top: 3px; color: var(--dim); font-size: 13px; }
+.dhero .about { margin: 12px 0 0; color: var(--dim); font-size: 13.5px; line-height: 1.6; max-width: 760px; }
+.dhero .about a, .srclink { color: var(--acc); text-decoration: none; font-size: 12.5px; white-space: nowrap; }
+.dhero .about a:hover, .srclink:hover { text-decoration: underline; }
+.dhero .go { display: grid; gap: 8px; }
+.dhero .go .btn { height: 46px; font-size: 14px; }
+.dhero .go .sum { font-size: 12px; color: var(--dim-2); text-align: center; line-height: 1.5; }
+
+.gallery {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 32%);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+}
+
+.shot {
+  margin: 0;
+  scroll-snap-align: start;
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: zoom-in;
+  display: flex;
+  flex-direction: column;
+}
+
+.shot .ph { aspect-ratio: 16 / 10; background: #0a1120; overflow: hidden; }
+
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+  opacity: 0;
+}
+
+.shot img.ok { opacity: 1; }
+.shot:hover img { transform: scale(1.03); }
+
+.shot figcaption {
+  padding: 8px 11px 10px;
+  font-size: 11.5px;
+  color: var(--dim);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.shot figcaption b { display: block; color: var(--dim-2); font-weight: 600; font-size: 10.5px;
+  text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+
+.credit { margin: 10px 0 0; font-size: 11.5px; color: var(--dim-2); }
+
+.dgrid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 1000px) { .dgrid { grid-template-columns: 1fr; } }
+
+.panel h3 .num {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 8px;
+  border-radius: 7px;
+  background: var(--acc-soft);
+  color: #cfe3ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.prose { color: var(--dim); font-size: 13px; line-height: 1.6; margin: 0 0 8px; }
+
+.gobar {
+  position: sticky;
+  bottom: -60px;
+  margin: 6px -22px -60px;
+  padding: 14px 22px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  background: rgba(8, 13, 24, 0.9);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  z-index: 6;
+}
+
+.gobar .what { flex: 1; min-width: 0; font-size: 13px; color: var(--dim); }
+.gobar .what b { color: var(--txt); }
+.gobar .btn { height: 42px; padding: 0 22px; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: rgba(3, 6, 12, 0.92);
+  padding: 16px 20px 22px;
+}
+
+.lightbox[hidden] { display: none; }
+.lightbox .lb-top { display: flex; align-items: center; gap: 10px; color: var(--dim); font-size: 13px; }
+.lightbox .lb-top .spacer { flex: 1; }
+.lightbox .lb-img { display: grid; place-items: center; min-height: 0; padding: 10px 0; }
+.lightbox .lb-img img { max-width: 100%; max-height: 100%; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+.lightbox .lb-cap { text-align: center; color: var(--dim); font-size: 12.5px; }
+.lightbox .lb-cap a { color: var(--acc); }
 
 /* ----------------------------------------------------------------- misc */
 .empty { text-align: center; padding: 54px 20px; color: var(--dim-2); }
@@ -4844,6 +5479,9 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 
 .toast.ok { border-color: rgba(61, 220, 151, 0.45); }
 .toast.bad { border-color: rgba(255, 107, 126, 0.5); }
+.toast { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; cursor: default; }
+.toast .x { background: none; border: 0; color: var(--dim-2); cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px; }
+.toast .x:hover { color: var(--txt); }
 .toast b { display: block; margin-bottom: 2px; }
 .toast small { color: var(--dim); }
 
@@ -4903,7 +5541,8 @@ pre.code {
 /* -------------------------------------------------- lite mode: no blur */
 html.lite { --blur: 0px; --sh: none; }
 html.lite .topbar, html.lite .rail, html.lite .panel, html.lite .card,
-html.lite .inst, html.lite .toast {
+html.lite .mc, html.lite .stat, html.lite .menu, html.lite .toast, html.lite .toolbar,
+html.lite .gobar {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   background: #0b1220;
@@ -5009,8 +5648,11 @@ __FORGE_FILE_APP_CSS__
     var box = $("#toasts");
     var el = document.createElement("div");
     el.className = "toast " + (kind || "");
-    el.innerHTML = "<b>" + h(title) + "</b>" + (detail ? "<small>" + h(detail) + "</small>" : "");
+    el.innerHTML = "<div><b>" + h(title) + "</b>" + (detail ? "<small>" + h(detail) + "</small>" : "") +
+      '</div><button class="x" type="button" title="Dismiss">\u00d7</button>';
+    el.querySelector(".x").onclick = function () { el.remove(); };
     box.appendChild(el);
+    while (box.children.length > 4) box.removeChild(box.firstChild);
     setTimeout(function () {
       el.style.transition = "opacity .3s, transform .3s";
       el.style.opacity = "0";
@@ -5033,6 +5675,40 @@ __FORGE_FILE_APP_CSS__
     }
   }
 
+  var SVG = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+            'stroke-linecap="round" stroke-linejoin="round"';
+  var I = {
+    globe: '<svg ' + SVG + '><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>' +
+           '<path d="M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21C9.5 18.4 8.2 15.4 8.2 12S9.5 5.6 12 3z"/></svg>',
+    home: '<svg ' + SVG + '><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>',
+    lock: '<svg ' + SVG + '><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+    copy: '<svg ' + SVG + '><rect x="9" y="9" width="11" height="11" rx="2"/>' +
+          '<path d="M5 15V5h10"/></svg>',
+    open: '<svg ' + SVG + '><path d="M14 5h5v5"/><path d="M19 5l-8 8"/>' +
+          '<path d="M18 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h4"/></svg>',
+    play: '<svg ' + SVG + '><path d="M7 4l12 8-12 8z"/></svg>',
+    stop: '<svg ' + SVG + '><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+    restart: '<svg ' + SVG + '><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v5h-5"/></svg>',
+    term: '<svg ' + SVG + '><rect x="3" y="4" width="18" height="16" rx="2"/>' +
+          '<path d="M7 9l3 3-3 3"/><path d="M13 15h4"/></svg>',
+    logs: '<svg ' + SVG + '><path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6M9 8h3"/></svg>',
+    tune: '<svg ' + SVG + '><path d="M5 8h14M5 16h14"/><circle cx="10" cy="8" r="2.4"/>' +
+          '<circle cx="15" cy="16" r="2.4"/></svg>',
+    trash: '<svg ' + SVG + '><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/>' +
+           '<path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg>',
+    plug: '<svg ' + SVG + '><path d="M9 3v6M15 3v6"/><path d="M7 9h10v3a5 5 0 0 1-10 0z"/>' +
+          '<path d="M12 17v4"/></svg>',
+    unplug: '<svg ' + SVG + '><path d="M4 4l16 16"/><path d="M9 3v6M15 3v6"/>' +
+            '<path d="M7 9h10v3a5 5 0 0 1-10 0z"/></svg>',
+    more: '<svg ' + SVG + '><circle cx="6" cy="12" r="1.4" fill="currentColor"/>' +
+          '<circle cx="12" cy="12" r="1.4" fill="currentColor"/>' +
+          '<circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg>',
+    close: '<svg ' + SVG + '><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    fit: '<svg ' + SVG + '><path d="M4 9V4h5M20 15v5h-5M15 4h5v5M9 20H4v-5"/></svg>',
+    eye: '<svg ' + SVG + '><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>' +
+         '<circle cx="12" cy="12" r="3"/></svg>'
+  };
+
   function sparkline(values, color) {
     var v = (values || []).slice(-60);
     if (v.length < 2) return '<svg class="spark" viewBox="0 0 100 26" preserveAspectRatio="none"></svg>';
@@ -5053,8 +5729,9 @@ __FORGE_FILE_APP_CSS__
   var S = {
     boot: null, host: null, catalog: [], instances: [], stats: {},
     view: "browse", sel: null, plan: null, job: null, jobES: null,
-    term: null, termES: null, termId: null, termName: null,
-    filters: { q: "", family: "", weight: "", kind: "", arch: true, sort: "beauty" },
+    shell: null, drawerSess: null, drawerName: null, termName: null, instKey: "",
+    info: null, gallery: [], shotIdx: 0,
+    filters: { q: "", family: "", weight: "", kind: "", sort: "beauty" },
     smart: { taste: "balanced", purpose: "general" },
     lite: false
   };
@@ -5149,45 +5826,40 @@ __FORGE_FILE_APP_CSS__
     $("#tagCat").textContent = String(S.boot ? S.boot.counts.runnable : S.catalog.length);
   }
 
-  /* ------------------------------------------------------------- filters */
-  function familyCounts() {
-    var c = {};
-    S.catalog.forEach(function (e) {
-      if (S.filters.arch && S.host && S.host.arch && e.arches.indexOf(S.host.arch) < 0) return;
-      c[e.family] = (c[e.family] || 0) + 1;
-    });
-    return c;
+  /* -------------------------------------------------------------- browse */
+  function runnable(e) {
+    return !S.host || !S.host.arch || e.arches.indexOf(S.host.arch) >= 0;
   }
 
   function renderFilters() {
     var labels = (S.boot && S.boot.family_labels) || {};
-    var counts = familyCounts();
-    var fams = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
-    var html = '<div class="chip' + (S.filters.family ? "" : " on") + '" data-fam="">All families <span class="n">' +
-      Object.keys(counts).reduce(function (s, k) { return s + counts[k]; }, 0) + "</span></div>";
-    html += fams.map(function (f) {
-      return '<div class="chip' + (S.filters.family === f ? " on" : "") + '" data-fam="' + h(f) +
-        '">' + h(labels[f] || f) + ' <span class="n">' + counts[f] + "</span></div>";
-    }).join("");
-    $("#famChips").innerHTML = html;
-
-    var weights = [["", "Any weight"], ["feather", "Featherweight"], ["light", "Light"],
-      ["balanced", "Balanced"], ["full", "Full"], ["heavy", "Heavy and pretty"]];
-    $("#wChips").innerHTML = weights.map(function (w) {
-      return '<div class="chip' + (S.filters.weight === w[0] ? " on" : "") + '" data-w="' + w[0] +
-        '">' + h(w[1]) + "</div>";
-    }).join("") +
-      '<div class="chip' + (S.filters.kind === "pull" ? " on" : "") + '" data-kind="pull">Ready to pull</div>' +
-      '<div class="chip' + (S.filters.kind === "build" ? " on" : "") + '" data-kind="build">Built locally</div>' +
-      '<div class="chip' + (S.filters.arch ? " on" : "") + '" data-arch="1">Runs on ' +
-      h((S.host && S.host.arch) || "this box") + "</div>";
+    var counts = {}, total = 0;
+    S.catalog.forEach(function (e) {
+      if (!runnable(e)) return;
+      counts[e.family] = (counts[e.family] || 0) + 1;
+      total++;
+    });
+    var fams = Object.keys(counts).sort(function (a, b) {
+      return (labels[a] || a).localeCompare(labels[b] || b);
+    });
+    $("#famSel").innerHTML = '<option value="">All families (' + total + ")</option>" +
+      fams.map(function (f) {
+        return '<option value="' + h(f) + '"' + (S.filters.family === f ? " selected" : "") +
+          ">" + h(labels[f] || f) + " (" + counts[f] + ")</option>";
+      }).join("");
+    $$("#weightSeg button").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.w === S.filters.weight);
+    });
+    $$("#kindSeg button").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.kind === S.filters.kind);
+    });
   }
 
   function filtered() {
     var f = S.filters;
     var q = f.q.trim().toLowerCase();
     var out = S.catalog.filter(function (e) {
-      if (f.arch && S.host && e.arches.indexOf(S.host.arch) < 0) return false;
+      if (!runnable(e)) return false;
       if (f.family && e.family !== f.family) return false;
       if (f.weight && e.weight !== f.weight) return false;
       if (f.kind && e.kind !== f.kind) return false;
@@ -5210,15 +5882,14 @@ __FORGE_FILE_APP_CSS__
   }
 
   function cardHtml(e) {
-    var glyph = window.forgeGlyph(e.glyph);
     var ready = e.kind === "pull";
     return '<article class="card" tabindex="0" data-id="' + h(e.id) + '">' +
       '<div class="top"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
       '<div style="min-width:0"><div class="name">' + h(e.name) + "</div>" +
-      '<div class="meta">' + h(e.subtitle) + "</div></div></div>" +
+      '<div class="meta">' + h(e.family_label) + " · " + h(e.de_label) + "</div></div></div>" +
       '<div class="badges">' +
       '<span class="badge ' + h(e.weight) + '">' + h(e.weight) + "</span>" +
-      '<span class="badge">' + glyph + h(e.de_label) + "</span>" +
+      '<span class="badge">' + window.forgeGlyph(e.glyph) + h(e.de_label) + "</span>" +
       (ready ? '<span class="badge ready">ready</span>' : '<span class="badge">builds here</span>') +
       (e.profile === "kasm" ? '<span class="badge">kasm</span>' : "") +
       "</div>" +
@@ -5235,10 +5906,12 @@ __FORGE_FILE_APP_CSS__
 
   function renderGrid() {
     var list = filtered();
-    $("#count").textContent = list.length + " of " + S.catalog.length + " desktops";
+    var hidden = S.catalog.filter(function (e) { return !runnable(e); }).length;
+    $("#count").textContent = list.length + " shown" +
+      (hidden ? " · " + hidden + " more need a different CPU" : "");
     var grid = $("#grid");
     if (!list.length) {
-      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">¯\\_(ツ)_/¯</div>' +
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">∅</div>' +
         "Nothing matches that. Try clearing a filter.</div>";
       return;
     }
@@ -5248,153 +5921,266 @@ __FORGE_FILE_APP_CSS__
   /* --------------------------------------------------------------- smart */
   function renderSmartControls() {
     var tastes = (S.boot && S.boot.tastes) || {};
-    $("#tasteChips").innerHTML = Object.keys(tastes).map(function (t) {
-      return '<div class="chip' + (S.smart.taste === t ? " on" : "") + '" data-taste="' + h(t) +
-        '" title="' + h(tastes[t]) + '">' + h(t) + "</div>";
+    var order = ["balanced", "beautiful", "lightest", "fastest"].filter(function (t) { return tastes[t]; });
+    $("#tasteSeg").innerHTML = order.map(function (t) {
+      return '<button data-taste="' + h(t) + '" title="' + h(tastes[t]) + '" class="' +
+        (S.smart.taste === t ? "on" : "") + '">' + h(t.charAt(0).toUpperCase() + t.slice(1)) +
+        "</button>";
     }).join("");
-    var purposes = [["general", "anything"], ["dev", "writing code"],
-      ["security", "security work"], ["retro", "retro and tiny"], ["media", "media"]];
-    $("#purposeChips").innerHTML = purposes.map(function (p) {
-      return '<div class="chip' + (S.smart.purpose === p[0] ? " on" : "") + '" data-purpose="' +
-        p[0] + '">' + h(p[1]) + "</div>";
-    }).join("");
+    $("#purposeSel").value = S.smart.purpose;
   }
 
   function runSmart() {
     var box = $("#smartOut");
-    box.innerHTML = '<div class="skel" style="height:96px"></div>';
+    box.innerHTML = '<div class="skel" style="height:110px;margin-top:14px"></div>';
     api("/api/smart", { body: { taste: S.smart.taste, purpose: S.smart.purpose, limit: 3 } })
       .then(function (r) {
         if (!r.picks.length) {
-          box.innerHTML = '<div class="warnbox">Nothing in the catalog fits this machine right now. ' +
-            "Free some memory or disk and try again.</div>";
+          box.innerHTML = '<div class="warnbox" style="margin-top:14px">Nothing in the catalog fits ' +
+            "this machine right now. Free some memory or disk and try again.</div>";
           return;
         }
         var fl = ["ram", "cpu", "disk", "beauty", "speed", "ready", "small"];
-        box.innerHTML = '<p class="sub" style="margin:0 0 10px">Weighed <b>' + r.considered +
+        box.innerHTML = '<p class="sub" style="margin:16px 0 10px">Weighed <b>' + r.considered +
           "</b> candidates against this machine, aiming for <b>" + h(r.taste) + "</b>.</p>" +
-          '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(270px,1fr))">' +
+          '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">' +
           r.picks.map(function (p, i) {
             var e = p.entry;
             return '<div class="pick' + (i === 0 ? " best" : "") + '">' +
-              '<div class="hd"><div class="logo" style="width:34px;height:34px;border-radius:10px;' +
+              '<div class="hd"><div class="logo" style="width:38px;height:38px;border-radius:11px;' +
               'display:grid;place-items:center;border:1px solid var(--line)">' +
-              window.forgeLogo(e.family) + "</div><div><b>" + h(e.name) + "</b><div class=\"meta\" " +
-              'style="font-size:11px;color:var(--dim-2)">' + h(e.subtitle) + "</div></div>" +
+              window.forgeLogo(e.family) + '</div><div style="min-width:0"><b>' + h(e.name) +
+              '</b><div style="font-size:11.5px;color:var(--dim-2)">' + h(e.family_label) +
+              " · " + h(e.de_label) + "</div></div>" +
               '<span class="score">' + p.score.toFixed(0) + "</span></div>" +
-              '<ul class="why">' + p.why.map(function (w) { return "<li>" + h(w) + "</li>"; }).join("") + "</ul>" +
+              '<ul class="why">' + p.why.map(function (w) { return "<li>" + h(w) + "</li>"; }).join("") +
+              "</ul>" +
               '<div class="factors">' + fl.map(function (k) {
                 var v = (p.factors[k] || 0) * 100;
                 return '<div class="factor"><span>' + k + '</span><div class="bar"><i style="width:' +
                   v.toFixed(0) + '%"></i></div><b>' + v.toFixed(0) + "</b></div>";
               }).join("") + "</div>" +
-              '<div class="row"><button class="btn primary sm" data-use="' + h(e.id) +
-              '">Configure this</button><button class="btn sm" data-go="' + h(e.id) +
-              '">Just forge it</button></div></div>';
+              '<div class="row" style="margin-top:4px"><button class="btn primary sm" data-use="' +
+              h(e.id) + '">See details</button><button class="btn sm" data-go="' + h(e.id) +
+              '">Forge it now</button></div></div>';
           }).join("") + "</div>";
       }).catch(function (e) {
-        box.innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
+        box.innerHTML = '<div class="warnbox bad" style="margin-top:14px">' + h(e.message) + "</div>";
       });
   }
 
-  /* ----------------------------------------------------------- configure */
-  function openConfigure(id, autostart) {
-    api("/api/entry/" + encodeURIComponent(id)).then(function (e) {
-      S.sel = e;
-      S.plan = Object.assign({}, e.plan);
-      renderConfigure();
-      show("configure");
+  /* -------------------------------------------------------------- detail */
+  function openDetail(id, autostart) {
+    show("configure");
+    $("#dHero").innerHTML = '<div class="skel" style="height:96px"></div>';
+    $("#dGallery").hidden = true;
+    ["cfgTune", "cfgAuth", "cfgOpts", "dAbout", "cfgSpecs"].forEach(function (k) {
+      $("#" + k).innerHTML = '<div class="skel" style="height:120px"></div>';
+    });
+    $("#dDocker").hidden = true;
+    $("#goBar").innerHTML = "";
+    Promise.all([
+      api("/api/entry/" + encodeURIComponent(id)),
+      api("/api/info/" + encodeURIComponent(id)).catch(function () { return null; })
+    ]).then(function (r) {
+      S.sel = r[0];
+      S.info = r[1] || {};
+      S.plan = Object.assign({}, r[0].plan);
+      renderDetail();
       if (autostart) startLaunch();
-    }).catch(function (err) { toast("Could not open that entry", err.message, "bad"); });
+    }).catch(function (err) {
+      $("#dHero").innerHTML = '<div class="warnbox bad">Could not open that entry: ' + h(err.message) + "</div>";
+    });
   }
 
-  function renderConfigure() {
-    var e = S.sel, hst = S.host;
-    var maxMem = Math.max(512, Math.min(hst.mem_total_mb - 256, hst.mem_avail_mb));
-    var tight = e.ram_rec > hst.mem_avail_mb * 0.6;
-    var noArch = e.arches.indexOf(hst.arch) < 0;
+  function trimText(t, n) {
+    t = String(t || "").trim();
+    if (t.length <= n) return t;
+    var cut = t.slice(0, n);
+    var dot = cut.lastIndexOf(". ");
+    return (dot > n * 0.5 ? cut.slice(0, dot + 1) : cut.replace(/\s+\S*$/, "") + "…");
+  }
 
-    $("#cfgHero").innerHTML =
-      '<div class="hero"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
-      "<div><h2>" + h(e.name) + "</h2><p>" + h(e.desc) + "</p>" +
-      '<div class="badges" style="margin-top:9px">' +
+  function renderDetail() {
+    var e = S.sel, hst = S.host, inf = S.info || {};
+    var noArch = e.arches.indexOf(hst.arch) < 0;
+    var kasm = e.profile === "kasm";
+    var distro = inf.distro, desk = inf.desktop, base = inf.based_on;
+    var curated = (e.tags || []).indexOf("curated") >= 0;
+    // A curated look ("Cupertino Clean") should describe itself, not Debian.
+    var aboutText = curated ? e.desc : ((distro && distro.extract) || inf.fallback || e.desc);
+    var aboutLink = curated ? null : distro;
+
+    /* -- hero */
+    $("#dHero").innerHTML =
+      '<div class="dhero"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
+      '<div style="min-width:0"><h2>' + h(e.name) + "</h2>" +
+      '<div class="tag">' + h(e.family_label) + " · " + h(e.de_label) + " · " +
+      h(e.kind === "pull" ? "prebuilt image" : "built on this machine") + "</div>" +
+      '<div class="badges" style="margin-top:10px">' +
       '<span class="badge ' + h(e.weight) + '">' + h(e.weight) + "</span>" +
       '<span class="badge">' + window.forgeGlyph(e.glyph) + h(e.de_label) + "</span>" +
-      '<span class="badge">' + h(e.family_label) + "</span>" +
       '<span class="badge' + (noArch ? " off" : "") + '">' + h(e.arches.join(" / ")) + "</span>" +
-      (e.kind === "pull" ? '<span class="badge ready">no build needed</span>'
-        : '<span class="badge">built on this machine</span>') +
-      "</div></div></div>" +
-      (noArch ? '<div class="warnbox bad" style="margin-top:12px">This image has no ' + h(hst.arch) +
-        " build, so it cannot run here.</div>" : "") +
-      (tight ? '<div class="warnbox" style="margin-top:12px">This one likes ' + mb(e.ram_rec) +
-        " of RAM and you have " + mb(hst.mem_avail_mb) +
-        " free. It will run, but keep an eye on it.</div>" : "");
+      (kasm ? '<span class="badge">kasm</span>' : "") + "</div>" +
+      '<p class="about">' + h(trimText(aboutText, 400)) +
+      (aboutLink && aboutLink.url ? ' <a href="' + h(aboutLink.url) + '" target="_blank" rel="noopener">' +
+        "Read on Wikipedia ↗</a>" : "") + "</p></div>" +
+      '<div class="go"><button class="btn primary" id="goBtn"' + (noArch ? " disabled" : "") +
+      ">Forge " + h(e.name) + '</button><div class="sum" id="goSum"></div></div></div>' +
+      (noArch ? '<div class="warnbox bad" style="margin:14px 0 0">This image has no ' + h(hst.arch) +
+        " build, so it cannot run on this machine.</div>" : "");
 
-    $("#cfgSpecs").innerHTML =
-      "<h3>What it costs</h3><dl class=\"kv\">" +
+    /* -- screenshots */
+    var imgs = inf.images || [];
+    var gal = $("#dGallery");
+    if (imgs.length) {
+      S.gallery = imgs;
+      gal.hidden = false;
+      gal.innerHTML = "<h3>Screenshots <span class=\"hint\">" + imgs.length +
+        " from Wikimedia Commons · click to enlarge</span></h3>" +
+        '<div class="gallery">' + imgs.map(function (im, i) {
+          return '<figure class="shot" data-shot="' + i + '"><div class="ph">' +
+            '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="' + h(im.src) +
+            '" alt="' + h(im.caption) + '"></div><figcaption><b>' +
+            h(im.about || "") + "</b>" + h(im.caption) + "</figcaption></figure>";
+        }).join("") + "</div>" +
+        '<p class="credit">Descriptions from Wikipedia and images from Wikimedia Commons, used under ' +
+        "their CC licences. Open an image for its author and licence.</p>";
+      $$("#dGallery img").forEach(function (img) {
+        img.onload = function () { img.classList.add("ok"); };
+        img.onerror = function () { var f = img.closest(".shot"); if (f) f.remove(); };
+        if (img.complete && img.naturalWidth) img.classList.add("ok");
+      });
+    } else {
+      gal.hidden = true;
+    }
+
+    /* -- about the desktop + base */
+    $("#dAbout").innerHTML = "<h3>About " + h(e.de_label) + "</h3>" +
+      '<p class="prose">' + h(trimText((desk && desk.extract) || inf.desktop_blurb || e.desc, 560)) + "</p>" +
+      (desk && desk.url ? '<a class="srclink" href="' + h(desk.url) +
+        '" target="_blank" rel="noopener">Read on Wikipedia ↗</a>' : "") +
+      (curated && distro && base ? sideArticle("Inspired by " + distro.title, distro) : "") +
+      (curated && distro && !base ? sideArticle("Built on " + distro.title, distro) : "") +
+      (base ? sideArticle("Built on " + base.title, base) : "");
+
+    /* -- specs */
+    $("#cfgSpecs").innerHTML = "<h3>At a glance</h3><dl class=\"kv\">" +
       "<dt>Download</dt><dd>" + mb(e.dl_mb) + "</dd>" +
       "<dt>On disk</dt><dd>about " + mb(e.disk_mb) + "</dd>" +
       "<dt>Idle memory</dt><dd>around " + mb(e.idle_mb) + "</dd>" +
-      "<dt>Floor / sweet spot</dt><dd>" + mb(e.ram_min) + " / " + mb(e.ram_rec) + "</dd>" +
+      "<dt>Memory floor</dt><dd>" + mb(e.ram_min) + " (sweet spot " + mb(e.ram_rec) + ")</dd>" +
       "<dt>Cores wanted</dt><dd>" + e.cpu_rec + "</dd>" +
-      "<dt>Base image</dt><dd style=\"font-family:var(--mono);font-size:11.5px;word-break:break-all\">" +
+      "<dt>Weight</dt><dd>" + h(e.weight) + "</dd>" +
+      "<dt>Image</dt><dd style=\"font-family:var(--mono);font-size:11.5px;word-break:break-all\">" +
       h(e.image || (e.recipe && e.recipe.image) || "-") + "</dd>" +
       (e.recipe && e.recipe.pkgs ? "<dt>Installs</dt><dd style=\"font-size:12px;color:var(--dim)\">" +
-        h(e.recipe.pkgs) + "</dd>" : "") +
-      "</dl>";
+        h(e.recipe.pkgs) + "</dd>" : "") + "</dl>";
 
-    function slider(id, label, min, max, step, val, fmt, advice) {
-      return '<div class="slider"><div class="lbl"><span>' + h(label) + ' <span class="adv">' +
-        h(advice || "") + '</span></span><b id="' + id + 'V">' + fmt(val) + "</b></div>" +
-        '<input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step +
-        '" value="' + val + '"></div>';
-    }
-
-    $("#cfgTune").innerHTML = "<h3>Resources <span class=\"hint\">this machine: " +
-      mb(hst.mem_avail_mb) + " RAM free, " + hst.cpus + " cores, " + mb(hst.disk_free_mb) +
-      " disk free</span></h3>" +
-      slider("sMem", "Memory", 256, maxMem, 128, S.plan.memory_mb, mb,
-        "floor " + mb(e.ram_min)) +
+    /* -- 1 resources */
+    var maxMem = Math.max(512, Math.min(hst.mem_total_mb - 256, hst.mem_avail_mb));
+    var maxDisk = Math.max(20480, Math.min(hst.disk_free_mb, 400000));
+    $("#cfgTune").innerHTML = '<h3><span class="num">1</span>Resources <span class="hint">' +
+      mb(hst.mem_avail_mb) + " RAM free · " + hst.cpus + " cores · " +
+      mb(hst.disk_free_mb) + " disk free</span></h3>" +
+      slider("sMem", "Memory", 256, maxMem, 128, S.plan.memory_mb, mb, "needs at least " + mb(e.ram_min)) +
       slider("sCpu", "CPU cores", 0.5, hst.cpus, 0.5, S.plan.cpus,
         function (v) { return Number(v).toFixed(1) + " cores"; }, "wants " + e.cpu_rec) +
-      slider("sShm", "Shared memory (/dev/shm)", 128, 2048, 64, S.plan.shm_mb, mb,
-        "browsers need this") +
-      slider("sDisk", "Storage budget", 2048,
-        Math.max(8192, Math.min(hst.disk_free_mb, 200000)), 512, S.plan.disk_mb, mb,
-        hst.quota_support ? "enforced" : "tracked, not enforced") +
-      (hst.quota_support ? "" : '<div class="warnbox" style="margin-top:4px">' +
-        h(hst.storage_driver + " on " + hst.backing_fs) + " cannot enforce a hard per-container " +
-        "disk cap, so this figure is recorded and watched rather than enforced.</div>");
+      slider("sShm", "Shared memory", 128, 4096, 64, S.plan.shm_mb, mb,
+        "browsers inside want 512 MB or more") +
+      slider("sDisk", "Storage", 5120, maxDisk, 1024, S.plan.disk_mb, mb,
+        hst.quota_support ? "hard limit" : "budget, tracked") +
+      (hst.quota_support ? "" : '<p class="sub" style="margin:2px 0 0;font-size:12px">' +
+        h(hst.storage_driver + " on " + hst.backing_fs) + " cannot hard-cap one container's disk, " +
+        "so storage is a tracked budget here rather than an enforced limit.</p>");
 
-    $("#cfgOpts").innerHTML = "<h3>Options</h3>" +
+    /* -- 2 sign-in */
+    $("#cfgAuth").innerHTML = '<h3><span class="num">2</span>Sign-in <span class="hint">' +
+      (kasm ? "this image always asks for a password" : "off means anyone with the link gets straight in") +
+      "</span></h3>" +
+      '<label class="toggle"><input type="checkbox" id="oAuth"' + (kasm ? " checked" : "") +
+      '><i></i><span>Ask for a username and password<small>' +
+      (kasm ? "Kasm signs you in as kasm_user" : "basic auth in front of the desktop") +
+      "</small></span></label>" +
+      '<div id="authFields" style="display:' + (kasm ? "block" : "none") + ';margin-top:12px">' +
+      '<label class="field"><span>Username</span><input type="text" id="oUser" value="' +
+      (kasm ? "kasm_user" : "forge") + '"' + (kasm ? " disabled" : "") + "></label>" +
+      '<label class="field"><span>Password</span><div class="row" style="gap:8px;flex-wrap:nowrap">' +
+      '<input type="text" id="oPass" placeholder="type one, or generate" autocomplete="new-password" ' +
+      'spellcheck="false"><button class="btn sm" type="button" id="genPass">Generate</button></div></label>' +
+      '<p class="sub" style="margin:0;font-size:12px">It is shown again in the manager if you forget it.</p></div>';
+
+    /* -- 3 options */
+    $("#cfgOpts").innerHTML = '<h3><span class="num">3</span>Options</h3>' +
       '<label class="field"><span>Name (optional)</span><input type="text" id="oName" placeholder="' +
       h(e.id) + '"></label>' +
-      '<label class="toggle"><input type="checkbox" id="oTunnel" checked><i></i>' +
-      "<span>Open a serveo tunnel<small>" +
-      (e.profile === "kasm" ? "https image, so a limited TCP tunnel" : "public https link") +
-      "</small></span></label>" +
-      '<label class="toggle"><input type="checkbox" id="oAuth"><i></i><span>Password protect it' +
-      "<small>basic auth on the desktop</small></span></label>" +
-      '<div id="authFields" style="display:none;margin:8px 0 4px">' +
-      '<label class="field"><span>User</span><input type="text" id="oUser" value="forge"></label>' +
-      '<label class="field"><span>Password</span><input type="password" id="oPass"></label></div>' +
-      '<label class="toggle"><input type="checkbox" id="oGpu"><i></i><span>Pass through /dev/dri' +
-      "<small>" + ((S.host.has_dri === false) ? "no GPU node found" : "use the GPU if there is one") +
-      "</small></span></label>" +
-      '<label class="toggle"><input type="checkbox" id="oSeccomp"><i></i><span>seccomp=unconfined' +
-      "<small>only if the desktop refuses to start</small></span></label>" +
-      (e.dockerfile ? '<div style="margin-top:12px"><button class="btn sm ghost" id="dfBtn">' +
-        "Show the Dockerfile it will build</button><pre class=\"code\" id=\"dfOut\" " +
-        'style="display:none;margin-top:9px">' + h(e.dockerfile) + "</pre></div>" : "");
+      toggle("oTunnel", true, "Public link through serveo",
+        kasm ? "https image, so a short-lived TCP tunnel" : "an https link that works from anywhere") +
+      toggle("oAuto", false, "Start with Docker",
+        "off: it only runs when you start it, not after a reboot") +
+      toggle("oGpu", false, "Pass the GPU through",
+        S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
+      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start");
 
-    $("#cfgGo").innerHTML =
-      '<button class="btn primary wide" id="goBtn"' + (noArch ? " disabled" : "") + ">Forge " +
-      h(e.name) + "</button>" +
-      '<p class="sub" style="margin:10px 0 0;text-align:center">A free host port is picked for you, ' +
-      "and the desktop is checked before you get the link.</p>";
+    /* -- dockerfile */
+    var dd = $("#dDocker");
+    if (e.dockerfile) {
+      dd.hidden = false;
+      dd.innerHTML = '<div class="row"><h3 style="margin:0">How it is built</h3><div class="spacer"></div>' +
+        '<button class="btn sm ghost" id="dfBtn">Show Dockerfile</button></div>' +
+        '<pre class="code" id="dfOut" style="display:none;margin-top:12px">' + h(e.dockerfile) + "</pre>";
+    } else {
+      dd.hidden = true;
+    }
+
+    $("#goBar").innerHTML = '<div class="what" id="goWhat"></div>' +
+      '<button class="btn sm ghost" data-back="browse">Cancel</button>' +
+      '<button class="btn primary" id="goBtn2"' + (noArch ? " disabled" : "") + ">Forge it</button>";
 
     $$("#cfgTune input[type=range]").forEach(syncRange);
+    updateGoSummary();
+
+    $("#genPass").onclick = function () {
+      var abc = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      var buf = new Uint32Array(16), out = "";
+      if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(buf);
+      else for (var j = 0; j < 16; j++) buf[j] = Math.floor(Math.random() * 1e9);
+      for (var i = 0; i < 16; i++) out += abc.charAt(buf[i] % abc.length);
+      $("#oPass").value = out;
+      $("#oAuth").checked = true;
+      $("#authFields").style.display = "block";
+    };
+  }
+
+  function sideArticle(title, art) {
+    return '<h3 style="margin-top:20px">' + h(title) + "</h3>" +
+      '<p class="prose">' + h(trimText(art.extract || "", 300)) + "</p>" +
+      (art.url ? '<a class="srclink" href="' + h(art.url) + '" target="_blank" rel="noopener">' +
+        "Read on Wikipedia ↗</a>" : "");
+  }
+
+  function slider(id, label, min, max, step, val, fmt, advice) {
+    val = Math.max(min, Math.min(max, val));
+    return '<div class="slider"><div class="lbl"><span>' + h(label) + ' <span class="adv">' +
+      h(advice || "") + '</span></span><b id="' + id + 'V">' + fmt(val) + "</b></div>" +
+      '<input type="range" id="' + id + '" min="' + min + '" max="' + max + '" step="' + step +
+      '" value="' + val + '"></div>';
+  }
+
+  function toggle(id, on, label, hint) {
+    return '<label class="toggle"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") +
+      "><i></i><span>" + h(label) + "<small>" + h(hint) + "</small></span></label>";
+  }
+
+  function updateGoSummary() {
+    if (!S.plan || !S.sel) return;
+    var txt = mb(S.plan.memory_mb) + " RAM · " + Number(S.plan.cpus).toFixed(1) + " cores · " +
+      mb(S.plan.shm_mb) + " shared · " + mb(S.plan.disk_mb) + " storage";
+    var w = $("#goWhat");
+    if (w) w.innerHTML = "<b>" + h(S.sel.name) + "</b> · " + h(txt);
+    var s = $("#goSum");
+    if (s) s.textContent = S.sel.kind === "pull" ? "About " + mb(S.sel.dl_mb) + " to download"
+      : "Builds here · about " + mb(S.sel.dl_mb) + " to fetch";
   }
 
   function syncRange(r) {
@@ -5402,11 +6188,29 @@ __FORGE_FILE_APP_CSS__
     r.style.setProperty("--pct", pct.toFixed(1) + "%");
   }
 
+  /* ------------------------------------------------------------ lightbox */
+  function openShot(i) {
+    var list = S.gallery || [];
+    if (!list.length) return;
+    S.shotIdx = (i + list.length) % list.length;
+    var im = list[S.shotIdx];
+    $("#lbImg").src = im.src;
+    $("#lbImg").alt = im.caption || "";
+    $("#lbCount").textContent = (S.shotIdx + 1) + " of " + list.length + " · " + (im.about || "");
+    $("#lbCap").innerHTML = h(im.caption || "") +
+      (im.page ? ' · <a href="' + h(im.page) + '" target="_blank" rel="noopener">source and licence' +
+        (im.license ? " (" + h(im.license) + ")" : "") + "</a>" : "");
+    $("#lightbox").hidden = false;
+  }
+
+  function closeShot() { $("#lightbox").hidden = true; $("#lbImg").removeAttribute("src"); }
+
   /* -------------------------------------------------------------- launch */
   function startLaunch() {
     var e = S.sel;
     var opts = {
       tunnel: $("#oTunnel") ? $("#oTunnel").checked : true,
+      autostart: $("#oAuto") ? $("#oAuto").checked : false,
       gpu: $("#oGpu") ? $("#oGpu").checked : false,
       seccomp_unconfined: $("#oSeccomp") ? $("#oSeccomp").checked : false
     };
@@ -5416,7 +6220,7 @@ __FORGE_FILE_APP_CSS__
       opts.username = ($("#oUser").value || "forge").trim();
       opts.password = $("#oPass").value || Math.random().toString(36).slice(2, 10);
     }
-    if (e.profile === "kasm") opts.password = opts.password || "forge";
+    if (e.profile === "kasm" && !opts.password) opts.password = "forge";
 
     show("launch");
     $("#lTitle").innerHTML = '<div class="hero"><div class="logo">' + window.forgeLogo(e.family) +
@@ -5542,7 +6346,7 @@ __FORGE_FILE_APP_CSS__
       h(res.image) + "</dd></dl>" +
       '<div class="row" style="margin-top:14px">' +
       '<a class="btn primary" href="' + h(res.local_url) + '" target="_blank" rel="noopener">Open the desktop</a>' +
-      '<button class="btn" data-term="' + h(res.name) + '">Open a shell</button>' +
+      '<button class="btn" data-term="' + h(res.name) + '">' + I.term + "Open a shell</button>" +
       '<button class="btn" data-back="manager">Go to the manager</button>' +
       '<button class="btn ghost" data-back="browse">Forge another</button></div></div>';
   }
@@ -5550,208 +6354,330 @@ __FORGE_FILE_APP_CSS__
   function linkRow(what, url, cls, note) {
     if (!url) return "";
     return '<div class="link-row ' + (cls || "") + '"><span class="ico">' +
-      (cls ? "🌍" : "🏠") + '</span><div style="min-width:0;flex:1">' +
+      (cls ? I.globe : I.home) + '</span><div style="min-width:0;flex:1">' +
       '<div class="what">' + h(what) + (note ? " &middot; " + h(note) : "") + "</div>" +
       '<a href="' + h(url) + '" target="_blank" rel="noopener">' + h(url) + "</a></div>" +
-      '<button class="btn sm" data-copy="' + h(url) + '">Copy</button></div>';
+      '<button class="iconbtn" data-copy="' + h(url) + '" title="Copy">' + I.copy + "</button></div>";
   }
 
   /* ------------------------------------------------------------- manager */
+  function instKey() {
+    return S.instances.map(function (i) {
+      var l = i.limits || {};
+      return [i.name, i.running ? 1 : 0, (i.tunnel && i.tunnel.url) || "",
+        (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
+        i.autostart ? 1 : 0, i.auth ? i.auth.user : ""].join(":");
+    }).join("|");
+  }
+
   function renderManager() {
     var box = $("#instList");
     if (!S.instances.length) {
-      box.innerHTML = '<div class="empty"><div class="big">🗂</div>Nothing forged yet. ' +
-        'Head to <b>Browse</b> and pick a desktop.</div>';
+      $("#instStats").innerHTML = "";
+      box.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">\u25A6</div>' +
+        "Nothing forged yet.<br>Pick a desktop in <b>Browse</b> and it shows up here.</div>";
+      S.instKey = "";
       return;
     }
-    var totalRx = 0, totalTx = 0;
-    box.innerHTML = S.instances.map(function (i) {
+    var key = instKey();
+    if (key !== S.instKey) {
+      var keepDrawer = S.drawerName && S.instances.some(function (i) {
+        return i.name === S.drawerName && i.running;
+      });
+      var drawerEl = keepDrawer ? $("#drawerHost") : null;
+      if (drawerEl) drawerEl.remove();
+      else closeDrawer();
+      S.instKey = key;
+      box.innerHTML = S.instances.map(mcCard).join("");
+      if (drawerEl) {
+        var card = document.querySelector('.mc[data-name="' + cssq(S.drawerName) + '"]');
+        if (card) card.appendChild(drawerEl); else closeDrawer();
+      }
+    }
+    paintStats();
+  }
+
+  function shortHost(url) {
+    var m = String(url).match(/^https?:\/\/([^/:]+)(:\d+)?/);
+    if (!m) return { head: url, tail: "" };
+    var parts = m[1].split(".");
+    var head = parts.shift();
+    if (head.length > 10) head = head.slice(0, 8) + "\u2026";
+    return { head: head, tail: "." + parts.join(".") + (m[2] || "") };
+  }
+
+  function mcCard(i) {
+    var running = i.running;
+    var tun = (i.tunnel && i.tunnel.url) ? i.tunnel : null;
+    var lim = i.limits || {};
+    var fam = (S.boot && S.boot.family_labels && S.boot.family_labels[i.family]) || i.family;
+    var rows = "";
+
+    if (i.local_url) {
+      var lp = i.local_url.replace(/^https?:\/\//, "");
+      rows += arow("home", "Local", '<span>' + h(lp) + "</span>", i.local_url, i.local_url, "");
+    }
+    if (tun) {
+      var sh = shortHost(tun.url);
+      rows += arow("globe", "Public", '<span>' + h(sh.head) + '</span><span class="muted">' +
+        h(sh.tail) + "</span>", tun.url, tun.url, "pub" + (tun.alive ? "" : " down"),
+        tun.alive ? "" : "tunnel is down, use the menu to reopen it");
+    }
+    if (i.auth) {
+      rows += '<div class="arow"><span class="ic">' + I.lock + '</span><span class="lab">Sign-in</span>' +
+        '<span class="val" data-secret="' + h(i.name) + '"><span>' + h(i.auth.user) +
+        '</span><span class="muted"> / \u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022</span></span>' +
+        '<div class="acts"><button class="iconbtn" data-reveal="' + h(i.name) + '" title="Show password">' +
+        I.eye + '</button><button class="iconbtn" data-copy="' + h(i.auth.password) +
+        '" title="Copy password">' + I.copy + "</button></div></div>";
+    }
+
+    var actions = running
+      ? '<a class="btn primary" href="' + h(i.local_url || "#") + '" target="_blank" rel="noopener">' +
+        I.open + "Open desktop</a>" +
+        '<button class="btn" data-drawer="' + h(i.name) + '">' + I.term + "Shell</button>" +
+        '<button class="btn" data-act="stop">' + I.stop + "Stop</button>"
+      : '<button class="btn primary" data-act="start">' + I.play + "Start</button>" +
+        '<button class="btn" data-tune="' + h(i.name) + '">' + I.tune + "Limits</button>" +
+        '<button class="btn" data-logs="' + h(i.name) + '">' + I.logs + "Logs</button>";
+
+    return '<article class="mc ' + (running ? "up" : "") + '" data-name="' + h(i.name) + '">' +
+      '<section class="mc-head"><div class="logo">' + window.forgeLogo(i.family) + "</div>" +
+        '<div style="min-width:0"><div class="nm">' + h(i.title) + "</div>" +
+        '<div class="sub2">' + h(fam) + " \u00b7 " + h(i.de_label || "") + " \u00b7 " + h(i.name) + "</div></div>" +
+        '<span class="pill ' + (running ? "up" : (i.exit_code ? "bad" : "")) + '"><i></i>' +
+        h(running ? "Running \u00b7 " + ago(i.started_at) : cap(i.status || "stopped")) + "</span>" +
+      "</section>" +
+      '<section class="mc-metrics">' +
+        metricCell(i.name, "cpu", "CPU") + metricCell(i.name, "mem", "Memory") +
+        metricCell(i.name, "net", "Network") +
+      "</section>" +
+      (rows ? '<section class="mc-access">' + rows + "</section>" : "") +
+      '<section class="mc-limits"><div class="limits-line">' +
+        lchip("RAM", lim.memory_mb ? mb(lim.memory_mb) : "no cap") +
+        lchip("CPU", lim.cpus ? lim.cpus + (lim.cpus === 1 ? " core" : " cores") : "No cap") +
+        lchip("Shared", lim.shm_mb ? mb(lim.shm_mb) : "64 MB") +
+        lchip("Storage", i.disk_cap_mb ? mb(i.disk_cap_mb) : "\u2014") +
+        lchip("Auto-start", i.autostart ? "On" : "Off", i.autostart) +
+        '</div><button class="btn sm" data-tune="' + h(i.name) + '">' + I.tune + "Edit</button>" +
+      "</section>" +
+      '<section class="mc-actions">' + actions +
+        '<div class="menu-wrap"><button class="iconbtn" data-menu="' + h(i.name) + '" title="More">' +
+        I.more + '</button><div class="menu" hidden>' +
+          (running ? '<button data-act="restart">' + I.restart + "Restart</button>" : "") +
+          (running ? (tun ? '<button data-act="untunnel">' + I.unplug + "Drop public link</button>"
+                          : '<button data-act="tunnel">' + I.plug + "Open public link</button>") : "") +
+          '<button data-logs="' + h(i.name) + '">' + I.logs + "Container logs</button>" +
+          '<button data-tune="' + h(i.name) + '">' + I.tune + "Edit limits</button>" +
+          "<hr>" +
+          '<button class="danger" data-act="remove">' + I.trash + "Remove</button>" +
+        "</div></div>" +
+      "</section>" +
+    "</article>";
+  }
+
+  function cap(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function arow(icon, label, valHtml, copyText, openUrl, cls, title) {
+    return '<div class="arow ' + (cls || "") + '"' + (title ? ' title="' + h(title) + '"' : "") + ">" +
+      '<span class="ic">' + I[icon] + '</span><span class="lab">' + h(label) + "</span>" +
+      '<span class="val">' + valHtml + "</span>" +
+      '<div class="acts"><button class="iconbtn" data-copy="' + h(copyText) + '" title="Copy">' + I.copy +
+      '</button><a class="iconbtn" href="' + h(openUrl) + '" target="_blank" rel="noopener" title="Open">' +
+      I.open + "</a></div></div>";
+  }
+
+  function lchip(k, v, on) {
+    return '<span class="lchip' + (on ? " on" : "") + '"><span>' + h(k) + "</span>" + h(v) + "</span>";
+  }
+
+  function metricCell(name, kind, label) {
+    var body = kind === "net"
+      ? '<div class="sparkbox" data-spark="net" data-name="' + h(name) + '"></div>'
+      : '<div class="bar" data-bar="' + kind + '" data-name="' + h(name) + '"><i></i></div>';
+    return '<div class="m"><div class="k">' + h(label) + "</div>" +
+      '<div class="v" data-metric="' + kind + '" data-name="' + h(name) + '">\u2014</div>' + body + "</div>";
+  }
+
+  /* Numbers repaint in place every few seconds; rebuilding the cards each
+     time would drop an open shell and make the page crawl on a small box. */
+  function paintStats() {
+    var totRx = 0, totTx = 0, totMem = 0, running = 0;
+    S.instances.forEach(function (i) {
       var st = S.stats[i.name] || {};
-      totalRx += st.rx_total || 0;
-      totalTx += st.tx_total || 0;
-      var state = i.running ? "up" : (i.exit_code ? "bad" : "down");
-      var ports = Object.keys(i.ports || {}).map(function (k) {
-        return i.ports[k] + "&rarr;" + k;
-      }).join("  ");
-      var tun = i.tunnel && i.tunnel.url;
-      var memPct = st.mem_pct || 0;
-      var cpuPct = Math.min(100, (st.cpu || 0));
-      return '<div class="inst" data-name="' + h(i.name) + '">' +
-        '<div class="logo">' + window.forgeLogo(i.family) + "</div>" +
-        '<div style="min-width:0">' +
-        '<div class="nm">' + h(i.title) + "</div>" +
-        '<div class="sub2">' + h(i.name) + "</div>" +
-        '<div class="row" style="gap:7px;margin-top:6px">' +
-        '<span class="dot-state ' + state + '"><i></i>' +
-        h(i.running ? "running " + ago(i.started_at) : (i.status || "stopped")) + "</span>" +
-        '<span class="badge">' + h(i.de_label || "") + "</span>" +
-        (i.profile === "kasm" ? '<span class="badge">kasm</span>' : "") +
-        (i.restarts ? '<span class="badge">' + i.restarts + " restarts</span>" : "") +
-        "</div>" +
-        '<div class="sub2" style="margin-top:6px">' + ports + "</div>" +
-        (i.local_url ? '<div style="margin-top:6px"><a href="' + h(i.local_url) +
-          '" target="_blank" rel="noopener" style="color:var(--acc);font-size:12px">' +
-          h(i.local_url) + "</a></div>" : "") +
-        (tun ? '<div style="margin-top:3px"><a href="' + h(tun) +
-          '" target="_blank" rel="noopener" style="color:var(--acc);font-size:12px;word-break:break-all">' +
-          h(tun) + '</a> <button class="btn sm ghost" data-copy="' + h(tun) + '">copy</button>' +
-          (i.tunnel.alive ? "" : ' <span class="badge off">tunnel down</span>') + "</div>" : "") +
-        "</div>" +
-        '<div class="gauges">' +
-        '<div class="gauge"><span>cpu</span><div class="bar' + (cpuPct > 85 ? " bad" : "") +
-        '"><i style="width:' + cpuPct.toFixed(0) + '%"></i></div><b>' +
-        (st.cpu != null ? st.cpu.toFixed(1) + "%" : "-") + "</b></div>" +
-        '<div class="gauge"><span>ram</span><div class="bar' + (memPct > 88 ? " bad" : memPct > 70 ? " warn" : "") +
-        '"><i style="width:' + memPct.toFixed(0) + '%"></i></div><b>' +
-        (st.mem_mb != null ? mb(st.mem_mb) : "-") + "</b></div>" +
-        '<div class="gauge"><span>net</span>' + sparkline(st.spark_net) + "<b>" +
-        bytes((st.rx_total || 0) + (st.tx_total || 0)) + "</b></div>" +
-        '<div class="gauge" style="grid-template-columns:34px 1fr"><span>in/out</span>' +
-        '<b style="text-align:left">' + bytes(st.rx_total) + " in &middot; " +
-        bytes(st.tx_total) + " out &middot; " + bytes(st.rx_rate) + "/s now</b></div>" +
-        "</div>" +
-        '<div class="inst-actions">' +
-        (i.running
-          ? '<button class="btn sm" data-act="stop">Stop</button>' +
-            '<button class="btn sm" data-act="restart">Restart</button>' +
-            '<button class="btn sm" data-term="' + h(i.name) + '">Shell</button>' +
-            (tun ? '<button class="btn sm" data-act="untunnel">Drop tunnel</button>'
-                 : '<button class="btn sm" data-act="tunnel">Tunnel</button>')
-          : '<button class="btn sm primary" data-act="start">Start</button>') +
-        '<button class="btn sm ghost" data-logs="' + h(i.name) + '">Logs</button>' +
-        '<button class="btn sm ghost" data-tune="' + h(i.name) + '">Tune</button>' +
-        '<button class="btn sm danger" data-act="remove">Remove</button>' +
-        "</div></div>";
-    }).join("");
-    $("#instTotals").innerHTML = "<span class=\"chip static\">" + S.instances.length +
-      " instances</span><span class=\"chip static\">" +
-      S.instances.filter(function (i) { return i.running; }).length + " running</span>" +
-      "<span class=\"chip static\">" + bytes(totalRx) + " in</span>" +
-      "<span class=\"chip static\">" + bytes(totalTx) + " out</span>";
+      totRx += st.rx_total || 0;
+      totTx += st.tx_total || 0;
+      totMem += st.mem_mb || 0;
+      if (i.running) running++;
+      if (!i.running) {
+        set(i.name, "cpu", '<small>stopped</small>');
+        set(i.name, "mem", '<small>stopped</small>');
+        set(i.name, "net", '<small>stopped</small>');
+        bar(i.name, "cpu", 0); bar(i.name, "mem", 0);
+        return;
+      }
+      set(i.name, "cpu", st.cpu != null ? st.cpu.toFixed(1) + "<small> %</small>" : "\u2014");
+      set(i.name, "mem", st.mem_mb != null ? Math.round(st.mem_mb) + "<small> of " +
+        mb(st.mem_limit_mb || 0) + "</small>" : "\u2014");
+      set(i.name, "net", bytes((st.rx_total || 0) + (st.tx_total || 0)) +
+        (st.rx_rate || st.tx_rate ? "<small> \u00b7 " + bytes((st.rx_rate || 0) + (st.tx_rate || 0)) + "/s</small>" : ""));
+      bar(i.name, "cpu", Math.min(100, st.cpu || 0));
+      bar(i.name, "mem", st.mem_pct || 0);
+      var sp = document.querySelector('[data-spark="net"][data-name="' + cssq(i.name) + '"]');
+      if (sp) sp.innerHTML = sparkline(st.spark_net || []);
+    });
+    $("#instStats").innerHTML =
+      stat("Desktops", S.instances.length, running + " running") +
+      stat("Memory in use", mb(totMem), "across running desktops") +
+      stat("Downloaded", bytes(totRx), "into the desktops") +
+      stat("Uploaded", bytes(totTx), "out of the desktops");
+  }
+
+  function cssq(s) { return String(s).replace(/["\\]/g, "\\$&"); }
+
+  function set(name, kind, html) {
+    var el = document.querySelector('[data-metric="' + kind + '"][data-name="' + cssq(name) + '"]');
+    if (el) el.innerHTML = html;
+  }
+
+  function bar(name, kind, pct) {
+    var el = document.querySelector('[data-bar="' + kind + '"][data-name="' + cssq(name) + '"]');
+    if (!el) return;
+    el.className = "bar" + (pct > 88 ? " bad" : pct > 70 ? " warn" : "");
+    el.firstChild.style.width = Math.max(0, Math.min(100, pct)).toFixed(0) + "%";
+  }
+
+  function stat(k, v, s) {
+    return '<div class="stat"><div class="k">' + h(k) + '</div><div class="v">' + h(v) +
+      '</div><div class="s">' + h(s) + "</div></div>";
+  }
+
+  function closeMenus(except) {
+    $$(".menu").forEach(function (m) { if (m !== except) m.hidden = true; });
+    $$("[data-menu]").forEach(function (b) { b.classList.remove("on"); });
+    if (except) {
+      var btn = except.parentNode.querySelector("[data-menu]");
+      if (btn) btn.classList.add("on");
+    }
   }
 
   function instAction(name, act) {
-    if (act === "remove" && !confirm("Remove " + name + "? Its /config volume is kept unless you say otherwise.")) return;
     var body = {};
-    if (act === "remove") body.purge = confirm("Also delete its saved /config volume? OK = delete, Cancel = keep.");
-    toast(act + "...", name);
+    if (act === "remove") {
+      if (!confirm("Remove " + name + "?")) return;
+      body.purge = confirm("Also delete its saved files (the /config volume)?\n\nOK deletes them, Cancel keeps them.");
+    }
+    var card = document.querySelector('.mc[data-name="' + cssq(name) + '"]');
+    if (card) card.classList.add("busy");
+    toast(cap(act) + "\u2026", name);
     api("/api/instance/" + encodeURIComponent(name) + "/" + act, { body: body })
       .then(function (r) {
-        toast(act + " done", (r.tunnel && r.tunnel.url) || name, "ok");
+        toast(cap(act) + " done", (r.tunnel && r.tunnel.url) || name, "ok");
+        S.instKey = "";
         refreshInstances();
       })
-      .catch(function (e) { toast(act + " failed", e.message, "bad"); });
+      .catch(function (e) { toast(cap(act) + " failed", e.message, "bad"); })
+      .then(function () { if (card) card.classList.remove("busy"); });
   }
 
+  /* ---------------------------------------------------------------- modal */
+  function openModal(title, html) {
+    $("#modalTitle").textContent = title;
+    $("#modalBody").innerHTML = html;
+    $("#modal").style.display = "grid";
+  }
+
+  function closeModal() { $("#modal").style.display = "none"; $("#modalBody").innerHTML = ""; }
+
   function showLogs(name) {
+    openModal("Logs \u00b7 " + name, '<div class="skel" style="height:200px"></div>');
     api("/api/logs/" + encodeURIComponent(name) + "?tail=400").then(function (r) {
-      $("#modalTitle").textContent = "docker logs " + name;
-      $("#modalBody").innerHTML = '<pre class="code" style="max-height:60vh">' + h(r.logs || "(empty)") + "</pre>";
-      $("#modal").style.display = "grid";
-    }).catch(function (e) { toast("No logs", e.message, "bad"); });
+      $("#modalBody").innerHTML = '<pre class="code" style="max-height:62vh">' + h(r.logs || "(empty)") + "</pre>";
+    }).catch(function (e) {
+      $("#modalBody").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
+    });
   }
 
   function showTune(name) {
     var i = S.instances.filter(function (x) { return x.name === name; })[0];
     if (!i) return;
-    var mem = (i.limits && i.limits.memory_mb) || 1024;
-    var cpus = (i.limits && i.limits.cpus) || 1;
-    var maxMem = Math.max(512, S.host.mem_total_mb - 256);
-    $("#modalTitle").textContent = "Tune " + name;
-    $("#modalBody").innerHTML =
-      '<p class="sub">Applied live, no restart.</p>' +
-      '<div class="slider"><div class="lbl"><span>Memory</span><b id="tMemV">' + mb(mem) +
-      '</b></div><input type="range" id="tMem" min="256" max="' + maxMem + '" step="128" value="' + mem + '"></div>' +
-      '<div class="slider"><div class="lbl"><span>CPU cores</span><b id="tCpuV">' + cpus.toFixed(1) +
-      '</b></div><input type="range" id="tCpu" min="0.5" max="' + S.host.cpus + '" step="0.5" value="' + cpus + '"></div>' +
-      '<div class="row end"><button class="btn primary" id="tApply">Apply</button></div>';
-    $("#modal").style.display = "grid";
-    $$("#modalBody input[type=range]").forEach(syncRange);
-    $("#tMem").oninput = function () { $("#tMemV").textContent = mb(this.value); syncRange(this); };
-    $("#tCpu").oninput = function () { $("#tCpuV").textContent = Number(this.value).toFixed(1); syncRange(this); };
-    $("#tApply").onclick = function () {
-      api("/api/instance/" + encodeURIComponent(name) + "/retune",
-        { body: { memory_mb: Number($("#tMem").value), cpus: Number($("#tCpu").value) } })
-        .then(function () { toast("Retuned", name, "ok"); $("#modal").style.display = "none"; refreshInstances(); })
-        .catch(function (e) { toast("Could not retune", e.message, "bad"); });
+    var L = i.limits || {};
+    var cur = {
+      mem: L.memory_mb || 1024, cpu: L.cpus || 1, shm: L.shm_mb || 256,
+      disk: i.disk_cap_mb || 10240, auto: !!i.autostart
     };
+    var maxMem = Math.max(512, S.host.mem_total_mb - 256);
+    var maxDisk = Math.max(20480, Math.min(S.host.disk_free_mb, 400000));
+    openModal("Limits \u00b7 " + i.title,
+      '<p class="sub" style="margin-top:-4px">Memory, CPU and auto-start change instantly. ' +
+      "Shared memory and storage need the desktop recreated; your files in /config are kept.</p>" +
+      slider("tMem", "Memory", 256, maxMem, 128, cur.mem, mb, "live") +
+      slider("tCpu", "CPU cores", 0.5, S.host.cpus, 0.5, cur.cpu,
+        function (v) { return Number(v).toFixed(1) + " cores"; }, "live") +
+      slider("tShm", "Shared memory", 128, 4096, 64, cur.shm, mb, "restarts it \u00b7 browsers want 512 MB+") +
+      slider("tDisk", "Storage", 5120, maxDisk, 1024, cur.disk, mb,
+        S.host.quota_support ? "restarts it" : "restarts it \u00b7 tracked budget") +
+      toggle("tAuto", cur.auto, "Start with Docker", "on: comes back after a reboot. off: only when you start it") +
+      '<div class="row" style="margin-top:16px"><span class="sub" id="tNote" style="margin:0;flex:1"></span>' +
+      '<button class="btn ghost" id="tCancel" type="button">Cancel</button>' +
+      '<button class="btn primary" id="tApply" type="button">Apply</button></div>');
+    $$("#modalBody input[type=range]").forEach(syncRange);
+
+    function changed() {
+      return {
+        mem: Number($("#tMem").value), cpu: Number($("#tCpu").value),
+        shm: Number($("#tShm").value), disk: Number($("#tDisk").value), auto: $("#tAuto").checked
+      };
+    }
+    function note() {
+      var c = changed();
+      var restart = c.shm !== cur.shm || c.disk !== cur.disk;
+      var any = restart || c.mem !== cur.mem || c.cpu !== cur.cpu || c.auto !== cur.auto;
+      $("#tNote").textContent = !any ? "Nothing changed yet." :
+        restart ? "This restarts the desktop to apply (about half a minute). Files are kept." :
+        "Applies instantly, no restart.";
+      $("#tApply").disabled = !any;
+    }
+    $("#modalBody").oninput = function (ev) {
+      var t = ev.target;
+      if (t.type === "range") {
+        syncRange(t);
+        var fmt = t.id === "tCpu" ? Number(t.value).toFixed(1) + " cores" : mb(t.value);
+        $("#" + t.id + "V").textContent = fmt;
+      }
+      note();
+    };
+    $("#modalBody").onchange = note;
+    $("#tCancel").onclick = closeModal;
+    $("#tApply").onclick = function () {
+      var c = changed();
+      var body = {};
+      if (c.mem !== cur.mem) body.memory_mb = c.mem;
+      if (c.cpu !== cur.cpu) body.cpus = c.cpu;
+      if (c.shm !== cur.shm) body.shm_mb = c.shm;
+      if (c.disk !== cur.disk) body.disk_mb = c.disk;
+      if (c.auto !== cur.auto) body.autostart = c.auto;
+      var btn = $("#tApply");
+      btn.disabled = true;
+      btn.textContent = (body.shm_mb || body.disk_mb) ? "Recreating\u2026" : "Applying\u2026";
+      if (S.drawerName === name && (body.shm_mb || body.disk_mb)) closeDrawer();
+      api("/api/instance/" + encodeURIComponent(name) + "/retune", { body: body })
+        .then(function (r) {
+          toast(r.recreated ? "Recreated with new limits" : "Limits applied", name, "ok");
+          closeModal();
+          S.instKey = "";
+          refreshInstances();
+        })
+        .catch(function (e) {
+          toast("Could not change limits", e.message, "bad");
+          btn.disabled = false;
+          btn.textContent = "Apply";
+        });
+    };
+    note();
   }
 
   /* ------------------------------------------------------------ terminal */
-  function openTerm(name) {
-    show("shell");
-    $("#shTitle").textContent = name;
-    var el = $("#shTerm");
-    el.innerHTML = "";
-    if (S.termES) { S.termES.close(); S.termES = null; }
-    if (S.termId) api("/api/term/" + S.termId + "/close", { body: {} }).catch(function () {});
-    S.termName = name;
-    var term = new window.ForgeTerm(el, { cols: 100, rows: 28 });
-    S.term = term;
-
-    /* Attaching takes a second or two (docker exec, then the pty), so say so
-       rather than showing an empty black box. */
-    var head = $("#shHead");
-    var t0 = Date.now();
-    var frames = "\u280b\u2819\u2839\u2838\u283c\u2834\u2826\u2827\u2807\u280f";
-    var fi = 0;
-    var live = false;
-    var spin = setInterval(function () {
-      var secs = ((Date.now() - t0) / 1000).toFixed(1);
-      head.textContent = frames.charAt(fi++ % 10) + "  attaching to " + name + "  " + secs + "s";
-      if (fi === 90) {
-        term.line("still waiting on docker exec, the container may be busy", "d");
-      }
-    }, 90);
-    function settled(text) {
-      if (spin) { clearInterval(spin); spin = null; }
-      head.textContent = text;
-    }
-    term.line("connecting to " + name + " ...", "d");
-    term.line("");
-
-    var fit = term.fit();
-    api("/api/term", { body: { container: name, cols: fit.cols, rows: fit.rows } })
-      .then(function (r) {
-        S.termId = r.id;
-        head.textContent = "handshaking with the shell...";
-        S.termES = sse("/api/term/" + r.id + "/stream", {
-          data: function (d) {
-            if (!live) {
-              live = true;
-              settled("docker exec \u00b7 " + name + "  \u00b7  " +
-                      ((Date.now() - t0) / 1000).toFixed(1) + "s to attach");
-            }
-            var raw = atob(typeof d === "string" ? d.replace(/^"|"$/g, "") : d);
-            var out;
-            try {
-              /* the pty gives us utf-8 bytes; turn them into real characters */
-              out = decodeURIComponent(escape(raw));
-            } catch (e) {
-              out = raw;
-            }
-            term.write(out);
-          },
-          closed: function () {
-            settled("session closed \u00b7 " + name);
-            term.line("");
-            term.line("[session closed]", "d");
-          },
-          error: function () {}
-        });
-        el.focus();
-      })
-      .catch(function (e) {
-        settled("could not attach");
-        term.line("could not open a shell: " + e.message, "e");
-      });
-  }
-
-  function sendKeys(data) {
-    if (!S.termId) return;
-    api("/api/term/" + S.termId + "/input", { body: { data: data } }).catch(function () {});
-  }
-
   function keyToSeq(ev) {
     var k = ev.key;
     if (ev.ctrlKey && k.length === 1) {
@@ -5774,10 +6700,144 @@ __FORGE_FILE_APP_CSS__
       case "PageDown": return "\x1b[6~";
       case "Delete": return "\x1b[3~";
       case "Insert": return "\x1b[2~";
-      default:
-        if (k && k.length === 1) return k;
-        return null;
+      default: return (k && k.length === 1) ? k : null;
     }
+  }
+
+  /* One attach routine, used by the full Shell view and by the drawer that
+     slides out of a manager card. */
+  function attachTerm(cfg) {
+    var term = new window.ForgeTerm(cfg.el, { cols: 100, rows: cfg.rows || 28 });
+    var sess = { id: null, es: null, term: term, name: cfg.name, dead: false };
+    var t0 = Date.now();
+    var frames = "\u280b\u2819\u2839\u2838\u283c\u2834\u2826\u2827\u2807\u280f";
+    var fi = 0, live = false;
+    var spin = setInterval(function () {
+      head(frames.charAt(fi++ % 10) + "  attaching to " + cfg.name + "  " +
+           ((Date.now() - t0) / 1000).toFixed(1) + "s");
+      if (fi === 90) term.line("still waiting on docker exec, the container may be busy", "d");
+    }, 90);
+
+    function head(txt) { if (cfg.head) cfg.head.textContent = txt; }
+    function settled(txt) { if (spin) { clearInterval(spin); spin = null; } head(txt); }
+
+    term.line("connecting to " + cfg.name + " ...", "d");
+    term.line("");
+
+    var fit = term.fit();
+    api("/api/term", { body: { container: cfg.name, cols: fit.cols, rows: fit.rows } })
+      .then(function (r) {
+        sess.id = r.id;
+        head("handshaking with the shell\u2026");
+        sess.es = sse("/api/term/" + r.id + "/stream", {
+          data: function (d) {
+            if (!live) {
+              live = true;
+              settled("docker exec \u00b7 " + cfg.name + "  \u00b7  " +
+                      ((Date.now() - t0) / 1000).toFixed(1) + "s to attach");
+            }
+            var raw = atob(typeof d === "string" ? d.replace(/^"|"$/g, "") : d);
+            var out;
+            try { out = decodeURIComponent(escape(raw)); } catch (e) { out = raw; }
+            term.write(out);
+          },
+          closed: function () {
+            sess.dead = true;
+            settled("session closed \u00b7 " + cfg.name);
+            term.line("");
+            term.line("[session closed]", "d");
+          },
+          error: function () {}
+        });
+        cfg.el.focus();
+      })
+      .catch(function (e) {
+        settled("could not attach");
+        term.line("could not open a shell: " + e.message, "e");
+      });
+
+    function onKey(ev) {
+      if (ev.metaKey || ev.altKey) return;
+      if (ev.ctrlKey && (ev.key === "c" || ev.key === "v") && window.getSelection().toString()) return;
+      var seq = keyToSeq(ev);
+      if (seq != null) {
+        ev.preventDefault();
+        if (sess.id) api("/api/term/" + sess.id + "/input", { body: { data: seq } })
+          .catch(function () {});
+      }
+    }
+    function onPaste(ev) {
+      ev.preventDefault();
+      var txt = (ev.clipboardData || window.clipboardData).getData("text");
+      if (sess.id) api("/api/term/" + sess.id + "/input", { body: { data: txt } })
+        .catch(function () {});
+    }
+    cfg.el.addEventListener("keydown", onKey);
+    cfg.el.addEventListener("paste", onPaste);
+
+    sess.refit = function () {
+      var f = term.fit();
+      if (sess.id) api("/api/term/" + sess.id + "/resize", { body: f }).catch(function () {});
+      return f;
+    };
+    sess.close = function () {
+      if (spin) { clearInterval(spin); spin = null; }
+      cfg.el.removeEventListener("keydown", onKey);
+      cfg.el.removeEventListener("paste", onPaste);
+      if (sess.es) sess.es.close();
+      if (sess.id) api("/api/term/" + sess.id + "/close", { body: {} }).catch(function () {});
+      sess.dead = true;
+    };
+    return sess;
+  }
+
+  function closeShell() {
+    if (S.shell) { S.shell.close(); S.shell = null; }
+  }
+
+  function closeDrawer() {
+    if (S.drawerSess) { S.drawerSess.close(); S.drawerSess = null; }
+    var d = $("#drawerHost");
+    if (d) d.remove();
+    S.drawerName = null;
+  }
+
+  /* The shell slides out inside the card you clicked, so you keep the
+     instance's numbers in view while you type. */
+  function toggleDrawer(name) {
+    if (S.drawerName === name) { closeDrawer(); return; }
+    closeDrawer();
+    var card = document.querySelector('.mc[data-name="' + cssq(name) + '"]');
+    if (!card) return;
+    var host = document.createElement("div");
+    host.id = "drawerHost";
+    host.className = "drawer";
+    host.innerHTML = '<div class="drawer-head"><span id="drawerHead">starting\u2026</span>' +
+      '<div class="spacer" style="flex:1"></div>' +
+      '<button class="iconbtn" id="drawerFit" title="Fit to size">' + I.fit + "</button>" +
+      '<button class="iconbtn" id="drawerPop" title="Open the full shell view">' + I.open + "</button>" +
+      '<button class="iconbtn" id="drawerClose" title="Close">' + I.close + "</button></div>" +
+      '<pre class="term" id="drawerTerm" tabindex="0" style="outline:none"></pre>';
+    card.appendChild(host);
+    S.drawerName = name;
+    S.drawerSess = attachTerm({ el: $("#drawerTerm"), head: $("#drawerHead"), name: name, rows: 20 });
+    $("#drawerFit").onclick = function () {
+      var f = S.drawerSess.refit();
+      toast("Resized", f.cols + "\u00d7" + f.rows);
+    };
+    $("#drawerClose").onclick = closeDrawer;
+    $("#drawerPop").onclick = function () { closeDrawer(); openTerm(name); };
+    host.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function openTerm(name) {
+    closeShell();
+    show("shell");
+    $("#shTitle").textContent = name;
+    var el = $("#shTerm");
+    el.innerHTML = "";
+    S.shell = attachTerm({ el: el, head: $("#shHead"), name: name, rows: 28 });
+    S.termName = name;
   }
 
   /* ---------------------------------------------------------------- host */
@@ -5811,8 +6871,12 @@ __FORGE_FILE_APP_CSS__
   function show(view) {
     S.view = view;
     $$(".view").forEach(function (v) { v.classList.toggle("on", v.id === "v-" + view); });
-    $$("#rail button").forEach(function (b) { b.classList.toggle("on", b.dataset.view === view); });
-    if (view === "manager") { refreshInstances(); renderManager(); }
+    $$("#rail button[data-view]").forEach(function (b) {
+      var on = b.dataset.view === view || (view === "configure" && b.dataset.view === "browse");
+      b.classList.toggle("on", on);
+    });
+    closeMenus();
+    if (view === "manager") { S.instKey = ""; refreshInstances(); }
     if (view === "host") renderHost();
     $(".main").scrollTop = 0;
   }
@@ -5823,146 +6887,178 @@ __FORGE_FILE_APP_CSS__
       var b = ev.target.closest("button[data-view]");
       if (b) show(b.dataset.view);
     });
-
     $("#liteBtn").addEventListener("click", function () { applyLite(!S.lite); });
 
+    /* browse */
     var qTimer = null;
     $("#q").addEventListener("input", function () {
       var v = this.value;
       clearTimeout(qTimer);
-      qTimer = setTimeout(function () { S.filters.q = v; renderGrid(); }, 120);
+      qTimer = setTimeout(function () {
+        S.filters.q = v;
+        if (S.view !== "browse") show("browse");
+        renderGrid();
+      }, 120);
     });
-
     $("#sort").addEventListener("change", function () { S.filters.sort = this.value; renderGrid(); });
-
-    $("#famChips").addEventListener("click", function (ev) {
-      var c = ev.target.closest("[data-fam]");
-      if (!c) return;
-      S.filters.family = c.dataset.fam;
-      renderFilters();
-      renderGrid();
+    $("#famSel").addEventListener("change", function () { S.filters.family = this.value; renderGrid(); });
+    $("#weightSeg").addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-w]");
+      if (!b) return;
+      S.filters.weight = b.dataset.w;
+      renderFilters(); renderGrid();
     });
-
-    $("#wChips").addEventListener("click", function (ev) {
-      var c = ev.target.closest(".chip");
-      if (!c) return;
-      if (c.dataset.w !== undefined) S.filters.weight = c.dataset.w;
-      else if (c.dataset.kind) S.filters.kind = S.filters.kind === c.dataset.kind ? "" : c.dataset.kind;
-      else if (c.dataset.arch) S.filters.arch = !S.filters.arch;
-      renderFilters();
-      renderGrid();
+    $("#kindSeg").addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-kind]");
+      if (!b) return;
+      S.filters.kind = b.dataset.kind;
+      renderFilters(); renderGrid();
     });
-
     $("#grid").addEventListener("click", function (ev) {
       var c = ev.target.closest(".card");
-      if (c) openConfigure(c.dataset.id);
+      if (c) openDetail(c.dataset.id);
     });
-
     $("#grid").addEventListener("keydown", function (ev) {
       if (ev.key !== "Enter" && ev.key !== " ") return;
       var c = ev.target.closest(".card");
-      if (c) { ev.preventDefault(); openConfigure(c.dataset.id); }
+      if (c) { ev.preventDefault(); openDetail(c.dataset.id); }
     });
 
-    $("#tasteChips").addEventListener("click", function (ev) {
-      var c = ev.target.closest("[data-taste]");
-      if (!c) return;
-      S.smart.taste = c.dataset.taste;
+    /* smart chooser */
+    $("#tasteSeg").addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-taste]");
+      if (!b) return;
+      S.smart.taste = b.dataset.taste;
       renderSmartControls();
       runSmart();
     });
-
-    $("#purposeChips").addEventListener("click", function (ev) {
-      var c = ev.target.closest("[data-purpose]");
-      if (!c) return;
-      S.smart.purpose = c.dataset.purpose;
-      renderSmartControls();
+    $("#purposeSel").addEventListener("change", function () {
+      S.smart.purpose = this.value;
       runSmart();
     });
-
     $("#smartBtn").addEventListener("click", runSmart);
-
     $("#smartOut").addEventListener("click", function (ev) {
       var u = ev.target.closest("[data-use]");
-      if (u) return openConfigure(u.dataset.use);
+      if (u) return openDetail(u.dataset.use);
       var g = ev.target.closest("[data-go]");
-      if (g) return openConfigure(g.dataset.go, true);
+      if (g) return openDetail(g.dataset.go, true);
     });
 
+    /* detail page */
+    $("#dGallery").addEventListener("click", function (ev) {
+      var f = ev.target.closest("[data-shot]");
+      if (f) openShot(Number(f.dataset.shot));
+    });
+
+    /* lightbox */
+    $("#lbClose").addEventListener("click", closeShot);
+    $("#lbPrev").addEventListener("click", function () { openShot(S.shotIdx - 1); });
+    $("#lbNext").addEventListener("click", function () { openShot(S.shotIdx + 1); });
+    $("#lightbox").addEventListener("click", function (ev) {
+      if (ev.target.id === "lightbox" || ev.target.classList.contains("lb-img")) closeShot();
+    });
+
+    /* modal: its own listeners, so nothing can swallow the close click */
+    $("#modalClose").addEventListener("click", closeModal);
+    $("#modal").addEventListener("click", function (ev) {
+      if (ev.target.id === "modal") closeModal();
+    });
+
+    /* everything rendered on the fly */
     document.addEventListener("click", function (ev) {
-      var cp = ev.target.closest("[data-copy]");
-      if (cp) { copy(cp.dataset.copy); return; }
-      var bk = ev.target.closest("[data-back]");
-      if (bk) { show(bk.dataset.back); return; }
-      var tm = ev.target.closest("[data-term]");
-      if (tm) { openTerm(tm.dataset.term); return; }
-      var lg = ev.target.closest("[data-logs]");
-      if (lg) { showLogs(lg.dataset.logs); return; }
-      var tn = ev.target.closest("[data-tune]");
-      if (tn) { showTune(tn.dataset.tune); return; }
-      var act = ev.target.closest("[data-act]");
-      if (act) {
-        var row = act.closest(".inst");
-        if (row) instAction(row.dataset.name, act.dataset.act);
+      var t = ev.target;
+      var mbtn = t.closest("[data-menu]");
+      if (mbtn) {
+        var menu = mbtn.parentNode.querySelector(".menu");
+        var wasOpen = !menu.hidden;
+        closeMenus();
+        if (!wasOpen) { menu.hidden = false; closeMenus(menu); }
         return;
       }
-      if (ev.target.id === "goBtn") { startLaunch(); return; }
-      if (ev.target.id === "retryBtn") { startLaunch(); return; }
-      if (ev.target.id === "dfBtn") {
+      if (!t.closest(".menu")) closeMenus();
+
+      var x;
+      if ((x = t.closest("[data-drawer]"))) { toggleDrawer(x.dataset.drawer); return; }
+      if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy); return; }
+      if ((x = t.closest("[data-back]"))) { show(x.dataset.back); return; }
+      if ((x = t.closest("[data-term]"))) { openTerm(x.dataset.term); return; }
+      if ((x = t.closest("[data-logs]"))) { closeMenus(); showLogs(x.dataset.logs); return; }
+      if ((x = t.closest("[data-tune]"))) { closeMenus(); showTune(x.dataset.tune); return; }
+      if ((x = t.closest("[data-reveal]"))) {
+        var nm = x.dataset.reveal;
+        var inst = S.instances.filter(function (i) { return i.name === nm; })[0];
+        var val = document.querySelector('[data-secret="' + cssq(nm) + '"]');
+        if (inst && inst.auth && val) {
+          var shown = x.classList.toggle("on");
+          val.innerHTML = "<span>" + h(inst.auth.user) + '</span><span class="muted"> / ' +
+            (shown ? h(inst.auth.password) : "••••••••") + "</span>";
+        }
+        return;
+      }
+      if ((x = t.closest("[data-act]"))) {
+        var card = x.closest(".mc");
+        closeMenus();
+        if (card) instAction(card.dataset.name, x.dataset.act);
+        return;
+      }
+      var id = t.id || (t.closest("button") || {}).id;
+      if (id === "goBtn" || id === "goBtn2" || id === "retryBtn") { startLaunch(); return; }
+      if (id === "dfBtn") {
         var o = $("#dfOut");
-        o.style.display = o.style.display === "none" ? "block" : "none";
-        return;
-      }
-      if (ev.target.id === "modalClose" || ev.target.id === "modal") {
-        $("#modal").style.display = "none";
+        var open = o.style.display === "none";
+        o.style.display = open ? "block" : "none";
+        $("#dfBtn").textContent = open ? "Hide Dockerfile" : "Show Dockerfile";
       }
     });
 
     document.addEventListener("input", function (ev) {
       var t = ev.target;
-      if (t.type !== "range" || !S.plan) return;
+      if (t.type !== "range" || !S.plan || !t.closest("#cfgTune")) return;
       syncRange(t);
       if (t.id === "sMem") { S.plan.memory_mb = Number(t.value); $("#sMemV").textContent = mb(t.value); }
       if (t.id === "sCpu") { S.plan.cpus = Number(t.value); $("#sCpuV").textContent = Number(t.value).toFixed(1) + " cores"; }
       if (t.id === "sShm") { S.plan.shm_mb = Number(t.value); $("#sShmV").textContent = mb(t.value); }
       if (t.id === "sDisk") { S.plan.disk_mb = Number(t.value); $("#sDiskV").textContent = mb(t.value); }
+      updateGoSummary();
     });
 
     document.addEventListener("change", function (ev) {
-      if (ev.target.id === "oAuth") {
-        $("#authFields").style.display = ev.target.checked ? "block" : "none";
-      }
+      if (ev.target.id === "oAuth") $("#authFields").style.display = ev.target.checked ? "block" : "none";
     });
 
-    /* terminal keyboard */
-    var sh = $("#shTerm");
-    sh.addEventListener("keydown", function (ev) {
-      if (ev.metaKey || ev.altKey) return;
-      if (ev.ctrlKey && (ev.key === "c" || ev.key === "v") && window.getSelection().toString()) return;
-      var seq = keyToSeq(ev);
-      if (seq != null) { ev.preventDefault(); sendKeys(seq); }
-    });
-    sh.addEventListener("paste", function (ev) {
-      ev.preventDefault();
-      sendKeys((ev.clipboardData || window.clipboardData).getData("text"));
-    });
+    /* shell view */
     $("#shFit").addEventListener("click", function () {
-      if (!S.term || !S.termId) return;
-      var f = S.term.fit();
-      api("/api/term/" + S.termId + "/resize", { body: f }).catch(function () {});
-      toast("Resized", f.cols + "x" + f.rows);
+      if (!S.shell) return;
+      var f = S.shell.refit();
+      toast("Resized", f.cols + "×" + f.rows);
     });
-    $("#shClose").addEventListener("click", function () {
-      if (S.termId) api("/api/term/" + S.termId + "/close", { body: {} }).catch(function () {});
-      if (S.termES) S.termES.close();
-      S.termId = null;
-      show("manager");
+    $("#shClose").addEventListener("click", function () { closeShell(); show("manager"); });
+
+    var rsz = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(rsz);
+      rsz = setTimeout(function () {
+        if (S.shell && S.view === "shell") S.shell.refit();
+        if (S.drawerSess) S.drawerSess.refit();
+      }, 220);
     });
 
     window.addEventListener("keydown", function (ev) {
-      if (ev.target.tagName === "INPUT" || ev.target.id === "shTerm") return;
+      if (!$("#lightbox").hidden) {
+        if (ev.key === "Escape") { closeShot(); ev.preventDefault(); }
+        if (ev.key === "ArrowLeft") openShot(S.shotIdx - 1);
+        if (ev.key === "ArrowRight") openShot(S.shotIdx + 1);
+        return;
+      }
+      if (ev.key === "Escape") {
+        if ($("#modal").style.display === "grid") { closeModal(); return; }
+        closeMenus();
+      }
+      // A page shortcut must never eat a keystroke meant for a shell or a field.
+      var tag = ev.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (ev.target.closest && ev.target.closest(".term")) return;
       if (ev.key === "/") { ev.preventDefault(); $("#q").focus(); }
-      if (ev.key === "Escape") $("#modal").style.display = "none";
       if (ev.key === "1") show("browse");
       if (ev.key === "2") show("manager");
       if (ev.key === "3") show("host");
@@ -6475,13 +7571,1605 @@ __FORGE_FILE_TERM_JS__
 
   window.FORGE_LOGOS = L;
   window.FORGE_GLYPHS = G;
-  window.forgeLogo = function (family) { return L[family] || L.generic; };
+  /* Real marks (brands.js, from Simple Icons) win; the hand-drawn ones above
+     cover families Simple Icons does not carry, and anything offline. */
+  window.forgeLogo = function (family) {
+    var B = window.FORGE_BRANDS || {};
+    return B[family] || L[family] || L.generic;
+  };
   window.forgeGlyph = function (glyph) { return G[glyph] || G.generic; };
 })();
 __FORGE_FILE_LOGOS_JS__
+  cat > "$FORGE_APP/brands.js" <<'__FORGE_FILE_BRANDS_JS__'
+/* Real distro marks from Simple Icons (CC0 1.0, simpleicons.org).
+   Trademarks belong to their owners; shown only to identify each distro.
+   Generated by fetch_logos.py on 2026-10-02. */
+window.FORGE_BRANDS = {
+ "ubuntu": "<svg aria-hidden=\"true\" fill=\"#E95420\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M17.61.455a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zM12.92.8C8.923.777 5.137 2.941 3.148 6.451a4.5 4.5 0 0 1 .26-.007 4.92 4.92 0 0 1 2.585.737A8.316 8.316 0 0 1 12.688 3.6 4.944 4.944 0 0 1 13.723.834 11.008 11.008 0 0 0 12.92.8zm9.226 4.994a4.915 4.915 0 0 1-1.918 2.246 8.36 8.36 0 0 1-.273 8.303 4.89 4.89 0 0 1 1.632 2.54 11.156 11.156 0 0 0 .559-13.089zM3.41 7.932A3.41 3.41 0 0 0 0 11.342a3.41 3.41 0 0 0 3.41 3.409 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41zm2.027 7.866a4.908 4.908 0 0 1-2.915.358 11.1 11.1 0 0 0 7.991 6.698 11.234 11.234 0 0 0 2.422.249 4.879 4.879 0 0 1-.999-2.85 8.484 8.484 0 0 1-.836-.136 8.304 8.304 0 0 1-5.663-4.32zm11.405.928a3.41 3.41 0 0 0-3.41 3.41 3.41 3.41 0 0 0 3.41 3.41 3.41 3.41 0 0 0 3.41-3.41 3.41 3.41 0 0 0-3.41-3.41z\"/></svg>",
+ "debian": "<svg aria-hidden=\"true\" fill=\"#A81D33\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M13.88 12.685c-.4 0 .08.2.601.28.14-.1.27-.22.39-.33a3.001 3.001 0 01-.99.05m2.14-.53c.23-.33.4-.69.47-1.06-.06.27-.2.5-.33.73-.75.47-.07-.27 0-.56-.8 1.01-.11.6-.14.89m.781-2.05c.05-.721-.14-.501-.2-.221.07.04.13.5.2.22M12.38.31c.2.04.45.07.42.12.23-.05.28-.1-.43-.12m.43.12l-.15.03.14-.01V.43m6.633 9.944c.02.64-.2.95-.38 1.5l-.35.181c-.28.54.03.35-.17.78-.44.39-1.34 1.22-1.62 1.301-.201 0 .14-.25.19-.34-.591.4-.481.6-1.371.85l-.03-.06c-2.221 1.04-5.303-1.02-5.253-3.842-.03.17-.07.13-.12.2a3.551 3.552 0 012.001-3.501 3.361 3.362 0 013.732.48 3.341 3.342 0 00-2.721-1.3c-1.18.01-2.281.76-2.651 1.57-.6.38-.67 1.47-.93 1.661-.361 2.601.66 3.722 2.38 5.042.27.19.08.21.12.35a4.702 4.702 0 01-1.53-1.16c.23.33.47.66.8.91-.55-.18-1.27-1.3-1.48-1.35.93 1.66 3.78 2.921 5.261 2.3a6.203 6.203 0 01-2.33-.28c-.33-.16-.77-.51-.7-.57a5.802 5.803 0 005.902-.84c.44-.35.93-.94 1.07-.95-.2.32.04.16-.12.44.44-.72-.2-.3.46-1.24l.24.33c-.09-.6.74-1.321.66-2.262.19-.3.2.3 0 .97.29-.74.08-.85.15-1.46.08.2.18.42.23.63-.18-.7.2-1.2.28-1.6-.09-.05-.28.3-.32-.53 0-.37.1-.2.14-.28-.08-.05-.26-.32-.38-.861.08-.13.22.33.34.34-.08-.42-.2-.75-.2-1.08-.34-.68-.12.1-.4-.3-.34-1.091.3-.25.34-.74.54.77.84 1.96.981 2.46-.1-.6-.28-1.2-.49-1.76.16.07-.26-1.241.21-.37A7.823 7.824 0 0017.702 1.6c.18.17.42.39.33.42-.75-.45-.62-.48-.73-.67-.61-.25-.65.02-1.06 0C15.082.73 14.862.8 13.8.4l.05.23c-.77-.25-.9.1-1.73 0-.05-.04.27-.14.53-.18-.741.1-.701-.14-1.431.03.17-.13.36-.21.55-.32-.6.04-1.44.35-1.18.07C9.6.68 7.847 1.3 6.867 2.22L6.838 2c-.45.54-1.96 1.611-2.08 2.311l-.131.03c-.23.4-.38.85-.57 1.261-.3.52-.45.2-.4.28-.6 1.22-.9 2.251-1.16 3.102.18.27 0 1.65.07 2.76-.3 5.463 3.84 10.776 8.363 12.006.67.23 1.65.23 2.49.25-.99-.28-1.12-.15-2.08-.49-.7-.32-.85-.7-1.34-1.13l.2.35c-.971-.34-.57-.42-1.361-.67l.21-.27c-.31-.03-.83-.53-.97-.81l-.34.01c-.41-.501-.63-.871-.61-1.161l-.111.2c-.13-.21-1.52-1.901-.8-1.511-.13-.12-.31-.2-.5-.55l.14-.17c-.35-.44-.64-1.02-.62-1.2.2.24.32.3.45.33-.88-2.172-.93-.12-1.601-2.202l.15-.02c-.1-.16-.18-.34-.26-.51l.06-.6c-.63-.74-.18-3.102-.09-4.402.07-.54.53-1.1.88-1.981l-.21-.04c.4-.71 2.341-2.872 3.241-2.761.43-.55-.09 0-.18-.14.96-.991 1.26-.7 1.901-.88.7-.401-.6.16-.27-.151 1.2-.3.85-.7 2.421-.85.16.1-.39.14-.52.26 1-.49 3.151-.37 4.562.27 1.63.77 3.461 3.011 3.531 5.132l.08.02c-.04.85.13 1.821-.17 2.711l.2-.42M9.54 13.236l-.05.28c.26.35.47.73.8 1.01-.24-.47-.42-.66-.75-1.3m.62-.02c-.14-.15-.22-.34-.31-.52.08.32.26.6.43.88l-.12-.36m10.945-2.382l-.07.15c-.1.76-.34 1.511-.69 2.212.4-.73.65-1.541.75-2.362M12.45.12c.27-.1.66-.05.95-.12-.37.03-.74.05-1.1.1l.15.02M3.006 5.142c.07.57-.43.8.11.42.3-.66-.11-.18-.1-.42m-.64 2.661c.12-.39.15-.62.2-.84-.35.44-.17.53-.2.83\"/></svg>",
+ "fedora": "<svg aria-hidden=\"true\" fill=\"#51A2DA\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12.001 0C5.376 0 .008 5.369.004 11.992H.002v9.287h.002A2.726 2.726 0 0 0 2.73 24h9.275c6.626-.004 11.993-5.372 11.993-11.997C23.998 5.375 18.628 0 12 0zm2.431 4.94c2.015 0 3.917 1.543 3.917 3.671 0 .197.001.395-.03.619a1.002 1.002 0 0 1-1.137.893 1.002 1.002 0 0 1-.842-1.175 2.61 2.61 0 0 0 .013-.337c0-1.207-.987-1.672-1.92-1.672-.934 0-1.775.784-1.777 1.672.016 1.027 0 2.046 0 3.07l1.732-.012c1.352-.028 1.368 2.009.016 1.998l-1.748.013c-.004.826.006.677.002 1.093 0 0 .015 1.01-.016 1.776-.209 2.25-2.124 4.046-4.424 4.046-2.438 0-4.448-1.993-4.448-4.437.073-2.515 2.078-4.492 4.603-4.469l1.409-.01v1.996l-1.409.013h-.007c-1.388.04-2.577.984-2.6 2.47a2.438 2.438 0 0 0 2.452 2.439c1.356 0 2.441-.987 2.441-2.437l-.001-7.557c0-.14.005-.252.02-.407.23-1.848 1.883-3.256 3.754-3.256z\"/></svg>",
+ "arch": "<svg aria-hidden=\"true\" fill=\"#1793D1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M11.39.605C10.376 3.092 9.764 4.72 8.635 7.132c.693.734 1.543 1.589 2.923 2.554-1.484-.61-2.496-1.224-3.252-1.86C6.86 10.842 4.596 15.138 0 23.395c3.612-2.085 6.412-3.37 9.021-3.862a6.61 6.61 0 01-.171-1.547l.003-.115c.058-2.315 1.261-4.095 2.687-3.973 1.426.12 2.534 2.096 2.478 4.409a6.52 6.52 0 01-.146 1.243c2.58.505 5.352 1.787 8.914 3.844-.702-1.293-1.33-2.459-1.929-3.57-.943-.73-1.926-1.682-3.933-2.713 1.38.359 2.367.772 3.137 1.234-6.09-11.334-6.582-12.84-8.67-17.74zM22.898 21.36v-.623h-.234v-.084h.562v.084h-.234v.623h.331v-.707h.142l.167.5.034.107a2.26 2.26 0 01.038-.114l.17-.493H24v.707h-.091v-.593l-.206.593h-.084l-.205-.602v.602h-.091\"/></svg>",
+ "alpine": "<svg aria-hidden=\"true\" fill=\"#4a9ccc\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M5.998 1.607L0 12l5.998 10.393h12.004L24 12 18.002 1.607H5.998zM9.965 7.12L12.66 9.9l1.598 1.595.002-.002 2.41 2.363c-.2.14-.386.252-.563.344a3.756 3.756 0 01-.496.217 2.702 2.702 0 01-.425.111c-.131.023-.25.034-.358.034-.13 0-.242-.014-.338-.034a1.317 1.317 0 01-.24-.072.95.95 0 01-.2-.113l-1.062-1.092-3.039-3.041-1.1 1.053-3.07 3.072a.974.974 0 01-.2.111 1.274 1.274 0 01-.237.073c-.096.02-.209.033-.338.033-.108 0-.227-.009-.358-.031a2.7 2.7 0 01-.425-.114 3.748 3.748 0 01-.496-.217 5.228 5.228 0 01-.563-.343l6.803-6.727zm4.72.785l4.579 4.598 1.382 1.353a5.24 5.24 0 01-.564.344 3.73 3.73 0 01-.494.217 2.697 2.697 0 01-.426.111c-.13.023-.251.034-.36.034-.129 0-.241-.014-.337-.034a1.285 1.285 0 01-.385-.146c-.033-.02-.05-.036-.053-.04l-1.232-1.218-2.111-2.111-.334.334L12.79 9.8l1.896-1.897zm-5.966 4.12v2.529a2.128 2.128 0 01-.356-.035 2.765 2.765 0 01-.422-.116 3.708 3.708 0 01-.488-.214 5.217 5.217 0 01-.555-.34l1.82-1.825Z\"/></svg>",
+ "kali": "<svg aria-hidden=\"true\" fill=\"#557C94\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12.778 5.943s-1.97-.13-5.327.92c-3.42 1.07-5.36 2.587-5.36 2.587s5.098-2.847 10.852-3.008zm7.351 3.095l.257-.017s-1.468-1.78-4.278-2.648c1.58.642 2.954 1.493 4.021 2.665zm.42.74c.039-.068.166.217.263.337.004.024.01.039-.045.027-.005-.025-.013-.032-.013-.032s-.135-.08-.177-.137c-.041-.057-.049-.157-.028-.195zm3.448 8.479s.312-3.578-5.31-4.403a18.277 18.277 0 0 0-2.524-.187c-4.506.06-4.67-5.197-1.275-5.462 1.407-.116 3.087.643 4.73 1.408-.007.204.002.385.136.552.134.168.648.35.813.445.164.094.691.43 1.014.85.07-.131.654-.512.654-.512s-.14.003-.465-.119c-.326-.122-.713-.49-.722-.511-.01-.022-.015-.055.06-.07.059-.049-.072-.207-.13-.265-.058-.058-.445-.716-.454-.73-.009-.016-.012-.031-.04-.05-.085-.027-.46.04-.46.04s-.575-.283-.774-.893c.003.107-.099.224 0 .469-.3-.127-.558-.344-.762-.88-.12.305 0 .499 0 .499s-.707-.198-.82-.85c-.124.293 0 .469 0 .469s-1.153-.602-3.069-.61c-1.283-.118-1.55-2.374-1.43-2.754 0 0-1.85-.975-5.493-1.406-3.642-.43-6.628-.065-6.628-.065s6.45-.31 11.617 1.783c.176.785.704 2.094.989 2.723-.815.563-1.733 1.092-1.876 2.97-.143 1.878 1.472 3.53 3.474 3.58 1.9.102 3.214.116 4.806.942 1.52.84 2.766 3.4 2.89 5.703.132-1.709-.509-5.383-3.5-6.498 4.181.732 4.549 3.832 4.549 3.832zM12.68 5.663l-.15-.485s-2.484-.441-5.822-.204C3.37 5.211 0 6.38 0 6.38s6.896-1.735 12.68-.717Z\"/></svg>",
+ "parrot": "<svg aria-hidden=\"true\" fill=\"#15E0ED\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0Zm6.267 2.784L13.03 5.54l8.05-.179-8.05 3.333-2.154 2.688 5.007 9.038-1.536-1.605 1.645 3.456-4.937-5.527-6.268-6.28L2.77 12.11l.7-3.442 4.018-.261.823-4.06Z\"/></svg>",
+ "almalinux": "<svg aria-hidden=\"true\" fill=\"#dfe5ee\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M23.994 15.133c.079 1.061-.668 1.927-1.69 2.005a1.8 1.8 0 0 1-1.928-1.651c-.078-1.062.63-1.849 1.691-1.967 1.023-.078 1.849.59 1.927 1.613zm-12.623 4.955c-.944 0-1.73.786-1.73 1.809 0 1.14.747 1.848 1.887 1.848.904-.04 1.691-.865 1.691-1.809 0-.983-.904-1.848-1.848-1.848zm1.061-9.675c-.039-.865-.078-1.73.08-2.556.156-.944.314-1.887.904-2.674.707-.983 1.809-.944 2.399.118.314.511.432 1.062.471 1.652 0 .354.158.432.472.393.944-.157 1.888-.157 2.792.197.118.039.236.118.394 0 .314-.276.393-1.652.196-2.006-.354-.63-.904-.55-1.455-.55-.629.039-1.18-.158-1.612-.67-.393-.471-.511-1.06-.59-1.65-.04-.276-.079-.512-.315-.709-.55-.55-1.809-.432-2.477.118-2.556 2.045-2.989 5.467-1.534 8.18.04.118.118.236.275.157zm7.984 3.658c.354-.511.865-.747 1.415-.983a.973.973 0 0 0 .59-.472c.354-.669-.078-1.81-.747-2.36-2.595-2.006-5.938-1.612-8.18.433-.118.078-.157.196-.078.314.786-.236 1.612-.472 2.477-.51.905-.08 1.848-.158 2.753.235 1.14.472 1.337 1.534.472 2.36-.393.393-.905.668-1.455.825-.315.08-.354.236-.236.551.354.865.59 1.77.472 2.753-.04.157-.079.275.078.393.354.236 1.691 0 1.967-.275.511-.472.314-1.023.196-1.534-.157-.63-.078-1.219.276-1.73zm-7.197-2.045c-.118-.079-.197-.118-.315 0 .472.708.905 1.455 1.259 2.241.314.866.668 1.73.55 2.714-.118 1.18-1.1 1.69-2.123 1.101-.511-.275-.905-.669-1.22-1.14-.196-.276-.393-.276-.629-.08-.747.63-1.533 1.102-2.516 1.26-.158 0-.315 0-.394.157-.118.393.472 1.612.826 1.809.59.354 1.062 0 1.534-.276.55-.314 1.101-.432 1.73-.236.59.197.983.63 1.337 1.102.158.196.315.353.63.432.747.197 1.77-.59 2.084-1.376 1.18-3.028-.157-6.135-2.753-7.708zm-2.556 2.438c.472-.669.826-1.416.983-2.202-.157-.04-.197.04-.315.078-.904.944-1.848 1.849-3.067 2.478-.472.236-.983.433-1.534.433-.865 0-1.376-.551-1.298-1.416a2.92 2.92 0 0 1 .787-1.849c.236-.275.236-.432-.04-.668-.786-.55-1.494-1.22-1.848-2.124-.078-.275-.275-.275-.51-.157a4.293 4.293 0 0 0-.434.236c-1.022.63-1.14 1.416-.275 2.28.63.63.944 1.338.708 2.203-.118.433-.354.747-.63 1.101a.95.95 0 0 0-.235.787c.079.747.826 1.494 1.73 1.573 2.517.236 4.562-.63 5.978-2.753zm-4.68-5.152c1.376 1.18 3.067 1.455 4.837 1.377.157 0 .315 0 .354-.118.04-.197-.157-.197-.275-.236-.826-.354-1.691-.63-2.438-1.14S6.848 8.25 6.534 7.266c-.236-.747.078-1.415.825-1.651.669-.236 1.337-.236 1.967 0 .393.157.55.078.629-.354.118-.747.354-1.455.826-2.085.55-.786.55-.865-.354-1.376-.04 0-.04-.04-.079-.04-.865-.471-1.534-.196-1.848.709-.472 1.376-1.377 1.887-2.832 1.612-.196-.04-.393-.079-.472-.079-.747.118-1.18.55-1.297 1.14-.158 1.81.786 3.107 2.084 4.17zm-2.32 3.658c-.079-.944-1.023-1.652-2.045-1.534-.905.079-1.691 1.022-1.613 1.966.08.983 1.023 1.77 1.967 1.652 1.14-.079 1.73-1.18 1.69-2.084zm15.18-8.298c.943-.079 1.73-.983 1.651-1.927-.078-.983-1.022-1.77-2.005-1.691-1.023.079-1.73.983-1.652 1.966s.983 1.73 2.006 1.652zm-12.27-.826c1.062-.157 1.77-1.023 1.652-2.045C8.107.897 7.163.149 6.18.267c-1.062.118-1.691.944-1.573 2.085.118.865 1.061 1.612 1.966 1.494z\"/></svg>",
+ "rocky": "<svg aria-hidden=\"true\" fill=\"#10B981\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M23.332 15.957c.433-1.239.668-2.57.668-3.957 0-6.627-5.373-12-12-12S0 5.373 0 12c0 3.28 1.315 6.251 3.447 8.417L15.62 8.245l3.005 3.005zm-2.192 3.819l-5.52-5.52L6.975 22.9c1.528.706 3.23 1.1 5.025 1.1 3.661 0 6.94-1.64 9.14-4.224z\"/></svg>",
+ "centos": "<svg aria-hidden=\"true\" fill=\"#8f8fd6\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12.076.066L8.883 3.28H3.348v5.434L0 12.01l3.349 3.298v5.39h5.374l3.285 3.236 3.285-3.236h5.43v-5.374L24 12.026l-3.232-3.252V3.321H15.31zm0 .749l2.49 2.506h-1.69v6.441l-.8.805-.81-.815V3.28H9.627zm-8.2 2.991h4.483L6.485 5.692l4.253 4.279v.654H9.94L5.674 6.423l-1.798 1.77zm5.227 0h1.635v5.415l-3.509-3.53zm4.302.043h1.687l1.83 1.842-3.517 3.539zm2.431 0h4.404v4.394l-1.83-1.842-4.241 4.267h-.764v-.69l4.261-4.287zm2.574 3.3l1.83 1.843v1.676h-5.327zm-12.735.013l3.515 3.462H3.876v-1.69zM3.348 9.454v1.697h6.377l.871.858-.782.77H3.35v1.786L.753 12.01zm17.42.068l2.488 2.503-2.533 2.55v-1.796h-6.41l-.75-.754.825-.83h6.38zm-9.502.978l.81.815.186-.188.614-.618v.686h.768l-.825.83.75.754h-.719v.808l-.842-.83-.741.73v-.707h-.7l.781-.77-.188-.186-.682-.672h.788zm-7.39 2.807h5.402l-3.603 3.55-1.798-1.772zm6.154 0h.708v.7l-4.404 4.338 1.852 1.824h-4.31v-4.342l1.798 1.77zm3.348 0h.715l4.317 4.343.186-.187 1.599-1.61v4.316h-4.366l1.853-1.825-.188-.185-4.116-4.054zm1.46 0h5.357v1.798l-1.785 1.796zm-2.83.191l.842.829v6.37h1.691l-2.532 2.495-2.533-2.495h1.79V14.23zm-1.27 1.251v5.42H8.939l-1.852-1.823zm2.64.097l3.552 3.499-1.853 1.825h-1.7z\"/></svg>",
+ "opensuse": "<svg aria-hidden=\"true\" fill=\"#73BA25\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.724 0a12 12 0 0 0-9.448 4.623c1.464.391 2.5.727 2.81.832.005-.19.037-1.893.037-1.893s.004-.04.025-.06c.026-.026.065-.018.065-.018.385.056 8.602 1.274 12.066 3.292.427.25.638.517.902.786.958.99 2.223 5.108 2.359 5.957.005.033-.036.07-.054.083a5.177 5.177 0 0 1-.313.228c-.82.55-2.708 1.872-5.13 1.656-2.176-.193-5.018-1.44-8.445-3.699.336.79.668 1.58 1 2.371.497.258 5.287 2.7 7.651 2.651 1.904-.04 3.941-.968 4.756-1.458 0 0 .179-.108.257-.048.085.066.061.167.041.27-.05.234-.164.66-.242.863l-.065.165c-.093.25-.183.482-.356.625-.48.436-1.246.784-2.446 1.305-1.855.812-4.865 1.328-7.66 1.31-1.001-.022-1.968-.133-2.817-.232-1.743-.197-3.161-.357-4.026.269A12 12 0 0 0 10.724 24a12 12 0 0 0 12-12 12 12 0 0 0-12-12zM13.4 6.963a3.503 3.503 0 0 0-2.521.942 3.498 3.498 0 0 0-1.114 2.449 3.528 3.528 0 0 0 3.39 3.64 3.48 3.48 0 0 0 2.524-.946 3.504 3.504 0 0 0 1.114-2.446 3.527 3.527 0 0 0-3.393-3.64zm-.03 1.035a2.458 2.458 0 0 1 2.368 2.539 2.43 2.43 0 0 1-.774 1.706 2.456 2.456 0 0 1-1.762.659 2.461 2.461 0 0 1-2.364-2.542c.02-.655.3-1.26.777-1.707a2.419 2.419 0 0 1 1.756-.655zm.402 1.23c-.602 0-1.087.325-1.087.727 0 .4.485.725 1.087.725.6 0 1.088-.326 1.088-.725 0-.402-.487-.726-1.088-.726Z\"/></svg>",
+ "mint": "<svg aria-hidden=\"true\" fill=\"#86BE43\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M5.438 5.906v8.438c0 2.06 1.69 3.75 3.75 3.75h5.625c2.06 0 3.75-1.69 3.75-3.75V9.656a2.827 2.827 0 0 0-2.813-2.812 2.8 2.8 0 0 0-1.875.737A2.8 2.8 0 0 0 12 6.844a2.827 2.827 0 0 0-2.812 2.812v4.688h1.875V9.656c0-.529.408-.937.937-.937s.938.408.938.937v4.688h1.875V9.656c0-.529.408-.937.937-.937s.938.408.938.937v4.688a1.86 1.86 0 0 1-1.875 1.875H9.188a1.86 1.86 0 0 1-1.875-1.875V5.906ZM12 0C5.384 0 0 5.384 0 12s5.384 12 12 12 12-5.384 12-12S18.616 0 12 0m0 1.875A10.11 10.11 0 0 1 22.125 12 10.11 10.11 0 0 1 12 22.125 10.11 10.11 0 0 1 1.875 12 10.11 10.11 0 0 1 12 1.875\"/></svg>",
+ "zorin": "<svg aria-hidden=\"true\" fill=\"#15A6F0\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4 18.944L5.995 22.4h12.01L20 18.944H4zM24 12l-2.013 3.488H9.216l12.771-6.976L24 12zM0 12l2.013-3.488h12.771L2.013 15.488 0 12zm4-6.944L5.995 1.6h12.01L20 5.056H4z\"/></svg>",
+ "pop": "<svg aria-hidden=\"true\" fill=\"#48B9C7\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 0C5.372 0 0 5.373 0 12c0 6.628 5.372 12 12 12 6.627 0 12-5.372 12-12 0-6.627-5.373-12-12-12ZM9.64 2.918c1.091-.026 1.548.229 2.182.635a4.459 4.459 0 0 1 1.902 2.764c.254 1.141.178 2.029-.127 2.664v.05c-.609 1.294-1.622 2.335-3.043 2.842l1.217 3.172c.228.583.432 1.192.254 1.75-.177.558-.989.736-1.572.127-1.116-1.192-4.871-8.702-5.15-9.26-.279-.558-.584-1.016-.584-1.574.026-.837 1.318-1.7 1.953-2.131.634-.431 1.877-1.014 2.968-1.039Zm-.996 2.311c-.789.022-.358 1.669-.197 2.129.178.507.661 1.572 1.193 2.105.127.127.254.229.407.254.152.027.457-.127.584-.33a.932.932 0 0 0 .15-.559 3.232 3.232 0 0 0-.049-1.216c-.228-.787-.711-1.548-1.346-2.055-.127-.102-.279-.229-.457-.279a.901.901 0 0 0-.285-.049Zm8.414 2.027a2.283 2.283 0 0 1 1.588.636c.305.279.33.582.229.963-.102.38-.457 1.194-.736 1.777l-.709 1.344c-1.37 2.435-1.649 2.689-2.03 2.537-.456-.178-.304-2.614.127-5.582.127-.812.329-1.217.557-1.42.171-.152.6-.248.975-.254l-.001-.001Zm-1.859 8.332c.554.011.789.7.656 1.232a.861.861 0 0 1-.379.559c-.203.127-.685.127-.965-.102-.278-.228-.33-.609-.254-.914.076-.304.331-.635.686-.736a.757.757 0 0 1 .256-.039Zm-8.604 2.805h10.809c.52 0 .938.419.938.939v.074c0 .52-.418.94-.938.94H6.595a.936.936 0 0 1-.937-.94v-.074c0-.52.417-.939.937-.939Z\"/></svg>",
+ "elementary": "<svg aria-hidden=\"true\" fill=\"#64BAFF\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm0 1a11 11 0 0 1 10.59 8.01 19.09 19.09 0 0 1-4.66 6.08c-.94.81-1.96 1.53-3.08 2.04-1.13.5-2.37.8-3.6.72a6.23 6.23 0 0 1-2.66-.76 20.02 20.02 0 0 0 5.68-4.58 9.97 9.97 0 0 0 2.31-4.17c.18-.79.2-1.6.04-2.4a4.42 4.42 0 0 0-1.08-2.11 4.33 4.33 0 0 0-2-1.19 5.25 5.25 0 0 0-2.33-.08A7.8 7.8 0 0 0 7.2 4.85a9.77 9.77 0 0 0-2.94 7.49 7.88 7.88 0 0 0 1.95 4.59 18 18 0 0 1-3.56.85A11 11 0 0 1 12 1zm.07 2.22c.77 0 1.55.24 2.17.7.55.42.97 1.02 1.2 1.68.23.65.3 1.37.21 2.06a7.85 7.85 0 0 1-1.7 3.76 16.22 16.22 0 0 1-6.37 4.96c-.48-.42-.9-.92-1.2-1.48a6.61 6.61 0 0 1-.75-3.87c.12-1.32.58-2.6 1.2-3.79a7.92 7.92 0 0 1 3.02-3.42c.68-.37 1.45-.6 2.22-.6zm10.83 7.3A11 11 0 0 1 3.52 19a19.8 19.8 0 0 0 3.63-1.2c.51.4 1.08.71 1.67.94a8 8 0 0 0 5.44-.04 13.3 13.3 0 0 0 4.64-2.95 20 20 0 0 0 4-5.22z\"/></svg>",
+ "garuda": "<svg aria-hidden=\"true\" fill=\"#8839EF\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10.24 3.179C6.82 6.579 3.366 10.064 0 13.465c2.4 2.406 4.889 4.898 7.319 7.332l7.504.024 6.334-6.316-13.754-.012-1.525 1.54 11.512.024-3.198 3.197H7.956L2.172 13.47l8.74-8.74h6.284l4.815 4.815-7.501-.01v-2.12l-3.68 3.68c3.873.004 7.746.003 11.62 0v2.102l1.55-1.55-.003-2.306-6.16-6.159z\"/></svg>"
+};
+__FORGE_FILE_BRANDS_JS__
+  cat > "$FORGE_APP/info.json" <<'__FORGE_FILE_INFO_JSON__'
+{
+ "source": "Wikipedia / Wikimedia Commons",
+ "fetched": "2026-10-02",
+ "families": {
+  "ubuntu": {
+   "title": "Ubuntu",
+   "url": "https://en.wikipedia.org/wiki/Ubuntu",
+   "extract": "Ubuntu (uu-BUUN-too) is a Linux distribution based on Debian and composed primarily of free and open-source software. Developed by the British company Canonical and a community of contributors under a meritocratic governance model, Ubuntu is released in multiple official editions: Desktop, Server, and Core for IoT and robotic devices. Ubuntu is published on a six-month release cycle, with long-term support (LTS) versions issued every two years. Canonical provides security updates and support until each release reaches its designated end-of-life (EOL), with optional extended support available through the Ubuntu Pro and Expanded Security Maintenance (ESM) services.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Ubuntu-logo-2022.svg/960px-Ubuntu-logo-2022.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/7/76/Ubuntu-logo-2022.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Ubuntu_26.04_LTS_desktop.png/960px-Ubuntu_26.04_LTS_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/12/Ubuntu_26.04_LTS_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_26.04_LTS_desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of the default desktop environment of Ubuntu 26.04 LTS \"Resolute Raccoon\"",
+     "license": "GPL"
+    }
+   ]
+  },
+  "debian": {
+   "title": "Debian",
+   "url": "https://en.wikipedia.org/wiki/Debian",
+   "extract": "Debian is a free, general-purpose operating system developed by the Debian Project, a worldwide volunteer association founded by Ian Murdock on August 16, 1993. It is the second-oldest Linux distribution still being developed (only Slackware is older) and forms the base of many others. It is deployed across servers, personal computers, and embedded devices. Among Linux distributions, it ranks second only to Ubuntu (a Debian derivative), with 16% of the overall market. According to the 2025 Stack Overflow Developer Survey, 11.4% of developers use it as their primary personal operating system and 10.4% professionally. Its emphasis on stability and long-term support over frequent package updates has made it prevalent in server and embedded deployments.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png/960px-Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png/960px-Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_13_(Trixie)_screenshot_-_using_GNOME_desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Debian Trixie with the GNOME desktop",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Debian_13.0.0_KDE_default_desktop_-_English.png/960px-Debian_13.0.0_KDE_default_desktop_-_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/de/Debian_13.0.0_KDE_default_desktop_-_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_13.0.0_KDE_default_desktop_-_English.png",
+     "w": 1454,
+     "h": 991,
+     "caption": "Debian 13.0.0 KDE default desktop",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Debian_GNU_HURD_XFCE_desktop_screenshot.png/960px-Debian_GNU_HURD_XFCE_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Debian_GNU_HURD_XFCE_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_GNU_HURD_XFCE_desktop_screenshot.png",
+     "w": 1280,
+     "h": 768,
+     "caption": "Screenshot of Debian GNU Hurd with Xfce desktop environment running on QEMU",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Debian10_Gnome.png/960px-Debian10_Gnome.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Debian10_Gnome.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian10_Gnome.png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "Screenshot of Debian 10 (buster) with GNOME desktop environment running a couple of free software applications",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Debian_Etch-ja.png/960px-Debian_Etch-ja.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Debian_Etch-ja.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_Etch-ja.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "A screenshot of Debian 4.0 (Etch)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Debian-Woody.png/960px-Debian-Woody.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Debian-Woody.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian-Woody.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Debian 3.0 (Woody)",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "fedora": {
+   "title": "Fedora Linux",
+   "url": "https://en.wikipedia.org/wiki/Fedora_Linux",
+   "extract": "Fedora Linux is a Linux distribution developed by the Fedora Project. It was originally developed in 2003 as a continuation of the Red Hat Linux project. It contains software distributed under various free and open-source licenses and aims to be on the leading edge of open-source technologies. It is now the upstream source for CentOS Stream and Red Hat Enterprise Linux. Since the release of Fedora 21 in December 2014, three editions have been made available: personal computer, server and cloud computing. This was expanded to five editions for containerization and Internet of Things (IoT) as of the release of Fedora 37 in November 2022. A new version of Fedora Linux is usually released roughly every six months.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Fedora_44_Workstation.png/960px-Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/32/Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Fedora_SilverBlue_41_desktop.png/960px-Fedora_SilverBlue_41_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Fedora_SilverBlue_41_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_SilverBlue_41_desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Fedora Silverblue 41, desktop screenshot",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Fedora_42_KDE_Plasma_Desktop_English.png/960px-Fedora_42_KDE_Plasma_Desktop_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/86/Fedora_42_KDE_Plasma_Desktop_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_42_KDE_Plasma_Desktop_English.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Fedora Linux KDE Plasma Desktop Edition release version 42 featuring the KDE Plasma 6.3 Desktop…",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Fedora_21_desktop_screenshot.png/960px-Fedora_21_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Fedora_21_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_21_desktop_screenshot.png",
+     "w": 1440,
+     "h": 900,
+     "caption": "Fedora 21 desktop screenshot showing basic settings menu",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Fedora_Workstation_41_%E2%80%94_default_applications_%281%29.png/960px-Fedora_Workstation_41_%E2%80%94_default_applications_%281%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/da/Fedora_Workstation_41_%E2%80%94_default_applications_%281%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_Workstation_41_%E2%80%94_default_applications_(1).png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Fedora Workstation 41's Apps Page",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Fedora_44_Workstation.png/960px-Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/32/Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_44_Workstation.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Fedora 44 Workstation",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Fedora_15_Lovelock_Gnome3.png/960px-Fedora_15_Lovelock_Gnome3.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/21/Fedora_15_Lovelock_Gnome3.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_15_Lovelock_Gnome3.png",
+     "w": 1680,
+     "h": 1050,
+     "caption": "Fedora 15 mit dem Standarddesktop Gnome 3",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "arch": {
+   "title": "Arch Linux",
+   "url": "https://en.wikipedia.org/wiki/Arch_Linux",
+   "extract": "Arch Linux is an open source, rolling release Linux distribution. Arch Linux is kept up-to-date by regularly updating the individual pieces of software that it comprises. It provides monthly \"snapshots\" which are used as installation media. Arch Linux is intentionally minimal, and is meant to be configured by the user during installation to add only what is needed. Pacman, a package manager written specifically for Arch Linux, is used to install, remove and update software packages. The Arch User Repository (AUR) serves as a community-driven software repository for Arch Linux and provides packages not included in the official repositories and alternative versions of packages. AUR packages can be downloaded and built manually, or installed through an AUR 'helper'. such as Yet Another Yogurt (yay).",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png/960px-Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png/960px-Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_screenshot,_12.06.2024.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Arch Linux screenshot showcasing KDE Plasma 6. Taken on December 6, 2024 (Arch Linux is a rolling release…",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Arch_Linux_bootup_screenshot.png/960px-Arch_Linux_bootup_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/46/Arch_Linux_bootup_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_bootup_screenshot.png",
+     "w": 1280,
+     "h": 760,
+     "caption": "Screenshot of Arch Linux booting with systemd",
+     "license": "LGPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Example_of_pacman_in_Arch_Linux_screenshot.png/960px-Example_of_pacman_in_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Example_of_pacman_in_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Example_of_pacman_in_Arch_Linux_screenshot.png",
+     "w": 1263,
+     "h": 882,
+     "caption": "Screenshot of pacman command-line tool on Arch Linux, here updating some packages",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Pacstrap_screenshot.png/960px-Pacstrap_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Pacstrap_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Pacstrap_screenshot.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Screenshot of pacstrap during installation of Arch Linux",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Archinstall%2C_Minimal.png/960px-Archinstall%2C_Minimal.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/64/Archinstall%2C_Minimal.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Archinstall,_Minimal.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "An example configuration of Archinstall, in a Minimal profile",
+     "license": "GPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Arch_Linux_Minimal_Neofetch_Output.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Arch_Linux_Minimal_Neofetch_Output.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_Minimal_Neofetch_Output.png",
+     "w": 708,
+     "h": 476,
+     "caption": "A login and neofetch output of a Arch Linux with 6.12.7 kernel base installation on a virtual machine",
+     "license": "GPL"
+    }
+   ]
+  },
+  "alpine": {
+   "title": "Alpine Linux",
+   "url": "https://en.wikipedia.org/wiki/Alpine_Linux",
+   "extract": "Alpine Linux is a Linux distribution \"designed for power users who appreciate security, simplicity and resource efficiency\". It uses musl, BusyBox, and OpenRC instead of glibc, GNU Core Utilities, and systemd, respectively. This makes Alpine one of the few Linux distributions not to be based on systemd. For security, Alpine compiles all user-space binaries as position-independent executables with stack-smashing protection. Because of its small size and rapid startup, it is commonly used in containers providing quick boot-up times, on virtual machines (e.g., OS-level virtualization) as well as on real hardware in embedded devices, such as routers, servers and NAS.",
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/3/39/Alpine_1.00.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/39/Alpine_1.00.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_1.00.png",
+     "w": 796,
+     "h": 482,
+     "caption": "Screen shot of Alpine version 1.00 and a KDE desktop of a Gentoo GNU/Linux box",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Alpine_linux.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Alpine_linux.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_linux.JPG",
+     "w": 818,
+     "h": 528,
+     "caption": "Screenshot of Alpine via SSH on a Debian Server",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Alpine-xfce.jpg/960px-Alpine-xfce.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Alpine-xfce.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine-xfce.jpg",
+     "w": 1280,
+     "h": 720,
+     "caption": "Alpine Linux with XFCE",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Alpine_Linux_3.19_in_Xfce_4.19.png/960px-Alpine_Linux_3.19_in_Xfce_4.19.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/62/Alpine_Linux_3.19_in_Xfce_4.19.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_Linux_3.19_in_Xfce_4.19.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Alpine Linux 3.19 Standard ejecutandose en Xfce 4.19 con modificaciones",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Alpine_Linux_3.21_set_up_-_English.png/960px-Alpine_Linux_3.21_set_up_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/af/Alpine_Linux_3.21_set_up_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_Linux_3.21_set_up_-_English.png",
+     "w": 1283,
+     "h": 895,
+     "caption": "Alpine Linux 3.21 set up",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Alpine_Linux_3.11_Xfce_-_English.png/960px-Alpine_Linux_3.11_Xfce_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Alpine_Linux_3.11_Xfce_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_Linux_3.11_Xfce_-_English.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Alpine Linux 3.11 with Xfce desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "kali": {
+   "title": "Kali Linux",
+   "url": "https://en.wikipedia.org/wiki/Kali_Linux",
+   "extract": "Kali Linux is a Linux distribution designed for digital forensics and penetration testing. It is maintained and funded by Offensive Security. The software is based on the testing branch of the Debian Linux Distribution: most packages Kali uses are imported from the Debian repositories. Kali Linux has gained popularity in the cybersecurity community due to its comprehensive set of tools designed for penetration testing, vulnerability analysis, and reverse engineering. It was developed by Mati Aharoni and Devon Kearns of Offensive Security through the rewrite of BackTrack, their previous information security testing Linux distribution based on Knoppix.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Kali_Linux_2.0_wordmark.svg/960px-Kali_Linux_2.0_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Kali_Linux_2.0_wordmark.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/VirtualBox_Kali_Linux_29_03_2022_11_10_35.png/960px-VirtualBox_Kali_Linux_29_03_2022_11_10_35.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e6/VirtualBox_Kali_Linux_29_03_2022_11_10_35.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:VirtualBox_Kali_Linux_29_03_2022_11_10_35.png",
+     "w": 1680,
+     "h": 945,
+     "caption": "Kali Linux",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "parrot": {
+   "title": "Parrot OS",
+   "url": "https://en.wikipedia.org/wiki/Parrot_OS",
+   "extract": "Parrot OS is a Linux distribution based on Debian with a focus on security, privacy, and development.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Parrot_OS_Desktop.png/960px-Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Parrot_OS_Desktop.png/960px-Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Parrot_OS_Desktop.png",
+     "w": 1920,
+     "h": 952,
+     "caption": "Parrot OS Desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "almalinux": {
+   "title": "AlmaLinux",
+   "url": "https://en.wikipedia.org/wiki/AlmaLinux",
+   "extract": "AlmaLinux is a free and open source Linux distribution, a community-supported, production-grade enterprise operating system that is binary-compatible with Red Hat Enterprise Linux (RHEL). The name of the distribution comes from the word \"alma\", meaning \"soul\" in Spanish and other Latin languages. It was chosen to be a homage to the Linux community. It is developed by the American AlmaLinux OS Foundation, a 501(c) organization. The first stable release of AlmaLinux was published on 30 March 2021, and will be supported until 1 March 2029. AlmaLinux is built using publicly-viewable and reproducible methods using the AlmaLinux Build System (ALBS), which is a customized build system whose source code, like the distribution itself, is publicly distributed and licensed under open-source licenses.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png/960px-AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png/960px-AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:AlmaLinux_10.0_desktop_with_GNOME_47.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of default AlmaLinux version 10.0 desktop with GNOME 47",
+     "license": "GPL"
+    }
+   ]
+  },
+  "rocky": {
+   "title": "Rocky Linux",
+   "url": "https://en.wikipedia.org/wiki/Rocky_Linux",
+   "extract": "Rocky Linux is a free and open source Linux distribution developed by Rocky Enterprise Software Foundation, which is a privately owned benefit corporation that describes itself as a \"self-imposed not-for-profit\". It is intended to be a downstream, complete binary-compatible release using the Red Hat Enterprise Linux (RHEL) operating system source code. The project's aim is to provide a community-supported, production-grade enterprise operating system. Rocky Linux, along with RHEL, has become popular for enterprise operating system use. The first release candidate version of Rocky Linux was released on April 30, 2021, and its first general availability version was released on June 21, 2021. Rocky Linux 8 will be supported through May 2029, Rocky Linux 9 through May 2032, and Rocky Linux 10 through May 2035.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Rocky_Linux_10_Workstation.png/960px-Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Rocky_Linux_10_Workstation.png/960px-Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Rocky_Linux_10_Workstation.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of default Rocky Linux version 10.0 desktop with GNOME 47",
+     "license": "GPL"
+    }
+   ]
+  },
+  "oracle": {
+   "title": "Oracle Linux",
+   "url": "https://en.wikipedia.org/wiki/Oracle_Linux",
+   "extract": "Oracle Linux (abbreviated OL, formerly known as Oracle Enterprise Linux or OEL) is a Linux distribution packaged and freely distributed by Oracle, available partially under the GNU General Public License since late 2006. It is, in part, compiled from Red Hat Enterprise Linux (RHEL) source code, replacing Red Hat branding with Oracle's. It is also used by Oracle Cloud and Oracle Engineered Systems such as Oracle Exadata and others. Potential users can freely download Oracle Linux through Oracle's server, or from a variety of mirror sites, and can deploy and distribute it without cost. The company's Oracle Linux Support program aims to provide commercial technical support, covering Oracle Linux and existing RHEL or CentOS installations but without any certification from the former (i.e. without re-installation or re-boot). As of 2016, Oracle Linux had over 15,000 customers subscribed to",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Oracle_Linux_9_screenshot.png/960px-Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Oracle_Linux_9_screenshot.png/960px-Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Oracle_Linux_9_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of an Oracle Linux 9 default desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "centos": {
+   "title": "CentOS",
+   "url": "https://en.wikipedia.org/wiki/CentOS",
+   "extract": "CentOS (from Community Enterprise Operating System; also known as CentOS Linux) is a discontinued Linux distribution that provided a free and open-source community-supported computing platform, functionally compatible with its upstream source, Red Hat Enterprise Linux (RHEL). In January 2014, CentOS announced the official joining with Red Hat while staying independent from RHEL, under a new CentOS governing board. The first CentOS release in May 2004, numbered as CentOS version 2, was forked from RHEL version 2.1AS. Since version 8, CentOS officially supports the x86-64, ARM64, and POWER8 architectures, and releases up to version 6 also supported the IA-32 architecture. As of December 2015, AltArch releases of CentOS 7 are available for the IA-32 architecture, Power ISA, and for the ARMv7hl and AArch64 variants of the ARM architecture. CentOS 8 was released on 24 September 2019.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/CentOS_8.5_screenshot.png/960px-CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/5/51/CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/CentOS_8.5_screenshot.png/960px-CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/51/CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:CentOS_8.5_screenshot.png",
+     "w": 1360,
+     "h": 768,
+     "caption": "English GUI of CentOS 8.5 (11.16.2021)",
+     "license": "GPL"
+    }
+   ]
+  },
+  "opensuse": {
+   "title": "OpenSUSE",
+   "url": "https://en.wikipedia.org/wiki/OpenSUSE",
+   "extract": "openSUSE is a free and open-source Linux distribution developed by the openSUSE Project. It is offered in two main variations: Tumbleweed, an upstream rolling release distribution, and Leap, a stable release distribution which is sourced from SUSE Linux Enterprise. The openSUSE project is sponsored by SUSE of Germany. The company released the first version as SUSE Linux in 1994. Its development was opened up to the community in 2005, which marked the creation of openSUSE. The focus of the developers is on creating a stable and user-friendly RPM-based operating system with a large target group for workstations and servers.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/OpenSUSE_Logo.svg/960px-OpenSUSE_Logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/d/d0/OpenSUSE_Logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/OpenSUSE_Leap_16.0_screenshot.webp/960px-OpenSUSE_Leap_16.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/7e/OpenSUSE_Leap_16.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:OpenSUSE_Leap_16.0_screenshot.webp",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of openSUSE Leap 16.0",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp/960px-Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp",
+     "w": 1280,
+     "h": 800,
+     "caption": "A screenshot of Agama installer during disk partitioning setup for SUSE Linux Enterprise",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Cockpit_web_interface_on_openSUSE_screenshot.webp/960px-Cockpit_web_interface_on_openSUSE_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/22/Cockpit_web_interface_on_openSUSE_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Cockpit_web_interface_on_openSUSE_screenshot.webp",
+     "w": 1088,
+     "h": 615,
+     "caption": "A screenshot of Cockpit web interface (351) running on Firefox",
+     "license": "LGPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Myrlyn_1.0.0_screenshot.webp/960px-Myrlyn_1.0.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Myrlyn_1.0.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Myrlyn_1.0.0_screenshot.webp",
+     "w": 1074,
+     "h": 711,
+     "caption": "A screenshot of Myrlyn 1.0.0 running on openSUSE Tumbleweed",
+     "license": "GPLv2"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/c/c7/YaST2_ncurses_mode_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c7/YaST2_ncurses_mode_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:YaST2_ncurses_mode_screenshot.png",
+     "w": 874,
+     "h": 610,
+     "caption": "Screenshot of YaST in text mode (ncurses)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Webyast.png/960px-Webyast.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Webyast.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Webyast.png",
+     "w": 1440,
+     "h": 870,
+     "caption": "Webyast in action",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "mint": {
+   "title": "Linux Mint",
+   "url": "https://en.wikipedia.org/wiki/Linux_Mint",
+   "extract": "Linux Mint is a community-developed Linux distribution for x86-64 systems, based on Ubuntu. First released in 2006, Linux Mint is often noted for its ease of use, out-of-the-box functionality, and appeal to desktop users. It comes bundled with a selection of free and open-source software. The default desktop environment is Cinnamon, developed by the Linux Mint team, with MATE and Xfce available as alternatives. A Debian based version of Linux Mint also exists, called Linux Mint Debian Edition (LMDE).",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/LinuxMint22-Wilma-English.png/960px-LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/a/ac/LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/LinuxMint22-Wilma-English.png/960px-LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/ac/LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop. Firefox (with a tab open to…",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Lmde2.png/960px-Lmde2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/38/Lmde2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Lmde2.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Linux Mint Debian Edition running Cinnamon 2.8",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/2/28/Linux_Mint_22.1_mintupdate.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/28/Linux_Mint_22.1_mintupdate.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Linux_Mint_22.1_mintupdate.png",
+     "w": 790,
+     "h": 602,
+     "caption": "Update Manager on Linux Mint 22.1 (taken on a virtual machine)",
+     "license": "GPL"
+    }
+   ]
+  },
+  "zorin": {
+   "title": "Zorin OS",
+   "url": "https://en.wikipedia.org/wiki/Zorin_OS",
+   "extract": "Zorin OS is a Linux distribution based on Ubuntu which provides both free and paid versions. It uses a GNOME and Xfce 4 desktop environment by default, although the desktop is heavily customized and is for users more familiar with Windows, Chrome OS and macOS. Zorin OS Pro is a premium paid version offering additional desktop appearance customization options and apps for creative users such as for photo or video editing. Zorin is marketed as a privacy focused operating system aimed at everyday computer users.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Zorin-18-Desktop_Installed.png/960px-Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Zorin-18-Desktop_Installed.png/960px-Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Zorin-18-Desktop_Installed.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Screenshot of Zorin OS 18 showing the menu using the modified default GNOME desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "pop": {
+   "title": "Pop! OS",
+   "url": "https://en.wikipedia.org/wiki/Pop!_OS",
+   "extract": "Pop OS (stylized as Pop!_OS) is a free and open-source Linux distribution based on Ubuntu and developed by the American Linux computer manufacturer System76. It features the COSMIC desktop environment, a Rust-based and Wayland-only desktop created and maintained by System76. Pop!_OS is primarily designed to ship with the company’s computers, but it can also be downloaded and installed on most PCs. Pop!_OS provides full out-of-the-box support for both AMD and Nvidia GPUs. Pop!_OS provides default disk encryption, streamlined window and workspace management, keyboard shortcuts for navigation as well as built-in power management profiles. The latest releases also have packages that allow for easy setup for TensorFlow and CUDA.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Pop_OS-Logo-nobg.svg/960px-Pop_OS-Logo-nobg.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Pop_OS-Logo-nobg.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/System76_product_pang11.webp/960px-System76_product_pang11.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/41/System76_product_pang11.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:System76_product_pang11.webp",
+     "w": 1920,
+     "h": 1188,
+     "caption": "A photo of a System76 computer model",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Apps_Pop%21_OS_21.10.png/960px-Apps_Pop%21_OS_21.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apps_Pop%21_OS_21.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Apps_Pop!_OS_21.10.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Captura de pantalla mostrant el nou menú d'aplicacions anomenat Library més reduït i centrat a l'escriptori…",
+     "license": "GPL"
+    }
+   ]
+  },
+  "elementary": {
+   "title": "Elementary OS",
+   "url": "https://en.wikipedia.org/wiki/Elementary_OS",
+   "extract": "Elementary OS (stylized as elementary OS) is a Linux distribution based on Ubuntu LTS. It promotes itself as \"thoughtful, capable, and ethical computing\" and has a pay-what-you-want model. The operating system, the desktop environment (called Pantheon), and accompanying applications are developed and maintained by elementary, Inc.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/ElementaryOS8.0-Desktop.png/960px-ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/40/ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/ElementaryOS8.0-Desktop.png/960px-ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/40/ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:ElementaryOS8.0-Desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "A screenshot of the desktop of elementary OS 8.0",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Scrivania_di_elementary_OS_5.0_Juno.png/960px-Scrivania_di_elementary_OS_5.0_Juno.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/24/Scrivania_di_elementary_OS_5.0_Juno.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Scrivania_di_elementary_OS_5.0_Juno.png",
+     "w": 2560,
+     "h": 1600,
+     "caption": "Screenshot della scrivania di elementary OS 5.0 Juno, basato su Ubuntu 18.04 LTS",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Elementary_odin.png/960px-Elementary_odin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Elementary_odin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Elementary_odin.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "This image is the official screenshot of Elementary OS 6.0 Odin",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Elementary_OS_7.0_Horus.jpg/960px-Elementary_OS_7.0_Horus.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Elementary_OS_7.0_Horus.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Elementary_OS_7.0_Horus.jpg",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of elementary OS 7 desktop",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Elementary_OS_5.1_Hera.png/960px-Elementary_OS_5.1_Hera.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Elementary_OS_5.1_Hera.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Elementary_OS_5.1_Hera.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of elementary OS 5.1",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/ElementaryOS_Loki.png/960px-ElementaryOS_Loki.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/3c/ElementaryOS_Loki.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:ElementaryOS_Loki.png",
+     "w": 1680,
+     "h": 1050,
+     "caption": "A screenshot of the default desktop on elementary OS 0.4 \"Loki\"",
+     "license": "GPLv3"
+    }
+   ]
+  },
+  "garuda": {
+   "title": "Garuda Linux",
+   "url": "https://en.wikipedia.org/wiki/Garuda_Linux",
+   "extract": "Garuda Linux is an Arch Linux-based Linux distribution targeted towards gaming. It offers multiple desktop environments, but the KDE Plasma version is the default. The distribution is named after Garuda, the divine eagle mount of the god Vishnu in Hinduism. Garuda Linux features a rolling release update model using Pacman as its package manager.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png/960px-Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png/960px-Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Garuda_Linux_Dr460nized,_Bird_of_Prey.png",
+     "w": 2560,
+     "h": 1600,
+     "caption": "Garuda Linux KDE Dr460nized, \"Bird of Prey\" screenshot",
+     "license": "GPLv3"
+    }
+   ]
+  }
+ },
+ "desktops": {
+  "xfce": {
+   "title": "Xfce",
+   "url": "https://en.wikipedia.org/wiki/Xfce",
+   "extract": "Xfce is a free and open-source desktop environment for Linux and other Unix-like operating systems. Xfce aims to be fast and lightweight while still visually appealing and easy to use. The desktop environment is designed to embody the traditional Unix philosophy of modularity and re-usability, as well as adherence to standards; specifically, those defined at freedesktop.org.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/XFCE_4.20.png/960px-XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/e/ed/XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Mousepad_screenshot.png/960px-Mousepad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/26/Mousepad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Mousepad_screenshot.png",
+     "w": 1302,
+     "h": 1028,
+     "caption": "Screenshot of the Mousepad text editor running on Arch Linux in the xfce Desktop Environment",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Parole_Media_Player_1.0.5_%282019-11%29.png/960px-Parole_Media_Player_1.0.5_%282019-11%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Parole_Media_Player_1.0.5_%282019-11%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Parole_Media_Player_1.0.5_(2019-11).png",
+     "w": 2034,
+     "h": 1080,
+     "caption": "Parole Media Player 1.0.5",
+     "license": "CC BY 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/XFCE_4.20.png/960px-XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/ed/XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:XFCE_4.20.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "XFCE 4.20 desktop environment",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Xfce-4.4.png/960px-Xfce-4.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/71/Xfce-4.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xfce-4.4.png",
+     "w": 1280,
+     "h": 1024,
+     "caption": "Screenshot of Xfce 4.4.0, Murrine theme",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Default_plus_xffm_and_utils.png/960px-Default_plus_xffm_and_utils.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/Default_plus_xffm_and_utils.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Default_plus_xffm_and_utils.png",
+     "w": 1280,
+     "h": 1024,
+     "caption": "Linux-Praxisbuch/ Grafische Benutzeroberflächen: XFce Screenshot - von www.xfce.org Unter verschiedenen…",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Xfce_4.12_on_Fedora_22.png/960px-Xfce_4.12_on_Fedora_22.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/60/Xfce_4.12_on_Fedora_22.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xfce_4.12_on_Fedora_22.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Xfce 4.12 desktop running on Fedora 22",
+     "license": "GPL"
+    }
+   ]
+  },
+  "mate": {
+   "title": "MATE (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/MATE_(desktop_environment)",
+   "extract": "MATE (MAH-tay) is a desktop environment composed of free and open-source software that runs on Linux, and other Unix-like operating systems such as BSD, and Illumos.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Mate-logo.svg/960px-Mate-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Mate-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/PC-BSD_10.1.2_MATE_Screenshot.png/960px-PC-BSD_10.1.2_MATE_Screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c1/PC-BSD_10.1.2_MATE_Screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:PC-BSD_10.1.2_MATE_Screenshot.png",
+     "w": 2340,
+     "h": 1440,
+     "caption": "Screenshot of a PC-BSD 10.1.2 desktop (MATE) with dual monitor (dual head, pivot). Windows showing running…",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Mate-desktop-1.26.en.png/960px-Mate-desktop-1.26.en.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/Mate-desktop-1.26.en.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Mate-desktop-1.26.en.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "This is a screenshot of a typical MATE desktop with 1.26 version, which was taken from Fedora Linux 34 by me",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/MATE_1.10.png/960px-MATE_1.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/7a/MATE_1.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:MATE_1.10.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "MATE 1.10 on Manjaro Linux, GTK+3 version, taken by myself",
+     "license": "LGPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/7/75/Mate-caja-1.26.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/Mate-caja-1.26.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Mate-caja-1.26.png",
+     "w": 828,
+     "h": 598,
+     "caption": "This is a screenshot of Caja file-manager, version 1.26. Caja is a core component of MATE desktop…",
+     "license": "GPL"
+    }
+   ]
+  },
+  "kde": {
+   "title": "KDE Plasma",
+   "url": "https://en.wikipedia.org/wiki/KDE_Plasma",
+   "extract": "KDE Plasma is a graphical shell developed by the KDE community for Linux and BSD. It serves as the interface layer between the user and the operating system, providing a graphical user interface (GUI) and workspace environment for launching applications, managing windows, and interacting with files and system settings. Plasma is designed to be modular and adaptable, with different variants tailored for specific device types, such as Plasma Desktop for personal computers, and Plasma Mobile for smartphones. Plasma was first introduced in 2008 as part of KDE Software Compilation 4, as a major technical overhaul, combining traditional desktop functionality with a widget-based system designed for flexibility and visual consistency. With the KDE brand repositioning in 2009, the KDE software compilation was split into three distinct projects: KDE Plasma, KDE Frameworks and KDE Gear, allowing ea",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/KDE_Plasma_6.4.5_Light.png/960px-KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/15/KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/KDE_Plasma_5.24_on_Arch_Linux_screenshot.png/960px-KDE_Plasma_5.24_on_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/46/KDE_Plasma_5.24_on_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_5.24_on_Arch_Linux_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "KDE Plasma 5.24 screenshot with Konsole and System Settings showing Wayland information",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/KDE_Plasma_Desktop_4.9.png/960px-KDE_Plasma_Desktop_4.9.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/KDE_Plasma_Desktop_4.9.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_Desktop_4.9.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "KDE Plasma Desktop 4.9",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/KDE_Plasma_6.4.5_Light.png/960px-KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/15/KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_6.4.5_Light.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of KDE Plasma 6.4.5 in Light theme (called Breeze Light)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/KDE_Plasma_6.4.5_Dark.png/960px-KDE_Plasma_6.4.5_Dark.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/52/KDE_Plasma_6.4.5_Dark.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_6.4.5_Dark.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of KDE Plasma 6.4.5 in Dark theme (called Breeze Dark)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/KDE_Arch.png/960px-KDE_Arch.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c6/KDE_Arch.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Arch.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "KDE Plasma running on Arch Linux. Shown are Konsole and Dolphin, two of KDE's core application windows",
+     "license": "GPL"
+    }
+   ]
+  },
+  "lxqt": {
+   "title": "LXQt",
+   "url": "https://en.wikipedia.org/wiki/LXQt",
+   "extract": "LXQt is a free and open source lightweight desktop environment. It was formed from the merger of the LXDE and Razor-qt projects. Like its GTK predecessor LXDE, LXQt does not ship or develop its own window manager; instead, LXQt lets the user decide which (supported) window manager they want to use. Linux distributions commonly default LXQt to Openbox, Xfwm4, or KWin.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/LXQt_2.0.0_Ambiance_screenshot.png/960px-LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/2/29/LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/LXQt_2.0.0_Ambiance_screenshot.png/960px-LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/29/LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXQt_2.0.0_Ambiance_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "LXQt 2.0.0 with Ambiance theme",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "lxde": {
+   "title": "LXDE",
+   "url": "https://en.wikipedia.org/wiki/LXDE",
+   "extract": "LXDE (abbreviation for Lightweight X11 Desktop Environment) is a free desktop environment with comparatively low resource requirements. This makes it especially suitable for use on older or resource-constrained personal computers such as netbooks or system on a chip computers. LXDE was written in the C programming language, using the GTK 2 toolkit, and runs on Unix and other POSIX-compliant platforms, such as Linux and BSDs. The LXDE project aims to provide a fast and energy-efficient desktop environment.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXDE_desktop_full.png",
+     "w": 801,
+     "h": 601,
+     "caption": "Base LXDE desktop, taken from lubuntu-9.10_lynxis_b14",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/LXDE-ArchLinux.png/960px-LXDE-ArchLinux.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/53/LXDE-ArchLinux.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXDE-ArchLinux.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "LXDE desktop on ArchLinux",
+     "license": "GPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Pcmanfm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Pcmanfm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Pcmanfm.png",
+     "w": 678,
+     "h": 506,
+     "caption": "LXDE, PCManFM",
+     "license": "GPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/9/96/LXDE_Gpicview.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/9/96/LXDE_Gpicview.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXDE_Gpicview.png",
+     "w": 651,
+     "h": 540,
+     "caption": "LXDE GpicView",
+     "license": "GPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/1/11/LXappearance.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/11/LXappearance.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXappearance.png",
+     "w": 644,
+     "h": 477,
+     "caption": "LXDE Appearance Settings",
+     "license": "GPL"
+    }
+   ]
+  },
+  "cinnamon": {
+   "title": "Cinnamon (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/Cinnamon_(desktop_environment)",
+   "extract": "Cinnamon is a free and open-source desktop environment for Linux and other Unix-like operating systems. It was originally based on GNOME 3, but follows traditional desktop metaphor conventions. The development of Cinnamon began by the Linux Mint team following the April 2011 release of GNOME 3, in which the conventional desktop metaphor of GNOME 2 was replaced in favor of GNOME Shell. Following several attempts to extend GNOME 3 so that it would suit the Linux Mint design goals through \"Mint GNOME Shell Extensions\", the Linux Mint team eventually forked several components of GNOME 3 to build an independent desktop environment. This separation from GNOME was completed with the release of Cinnamon 2.0.0 on 9 October 2013. Applets, extensions, actions, and desklets made explicitly for Cinnamon are no longer compatible with GNOME Shell.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Cinnamon-logo.svg/960px-Cinnamon-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Cinnamon-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/LinuxMint22-Wilma-English-CustomDesktop.png/960px-LinuxMint22-Wilma-English-CustomDesktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/69/LinuxMint22-Wilma-English-CustomDesktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English-CustomDesktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the Cinnamon desktop. Customization's to the background, icons and…",
+     "license": "GPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Cinnamon_System_Settings_4.0.10_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Cinnamon_System_Settings_4.0.10_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Cinnamon_System_Settings_4.0.10_screenshot.png",
+     "w": 802,
+     "h": 629,
+     "caption": "Screenshot of Cinnamon (desktop environment) System Settings 4.0.10",
+     "license": "GPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/8/83/Nemo_6.0.2_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/83/Nemo_6.0.2_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Nemo_6.0.2_screenshot.png",
+     "w": 800,
+     "h": 587,
+     "caption": "Screenshot of Nemo (file manager) 6.0.2, running under Cinnamon",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Cinnamon_1.6_Workspace_OSD.png/960px-Cinnamon_1.6_Workspace_OSD.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cinnamon_1.6_Workspace_OSD.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Cinnamon_1.6_Workspace_OSD.png",
+     "w": 1946,
+     "h": 1226,
+     "caption": "A Linux Mint's Cinnamon 1.6 showing a Workspace OSD",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Linux_Mint_19.1_%22Tessa%22_%28Cinnamon%29.png/960px-Linux_Mint_19.1_%22Tessa%22_%28Cinnamon%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/48/Linux_Mint_19.1_%22Tessa%22_%28Cinnamon%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Linux_Mint_19.1_%22Tessa%22_(Cinnamon).png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "Screenshot of Linux Mint 19.1 \"Tessa\"",
+     "license": "GPLv2"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/LinuxMint22-Wilma-English.png/960px-LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/ac/LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop. Firefox (with a tab open to…",
+     "license": "GPL"
+    }
+   ]
+  },
+  "budgie": {
+   "title": "Budgie (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/Budgie_(desktop_environment)",
+   "extract": "Budgie is an independent, free and open-source desktop environment for Linux and other Unix-like operating systems that targets the desktop metaphor. Budgie is developed by the Buddies of Budgie organization, which is composed of a team of contributors from Linux distributions such as Fedora, Debian, and Arch Linux. Its design emphasizes simplicity, minimalism, and elegance, while providing the means to extend or customize the desktop in various ways. Unlike desktop environments like Cinnamon, Budgie does not have a reference platform, and all distributions that ship Budgie are recommended to set defaults that best fit their desired user experience. Budgie is also shipped as an edition of certain Linux distributions, such as Ubuntu Budgie.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/BudgieDesktop-v10.7.jpg/960px-BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/4e/BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/BudgieDesktop-v10.7.jpg/960px-BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4e/BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:BudgieDesktop-v10.7.jpg",
+     "w": 2000,
+     "h": 1125,
+     "caption": "A screenshot depicting the default configuration of the Budgie desktop environment. Shows the Raven sidebar,…",
+     "license": "Apache License 2.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Budgie_%28desktop_environment%29_v10.4.png/960px-Budgie_%28desktop_environment%29_v10.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Budgie_%28desktop_environment%29_v10.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Budgie_(desktop_environment)_v10.4.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Screenshot of Budgie (desktop environment) version 10.4 showing settings dialog, panel, and open menu",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Fedora_Budgie_38_Beta.jpg/960px-Fedora_Budgie_38_Beta.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Fedora_Budgie_38_Beta.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_Budgie_38_Beta.jpg",
+     "w": 2711,
+     "h": 1557,
+     "caption": "The Budgie Desktop version 10.7.1 on the version 38 beta of Fedora Linux, with desktop icons enabled and a…",
+     "license": "Apache License 2.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Ubuntu_Budgie_22.10.png/960px-Ubuntu_Budgie_22.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Ubuntu_Budgie_22.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_Budgie_22.10.png",
+     "w": 2048,
+     "h": 1152,
+     "caption": "Ubuntu Budgie 22.10",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Solus_Budgie_4.3.jpg/960px-Solus_Budgie_4.3.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/30/Solus_Budgie_4.3.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Solus_Budgie_4.3.jpg",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Solus 4.3 Operating system with Budgie desktop environment developed by Solus",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Budgie_on_Ultramarine_Linux_37.jpg/960px-Budgie_on_Ultramarine_Linux_37.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Budgie_on_Ultramarine_Linux_37.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Budgie_on_Ultramarine_Linux_37.jpg",
+     "w": 1920,
+     "h": 1080,
+     "caption": "The Budgie Desktop version 10.7.1 on Ultramarine Linux, with desktop icons enabled and a single full-width…",
+     "license": "Apache License 2.0"
+    }
+   ]
+  },
+  "gnome-flashback": {
+   "title": "GNOME",
+   "url": "https://en.wikipedia.org/wiki/GNOME",
+   "extract": "GNOME is a desktop environment and suite of software for Linux and BSD developed by the GNOME Project and released as free and open source software. The primary components of GNOME are the GNOME Shell, which provides features such as virtual desktops and window management; and the GNOME Core Applications, which distribute a suite of software that integrates with the shell and provides basic system features such as a file manager and a computer configuration application. The GNOME Project is composed of both volunteers and paid contributors, the largest contributor being Red Hat. In 2023 and 2024, GNOME received €1,000,000 from Germany's Sovereign Tech Fund.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Gnomelogo.svg/960px-Gnomelogo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/6/68/Gnomelogo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Gnome-2.18-screenshot1.png/960px-Gnome-2.18-screenshot1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/62/Gnome-2.18-screenshot1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Gnome-2.18-screenshot1.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "This is the screenshot from the 2.18 release notes",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/GNOME_Clocks_40_%28released_in_2021-03%29.png/960px-GNOME_Clocks_40_%28released_in_2021-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/23/GNOME_Clocks_40_%28released_in_2021-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:GNOME_Clocks_40_(released_in_2021-03).png",
+     "w": 2564,
+     "h": 1052,
+     "caption": "GNOME Clocks",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png/960px-GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/3d/GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:GNOME_Flashback_3.36_with_GNOME_Panel_3.36_(2020-03).png",
+     "w": 1920,
+     "h": 1199,
+     "caption": "GNOME Flashback 3.36 with GNOME Panel 3.36 (2020-03)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/GNOME_Classic_3.36_%282020-03%29.png/960px-GNOME_Classic_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/d8/GNOME_Classic_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:GNOME_Classic_3.36_(2020-03).png",
+     "w": 1600,
+     "h": 900,
+     "caption": "GNOME Classic 3.36",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Phone-concept-2022.png/960px-Phone-concept-2022.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Phone-concept-2022.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Phone-concept-2022.png",
+     "w": 1200,
+     "h": 768,
+     "caption": "Mockups of mobile GNOME Shell views (overview, app grid, system status area)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Gnome_Builder_46.1.png/960px-Gnome_Builder_46.1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Gnome_Builder_46.1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Gnome_Builder_46.1.png",
+     "w": 2730,
+     "h": 1758,
+     "caption": "The screenshot of the repo for \"Gnome Clocks\" app",
+     "license": "CC0"
+    }
+   ]
+  },
+  "enlightenment": {
+   "title": "Enlightenment (window manager)",
+   "url": "https://en.wikipedia.org/wiki/Enlightenment_(window_manager)",
+   "extract": "Enlightenment, also known simply as E, is a compositing window manager for the X Window System. Since version 0.20, Enlightenment also supports Wayland. It is shipped with some Linux distributions such as Bodhi Linux and Pentoo. Enlightenment is only a window manager at its core; however, with many modules included, it can be extended to resemble a full desktop environment. Since version 0.17 (E17), Enlightenment has been written with the Enlightenment Foundation Libraries (EFL), and the Enlightenment project also writes a set of applications with the EFL.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/E17_enlightenment_logo_shiny_black_curved.svg/960px-E17_enlightenment_logo_shiny_black_curved.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/9/9e/E17_enlightenment_logo_shiny_black_curved.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Enlightenment_0.26.0.png/960px-Enlightenment_0.26.0.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/16/Enlightenment_0.26.0.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Enlightenment_0.26.0.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "A screenshot of the Enlightenment 0.26.0 desktop with various applications open. Clockwise from top left:…",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "i3": {
+   "title": "I3 (window manager)",
+   "url": "https://en.wikipedia.org/wiki/I3_(window_manager)",
+   "extract": "i3 is a tiling window manager designed for X11, inspired by wmii and written in C. It supports tiling, stacking, and tabbing layouts, which are handled manually. Its configuration is achieved via a plain text file and extending i3 is possible using its Unix domain socket and JSON based IPC interface from many programming languages. Like wmii, i3 uses a control system very similar to that of vi and Vim. By default, window focus is controlled by what the documentation refers to as the 'Mod1' key (Alt key/Windows key) in addition to the right-hand home row keys (Mod1+J,K,L,Semicolon), while window movement is controlled by the addition of the Shift key (Mod1+Shift+J,K,L,Semicolon).",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/I3_window_manager_logo.svg/960px-I3_window_manager_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/2/27/I3_window_manager_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/I3_window_manager_screenshot.png/960px-I3_window_manager_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/af/I3_window_manager_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_screenshot.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "Screenshot of a typical i3 session",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/I3_window_manager_with_tabbed_layout.png/960px-I3_window_manager_with_tabbed_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/85/I3_window_manager_with_tabbed_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_with_tabbed_layout.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Example of i3 window manager with tabbed layout",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/I3_window_manager_with_stacking_layout.png/960px-I3_window_manager_with_stacking_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/3b/I3_window_manager_with_stacking_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_with_stacking_layout.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Example of i3 window manager with stacking layout",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/I3_window_manager_with_floating_window.png/960px-I3_window_manager_with_floating_window.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/fc/I3_window_manager_with_floating_window.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_with_floating_window.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Example of i3 window manager with floating window",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "openbox": {
+   "title": "Openbox",
+   "url": "https://en.wikipedia.org/wiki/Openbox",
+   "extract": "Openbox is a free, stacking window manager for the X Window System, licensed under the GNU General Public License. Originally derived from Blackbox 0.65.0 (a C++ project), Openbox has been completely re-written in the C programming language and since version 3.0 is no longer based upon any code from Blackbox. Since at least 2010, it has been considered feature complete, bug free and a completed project. Occasional maintenance is done to keep it working, but only if needed. Openbox is designed to be small, fast, and fully compliant with the Inter-Client Communication Conventions Manual (ICCCM) and Extended Window Manager Hints (EWMH). It supports many features such as menus by which the user can control applications or which display various dynamic information.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/2010-04-24-133031_1280x800_scrot.png/960px-2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/f/f7/2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/2010-04-24-133031_1280x800_scrot.png/960px-2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/f7/2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:2010-04-24-133031_1280x800_scrot.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "Openbox 3.4.11 with the default Clearlooks theme. Other running programs are UXTerm, Vim, and Thunar",
+     "license": "GPL"
+    }
+   ]
+  },
+  "fluxbox": {
+   "title": "Fluxbox",
+   "url": "https://en.wikipedia.org/wiki/Fluxbox",
+   "extract": "Fluxbox is a stacking window manager for the X Window System, which started as a fork of Blackbox 0.61.1 in 2001, with the same aim to be lightweight. Its user interface has only a taskbar, a pop-up menu accessible by right-clicking on the desktop, and minimal support for graphical icons. All basic configurations are controlled by text files, including the construction of menus and the mapping of key-bindings. Fluxbox has high compliance to the Extended Window Manager Hints specification. Fluxbox is basic in appearance, but it can show a few options for improved attractiveness: colors, gradients, borders, and several other basic appearance attributes can be specified. Recent versions support rounded corners and graphical elements. Effects managers such as xcompmgr, cairo-compmgr and transset-df (deprecated) can add true transparency to desktop elements and windows. Enhancements can also",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Fluxbox-logo.svg/960px-Fluxbox-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Fluxbox-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Fluxbox.png/960px-Fluxbox.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/56/Fluxbox.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fluxbox.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Fluxbox",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "icewm": {
+   "title": "IceWM",
+   "url": "https://en.wikipedia.org/wiki/IceWM",
+   "extract": "IceWM is a stacking window manager for the X Window System, originally written by Marko Maček. It was written from scratch in C++ and is released under the terms of the GNU Lesser General Public License. It is customizable, relatively lightweight in terms of memory and CPU usage, and comes with themes that allow it to imitate the GUI of Windows 95, Windows XP, Windows 7, OS/2, Motif, and other graphical user interfaces. IceWM can be configured from plain text files stored in a user's home directory, making it easy to customize and copy settings. IceWM has an optional, built-in taskbar with a dynamic start menu, tasks display, system tray, network and CPU meters, mail check and configurable clock. It features a task list window and an Alt+Tab task switcher. Official support for GNOME and KDE menus used to be available as a separate package. In recent IceWM versions, support for them is bu",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/7/77/IceWM_Logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/7/77/IceWM_Logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/IceWM_with_Xeyes.png/960px-IceWM_with_Xeyes.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4a/IceWM_with_Xeyes.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:IceWM_with_Xeyes.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "IceWM on Debian Buster, featuring Xeyes and the Futureproto theme",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/IceWM_in_action.png/960px-IceWM_in_action.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/23/IceWM_in_action.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:IceWM_in_action.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "IceWM on Debian Buster, featuring Xcalendar and LXappearance",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/IceWM_NanoBlue_openSUSE.png/960px-IceWM_NanoBlue_openSUSE.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/2d/IceWM_NanoBlue_openSUSE.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:IceWM_NanoBlue_openSUSE.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Screenshot of IceWM with xterm, using NanoBlue theme on openSUSE",
+     "license": "LGPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/2/27/Icewm-default.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/27/Icewm-default.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Icewm-default.jpg",
+     "w": 800,
+     "h": 600,
+     "caption": "A screenshot showing IceWM's default setup on a Debian machine. Taken by JamesGecko on 12-6-2005 Since all…",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "jwm": {
+   "title": "JWM",
+   "url": "https://en.wikipedia.org/wiki/JWM",
+   "extract": "JWM may refer to: Waco JWM, a straight-wing model based on the ASO",
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Openbsd37withjwm.png/960px-Openbsd37withjwm.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/48/Openbsd37withjwm.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Openbsd37withjwm.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "OpenBSD 3.7 with Joe's Window Manager for the window manager, on top of X.org",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "awesome": {
+   "title": "Awesome (window manager)",
+   "url": "https://en.wikipedia.org/wiki/Awesome_(window_manager)",
+   "extract": "awesome, formerly jdwm, is a dynamic window manager for the X Window System developed in the programming languages C and Lua. Lua is also used to configure and extend the system. Its development began as a fork of dwm, though has diverged largely since. It aims to be very small and fast, yet highly customizable. It enables managing windows via keyboard. The fork was initially nicknamed jdwm, where \"jd\" denoted the principal programmer's initials and dwm denoted the software project it was forked from. The first git repository for what was to become awesome was set up in September 2007. jdwm was renamed to awesome, after the same phrase used by the How I Met Your Mother character Barney Stinson. awesome was officially announced on the dwm mailing list on September 20, 2007.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Awesome_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Awesome_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Awesome_screenshot.png/960px-Awesome_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Awesome_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Awesome_screenshot.png",
+     "w": 1280,
+     "h": 1024,
+     "caption": "Awesome screenshot",
+     "license": "GPL"
+    }
+   ]
+  },
+  "qtile": {
+   "title": "Tiling window manager",
+   "url": "https://en.wikipedia.org/wiki/Tiling_window_manager",
+   "extract": "In computing, a tiling window manager is a window manager with the organization of the screen often dependent on mathematical formulas to organise the windows into a non-overlapping frame. This is opposed to the more common approach used by stacking window managers, which allow the user to drag windows around, instead of windows snapping into a position. This allows for a different style of organization, although it departs from the traditional desktop metaphor.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Dwm-screenshot.png/960px-Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/17/Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Dwm-screenshot.png/960px-Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/17/Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Dwm-screenshot.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "dwm 4.7 showing translucent rxvt windows along with dclock and rox-filer",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Bluetile_screenshot2.png/960px-Bluetile_screenshot2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/20/Bluetile_screenshot2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Bluetile_screenshot2.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Screenshot of Bluetile (tiling window manager) in a tiled layout",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Scrotwm.png/960px-Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/39/Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Scrotwm.png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "scrotwm in action",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Wmfs-2011-03-11.png/960px-Wmfs-2011-03-11.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Wmfs-2011-03-11.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Wmfs-2011-03-11.png",
+     "w": 1280,
+     "h": 1024,
+     "caption": "WMFS created by Martin Duquesnoy",
+     "license": "CC0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Dwm-shot.png/960px-Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Dwm-shot.png",
+     "w": 1280,
+     "h": 801,
+     "caption": "Screenshot of the dwm window manager in use",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "xmonad": {
+   "title": "Xmonad",
+   "url": "https://en.wikipedia.org/wiki/Xmonad",
+   "extract": "xmonad is a dynamic window manager (tiling) for the X Window System, noted for being written in the functional programming language Haskell.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Xmonad-2022-new-logo.svg/960px-Xmonad-2022-new-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Xmonad-2022-new-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Xmonad_screenshot.png/960px-Xmonad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Xmonad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xmonad_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "XMonad in tiling mode with two URXVT terminals and pcmanFM open",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Xmonad-screen-triplehead-dons.png/960px-Xmonad-screen-triplehead-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/71/Xmonad-screen-triplehead-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xmonad-screen-triplehead-dons.png",
+     "w": 1600,
+     "h": 1200,
+     "caption": "This is a screenshot of an X window manager named Xmonad; it is a screenshot taken by Xmonad developer Don…",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Xmonad-tall-status-dons.png/960px-Xmonad-tall-status-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/64/Xmonad-tall-status-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xmonad-tall-status-dons.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "This is a screenshot of an X window manager named Xmonad; it is a screenshot taken by Xmonad developer Don…",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "pekwm": {
+   "title": "PekWM",
+   "url": "https://en.wikipedia.org/wiki/PekWM",
+   "extract": "PekWM is a minimalist window manager. It provides an application menu and window decorations. Other features include the likes of window grouping, xinerama support, automatic properties, and a keygrabber with keychains. PekWM is developed by Claes Nästen and is originally based on the code base of aewm++ but has since then diverged from it. PekWM is suitable to be used as a technical foundation for the user of a computer to build a customized environment around. PekWM is very customizable and has good system performance. PekWM is made for the X windowing system (X11). PekWM is primarily designed for use on operating systems featuring the Linux kernel, and is available in the repositories for many such system distributions.",
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Pekwm.jpg/960px-Pekwm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/9/98/Pekwm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Pekwm.jpg",
+     "w": 1024,
+     "h": 768,
+     "caption": "Une capture d'écran rendant compte de l'aspect de pekwm Screenshot of pekwm",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Arch_Linux_with_PekWM.png/960px-Arch_Linux_with_PekWM.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/73/Arch_Linux_with_PekWM.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_with_PekWM.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "A screenshot of Arch Linux with PekWM",
+     "license": "GPL"
+    }
+   ]
+  },
+  "wmaker": {
+   "title": "Window Maker",
+   "url": "https://en.wikipedia.org/wiki/Window_Maker",
+   "extract": "Window Maker is a free and open-source window manager for the X Window System. It emulates NeXTSTEP's Look and feel as a GNUstep-compatible environment.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Wmaker-0.80.2.png",
+     "w": 800,
+     "h": 600,
+     "caption": "A screenshot of the Window Maker window manager. This is the default look of Window Maker (version 0.80.2),…",
+     "license": "GPL"
+    }
+   ]
+  },
+  "fvwm3": {
+   "title": "FVWM",
+   "url": "https://en.wikipedia.org/wiki/FVWM",
+   "extract": "The F Virtual Window Manager (FVWM) is a virtual window manager for the X Window System. Originally a twm derivative, FVWM is now a window manager for Unix-like systems.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Debian_FVWM_Green.png/960px-Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/0/0a/SUSE_5.1_FVWM_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/0/0a/SUSE_5.1_FVWM_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:SUSE_5.1_FVWM_screenshot.png",
+     "w": 801,
+     "h": 600,
+     "caption": "Screenshot of SUSE Linux 5.1 with FVWM",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Debian_FVWM_Motif_MWM_Emulation.png/960px-Debian_FVWM_Motif_MWM_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/87/Debian_FVWM_Motif_MWM_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_Motif_MWM_Emulation.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "FVWM emulating Motif and MWM (Motif Window Manager), using the \"FVWM-min\" package. Running on Debian GNU/Linux",
+     "license": "CC0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Debian_FVWM_Green.png/960px-Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_Green.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Green screen style for FVWM, using the \"FVWM-min\" package. Running on Debian GNU/Linux",
+     "license": "CC0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Debian_FVWM_CDE_Emulation.png/960px-Debian_FVWM_CDE_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/58/Debian_FVWM_CDE_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_CDE_Emulation.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "FVWM emulating the look of the Common Desktop Environment (CDE), using the \"FVWM-min\" package. Running on…",
+     "license": "CC0"
+    }
+   ]
+  },
+  "dwm": {
+   "title": "Dwm",
+   "url": "https://en.wikipedia.org/wiki/Dwm",
+   "extract": "dwm is a minimalist dynamic window manager for the X Window System developed by Suckless that has influenced the development of several other X window managers, including xmonad and awesome. It is externally similar to wmii, but internally much simpler. dwm is written purely in C for performance and lacks any configuration interface besides editing the source code. One of the project's guidelines is that the source code is intended never to exceed 2000 SLOC, and options meant to be user-configurable are all contained in a single header file.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Dwm-shot.png/960px-Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Dwm-shot.png/960px-Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Dwm-shot.png",
+     "w": 1280,
+     "h": 801,
+     "caption": "Screenshot of the dwm window manager in use",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Dwm_dual_monitor.jpeg/960px-Dwm_dual_monitor.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Dwm_dual_monitor.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Dwm_dual_monitor.jpeg",
+     "w": 1000,
+     "h": 750,
+     "caption": "The Dynamic Window Manager (\"dwm\") X11 window manager displaying its tiled modes running on two screens…",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "cwm": {
+   "title": "Cwm (window manager)",
+   "url": "https://en.wikipedia.org/wiki/Cwm_(window_manager)",
+   "extract": "cwm (Calm Window Manager) is a stacking window manager for the X Window System. While it is primarily developed as a part of OpenBSD's base system, portable versions are available on other Unix-like operating systems.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Cwm_%28window_manager%29.png/960px-Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Cwm_%28window_manager%29.png/960px-Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Cwm_(window_manager).png",
+     "w": 1280,
+     "h": 720,
+     "caption": "OpenBSD desktop managed with cwm running xstatbar, xconsole, xombrero/xxxterm and uxterm (with tmux, scrot…",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "ratpoison": {
+   "title": "Ratpoison",
+   "url": "https://en.wikipedia.org/wiki/Ratpoison",
+   "extract": "ratpoison is a tiling window manager for the X Window System primarily developed by Shawn Betts. The user interface and much of their functionality are inspired by the GNU Screen terminal multiplexer. While ratpoison is written in C, Betts' StumpWM re-implements a similar window manager in Common Lisp.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Ratpoison_new.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Ratpoison_new.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Ratpoison-screenshot.png/960px-Ratpoison-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Ratpoison-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ratpoison-screenshot.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "en:Ratpoison",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "twm": {
+   "title": "Twm",
+   "url": "https://en.wikipedia.org/wiki/Twm",
+   "extract": "twm is a window manager for the X Window System. Started in 1987 by Tom LaStrange, it has been the standard window manager for the X Window System since version X11R4. The name originally stood for Tom's Window Manager, but the software was renamed Tab Window Manager by the X Consortium when they adopted it in 1989. twm is a stacking window manager that provides title bars, shaped windows, and icon management. It is highly configurable and extensible. twm was a breakthrough achievement in the early years, but has been superseded by other window managers which, unlike twm, use a widget toolkit rather than a combination of the X Toolkit Intrinsics and XRandR.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Debian_TWM_Maroon.png/960px-Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Debian_TWM_Maroon.png/960px-Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_TWM_Maroon.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "TWM (Tom's Window Manager) running with its classic maroon theme as seen in early X11 versions. Running on…",
+     "license": "CC0"
+    }
+   ]
+  },
+  "lumina": {
+   "title": "Lumina (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/Lumina_(desktop_environment)",
+   "extract": "Lumina Desktop Environment, or simply Lumina, is a plugin-based desktop environment for Unix and Unix-like operating systems. It was designed specifically as a system interface for the now-discontinued TrueOS as well as systems derived from Berkeley Software Distribution (BSD) in general, but it has been ported to various Linux distributions.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png/960px-DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png/960px-DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png",
+     "w": 1280,
+     "h": 720,
+     "caption": "Screenshot of DragonFly BSD 6.2.1 with Lumina (desktop environment)",
+     "license": "BSD"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Lumina1.0.0-TrueOS.png/960px-Lumina1.0.0-TrueOS.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/45/Lumina1.0.0-TrueOS.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Lumina1.0.0-TrueOS.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot which shows Lumina Desktop in TrueOS system",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "ukui": {
+   "title": "UKUI",
+   "url": "https://en.wikipedia.org/wiki/UKUI",
+   "extract": "UKUI (Ultimate Kylin User Interface) is a desktop environment for Linux distributions and other UNIX-like operating systems, originally developed for Ubuntu Kylin, and written using the Qt framework. UKUI was a fork of the MATE Desktop Environment. UKUI is a lightweight desktop environment, which consumes few resources and works with older computers. It has been developed with GTK and Qt technologies. Its visual appearance is similar to Windows 7, making it easier for new users of Linux.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/c/c1/UKUI.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c1/UKUI.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/f/f7/ReactOS_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/f7/ReactOS_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:ReactOS_screenshot.png",
+     "w": 800,
+     "h": 600,
+     "caption": "Screenshot of ReactOS 0.3.4",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Ubuntu_kylin.png/960px-Ubuntu_kylin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/38/Ubuntu_kylin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_kylin.png",
+     "w": 2560,
+     "h": 1600,
+     "caption": "Image of Ubuntu Kylin 21.10",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/White-theme-Linux-Kylin.jpg/960px-White-theme-Linux-Kylin.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/18/White-theme-Linux-Kylin.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:White-theme-Linux-Kylin.jpg",
+     "w": 1366,
+     "h": 672,
+     "caption": "Desktop environment UKUI in Linux Kylin",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "bspwm": {
+   "title": "bspwm",
+   "url": "https://github.com/baskerville/bspwm",
+   "extract": null,
+   "lead": null,
+   "lead_full": null,
+   "images": []
+  },
+  "herbstluftwm": {
+   "title": "herbstluftwm",
+   "url": "https://herbstluftwm.org",
+   "extract": null,
+   "lead": null,
+   "lead_full": null,
+   "images": []
+  },
+  "spectrwm": {
+   "title": "spectrwm",
+   "url": "https://github.com/conformal/spectrwm",
+   "extract": null,
+   "lead": null,
+   "lead_full": null,
+   "images": []
+  }
+ }
+}
+__FORGE_FILE_INFO_JSON__
   if command -v sha256sum >/dev/null 2>&1; then
     local bad=0 f want got
-    for f in catalog.py engine.py index.html app.css app.js term.js logos.js; do
+    for f in catalog.py engine.py index.html app.css app.js term.js logos.js brands.js info.json; do
       case "$f" in
         catalog.py) want="$FORGE_SHA_CATALOG_PY" ;;
         engine.py) want="$FORGE_SHA_ENGINE_PY" ;;
@@ -6490,6 +9178,8 @@ __FORGE_FILE_LOGOS_JS__
         app.js) want="$FORGE_SHA_APP_JS" ;;
         term.js) want="$FORGE_SHA_TERM_JS" ;;
         logos.js) want="$FORGE_SHA_LOGOS_JS" ;;
+        brands.js) want="$FORGE_SHA_BRANDS_JS" ;;
+        info.json) want="$FORGE_SHA_INFO_JSON" ;;
       esac
       got=$(sha256sum "$FORGE_APP/$f" | cut -d' ' -f1)
       if [ "$got" != "$want" ]; then
@@ -6639,6 +9329,7 @@ def q(s): return str(s).replace("'", "")
 print("E_NAME='%s'" % q(d["name"]))
 print("E_DESC='%s'" % q(d["desc"][:150]))
 print("E_KIND='%s'" % q(d["kind"]))
+print("E_PROFILE='%s'" % q(d["profile"]))
 print("E_DL=%d" % d["dl_mb"])
 print("E_DISK=%d" % d["disk_mb"])
 print("E_RAMMIN=%d" % d["ram_min"])
@@ -6653,7 +9344,8 @@ PYEOF
   info "$([ "$E_KIND" = pull ] && echo "prebuilt image" || echo "built on this machine") · about $((E_DL)) MB to download · roughly $((E_DISK)) MB on disk"
   printf '\n'
 
-  if confirm "Use the suggested resources (${P_MEM} MB RAM, ${P_CPU} cores, ${P_SHM} MB shm)?" y; then
+  local disk_gb=$((P_DISK / 1024))
+  if confirm "Use the suggested resources (${P_MEM} MB RAM, ${P_CPU} cores, ${disk_gb} GB storage)?" y; then
     :
   else
     P_MEM=$(ask "memory in MB (floor ${E_RAMMIN})" "$P_MEM")
@@ -6665,10 +9357,35 @@ PYEOF
 
   local -a args=(--memory "$P_MEM" --cpus "$P_CPU" --shm "$P_SHM" --disk "$P_DISK")
   [ -n "$name" ] && args+=(--name "$name")
+
+  # Sign-in. Without this anyone who reaches the URL is already inside.
+  local want_auth=n
+  [ "$E_PROFILE" = "kasm" ] && want_auth=y
+  if confirm "Set a username and password for this desktop?" "$want_auth"; then
+    local u pw
+    if [ "$E_PROFILE" = "kasm" ]; then
+      u="kasm_user"
+      info "this image always signs you in as kasm_user"
+    else
+      u=$(ask "username" "forge")
+    fi
+    pw=$(ask "password (blank generates one)" "")
+    if [ -z "$pw" ]; then
+      pw=$("$PY" -c "import secrets,string
+a = string.ascii_letters + string.digits
+print(''.join(secrets.choice(a) for _ in range(16)))")
+      info "generated password: $pw"
+      warn "write it down, it is set inside the container and cannot be read back"
+    fi
+    args+=(--user "$u" --password "$pw")
+  fi
   if [ "$NO_TUNNEL" = 1 ]; then
     args+=(--no-tunnel)
   elif ! confirm "Open a public serveo tunnel?" y; then
     args+=(--no-tunnel)
+  fi
+  if confirm "Start it automatically whenever Docker starts (after a reboot)?" n; then
+    args+=(--autostart)
   fi
   stream_launch "$id" "${args[@]}"
 }
@@ -6877,6 +9594,8 @@ print()
           $'shell\tOpen a shell in it\tdocker exec' \
           $'tunnel\tOpen or replace the tunnel\tfresh serveo URL' \
           $'untunnel\tDrop the tunnel\tkeep it local only' \
+          $'limits\tChange limits\tmemory, cpu, shared memory, storage' \
+          $'autostart\tToggle auto-start\tcome back after a reboot, or not' \
           $'restart\tRestart it\t' \
           $'stop\tStop it\t' \
           $'start\tStart it\t' \
@@ -6891,6 +9610,35 @@ print()
             docker exec -it "$pick" /bin/sh -c 'if command -v bash >/dev/null 2>&1; then exec bash -l; else exec /bin/sh -l; fi'
             ;;
           logs) engine logs "$pick" --tail 120 | sed 's/^/    /' ;;
+          limits)
+            local cur; cur=$(engine instances 2>/dev/null | "$PY" -c "
+import json,sys
+for i in json.load(sys.stdin)['instances']:
+    if i['name']=='$pick':
+        l=i.get('limits') or {}
+        print(l.get('memory_mb') or 1024, l.get('cpus') or 1, l.get('shm_mb') or 256, i.get('disk_cap_mb') or 10240)")
+            local cm cc cs cd nm nc ns nd
+            read -r cm cc cs cd <<<"$cur"
+            nm=$(ask "memory in MB" "$cm"); nc=$(ask "cpu cores" "$cc")
+            ns=$(ask "shared memory in MB (browsers want 512+)" "$cs"); nd=$(ask "storage in MB" "$cd")
+            if [ "$ns" != "$cs" ] || [ "$nd" != "$cd" ]; then
+              info "shared memory and storage need the desktop recreated; files in /config are kept"
+            fi
+            spin_start "applying limits to $pick"
+            local r; r=$(engine retune "$pick" --memory "$nm" --cpus "$nc" --shm "$ns" --disk "$nd" 2>&1)
+            spin_stop
+            if printf '%s' "$r" | grep -q '"error"'; then bad "$r"
+            elif printf '%s' "$r" | grep -q '"recreated": true'; then ok "recreated $pick with the new limits"
+            else ok "limits applied live"; fi
+            ;;
+          autostart)
+            local now; now=$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$pick" 2>/dev/null)
+            if [ "$now" = "no" ] || [ -z "$now" ]; then
+              engine retune "$pick" --autostart on >/dev/null && ok "$pick now starts with Docker"
+            else
+              engine retune "$pick" --autostart off >/dev/null && ok "$pick only starts when you start it"
+            fi
+            ;;
           remove)
             if confirm "Remove $pick?" n; then
               local purge=""
@@ -7109,7 +9857,32 @@ cmd_uninstall() {
 #  main menu
 # =========================================================================
 
+# Older versions created every desktop with --restart unless-stopped, so they
+# all came back whenever Docker or the machine restarted. Offer to undo that once.
+review_autostart() {
+  local marker="$FORGE_STATE/autostart-reviewed"
+  [ -f "$marker" ] && return 0
+  local names
+  names=$(docker ps -a --filter "label=io.selkiesforge.entry" \
+    --format '{{.Names}}' 2>/dev/null | while read -r n; do
+      [ -n "$n" ] || continue
+      p=$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$n" 2>/dev/null)
+      [ "$p" != "no" ] && [ -n "$p" ] && printf '%s ' "$n"
+    done)
+  if [ -z "$names" ]; then touch "$marker"; return 0; fi
+  title "Desktops that start on their own" "these come back every time Docker or this machine restarts"
+  for n in $names; do info "$n"; done
+  if confirm "Stop them starting automatically? (you can turn it back on per desktop)" y; then
+    for n in $names; do docker update --restart no "$n" >/dev/null 2>&1 && ok "$n: auto-start off"; done
+  else
+    info "left as they are; change any of them later in the manager"
+  fi
+  # Only remember the question once it has actually been answered.
+  touch "$marker"
+}
+
 main_menu() {
+  review_autostart
   while :; do
     local running total
     running=$(docker ps -q --filter "label=io.selkiesforge.entry" 2>/dev/null | wc -l | tr -d ' ')
