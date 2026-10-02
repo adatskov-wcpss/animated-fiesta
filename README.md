@@ -90,7 +90,15 @@ Selkies Forge keeps itself up to date from this repository:
 - **While the web UI runs**, it checks GitHub every 5 minutes. When there is a new build, it installs it on its own and shows a banner with a **Restart now** button. Your desktops keep running through the restart.
 - **When you run `selkies-cli`**, it checks too, at most once every 5 minutes. If there is a new build, it installs it and carries on with the new version.
 
-Each check sends GitHub the identifier of the last copy it downloaded, so an unchanged file costs a tiny "not modified" reply instead of a 560 KB download. Set `FORGE_AUTO_UPDATE=0` to turn automatic updates off; `selkies-cli update` still works by hand.
+Updating works like `git pull`. Selkies Forge keeps its own clone of this repository in `~/.selkies-forge/repo`, fetches from GitHub, and **fast-forwards only**:
+
+- **Always current.** It talks to GitHub's git servers directly, so a new push is seen on the next check. There's no cache lag.
+- **Cheap.** When nothing has changed, a check moves only a few KB.
+- **Never backwards.** If the branch is rewound or force-pushed to an older commit, it refuses and says so. A later release with a higher version number is still accepted.
+
+If git isn't available (the script installs it with the other extras), it falls back to downloading `docker.sh` and only accepts a higher version number.
+
+Set `FORGE_AUTO_UPDATE=0` to turn automatic updates off. `selkies-cli update` still works by hand.
 
 `selkies-cli` goes in `~/.local/bin` (or `~/bin`) when that folder is on your `PATH`, otherwise in `/usr/local/bin` if you can write to it. If neither works it goes in `~/.local/bin`, and a short marked block is added to `~/.bashrc` (plus `~/.zshrc` and `~/.profile` if you have them) to put that folder on your `PATH`. Open a new terminal once for that to take effect. Set `FORGE_BIN_DIR` to choose the folder yourself; your shell profiles are then left alone.
 
@@ -219,7 +227,8 @@ Everything lives in `~/.selkies-forge`. Set `FORGE_HOME` to use a different fold
 ├── app/      the engine, the web UI and the selkies-cli front end
 ├── state/    instances, reserved ports, web UI pid
 ├── logs/     launch, tunnel and web UI logs
-└── builds/   Dockerfiles for desktops built on this machine
+├── builds/   Dockerfiles for desktops built on this machine
+└── repo/     a git clone of this repository, used for updates
 
 ~/.local/bin/selkies-cli   a small wrapper that runs app/selkies-cli
 ```
@@ -232,7 +241,7 @@ Everything lives in `~/.selkies-forge`. Set `FORGE_HOME` to use a different fold
   - container registries (`lscr.io`, `ghcr.io`, Docker Hub),
   - `get.docker.com`, only if it installs Docker,
   - `serveo.net`, only when you open a public link,
-  - `raw.githubusercontent.com`, every 5 minutes to check for updates (turn off with `FORGE_AUTO_UPDATE=0`).
+  - `github.com`, every 5 minutes, to `git fetch` updates (turn off with `FORGE_AUTO_UPDATE=0`).
 
   Your browser loads screenshots from `upload.wikimedia.org`. There is no telemetry.
 

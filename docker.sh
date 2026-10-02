@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.2.0"
+FORGE_VERSION="1.3.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -499,10 +499,11 @@ install_extras() {
   local missing=()
   command -v ssh >/dev/null 2>&1 || missing+=(ssh)
   command -v curl >/dev/null 2>&1 || missing+=(curl)
+  command -v git >/dev/null 2>&1 || missing+=(git)
   [ ${#missing[@]} -eq 0 ] && return 0
   detect_pkg || return 0
   need_root || return 0
-  title "Extras" "${missing[*]} needed for tunnels and downloads"
+  title "Extras" "${missing[*]} needed for tunnels, downloads and updates"
   confirm "Install ${missing[*]}?" y || return 0
   local pkgs=()
   for m in "${missing[@]}"; do
@@ -511,6 +512,7 @@ install_extras() {
       ssh:apk) pkgs+=(openssh-client) ;;
       ssh:*) pkgs+=(openssh-clients) ;;
       curl:*) pkgs+=(curl) ;;
+      git:*) pkgs+=(git) ;;
     esac
   done
   spin_start "installing ${pkgs[*]}"
@@ -524,7 +526,7 @@ install_extras() {
 # =========================================================================
 
 FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
-FORGE_SHA_ENGINE_PY="77b9df8adc4e6ee904901e39ec08dbcc7c9ab41df8d641d6406d24db429e81d5"
+FORGE_SHA_ENGINE_PY="f17f99d730e41e0ef0fd698b6c948e76b801ee4ad8f96e16509edc0b3a4f5c52"
 FORGE_SHA_INDEX_HTML="de550e73a4370826d1006468e935781241018bb96a3cac90b2defed1eea6c033"
 FORGE_SHA_APP_CSS="dace2ed91118a7a7a56e39a0749421b4736dd21638403b6490f7f87bf3858c0d"
 FORGE_SHA_APP_JS="9cd44608ef31d2364760eec1f650665c030dccb543e779eaa8250e3940bbf276"
@@ -532,8 +534,8 @@ FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99
 FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_INFO_JSON="55b317e435e760e51ea56e39b6dfdd67c8f0266940b9769ff748d94cfa0aac57"
-FORGE_SHA_SELKIES_CLI="09be93b447942793f35685a9471ebf641672ad5ce0dda69725ea6d2d25a0682e"
-FORGE_PAYLOAD_SHA="92c600883767e608186fe29709654c40e43d712b2e1ed9e793d866c7a8898928"
+FORGE_SHA_SELKIES_CLI="e14ca113f15503bc7b475bace29865ed7843234eac33b490bdfa90f2f8b5a196"
+FORGE_PAYLOAD_SHA="97d44108dd6c3589807d47cd5d832e35dfe6307f3b2d656dd582825864c500c9"
 FORGE_PAYLOAD_FILES="catalog.py engine.py index.html app.css app.js term.js logos.js brands.js info.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -1259,7 +1261,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import catalog  # noqa: E402
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 APPDIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.environ.get("FORGE_HOME") or os.path.join(os.path.expanduser("~"), ".selkies-forge")
 STATE = os.path.join(ROOT, "state")
@@ -4007,55 +4009,169 @@ def installed_payload():
         return None
 
 
+def installed_version():
+    """FORGE_VERSION of the build that is actually installed (not this process)."""
+    try:
+        with open(os.path.join(APPDIR, "selkies-cli")) as fh:
+            for line in fh:
+                if line.startswith("FORGE_VERSION="):
+                    return line.split("=", 1)[1].strip().strip('"')
+    except Exception:
+        pass
+    return VERSION
+
+
+def _vtuple(v):
+    nums = re.findall(r"\d+", v or "")
+    return tuple(int(x) for x in nums[:4]) or (0,)
+
+
 def auto_update_enabled():
     return os.environ.get("FORGE_AUTO_UPDATE", "1") != "0"
 
 
-def check_update(install=True, max_age=0, timeout=20):
-    """Compare GitHub's docker.sh with what is installed; install if newer.
+REPO_URL_DEFAULT = "https://github.com/adatskov-wcpss/animated-fiesta.git"
+REPO_BRANCH = os.environ.get("FORGE_BRANCH") or "main"
+REPO_DIR = os.path.join(ROOT, "repo")
 
-    Uses the ETag so an unchanged file costs a tiny 304, not a 560 KB download.
+
+def check_update(install=True, max_age=0, timeout=20):
+    """Is there a newer Selkies Forge?  Install it if asked.
+
+    The normal path is a git clone of the repo that only ever fast-forwards
+    (a "git pull --ff-only"): it talks to GitHub's git servers directly, so
+    there is no cache lag, and it can never move backwards.  Without git it
+    falls back to downloading docker.sh, newer versions only.
     """
-    with FileLock("update", timeout=120):
+    with FileLock("update", timeout=300):
         st = jload(UPDATE_JSON, {})
         if max_age and time.time() - float(st.get("checked_at") or 0) < max_age:
             st["just_installed"] = False
             return st
-        url = os.environ.get("FORGE_URL") or UPDATE_URL_DEFAULT
-        headers = {"User-Agent": "selkies-forge/" + VERSION}
-        dl = os.path.join(STATE, "update-docker.sh")
-        if st.get("etag") and st.get("url") == url and os.path.exists(dl):
-            headers["If-None-Match"] = st["etag"]
-        st.update(checked_at=time.time(), url=url, error=None, just_installed=False)
-        body = None
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=timeout) as r:
-                body = r.read()
-                st["etag"] = r.headers.get("ETag")
-        except urllib.error.HTTPError as ex:
-            if ex.code != 304:
-                st["error"] = "GitHub answered HTTP %s" % ex.code
-        except Exception as ex:
-            st["error"] = "could not reach GitHub (%s)" % type(ex).__name__
-        if body:
-            txt = body.decode("utf-8", "replace")
-            m = re.search(r'^FORGE_PAYLOAD_SHA="([0-9a-f]{64})"', txt, re.M)
-            v = re.search(r'^FORGE_VERSION="([^"]+)"', txt, re.M)
-            if m:
-                with open(dl, "wb") as fh:
-                    fh.write(body)
-                st["remote_sha"] = m.group(1)
-                st["remote_version"] = v.group(1) if v else None
-            else:
-                st["error"] = "the file on GitHub does not look like Selkies Forge"
-        local = installed_payload()
-        st["installed_sha"] = local
-        st["available"] = bool(st.get("remote_sha") and local and st["remote_sha"] != local)
-        if st["available"] and install and auto_update_enabled():
-            _install_update(st, dl)
+        st.update(checked_at=time.time(), error=None, just_installed=False)
+        if have("git") and not os.environ.get("FORGE_URL"):
+            _check_git(st, install)
+        else:
+            _check_download(st, install, timeout)
+        st["installed_version"] = installed_version()
         jsave(UPDATE_JSON, {k: v for k, v in st.items() if k != "just_installed"})
         return st
+
+
+def _git(*args, **kw):
+    return run(["git", "-C", REPO_DIR] + list(args), timeout=kw.get("timeout", 120))
+
+
+def _payload_and_version(txt):
+    m = re.search(r'^FORGE_PAYLOAD_SHA="([0-9a-f]{64})"', txt or "", re.M)
+    v = re.search(r'^FORGE_VERSION="([^"]+)"', txt or "", re.M)
+    return (m.group(1) if m else None), (v.group(1) if v else None)
+
+
+def _check_git(st, install):
+    url = os.environ.get("FORGE_REPO") or REPO_URL_DEFAULT
+    st["method"] = "git"
+    st["url"] = url
+    # Our own private clone; re-clone if it is missing or points elsewhere.
+    ok = os.path.isdir(os.path.join(REPO_DIR, ".git"))
+    if ok:
+        rc, out, _ = _git("remote", "get-url", "origin", timeout=20)
+        ok = rc == 0 and out.strip() == url
+        if not ok:
+            shutil.rmtree(REPO_DIR, ignore_errors=True)
+    if not ok:
+        rc, _, err = run(["git", "clone", "--quiet", "--single-branch", "--branch", REPO_BRANCH,
+                          url, REPO_DIR], timeout=600)
+        if rc != 0:
+            st["error"] = "git clone failed: %s" % (err.strip().splitlines() or ["?"])[-1][:160]
+            return
+        st.pop("installed_commit", None)
+
+    rc, _, err = _git("fetch", "--quiet", "origin", REPO_BRANCH, timeout=180)
+    if rc != 0:
+        st["error"] = "git fetch failed: %s" % (err.strip().splitlines() or ["?"])[-1][:160]
+        return
+    rc, out, _ = _git("rev-parse", "FETCH_HEAD", timeout=20)
+    remote = out.strip()
+    rc, txt, _ = _git("show", "%s:docker.sh" % remote, timeout=60)
+    remote_sha, remote_version = _payload_and_version(txt if rc == 0 else "")
+    if not remote_sha:
+        st["error"] = "docker.sh in %s does not look like Selkies Forge" % url
+        return
+    st.update(remote_commit=remote, remote_sha=remote_sha, remote_version=remote_version)
+
+    local = installed_payload()
+    mine = st.get("installed_commit")
+    if remote_sha == local:
+        st["available"] = False
+        st["installed_commit"] = remote          # in step with GitHub
+    elif mine and mine != remote:
+        # A fast-forward only: the installed commit must be in GitHub's history.
+        rc, _, _ = _git("merge-base", "--is-ancestor", mine, remote, timeout=30)
+        # If history was rewritten, still take a release whose version is
+        # genuinely higher; otherwise one force-push would freeze updates.
+        higher = _vtuple(remote_version) > _vtuple(installed_version())
+        st["available"] = rc == 0 or higher
+        if not st["available"]:
+            st["error"] = ("GitHub's history no longer contains the installed commit; "
+                           "not following it backwards")
+    else:
+        # First check after installing from a downloaded script: we don't know
+        # which commit that was, so only a higher version counts as newer.
+        st["available"] = _vtuple(remote_version) > _vtuple(installed_version())
+
+    if not (st["available"] and install and auto_update_enabled()):
+        return
+    # The "git pull": fast-forward our clone, then install from it.
+    rc, _, err = _git("merge", "--ff-only", "--quiet", remote, timeout=120)
+    if rc != 0:
+        _git("checkout", "--quiet", "-B", REPO_BRANCH, remote, timeout=120)
+    _install_update(st, os.path.join(REPO_DIR, "docker.sh"))
+    if st.get("just_installed"):
+        st["installed_commit"] = remote
+
+
+def _check_download(st, install, timeout):
+    """Fallback without git: fetch docker.sh itself (ETag keeps repeats cheap)."""
+    url = os.environ.get("FORGE_URL") or UPDATE_URL_DEFAULT
+    st["method"] = "download"
+    headers = {"User-Agent": "selkies-forge/" + VERSION}
+    dl = os.path.join(STATE, "update-docker.sh")
+    if st.get("etag") and st.get("url") == url and os.path.exists(dl):
+        headers["If-None-Match"] = st["etag"]
+    st["url"] = url
+    body = None
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            body = r.read()
+            st["etag"] = r.headers.get("ETag")
+    except urllib.error.HTTPError as ex:
+        if ex.code != 304:
+            st["error"] = "GitHub answered HTTP %s" % ex.code
+    except Exception as ex:
+        st["error"] = "could not reach GitHub (%s)" % type(ex).__name__
+    if body:
+        txt = body.decode("utf-8", "replace")
+        m = re.search(r'^FORGE_PAYLOAD_SHA="([0-9a-f]{64})"', txt, re.M)
+        v = re.search(r'^FORGE_VERSION="([^"]+)"', txt, re.M)
+        if m:
+            with open(dl, "wb") as fh:
+                fh.write(body)
+            st["remote_sha"] = m.group(1)
+            st["remote_version"] = v.group(1) if v else None
+        else:
+            st["error"] = "the file on GitHub does not look like Selkies Forge"
+    local = installed_payload()
+    st["installed_sha"] = local
+    st["installed_version"] = installed_version()
+    # Only ever move forward. GitHub's raw cache can serve an older copy for
+    # a few minutes after a push, and "different" must not mean "install".
+    newer = _vtuple(st.get("remote_version")) > _vtuple(st["installed_version"])
+    st["available"] = bool(st.get("remote_sha") and local and
+                           st["remote_sha"] != local and newer)
+    if st["available"] and install and auto_update_enabled():
+        _install_update(st, dl)
 
 
 def _install_update(st, path):
@@ -4088,9 +4204,10 @@ def update_report():
     return {"running_version": VERSION, "auto": auto_update_enabled(),
             "checked_at": st.get("checked_at"), "available": bool(st.get("available")),
             "remote_version": st.get("remote_version"),
-            "installed_version": st.get("installed_version") or VERSION,
+            "installed_version": installed_version(),
             "installed_at": st.get("installed_at"), "error": st.get("error"),
             "restart_needed": bool(running and installed and running != installed),
+            "method": st.get("method"), "commit": (st.get("installed_commit") or "")[:7],
             "every_s": UPDATE_EVERY}
 
 
@@ -9554,7 +9671,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.2.0"
+FORGE_VERSION="1.3.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -10017,10 +10134,11 @@ install_extras() {
   local missing=()
   command -v ssh >/dev/null 2>&1 || missing+=(ssh)
   command -v curl >/dev/null 2>&1 || missing+=(curl)
+  command -v git >/dev/null 2>&1 || missing+=(git)
   [ ${#missing[@]} -eq 0 ] && return 0
   detect_pkg || return 0
   need_root || return 0
-  title "Extras" "${missing[*]} needed for tunnels and downloads"
+  title "Extras" "${missing[*]} needed for tunnels, downloads and updates"
   confirm "Install ${missing[*]}?" y || return 0
   local pkgs=()
   for m in "${missing[@]}"; do
@@ -10029,6 +10147,7 @@ install_extras() {
       ssh:apk) pkgs+=(openssh-client) ;;
       ssh:*) pkgs+=(openssh-clients) ;;
       curl:*) pkgs+=(curl) ;;
+      git:*) pkgs+=(git) ;;
     esac
   done
   spin_start "installing ${pkgs[*]}"
@@ -10979,28 +11098,30 @@ cmd_ui_log() {
 }
 
 cmd_update() {
-  title "Update" "fetch the latest docker.sh and install it"
-  local tmp="$FORGE_STATE/docker.sh.new"
-  spin_start "downloading the latest version"
-  local okdl=0
-  if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$FORGE_URL" -o "$tmp" 2>/dev/null && okdl=1
-  else
-    "$PY" -c "import urllib.request,sys; open(sys.argv[2],'wb').write(urllib.request.urlopen(sys.argv[1],timeout=60).read())" \
-      "$FORGE_URL" "$tmp" 2>/dev/null && okdl=1
-  fi
-  spin_stop
-  [ "$okdl" = 1 ] && [ -s "$tmp" ] || die "could not download $FORGE_URL"
-  bash -n "$tmp" 2>/dev/null || die "the download is not a valid script; nothing was changed"
-  local newv; newv=$(grep -m1 '^FORGE_VERSION=' "$tmp" | cut -d'"' -f2)
-  info "you have $FORGE_VERSION, the latest is ${newv:-unknown}"
-
+  title "Update" "git pull from GitHub, fast-forward only"
   local js; js=$(forge_status_json)
   eval "$(status_vars "$js")"
-  FORGE_HOME="$FORGE_HOME" bash "$tmp" --setup --yes || die "the update did not install cleanly"
-  rm -f "$tmp"
-  ok "updated to ${newv:-the latest version}"
-  if [ "$UI_STATE" = "up" ] && confirm "Restart the web UI so it runs the new version?" y; then
+  spin_start "checking GitHub"
+  local r
+  r=$(engine check-update --install 2>/dev/null)
+  spin_stop
+  printf '%s' "$r" | FORGE_COLOR=$COLOR "$PY" -c '
+import json, os, sys
+d = json.loads(sys.stdin.read() or "{}")
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+via = "git pull" if d.get("method") == "git" else "download"
+commit = (d.get("installed_commit") or d.get("remote_commit") or "")[:7]
+tag = c("2", "(" + via + (", " + commit if commit else "") + ")")
+if d.get("just_installed"):
+    print("  %s updated to %s %s" % (c("38;5;79", "\u2714"), d.get("installed_version"), tag))
+elif d.get("error"):
+    print("  %s %s" % (c("38;5;221", "!"), d["error"]))
+else:
+    print("  %s already up to date: %s %s" % (c("38;5;79", "\u2714"), d.get("installed_version"), tag))
+'
+  if printf '%s' "$r" | grep -q '"just_installed": true' && [ "$UI_STATE" = "up" ] && \
+     confirm "Restart the web UI so it runs the new version?" y; then
     exec bash "$FORGE_APP/selkies-cli" restart
   fi
 }
@@ -12188,28 +12309,30 @@ cmd_ui_log() {
 }
 
 cmd_update() {
-  title "Update" "fetch the latest docker.sh and install it"
-  local tmp="$FORGE_STATE/docker.sh.new"
-  spin_start "downloading the latest version"
-  local okdl=0
-  if command -v curl >/dev/null 2>&1; then
-    curl -fsSL "$FORGE_URL" -o "$tmp" 2>/dev/null && okdl=1
-  else
-    "$PY" -c "import urllib.request,sys; open(sys.argv[2],'wb').write(urllib.request.urlopen(sys.argv[1],timeout=60).read())" \
-      "$FORGE_URL" "$tmp" 2>/dev/null && okdl=1
-  fi
-  spin_stop
-  [ "$okdl" = 1 ] && [ -s "$tmp" ] || die "could not download $FORGE_URL"
-  bash -n "$tmp" 2>/dev/null || die "the download is not a valid script; nothing was changed"
-  local newv; newv=$(grep -m1 '^FORGE_VERSION=' "$tmp" | cut -d'"' -f2)
-  info "you have $FORGE_VERSION, the latest is ${newv:-unknown}"
-
+  title "Update" "git pull from GitHub, fast-forward only"
   local js; js=$(forge_status_json)
   eval "$(status_vars "$js")"
-  FORGE_HOME="$FORGE_HOME" bash "$tmp" --setup --yes || die "the update did not install cleanly"
-  rm -f "$tmp"
-  ok "updated to ${newv:-the latest version}"
-  if [ "$UI_STATE" = "up" ] && confirm "Restart the web UI so it runs the new version?" y; then
+  spin_start "checking GitHub"
+  local r
+  r=$(engine check-update --install 2>/dev/null)
+  spin_stop
+  printf '%s' "$r" | FORGE_COLOR=$COLOR "$PY" -c '
+import json, os, sys
+d = json.loads(sys.stdin.read() or "{}")
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+via = "git pull" if d.get("method") == "git" else "download"
+commit = (d.get("installed_commit") or d.get("remote_commit") or "")[:7]
+tag = c("2", "(" + via + (", " + commit if commit else "") + ")")
+if d.get("just_installed"):
+    print("  %s updated to %s %s" % (c("38;5;79", "\u2714"), d.get("installed_version"), tag))
+elif d.get("error"):
+    print("  %s %s" % (c("38;5;221", "!"), d["error"]))
+else:
+    print("  %s already up to date: %s %s" % (c("38;5;79", "\u2714"), d.get("installed_version"), tag))
+'
+  if printf '%s' "$r" | grep -q '"just_installed": true' && [ "$UI_STATE" = "up" ] && \
+     confirm "Restart the web UI so it runs the new version?" y; then
     exec bash "$FORGE_APP/selkies-cli" restart
   fi
 }
