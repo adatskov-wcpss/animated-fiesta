@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.3.0"
+FORGE_VERSION="1.4.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -525,18 +525,20 @@ install_extras() {
 #  embedded payload: the engine, the web UI and the selkies-cli front end
 # =========================================================================
 
-FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
-FORGE_SHA_ENGINE_PY="f17f99d730e41e0ef0fd698b6c948e76b801ee4ad8f96e16509edc0b3a4f5c52"
-FORGE_SHA_INDEX_HTML="de550e73a4370826d1006468e935781241018bb96a3cac90b2defed1eea6c033"
-FORGE_SHA_APP_CSS="dace2ed91118a7a7a56e39a0749421b4736dd21638403b6490f7f87bf3858c0d"
-FORGE_SHA_APP_JS="9cd44608ef31d2364760eec1f650665c030dccb543e779eaa8250e3940bbf276"
+FORGE_SHA_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
+FORGE_SHA_ENGINE_PY="6ca57f359c1d87dec379529096bfc7a49493a53bd11e6b74cd81ef8c2b735dd9"
+FORGE_SHA_LAYER_PY="a2ca0e32bfa2d8ddeacac31ed373d60e0667752e52bd319162d0db013ebf60a3"
+FORGE_SHA_INDEX_HTML="72ccc68dcf6edcc7ddcaddd008622f237f96ab0e7a2b462d0b485d3a5935dd63"
+FORGE_SHA_APP_CSS="93430bfa328b8d1a5370f19a47d9829677d17a44f920a9ee72d6e3a0ab56978d"
+FORGE_SHA_APP_JS="055efee1ccc27c284bf35f7dbb94769371f447b1b711ca093d3286e040c2dd47"
 FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_INFO_JSON="55b317e435e760e51ea56e39b6dfdd67c8f0266940b9769ff748d94cfa0aac57"
-FORGE_SHA_SELKIES_CLI="e14ca113f15503bc7b475bace29865ed7843234eac33b490bdfa90f2f8b5a196"
-FORGE_PAYLOAD_SHA="97d44108dd6c3589807d47cd5d832e35dfe6307f3b2d656dd582825864c500c9"
-FORGE_PAYLOAD_FILES="catalog.py engine.py index.html app.css app.js term.js logos.js brands.js info.json selkies-cli"
+FORGE_SHA_INFO_JSON="406c52067917f5e23420d2c9b9d57809dc4ff3cd8a138b46c3853cbc54e53d15"
+FORGE_SHA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
+FORGE_SHA_SELKIES_CLI="2de50be84a65d94bbd0310b91a738fbbd3cd92be620c24314397fda655b33063"
+FORGE_PAYLOAD_SHA="6b72fa047a876342ca0ce05626414eecd98e684fe7fec8a5a57dd59f298b60df"
+FORGE_PAYLOAD_FILES="catalog.py engine.py layer.py index.html app.css app.js term.js logos.js brands.js info.json shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -583,7 +585,7 @@ DESKTOPS = {
                       "Thunar xfce4-settings xfconf xfce4-appfinder mousepad",
                  session="xfce4-session"),
         pacman=dict(pkgs="xfce4 xfce4-goodies", session="xfce4-session"),
-        apk=dict(pkgs="xfce4 xfce4-terminal thunar xfce4-screensaver mousepad",
+        apk=dict(pkgs="xfce4 xfce4-terminal thunar mousepad",
                  session="xfce4-session"),
     ),
     "mate": dict(
@@ -603,17 +605,21 @@ DESKTOPS = {
         label="KDE Plasma", glyph="kde", klass="heavy", idle=760, add_dl=620,
         beauty=94, speed=58, term="konsole",
         blurb="Maximalist and gorgeous. Every knob you could want, twice.",
-        apt=dict(pkgs="kde-plasma-desktop konsole dolphin kate",
+        # kwin-x11 is only a Recommends, and --no-install-recommends drops it:
+        # Plasma then starts with no window manager at all.
+        apt=dict(pkgs="kde-plasma-desktop kwin-x11 konsole dolphin kate",
                  session="startplasma-x11",
-                 pre=['[ -f "$HOME/.config/kwinrc" ] || kwriteconfig6 --file "$HOME/.config/kwinrc" '
+                 pre=['for kw in kwriteconfig6 kwriteconfig5; do command -v $kw >/dev/null && break; done; '
+                      '[ -f "$HOME/.config/kwinrc" ] || $kw --file "$HOME/.config/kwinrc" '
                       '--group Compositing --key Enabled false 2>/dev/null || true',
-                      '[ -f "$HOME/.config/kscreenlockerrc" ] || kwriteconfig6 --file '
+                      '[ -f "$HOME/.config/kscreenlockerrc" ] || $kw --file '
                       '"$HOME/.config/kscreenlockerrc" --group Daemon --key Autolock false '
                       '2>/dev/null || true',
                       'touch "$HOME/.local/share/user-places.xbel" 2>/dev/null || true']),
         dnf=dict(pkgs="plasma-desktop plasma-workspace-x11 konsole dolphin kwin-x11 "
                       "plasma-nm breeze-gtk", session="startplasma-x11"),
-        pacman=dict(pkgs="plasma-desktop plasma-workspace konsole dolphin kwin",
+        # Plasma 6.4 split the X11 window manager out into kwin-x11.
+        pacman=dict(pkgs="plasma-desktop plasma-workspace plasma-x11-session konsole dolphin kwin kwin-x11",
                     session="startplasma-x11"),
     ),
     "lxqt": dict(
@@ -646,7 +652,7 @@ DESKTOPS = {
     ),
     "cinnamon": dict(
         label="Cinnamon", glyph="cinnamon", klass="full", idle=620, add_dl=480,
-        beauty=90, speed=66, term="gnome-terminal",
+        beauty=90, speed=66, term="gnome-terminal", display="fixed",
         blurb="Polished, modern, familiar. Mint's calling card.",
         apt=dict(pkgs="cinnamon-core gnome-terminal nemo",
                  session="sh -c 'cinnamon-session-cinnamon2d || cinnamon-session'"),
@@ -657,7 +663,7 @@ DESKTOPS = {
     ),
     "budgie": dict(
         label="Budgie", glyph="budgie", klass="full", idle=560, add_dl=450,
-        beauty=91, speed=70, term="gnome-terminal",
+        beauty=91, speed=70, term="gnome-terminal", display="fixed",
         blurb="Opinionated and elegant. Raven sidebar, no clutter.",
         apt=dict(pkgs="budgie-desktop budgie-indicator-applet gnome-terminal nautilus",
                  session="budgie-desktop"),
@@ -668,14 +674,14 @@ DESKTOPS = {
     ),
     "gnome-flashback": dict(
         label="GNOME Flashback", glyph="gnome", klass="balanced", idle=470, add_dl=390,
-        beauty=80, speed=74, term="gnome-terminal",
+        beauty=80, speed=74, term="gnome-terminal", display="fixed",
         blurb="GNOME's classic layout on Metacity. Works where real GNOME can't.",
         apt=dict(pkgs="gnome-session-flashback gnome-terminal nautilus metacity",
                  session="gnome-session --session=gnome-flashback-metacity"),
     ),
     "enlightenment": dict(
         label="Enlightenment", glyph="enlightenment", klass="light", idle=300, add_dl=240,
-        beauty=82, speed=84, term="terminology",
+        beauty=82, speed=84, term="terminology", display="fixed",
         blurb="Animated, glossy, unlike anything else. A cult favourite.",
         apt=dict(pkgs="enlightenment terminology", session="enlightenment_start"),
         dnf=dict(pkgs="enlightenment terminology", session="enlightenment_start"),
@@ -685,7 +691,7 @@ DESKTOPS = {
         label="i3", glyph="i3", klass="feather", idle=120, add_dl=120,
         beauty=68, speed=98, term="xterm", bare=True,
         blurb="Tiling, keyboard-driven, ruthlessly efficient.",
-        apt=dict(pkgs="i3 i3status i3lock dmenu rofi xterm feh", session="i3"),
+        apt=dict(pkgs="i3 i3status i3lock suckless-tools rofi xterm feh", session="i3"),
         dnf=dict(pkgs="i3 i3status i3lock dmenu rofi xterm feh", session="i3"),
         pacman=dict(pkgs="i3-wm i3status i3lock dmenu rofi xterm feh", session="i3"),
         apk=dict(pkgs="i3wm i3status i3lock dmenu xterm feh", session="i3"),
@@ -694,11 +700,11 @@ DESKTOPS = {
         label="Openbox", glyph="openbox", klass="feather", idle=110, add_dl=100,
         beauty=60, speed=98, term="xterm", bare=True,
         blurb="A window manager and nothing else. Yours to decorate.",
-        apt=dict(pkgs="openbox obconf tint2 xterm feh nitrogen lxappearance",
+        apt=dict(pkgs="openbox obconf tint2 xterm feh lxappearance",
                  session="openbox-session"),
-        dnf=dict(pkgs="openbox obconf tint2 xterm feh", session="openbox-session"),
-        pacman=dict(pkgs="openbox obconf tint2 xterm feh nitrogen", session="openbox-session"),
-        apk=dict(pkgs="openbox obconf tint2 xterm feh", session="openbox-session"),
+        dnf=dict(pkgs="openbox xterm feh", session="openbox-session"),
+        pacman=dict(pkgs="openbox tint2 xterm feh", session="openbox-session"),
+        apk=dict(pkgs="openbox tint2 xterm feh", session="openbox-session"),
     ),
     "fluxbox": dict(
         label="Fluxbox", glyph="fluxbox", klass="feather", idle=100, add_dl=95,
@@ -751,7 +757,7 @@ DESKTOPS = {
         label="herbstluftwm", glyph="herbstluftwm", klass="feather", idle=95, add_dl=95,
         beauty=66, speed=98, term="xterm", bare=True,
         blurb="Manual tiling, driven entirely from the shell.",
-        apt=dict(pkgs="herbstluftwm xterm feh dmenu", session="herbstluftwm"),
+        apt=dict(pkgs="herbstluftwm xterm feh suckless-tools", session="herbstluftwm"),
         pacman=dict(pkgs="herbstluftwm xterm feh dmenu", session="herbstluftwm"),
         apk=dict(pkgs="herbstluftwm xterm feh dmenu", session="herbstluftwm"),
     ),
@@ -767,7 +773,7 @@ DESKTOPS = {
         label="xmonad", glyph="xmonad", klass="feather", idle=100, add_dl=130,
         beauty=64, speed=98, term="xterm", bare=True,
         blurb="Haskell tiling. Mathematically tidy windows.",
-        apt=dict(pkgs="xmonad libghc-xmonad-contrib-dev xterm feh dmenu", session="xmonad"),
+        apt=dict(pkgs="xmonad xterm feh suckless-tools", session="xmonad"),
         pacman=dict(pkgs="xmonad xmonad-contrib xterm feh dmenu", session="xmonad"),
     ),
     "pekwm": dict(
@@ -800,7 +806,7 @@ DESKTOPS = {
         label="spectrwm", glyph="spectrwm", klass="feather", idle=60, add_dl=85,
         beauty=58, speed=99, term="xterm", bare=True,
         blurb="dwm's ideas with a readable config file.",
-        apt=dict(pkgs="spectrwm xterm feh dmenu", session="spectrwm"),
+        apt=dict(pkgs="spectrwm xterm feh suckless-tools", session="spectrwm"),
         apk=dict(pkgs="spectrwm xterm dmenu", session="spectrwm"),
     ),
     "cwm": dict(
@@ -829,7 +835,7 @@ DESKTOPS = {
     ),
     "ukui": dict(
         label="UKUI", glyph="ukui", klass="balanced", idle=430, add_dl=360,
-        beauty=79, speed=73, term="mate-terminal",
+        beauty=79, speed=73, term="mate-terminal", display="fixed",
         blurb="Kylin's desktop. A very deliberate Windows-like flow.",
         apt=dict(pkgs="ukui-session-manager ukui-panel ukui-settings-daemon peony "
                       "ukui-control-center mate-terminal", session="ukui-session"),
@@ -847,8 +853,8 @@ BASES = {
         note="The most packages, the most answers online.",
         des=["xfce", "mate", "kde", "lxqt", "lxde", "cinnamon", "budgie",
              "gnome-flashback", "enlightenment", "i3", "openbox", "fluxbox",
-             "icewm", "jwm", "awesome", "bspwm", "herbstluftwm", "qtile",
-             "xmonad", "pekwm", "wmaker", "fvwm3", "lumina", "ukui"]),
+             "icewm", "jwm", "awesome", "bspwm", "herbstluftwm",
+             "xmonad", "pekwm", "wmaker", "fvwm3", "ukui"]),
     "bookworm": dict(
         image="lscr.io/linuxserver/baseimage-selkies:debianbookworm", pm="apt",
         family="debian", distro="Debian 12", code="Bookworm",
@@ -856,9 +862,9 @@ BASES = {
         note="Boring on purpose. Nothing moves until you move it.",
         des=["xfce", "mate", "kde", "lxqt", "lxde", "cinnamon", "budgie",
              "gnome-flashback", "enlightenment", "i3", "openbox", "fluxbox",
-             "icewm", "jwm", "awesome", "bspwm", "herbstluftwm", "qtile",
+             "icewm", "jwm", "awesome", "bspwm", "herbstluftwm",
              "xmonad", "pekwm", "wmaker", "fvwm3", "dwm", "spectrwm", "cwm",
-             "ratpoison", "twm", "lumina"]),
+             "ratpoison", "twm"]),
     "kali": dict(
         image="lscr.io/linuxserver/baseimage-selkies:kali", pm="apt",
         family="kali", distro="Kali Linux", code="Rolling",
@@ -880,7 +886,7 @@ BASES = {
         note="Bleeding edge, and you hold the knife.",
         des=["xfce", "mate", "kde", "lxqt", "lxde", "cinnamon", "budgie",
              "enlightenment", "i3", "openbox", "fluxbox", "icewm", "jwm",
-             "awesome", "bspwm", "herbstluftwm", "qtile", "xmonad", "wmaker"]),
+             "awesome", "bspwm", "herbstluftwm", "qtile", "wmaker"]),
     "alpine321": dict(
         image="lscr.io/linuxserver/baseimage-selkies:alpine321", pm="apk",
         family="alpine", distro="Alpine 3.21", code="musl",
@@ -1031,7 +1037,7 @@ PERSONALITIES = [
          desc="Xfce with the tools already installed: git, neovim, Python, Node, "
               "build-essential, ripgrep, tmux, htop.",
          extra="git neovim vim tmux htop ripgrep fd-find jq curl wget build-essential "
-               "python3-pip python3-venv nodejs npm yaru-theme-gtk papirus-icon-theme",
+               "python3-pip python3-venv nodejs yaru-theme-gtk papirus-icon-theme",
          theme=dict(gtk="Yaru-dark", icons="Papirus-Dark")),
 ]
 
@@ -1096,6 +1102,36 @@ def _entry(**kw):
     return kw
 
 
+# What each session expects to find in its environment. Without these,
+# gnome-session skips GNOME Flashback's own panel and shell (they are
+# OnlyShowIn=GNOME-Flashback), and Cinnamon's window manager refuses to start
+# at all ("Unsupported session type").
+SESSION_ENV = {
+    "xfce": ["XDG_CURRENT_DESKTOP=XFCE", "XDG_SESSION_DESKTOP=xfce"],
+    "mate": ["XDG_CURRENT_DESKTOP=MATE", "XDG_SESSION_DESKTOP=mate", "DESKTOP_SESSION=mate"],
+    "kde": ["XDG_CURRENT_DESKTOP=KDE", "XDG_SESSION_DESKTOP=KDE", "KDE_FULL_SESSION=true",
+            "DESKTOP_SESSION=plasma"],
+    "lxqt": ["XDG_SESSION_DESKTOP=lxqt", "DESKTOP_SESSION=lxqt"],
+    "lxde": ["XDG_CURRENT_DESKTOP=LXDE", "XDG_SESSION_DESKTOP=LXDE", "DESKTOP_SESSION=LXDE"],
+    # No XDG_SESSION_DESKTOP/DESKTOP_SESSION here on purpose: when nemo-desktop
+    # sees "cinnamon" there it leaves the wallpaper to Cinnamon, which cannot
+    # draw it with software rendering under Xvfb, and the desktop is black.
+    "cinnamon": ["XDG_CURRENT_DESKTOP=X-Cinnamon"],
+    "budgie": ["XDG_CURRENT_DESKTOP=Budgie:GNOME", "XDG_SESSION_DESKTOP=budgie-desktop",
+               "DESKTOP_SESSION=budgie-desktop"],
+    "gnome-flashback": ["XDG_CURRENT_DESKTOP=GNOME-Flashback:GNOME",
+                        "XDG_SESSION_DESKTOP=gnome-flashback-metacity",
+                        "DESKTOP_SESSION=gnome-flashback-metacity", "GNOME_SHELL_SESSION_MODE="],
+    "enlightenment": ["XDG_CURRENT_DESKTOP=Enlightenment", "E_CONF_PROFILE=standard"],
+    "ukui": ["XDG_CURRENT_DESKTOP=UKUI", "XDG_SESSION_DESKTOP=ukui", "DESKTOP_SESSION=ukui"],
+}
+# GTK desktops whose icons are SVGs need the loader that --no-install-recommends skips.
+EXTRA_PKGS = {
+    "apt": {"gnome-flashback": "librsvg2-common", "budgie": "librsvg2-common",
+            "cinnamon": "librsvg2-common", "mate": "librsvg2-common", "ukui": "librsvg2-common"},
+}
+
+
 def _recipe(base_key, de_key):
     """Return the install recipe for a desktop on a base, or None."""
     base = BASES[base_key]
@@ -1103,9 +1139,14 @@ def _recipe(base_key, de_key):
     spec = de.get(base["pm"])
     if not spec:
         return None
-    return dict(image=base["image"], pm=base["pm"], pkgs=spec["pkgs"],
+    pkgs = spec["pkgs"]
+    extra = EXTRA_PKGS.get(base["pm"], {}).get(de_key)
+    if extra:
+        pkgs = pkgs + " " + extra
+    env = ["XDG_SESSION_TYPE=x11"] + SESSION_ENV.get(de_key, []) + list(spec.get("env", []))
+    return dict(image=base["image"], pm=base["pm"], pkgs=pkgs,
                 session=spec["session"], pre=list(spec.get("pre", [])),
-                env=list(spec.get("env", [])), bare=bool(de.get("bare")),
+                env=env, bare=bool(de.get("bare")),
                 term=de.get("term", "xterm"))
 
 
@@ -1120,7 +1161,7 @@ def build_catalog():
             name="%s %s" % (distro, de["label"]),
             subtitle="Webtop - ready to run",
             family=family, distro=distro, de=de_key, de_label=de["label"],
-            glyph=de["glyph"], kind="pull",
+            glyph=de["glyph"], kind="pull", display=de.get("display", "fit"),
             image="lscr.io/linuxserver/webtop:" + tag,
             desc="LinuxServer's prebuilt %s desktop on %s. No build step, "
                  "pulls and runs." % (de["label"], distro),
@@ -1160,6 +1201,7 @@ def build_catalog():
                 subtitle="built on %s" % base["code"],
                 family=base["family"], distro=base["distro"], de=de_key,
                 de_label=de["label"], glyph=de["glyph"], kind="build",
+                display=de.get("display", "fit"),
                 image=None, base=base_key, recipe=rec,
                 desc="%s %s" % (de["blurb"], base["note"]),
                 idle=de["idle"], dl=base["dl"] + de["add_dl"],
@@ -1182,6 +1224,7 @@ def build_catalog():
             id=p["id"], name=p["name"], subtitle=p["subtitle"],
             family=p["family"], distro=base["distro"], de=p["de"],
             de_label=de["label"], glyph=de["glyph"], kind="build",
+            display=de.get("display", "fit"),
             image=None, base=p["base"], recipe=rec, desc=p["desc"],
             idle=de["idle"] + 60, dl=base["dl"] + de["add_dl"] + p["add_dl"],
             beauty=p["beauty"], speed=max(30, de["speed"] - 6),
@@ -1260,8 +1303,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import catalog  # noqa: E402
+import layer  # noqa: E402
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 APPDIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.environ.get("FORGE_HOME") or os.path.join(os.path.expanduser("~"), ".selkies-forge")
 STATE = os.path.join(ROOT, "state")
@@ -1939,12 +1983,22 @@ def entry_info(e):
     return out
 
 
+_SHOTS = {}
+
+
+def shots_index():
+    """Real screenshots of each desktop, taken by the forge itself (shots.json)."""
+    if not _SHOTS:
+        _SHOTS.update(jload(os.path.join(APPDIR, "shots.json"), {}) or {"ids": {}})
+    return _SHOTS
+
+
 def public_entry(e):
     """The catalog fields the UI and CLI need, without the build recipe."""
     keep = ("id", "name", "subtitle", "family", "distro", "de", "de_label", "glyph",
             "kind", "image", "desc", "dl_mb", "disk_mb", "idle_mb", "ram_min",
             "ram_rec", "cpu_rec", "heavy", "weight", "beauty", "speed", "arches",
-            "tags", "profile")
+            "tags", "profile", "display")
     out = {k: e.get(k) for k in keep}
     out["family_label"] = catalog.FAMILY_LABEL.get(e["family"], e["family"].title())
     return out
@@ -2111,6 +2165,7 @@ def docker_instances():
                 "shm_mb": int((hostcfg.get("ShmSize") or 0) / (1024 * 1024)) or None,
             },
             "disk_cap_mb": _int_or_none(labels.get("%s.disk" % LABEL)),
+            "display": labels.get("%s.display" % LABEL) or "",
             "autostart": restart in ("always", "unless-stopped", "on-failure"),
             "restart_policy": restart,
             "auth": auth,
@@ -2288,8 +2343,9 @@ def tunnel_stop(name):
 INSTALL_SH = {
     "apt": """
 export DEBIAN_FRONTEND=noninteractive
+echo 'Acquire::Retries "6";' > /etc/apt/apt.conf.d/80-forge-retries
 echo ">> forge: apt-get update"
-apt-get update -qq
+for i in 1 2 3; do apt-get update -qq && break; echo ">> forge: apt-get update failed, retry $i"; sleep $((i * 5)); done
 echo ">> forge: installing desktop packages"
 if ! apt-get install -y --no-install-recommends $PKGS; then
   echo ">> forge: bulk install failed, falling back to one at a time"
@@ -2304,7 +2360,8 @@ rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/* /config/.cache 2>/dev/null || true
 """,
     "dnf": """
 echo ">> forge: installing desktop packages with dnf"
-if ! dnf install -y --setopt=install_weak_deps=False --best --skip-broken $PKGS; then
+echo "retries=10" >> /etc/dnf/dnf.conf 2>/dev/null || true
+if ! dnf install -y --setopt=install_weak_deps=False --skip-broken --skip-unavailable $PKGS; then
   echo ">> forge: bulk install failed, falling back to one at a time"
   for p in $PKGS; do
     dnf install -y --setopt=install_weak_deps=False "$p" >/dev/null 2>&1 \\
@@ -2331,7 +2388,7 @@ rm -rf /var/cache/pacman/pkg/* /tmp/* /config/.cache 2>/dev/null || true
 """,
     "apk": """
 echo ">> forge: installing desktop packages with apk"
-apk update >/dev/null 2>&1 || true
+for i in 1 2 3; do apk update >/dev/null 2>&1 && break; sleep $((i * 5)); done
 if ! apk add --no-cache $PKGS; then
   echo ">> forge: bulk install failed, falling back to one at a time"
   for p in $PKGS; do
@@ -2459,19 +2516,23 @@ def gen_startwm(entry):
 
     if rec.get("bare"):
         term = rec.get("term", "xterm")
-        out.append('(sleep 3; command -v %s >/dev/null 2>&1 && %s >/dev/null 2>&1 &) &'
-                   % (term, term))
+        # A bare window manager starts on a black root window: paint the forge
+        # wallpaper (twice: some window managers paint over it as they start).
+        out.append('(for d in 2 6; do sleep $d; command -v feh >/dev/null 2>&1 && '
+                   'feh --no-fehbg --bg-fill /usr/local/share/forge/wallpaper.jpg 2>/dev/null; done) &')
+        # Open a terminal, unless the seeded config (i3, bspwm) already opened one.
+        out.append('(sleep 4; pgrep -u "$(id -u)" -x %s >/dev/null 2>&1 || '
+                   '{ command -v %s >/dev/null 2>&1 && %s >/dev/null 2>&1; } &) &'
+                   % (term, term, term))
 
-    out.append("exec dbus-launch --exit-with-session %s > /dev/null 2>&1" % rec["session"])
+    out.append(layer.supervised_session(rec["session"]))
     return "\n".join(out) + "\n"
 
 
 def gen_dockerfile(entry):
     rec = entry["recipe"]
     inst = base64.b64encode(gen_install_sh(entry).encode()).decode()
-    start = base64.b64encode(gen_startwm(entry).encode()).decode()
     df = [
-        "# syntax=docker/dockerfile:1",
         "FROM %s" % rec["image"],
         'LABEL %s.entry="%s"' % (LABEL, entry["id"]),
         'LABEL %s.builder="selkies-forge %s"' % (LABEL, VERSION),
@@ -2480,8 +2541,6 @@ def gen_dockerfile(entry):
         "    && chmod +x /tmp/forge-install.sh \\\n"
         "    && /tmp/forge-install.sh \\\n"
         "    && rm -f /tmp/forge-install.sh" % inst,
-        "RUN printf '%%s' '%s' | base64 -d > /defaults/startwm.sh \\\n"
-        "    && chmod 755 /defaults/startwm.sh" % start,
         "EXPOSE 3000 3001",
         "VOLUME /config",
     ]
@@ -2699,6 +2758,40 @@ def tz_name():
     return os.environ.get("TZ") or "Etc/UTC"
 
 
+DISPLAY_MODES = ("auto", "fit", "fixed")
+RES_RE = re.compile(r"^\s*(\d{3,5})\s*[xX\u00d7]\s*(\d{3,5})\s*$")
+
+
+def display_for(entry, opts):
+    """('fit', None) or ('fixed', (w, h)) for this launch.
+
+    fit    the desktop follows your browser window (Selkies resizes the screen)
+    fixed  the screen stays one size and Selkies scales it into the window;
+           for window managers that cannot cope with the screen changing size
+           under them, so nothing can ever end up below the bottom edge
+    """
+    if entry.get("profile") == "kasm":
+        return "fit", None
+    mode = str(opts.get("display") or "auto").lower()
+    if mode not in DISPLAY_MODES:
+        mode = "auto"
+    if mode == "auto":
+        mode = entry.get("display") or "fit"
+    if mode != "fixed":
+        return "fit", None
+    m = RES_RE.match(str(opts.get("resolution") or ""))
+    w, h = (int(m.group(1)), int(m.group(2))) if m else (1920, 1080)
+    return "fixed", (int(clamp(w, 800, 3840)), int(clamp(h, 600, 2160)))
+
+
+def parse_display_label(txt):
+    """'fixed:1920x1080' -> ('fixed', '1920x1080'); 'fit' -> ('fit', None)."""
+    txt = str(txt or "")
+    if txt.startswith("fixed"):
+        return "fixed", (txt.split(":", 1)[1] if ":" in txt else "1920x1080")
+    return ("fit" if txt == "fit" else "auto"), None
+
+
 def docker_run_args(entry, name, ports, plan, opts, image, host):
     prof = entry.get("profile", "selkies")
     args = ["docker", "run", "-d", "--name", name,
@@ -2746,6 +2839,16 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
                  "-e", "PGID=%d" % os.getgid(),
                  "-e", "TZ=%s" % tz_name(),
                  "-e", "TITLE=%s" % entry["name"]]
+        mode, res = display_for(entry, opts)
+        args += ["--label", "%s.display=%s" % (LABEL, "fixed:%dx%d" % res if res else "fit")]
+        if res:
+            args += ["-e", "SELKIES_MANUAL_WIDTH=%d" % res[0],
+                     "-e", "SELKIES_MANUAL_HEIGHT=%d" % res[1]]
+        else:
+            # Xvfb's default virtual screen is 15360x8640: a full-screen
+            # wallpaper alone is half a gigabyte, enough to get a 1 GB desktop
+            # OOM-killed. 4K is the largest window anyone will stream.
+            args += ["-e", "MAX_RES=3840x2160"]
         if opts.get("username") and opts.get("password"):
             args += ["-e", "CUSTOM_USER=%s" % opts["username"],
                      "-e", "PASSWORD=%s" % opts["password"]]
@@ -2757,22 +2860,58 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
     return args, vol
 
 
-def wait_healthy(name, port, profile, job=None, timeout=240):
+# ---------------------------------------------------------------------------
+# health: the web port answering is not the same as a working desktop
+# ---------------------------------------------------------------------------
+
+class LaunchProblem(RuntimeError):
+    """A launch failure the pipeline may be able to fix and retry."""
+
+    def __init__(self, msg, kind, detail=""):
+        RuntimeError.__init__(self, msg)
+        self.kind = kind
+        self.detail = detail or ""
+
+
+def container_state(name):
+    rc, out, _ = run(["docker", "inspect", "-f", "{{json .State}}", name], timeout=20)
+    if rc != 0:
+        return {}
+    try:
+        return json.loads(out) or {}
+    except Exception:
+        return {}
+
+
+def exec_read(name, path, timeout=15):
+    rc, out, _ = run(["docker", "exec", name, "cat", path], timeout=timeout)
+    return out if rc == 0 else ""
+
+
+def _stopped_problem(name):
+    st = container_state(name)
+    tail = container_logs(name, 40)
+    if st.get("OOMKilled"):
+        return LaunchProblem("the desktop ran out of memory and was killed", "oom", tail)
+    return LaunchProblem("the container stopped on its own (exit %s)" % st.get("ExitCode"),
+                         "exited", tail)
+
+
+def wait_http(name, port, profile, job=None, timeout=240):
     """Poll the desktop's own web port until it answers."""
     url = ("https://127.0.0.1:%d/" if profile == "kasm" else "http://127.0.0.1:%d/") % port
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
-    deadline = time.time() + timeout
+    t0 = time.time()
+    deadline = t0 + timeout
     last = ""
     attempt = 0
     while time.time() < deadline:
         attempt += 1
-        rc, out, _ = run(["docker", "inspect", "-f", "{{.State.Running}}|{{.State.ExitCode}}",
-                          name], timeout=20)
-        if rc == 0 and out.strip().startswith("false"):
-            tail = container_logs(name, 25)
-            raise RuntimeError("the container stopped on its own.\n%s" % tail)
+        st = container_state(name)
+        if st and not st.get("Running") and not st.get("Restarting"):
+            raise _stopped_problem(name)
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "selkies-forge"})
             with urllib.request.urlopen(req, timeout=6, context=ctx) as resp:
@@ -2786,12 +2925,94 @@ def wait_healthy(name, port, profile, job=None, timeout=240):
         except Exception as ex:
             last = type(ex).__name__
         if job and attempt % 5 == 0:
-            frac = 1.0 - (deadline - time.time()) / float(timeout)
-            job.set_progress(clamp(0.90 + 0.06 * frac, 0.90, 0.96),
-                             {"waiting": last, "seconds": int(time.time() - (deadline - timeout))})
+            frac = (time.time() - t0) / float(timeout)
+            job.set_progress(clamp(0.88 + 0.04 * frac, 0.88, 0.92),
+                             {"waiting": last, "seconds": int(time.time() - t0)})
         time.sleep(2.0)
-    raise RuntimeError("the desktop never answered on port %d within %ds (last: %s)"
-                       % (port, timeout, last or "no reply"))
+    raise LaunchProblem("the desktop never answered on port %d within %ds (last: %s)"
+                        % (port, timeout, last or "no reply"), "timeout",
+                        container_logs(name, 30))
+
+
+# Kept for callers that only care about the web port (reconfigure, repair).
+wait_healthy = wait_http
+
+
+def session_log(name, lines=40):
+    txt = exec_read(name, "/tmp/forge/session.log")
+    return "\n".join(txt.splitlines()[-lines:])
+
+
+# Window managers that never announce themselves (no _NET_SUPPORTING_WM_CHECK);
+# for these, windows on screen are the best sign of life we get.
+NO_EWMH = {"twm", "ratpoison", "wmaker"}
+
+
+def wait_session(name, entry, job=None, timeout=180):
+    """After the web port answers, wait until the desktop session is really up.
+
+    The forge agent inside the container reports the window manager it sees
+    and how many windows exist. "Up" means a window manager that is still
+    there on the next look, not just a web page in front of a black screen.
+    A session that keeps crashing flips the agent into rescue mode; one that
+    never brings up a window manager, or gets OOM-killed, is a problem the
+    launch can act on.
+    """
+    if entry.get("profile") == "kasm":
+        return {"wm": "KasmVNC"}
+    t0 = time.time()
+    deadline = t0 + timeout
+    checked_agent = False
+    last = {}
+    seen_wm = 0
+    bare = entry.get("de") in NO_EWMH
+    while time.time() < deadline:
+        st = container_state(name)
+        if st and not st.get("Running") and not st.get("Restarting"):
+            raise _stopped_problem(name)
+        if st.get("OOMKilled"):
+            raise LaunchProblem("the desktop ran out of memory (the kernel killed part of it)",
+                                "oom", session_log(name))
+        raw = exec_read(name, "/tmp/forge/health.json")
+        if raw.strip():
+            try:
+                last = json.loads(raw)
+            except Exception:
+                last = {}
+            if last.get("mode") == "rescue":
+                raise LaunchProblem("the desktop session keeps crashing on start", "crash",
+                                    session_log(name))
+            if last.get("wm"):
+                seen_wm += 1
+                if seen_wm >= 2:
+                    return last
+            else:
+                seen_wm = 0
+                if bare and int(last.get("clients") or 0) > 0 and time.time() - t0 > 25:
+                    return last
+        elif not checked_agent and time.time() - t0 > 20:
+            checked_agent = True
+            rc, _, _ = run(["docker", "exec", name, "test", "-x", "/usr/local/share/forge/agent"],
+                           timeout=15)
+            if rc != 0:
+                return {"agent": False}      # an old container without the forge layer
+        if job:
+            frac = (time.time() - t0) / float(timeout)
+            job.set_progress(clamp(0.92 + 0.04 * frac, 0.92, 0.96),
+                             {"waiting": "desktop session", "seconds": int(time.time() - t0)})
+        time.sleep(2.5)
+    raise LaunchProblem("the web page is up, but no desktop session appeared within %ds"
+                        % timeout, "nowm", session_log(name, 30))
+
+
+def mem_pressure(name):
+    """Memory use of a container as a percent of its limit (0 if unknown)."""
+    rc, out, _ = run(["docker", "stats", "--no-stream", "--format", "{{.MemPerc}}", name],
+                     timeout=30)
+    try:
+        return float(out.strip().rstrip("%"))
+    except ValueError:
+        return 0.0
 
 
 def container_logs(name, lines=60):
@@ -2799,12 +3020,188 @@ def container_logs(name, lines=60):
     return (out or "") + (err or "")
 
 
+SECCOMP_HINTS = re.compile(r"operation not permitted|seccomp|bwrap:|clone3|"
+                           r"failed to move to new namespace|unshare", re.I)
+SHM_HINTS = re.compile(r"/dev/shm|shm_open|no space left on device", re.I)
+
+
+def pick_fix(problem, plan, opts, host, tried):
+    """Decide how to retry a failed start. Returns (description, apply) or None."""
+    text = "%s\n%s" % (problem, getattr(problem, "detail", ""))
+    kind = getattr(problem, "kind", "")
+    if kind == "oom" and "memory" not in tried:
+        room = int(host.get("mem_avail_mb", 0) * 0.8)
+        new = int(min(room, max(plan["memory_mb"] * 1.75, plan["memory_mb"] + 768)))
+        if new > plan["memory_mb"] + 128:
+            def apply():
+                plan["memory_mb"] = int(round(new / 256.0) * 256)
+            return ("it ran out of memory; retrying with %s" % human_mb(new), "memory", apply)
+    if SHM_HINTS.search(text) and "shm" not in tried:
+        def apply():
+            plan["shm_mb"] = int(min(4096, plan["shm_mb"] * 2))
+        return ("shared memory ran out; retrying with %s /dev/shm"
+                % human_mb(min(4096, plan["shm_mb"] * 2)), "shm", apply)
+    if kind in ("crash", "exited", "nowm") and "seccomp" not in tried and \
+            not opts.get("seccomp_unconfined") and \
+            (SECCOMP_HINTS.search(text) or kind in ("crash", "nowm")):
+        def apply():
+            opts["seccomp_unconfined"] = True
+        return ("the session was blocked by Docker's syscall filter; retrying with "
+                "seccomp unconfined", "seccomp", apply)
+    if kind == "timeout" and "slow" not in tried:
+        def apply():
+            opts["health_timeout"] = int(int(opts.get("health_timeout") or 300) * 1.6)
+        return ("it is slow to boot on this machine; giving it longer", "slow", apply)
+    if kind == "exited" and "restart" not in tried:
+        return ("the container stopped during start; trying once more", "restart",
+                lambda: None)
+    return None
+
+
+RUN_PORT_ERR = re.compile(r"port is already allocated|address already in use|bind for", re.I)
+RUN_NAME_ERR = re.compile(r"is already in use by container|Conflict\. The container name", re.I)
+RUN_QUOTA_ERR = re.compile(r"storage-opt|--storage-opt|quota", re.I)
+RUN_CPU_ERR = re.compile(r"range of CPUs is from", re.I)
+
+
+def docker_run_resilient(entry, cname, plan, opts, image, host, job, want_ports=None):
+    """docker run, fixing the usual reasons it refuses: ports, names, quotas."""
+    nports = 1 if entry["profile"] == "kasm" else 2
+    ports = alloc_ports(nports, want=want_ports)
+    host = dict(host)
+    for attempt in range(5):
+        args, vol = docker_run_args(entry, cname, ports, plan, opts, image, host)
+        job.log("$ " + " ".join(shlex.quote(a) for a in args))
+        rc, out, err = run(args, timeout=180)
+        if rc == 0:
+            return cname, ports, vol, out.strip()
+        msg = (err.strip() or out.strip())
+        job.log("docker run refused: %s" % msg.splitlines()[-1] if msg else "docker run refused",
+                "err")
+        run(["docker", "rm", "-f", cname], timeout=60)
+        if RUN_PORT_ERR.search(msg):
+            release_port_reservation(ports)
+            ports = alloc_ports(nports)
+            job.log("auto-fix  : that port was taken, moving to %s"
+                    % ", ".join(str(p) for p in ports))
+        elif RUN_NAME_ERR.search(msg):
+            cname = container_name_for(entry, cname + "-%d" % (attempt + 2))
+            job.log("auto-fix  : that name was taken, using %s" % cname)
+        elif RUN_QUOTA_ERR.search(msg) and host.get("quota_support"):
+            host["quota_support"] = False
+            job.log("auto-fix  : this storage driver refused a disk quota; tracking the "
+                    "budget instead of enforcing it")
+        elif RUN_CPU_ERR.search(msg):
+            plan["cpus"] = float(max(1, host.get("cpus", 1)))
+            job.log("auto-fix  : capping CPUs at %s" % plan["cpus"])
+        elif "no such image" in msg.lower() or "unable to find image" in msg.lower():
+            raise RuntimeError("docker run failed: %s" % msg)
+        elif attempt < 2:
+            job.log("auto-fix  : retrying in a moment")
+            time.sleep(3 + attempt * 3)
+        else:
+            release_port_reservation(ports)
+            raise RuntimeError("docker run failed: %s" % msg)
+    release_port_reservation(ports)
+    raise RuntimeError("docker run kept failing; see the log above")
+
+
+# ---------------------------------------------------------------------------
+# the forge layer: seeds, agent and session supervisor (see layer.py)
+# ---------------------------------------------------------------------------
+
+def image_id(image):
+    rc, out, _ = run(["docker", "image", "inspect", "-f", "{{.Id}}", image], timeout=30)
+    return out.strip() if rc == 0 else ""
+
+
+def layer_repo(entry):
+    return "%srun-%s" % (IPREFIX, slug(entry["id"])[:60])
+
+
+def ensure_layer(entry, base_image, job=None):
+    """Return the image to run: base_image plus the forge layer on top."""
+    if entry.get("profile") == "kasm":
+        return base_image
+    startwm = gen_startwm(entry) if entry["kind"] == "build" else None
+    dig = layer.digest(image_id(base_image), startwm)
+    tag = "%s:%s" % (layer_repo(entry), dig)
+    if image_present(tag):
+        if job:
+            job.log("layer    : %s (already built)" % tag)
+        return tag
+    ctx = os.path.join(BUILDDIR, "layer-" + slug(entry["id"]))
+    shutil.rmtree(ctx, ignore_errors=True)
+    os.makedirs(ctx, exist_ok=True)
+    for rel, (content, mode) in layer.files(startwm).items():
+        path = os.path.join(ctx, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "wb") as fh:
+            fh.write(content if isinstance(content, bytes) else content.encode())
+        os.chmod(path, mode)
+    with open(os.path.join(ctx, "Dockerfile"), "w") as fh:
+        fh.write(layer.dockerfile(base_image, LABEL, entry["id"], dig, startwm=bool(startwm)))
+    if job:
+        job.log("layer    : adding the forge layer (first-run fixes, screen agent%s)"
+                % (", session supervisor" if startwm else ""))
+    lines = []
+    env = dict(os.environ)
+    env["DOCKER_BUILDKIT"] = "1"
+    rc = stream_cmd(["docker", "build", "--progress=plain", "-t", tag, ctx],
+                    lines.append, env=env, timeout=900)
+    if rc != 0:
+        # No buildx on this Docker: the classic builder handles a file this simple.
+        env["DOCKER_BUILDKIT"] = "0"
+        lines = []
+        rc = stream_cmd(["docker", "build", "-t", tag, ctx], lines.append, env=env, timeout=900)
+    if rc != 0:
+        raise RuntimeError("could not add the forge layer:\n" + "\n".join(lines[-12:]))
+    # Older layers of this entry are only a few KB each, but tidy them anyway.
+    rc, out, _ = run(["docker", "images", layer_repo(entry), "--format", "{{.Tag}}"], timeout=30)
+    for t in out.split():
+        if t != dig:
+            run(["docker", "rmi", "%s:%s" % (layer_repo(entry), t)], timeout=60)
+    if job:
+        job.log("layer    : %s" % tag)
+    return tag
+
+
 # ===========================================================================
 # the launch pipeline
 # ===========================================================================
 
+def get_image(entry, host, job, opts):
+    """Pull or build the desktop image. Returns its tag."""
+    if entry["kind"] == "pull":
+        image = entry["image"]
+        if image_present(image) and not opts.get("force_pull"):
+            job.set_phase("fetch", "Image already here, skipping the pull", 0.70)
+            job.log("image already present locally, not pulling again")
+        else:
+            job.set_phase("fetch", "Pulling %s" % image, 0.02)
+            do_pull(image, host["arch"], job)
+        return image
+    image = build_image_tag(entry)
+    if image_present(image) and not opts.get("force_build"):
+        job.set_phase("fetch", "Built image already here", 0.70)
+        job.log("%s already built, reusing it" % image)
+        return image
+    base = entry["recipe"]["image"]
+    if not image_present(base):
+        job.set_phase("fetch", "Pulling base %s" % base, 0.02)
+        do_pull(base, host["arch"], job, weight=(0.02, 0.45))
+    job.set_phase("build", "Building %s" % entry["name"], 0.46)
+    do_build(entry, image, job)
+    return image
+
+
 def launch(entry_id, plan=None, opts=None, job=None, name=None):
-    """Pull or build, run, wait, tunnel.  Returns the finished instance dict."""
+    """Pull or build, layer, run, verify the session, tunnel.
+
+    Every stage that can fail for an ordinary reason (a flaky network, a port
+    someone grabbed, a desktop that needs more memory or a looser syscall
+    filter) is retried with a fix applied, and each fix is written to the log.
+    """
     opts = dict(opts or {})
     entry = catalog.BY_ID.get(entry_id)
     if not entry:
@@ -2813,6 +3210,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
     host = host_info(fresh=True)
     plan = dict(plan or plan_resources(entry, host))
     reserved = []
+    cname = None
 
     try:
         # ---- 1. check this machine can run it ---------------------------
@@ -2821,12 +3219,22 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
         job.log("host     : %s, %d cores, %s RAM free, %s disk free"
                 % (host["arch"], host["cpus"], human_mb(host["mem_avail_mb"]),
                    human_mb(host["disk_free_mb"])))
-        job.log("plan     : %s RAM, %s CPU, %s shm"
-                % (human_mb(plan["memory_mb"]), plan["cpus"], human_mb(plan["shm_mb"])))
+        mode, res = display_for(entry, opts)
+        job.log("plan     : %s RAM, %s CPU, %s shm, screen %s"
+                % (human_mb(plan["memory_mb"]), plan["cpus"], human_mb(plan["shm_mb"]),
+                   "fixed %dx%d, scaled to your window" % res if res
+                   else "follows your browser window"))
 
         ok, derr = docker_ok()
         if not ok:
             raise RuntimeError("docker is not answering: %s" % derr)
+
+        need = 3 * 1024 if image_present(entry.get("image") or build_image_tag(entry)) \
+            else int(entry["disk_mb"] * 1.3) + 1024
+        if host.get("disk_free_mb") and host["disk_free_mb"] < need:
+            raise RuntimeError("only %s of disk is free and this needs about %s; "
+                               "free some space (docker system prune) and try again"
+                               % (human_mb(host["disk_free_mb"]), human_mb(need)))
 
         probe_image = entry["image"] if entry["kind"] == "pull" else entry["recipe"]["image"]
         job.log("image    : %s" % probe_image)
@@ -2847,62 +3255,91 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                     % (host.get("storage_driver"), host.get("backing_fs"),
                        human_mb(plan["disk_mb"])))
 
-        # ---- 2. get the image ------------------------------------------
-        if entry["kind"] == "pull":
-            image = entry["image"]
-            if image_present(image) and not opts.get("force_pull"):
-                job.set_phase("fetch", "Image already here, skipping the pull", 0.70)
-                job.log("image already present locally, not pulling again")
-            else:
-                job.set_phase("fetch", "Pulling %s" % image, 0.02)
-                do_pull(image, host["arch"], job)
-        else:
-            image = build_image_tag(entry)
-            if image_present(image) and not opts.get("force_build"):
-                job.set_phase("fetch", "Built image already here", 0.70)
-                job.log("%s already built, reusing it" % image)
-            else:
-                base = entry["recipe"]["image"]
-                if not image_present(base):
-                    job.set_phase("fetch", "Pulling base %s" % base, 0.02)
-                    do_pull(base, host["arch"], job, weight=(0.02, 0.45))
-                job.set_phase("build", "Building %s" % entry["name"], 0.46)
-                do_build(entry, image, job)
+        # ---- 2. get the image, then the forge layer on top ----------------
+        image = get_image(entry, host, job, opts)
+        job.set_phase("layer", "Adding the forge layer", 0.80)
+        run_image = ensure_layer(entry, image, job)
 
-        # ---- 3. create the container -----------------------------------
-        job.set_phase("create", "Starting the container", 0.80)
-        nports = 1 if entry["profile"] == "kasm" else 2
-        reserved = alloc_ports(nports, want=opts.get("ports"))
-        job.log("ports    : %s" % ", ".join(str(p) for p in reserved))
-        cname = container_name_for(entry, name or opts.get("name"))
-        args, vol = docker_run_args(entry, cname, reserved, plan, opts, image, host)
-        job.log("$ " + " ".join(shlex.quote(a) for a in args))
-        rc, out, err = run(args, timeout=180)
-        if rc != 0:
-            raise RuntimeError("docker run failed: %s" % (err.strip() or out.strip()))
-        job.log("container: %s (%s)" % (cname, out.strip()[:12]))
-        reg_update(cname, {"entry_id": entry["id"], "created": time.time(),
-                           "plan": plan, "opts": {k: v for k, v in opts.items()
-                                                  if k != "password"},
-                           "volume": vol, "image": image,
-                           "ports": reserved, "tunnel": None})
+        # ---- 3 + 4. start it and make sure the desktop really came up -----
+        tried = set()
+        session = {}
+        warning = None
+        attempt = 0
+        while True:
+            attempt += 1
+            job.set_phase("create", "Starting the container" if attempt == 1
+                          else "Starting it again (try %d)" % attempt, 0.84)
+            if not cname:
+                cname = container_name_for(entry, name or opts.get("name"))
+            cname, reserved, vol, cid = docker_run_resilient(
+                entry, cname, plan, opts, run_image, host, job,
+                want_ports=reserved or opts.get("ports"))
+            job.log("container: %s (%s)" % (cname, cid[:12]))
+            reg_update(cname, {"entry_id": entry["id"], "created": time.time(),
+                               "plan": plan, "opts": {k: v for k, v in opts.items()
+                                                      if k != "password"},
+                               "volume": vol, "image": run_image,
+                               "ports": reserved, "tunnel": None})
+            try:
+                job.set_phase("health", "Waiting for the desktop to come up", 0.88)
+                heavy = entry.get("weight") in ("full", "heavy")
+                wait_http(cname, reserved[0], entry["profile"], job,
+                          timeout=int(opts.get("health_timeout", 420 if heavy else 300)))
+                job.log("web      : answering on port %d" % reserved[0])
+                job.set_phase("session", "Waiting for the desktop session", 0.92)
+                session = wait_session(cname, entry, job, timeout=240 if heavy else 150)
+                break
+            except LaunchProblem as lp:
+                job.log("problem  : %s" % lp, "err")
+                for ln in (lp.detail or "").strip().splitlines()[-12:]:
+                    job.log("  | " + ln, "err")
+                if lp.kind in ("crash", "nowm") and "memory" not in tried and \
+                        mem_pressure(cname) > 88:
+                    lp.kind = "oom"          # it is starving, not broken
+                fix = pick_fix(lp, plan, opts, host, tried) if attempt < 4 else None
+                if not fix:
+                    if lp.kind in ("crash", "nowm"):
+                        # Leave it running: the rescue session shows the log in
+                        # the desktop itself, which beats a dead container.
+                        warning = (("The desktop session crashed on start, so it opened a "
+                                    "rescue session that shows why. " if lp.kind == "crash" else
+                                    "The desktop did not come up properly. ") + str(lp))
+                        session = {"mode": "rescue" if lp.kind == "crash" else "nowm",
+                                   "log": (lp.detail or "")[-1500:]}
+                        break
+                    raise RuntimeError("%s\n%s" % (lp, "\n".join(
+                        (lp.detail or "").strip().splitlines()[-15:])))
+                desc, key, apply = fix
+                tried.add(key)
+                apply()
+                job.log("auto-fix : %s" % desc)
+                run(["docker", "rm", "-f", cname], timeout=120)
+                release_port_reservation(reserved)
 
-        # ---- 4. wait for the desktop to answer -------------------------
-        job.set_phase("health", "Waiting for the desktop to come up", 0.90)
-        wait_healthy(cname, reserved[0], entry["profile"], job,
-                     timeout=int(opts.get("health_timeout", 300)))
-        job.log("desktop is answering on port %d" % reserved[0])
+        if session.get("wm"):
+            job.log("session  : %s is running (%s, %s window%s)"
+                    % (session["wm"], session.get("screen", "?"), session.get("clients", 0),
+                       "" if session.get("clients") == 1 else "s"))
+        elif int(session.get("clients") or 0) > 0:
+            job.log("session  : up (%s window%s on screen)"
+                    % (session["clients"], "" if session["clients"] == 1 else "s"))
+        elif session.get("slow"):
+            warning = warning or ("The web page is up but the desktop session had not "
+                                  "reported in yet. Give it a minute, then reload.")
+            job.log("session  : still starting, the page will catch up", "err")
+        if tried:
+            job.log("fixed    : %s" % ", ".join(sorted(tried)))
 
         # ---- 5. tunnel --------------------------------------------------
         tun = None
         if opts.get("tunnel", True):
-            mode = "tcp" if entry["profile"] == "kasm" else "http"
-            job.set_phase("tunnel", "Opening a serveo tunnel (%s)" % mode, 0.96)
+            tmode = "tcp" if entry["profile"] == "kasm" else "http"
+            job.set_phase("tunnel", "Opening a serveo tunnel (%s)" % tmode, 0.96)
             try:
-                tun = tunnel_start(cname, reserved[0], mode=mode,
+                tun = tunnel_start(cname, reserved[0], mode=tmode,
                                    subdomain=opts.get("subdomain"))
                 job.log("tunnel   : %s" % tun["url"])
-                if mode == "tcp":
+                if tmode == "tcp":
                     job.log("note     : anonymous serveo TCP tunnels are capped "
                             "(~10 min, 2 connections). The local link has no limits.")
             except Exception as ex:
@@ -2914,12 +3351,14 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
         release_port_reservation(reserved)
         inst = next((i for i in docker_instances() if i["name"] == cname), None)
         result = {"name": cname, "entry_id": entry["id"], "entry": public_entry(entry),
-                  "ports": reserved, "image": image, "plan": plan,
+                  "ports": reserved, "image": run_image, "plan": plan,
                   "local_url": "http://localhost:%d" % reserved[0]
                   if entry["profile"] != "kasm" else "https://localhost:%d" % reserved[0],
                   "https_url": "https://localhost:%d" % reserved[1]
                   if entry["profile"] != "kasm" else None,
                   "tunnel": tun, "instance": inst,
+                  "session": session, "warning": warning, "fixes": sorted(tried),
+                  "display": "fixed %dx%d" % res if res else "fit",
                   "credentials": ({"user": "kasm_user",
                                    "password": opts.get("password", "forge")}
                                   if entry["profile"] == "kasm" else
@@ -2943,7 +3382,7 @@ def _hints_for(msg):
     if "permission denied" in m and "docker" in m:
         hints.append("your user is not in the docker group yet: "
                      "run `sudo usermod -aG docker $USER`, then log out and back in")
-    if "no space left" in m or "disk" in m:
+    if "no space left" in m or "disk is free" in m:
         hints.append("free some disk, or run `docker system prune -af` to drop old images")
     if "no arm64" in m or "no amd64" in m or "has no" in m:
         hints.append("pick an entry whose badge lists your architecture")
@@ -2953,46 +3392,72 @@ def _hints_for(msg):
     if "exit code 97" in m or "session binaries" in m:
         hints.append("that desktop's packages are not available on that base; "
                      "try the same desktop on another distro")
+    if "tag is gone" in m or "manifest unknown" in m:
+        hints.append("the publisher removed that image; pick another entry")
+    if "network" in m or "timeout" in m or "tls" in m:
+        hints.append("the network dropped out several times in a row; try again in a minute")
     if "serveo" in m:
         hints.append("serveo may be rate limiting; the local URL still works")
     return hints
 
 
 BAR_LINE = re.compile(r"\[[=>\s]*\]")
+NET_FLAKY = re.compile(r"tls handshake timeout|i/o timeout|connection reset|unexpected eof|"
+                       r"context deadline exceeded|toomanyrequests|too many requests|"
+                       r"\b50[234]\b|temporary failure|net/http|connection refused|"
+                       r"no route to host|eof$|timeout exceeded|failed to fetch|"
+                       r"could not resolve|hash sum mismatch|failed retrieving file|"
+                       r"curl error|could not connect|connection timed out", re.I)
 
 
 def do_pull(image, arch, job, weight=(0.02, 0.78)):
+    """docker pull with a live progress bar, retried on network hiccups."""
     lo, hi = weight
-    prog = PullProgress()
-    last = [0.0]
-    seen = set()
+    tail = deque(maxlen=30)
+    for attempt in range(1, 5):
+        prog = PullProgress()
+        last = [0.0]
+        seen = set()
 
-    def on_line(line):
-        clean = ANSI_RE.sub("", line).strip()
-        if not clean:
+        def on_line(line):
+            clean = ANSI_RE.sub("", line).strip()
+            if not clean:
+                return
+            tail.append(clean)
+            lid = prog.feed(clean)
+            # A pty makes docker repaint every layer on every tick. Log each
+            # layer/status once and let the progress bar carry the rest.
+            if BAR_LINE.search(clean) and lid:
+                key = (lid, prog.layers[lid]["phase"])
+                if key not in seen:
+                    seen.add(key)
+                    job.log("%s: %s" % (lid, prog.layers[lid]["phase"]))
+            else:
+                if clean not in seen:
+                    seen.add(clean)
+                    job.log(clean)
+            f = prog.fraction()
+            if f - last[0] > 0.003 or f >= 0.999:
+                last[0] = f
+                job.set_progress(lo + (hi - lo) * f, prog.summary())
+
+        cmd = ["docker", "pull", "--platform", "linux/%s" % arch, image]
+        rc = stream_cmd_pty(cmd, on_line, timeout=5400)
+        if rc == 0:
+            job.set_progress(hi, prog.summary())
             return
-        lid = prog.feed(clean)
-        # A pty makes docker repaint every layer on every tick. Log each
-        # layer/status once and let the progress bar carry the rest.
-        if BAR_LINE.search(clean) and lid:
-            key = (lid, prog.layers[lid]["phase"])
-            if key not in seen:
-                seen.add(key)
-                job.log("%s: %s" % (lid, prog.layers[lid]["phase"]))
-        else:
-            if clean not in seen:
-                seen.add(clean)
-                job.log(clean)
-        f = prog.fraction()
-        if f - last[0] > 0.003 or f >= 0.999:
-            last[0] = f
-            job.set_progress(lo + (hi - lo) * f, prog.summary())
-
-    cmd = ["docker", "pull", "--platform", "linux/%s" % arch, image]
-    rc = stream_cmd_pty(cmd, on_line, timeout=5400)
-    if rc != 0:
-        raise RuntimeError("docker pull failed for %s (exit %d)" % (image, rc))
-    job.set_progress(hi, prog.summary())
+        txt = "\n".join(tail)
+        if re.search(r"manifest unknown|not found|no matching manifest", txt, re.I):
+            raise RuntimeError("the image tag is gone from the registry: %s" % image)
+        if attempt < 4 and (NET_FLAKY.search(txt) or rc in (1, 255)):
+            wait = 5 * attempt
+            job.log("pull interrupted (%s); retrying in %ds, already downloaded layers are kept"
+                    % ((tail[-1] if tail else "exit %d" % rc)[:120], wait), "err")
+            time.sleep(wait)
+            continue
+        break
+    raise RuntimeError("docker pull failed for %s (exit %d): %s"
+                       % (image, rc, (tail[-1] if tail else "")[:200]))
 
 
 BUILD_STEP = re.compile(r"^#(\d+)\s")
@@ -3005,19 +3470,19 @@ def do_build(entry, tag, job, weight=(0.46, 0.78)):
     df = gen_dockerfile(entry)
     with open(os.path.join(ctx, "Dockerfile"), "w") as fh:
         fh.write(df)
-    with open(os.path.join(ctx, "startwm.sh"), "w") as fh:
-        fh.write(gen_startwm(entry))
     job.log("build context: %s" % ctx)
     job.log("installing: %s" % entry["recipe"]["pkgs"])
 
     # Package installs dominate the time; step counting gives a usable curve.
     seen = {"max": 0.0, "pkgs": 0}
     total_pkgs = max(1, len(entry["recipe"]["pkgs"].split()))
+    tail = deque(maxlen=60)
 
     def on_line(line):
         clean = ANSI_RE.sub("", line)
         if clean.strip():
             job.log(clean)
+            tail.append(clean)
         low = clean.lower()
         if "setting up " in low or ">> forge: ok" in low or "installing" in low:
             seen["pkgs"] = min(total_pkgs, seen["pkgs"] + 1)
@@ -3029,17 +3494,29 @@ def do_build(entry, tag, job, weight=(0.46, 0.78)):
             job.set_progress(lo + (hi - lo) * frac,
                              {"packages": seen["pkgs"], "packages_total": total_pkgs})
 
-    env = dict(os.environ)
-    env["DOCKER_BUILDKIT"] = "1"
-    env["BUILDKIT_PROGRESS"] = "plain"
-    cmd = ["docker", "build", "--progress=plain", "--platform",
-           "linux/%s" % host_info()["arch"], "-t", tag, "-f",
-           os.path.join(ctx, "Dockerfile"), ctx]
-    rc = stream_cmd(cmd, on_line, env=env, timeout=10800)
-    if rc != 0:
-        raise RuntimeError("docker build failed for %s (exit %d). The log above "
-                           "says which package broke." % (entry["id"], rc))
-    job.set_progress(hi)
+    for attempt in (1, 2, 3):
+        env = dict(os.environ)
+        env["DOCKER_BUILDKIT"] = "1"
+        env["BUILDKIT_PROGRESS"] = "plain"
+        cmd = ["docker", "build", "--progress=plain", "--platform",
+               "linux/%s" % host_info()["arch"], "-t", tag, "-f",
+               os.path.join(ctx, "Dockerfile"), ctx]
+        rc = stream_cmd(cmd, on_line, env=env, timeout=10800)
+        if rc == 0:
+            job.set_progress(hi)
+            return
+        txt = "\n".join(tail)
+        if "exit code: 97" in txt or "FATAL none of these session" in txt:
+            raise RuntimeError("docker build failed for %s: the desktop's packages did not "
+                               "install (exit code 97, session binaries missing)" % entry["id"])
+        if attempt < 3 and NET_FLAKY.search(txt):
+            job.log("build hit a network error; retrying in %ds (finished steps are cached)"
+                    % (10 * attempt), "err")
+            time.sleep(10 * attempt)
+            continue
+        break
+    raise RuntimeError("docker build failed for %s (exit %d). The log above "
+                       "says which package broke." % (entry["id"], rc))
 
 
 # ===========================================================================
@@ -3080,6 +3557,8 @@ def instance_action(name, action, opts=None):
     elif action == "untunnel":
         tunnel_stop(name)
         return {"ok": True}
+    elif action == "repair":
+        return reconfigure(name, repair=True)
     else:
         raise RuntimeError("unknown action %s" % action)
     if rc != 0:
@@ -3088,12 +3567,13 @@ def instance_action(name, action, opts=None):
 
 
 def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
-                autostart=None):
-    """Change an instance's limits.
+                autostart=None, display=None, resolution=None, repair=False):
+    """Change an instance's limits, its screen mode, or repair it.
 
-    Memory, CPU and auto-start apply live. Docker cannot change /dev/shm or
-    the storage budget of a running container, so those recreate it on the
-    same image, ports, environment and /config volume: files survive.
+    Memory, CPU and auto-start apply live. Docker cannot change /dev/shm, the
+    storage budget or the environment of a running container, so those (and
+    a repair, which moves it onto the newest forge layer) recreate it on the
+    same ports, environment and /config volume: files survive.
     """
     if not re.match(r"^[A-Za-z0-9_.-]+$", name or ""):
         raise RuntimeError("bad container name")
@@ -3105,8 +3585,15 @@ def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     labels = (c.get("Config") or {}).get("Labels") or {}
     cur_shm = int((hostcfg.get("ShmSize") or 0) / (1024 * 1024))
     cur_disk = _int_or_none(labels.get("%s.disk" % LABEL))
+    cur_display, cur_res = parse_display_label(labels.get("%s.display" % LABEL))
+    want_display = cur_display if display in (None, "") else str(display)
+    want_res = cur_res if resolution in (None, "") else str(resolution)
     need_recreate = ((shm_mb and int(shm_mb) != cur_shm) or
-                     (disk_mb and cur_disk and int(disk_mb) != cur_disk))
+                     (disk_mb and cur_disk and int(disk_mb) != cur_disk) or
+                     repair or
+                     (display not in (None, "") and
+                      (want_display != cur_display or
+                       (want_display == "fixed" and want_res != cur_res))))
 
     if not need_recreate:
         args = ["docker", "update"]
@@ -3131,6 +3618,15 @@ def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     for kv in ((c.get("Config") or {}).get("Env") or []):
         k, _, v = kv.partition("=")
         env[k] = v
+    # Anything the user added at launch (not ours, not the image's) is carried over.
+    image_env = set()
+    rc_i, out_i, _ = run(["docker", "image", "inspect", "-f", "{{json .Config.Env}}",
+                          (c.get("Config") or {}).get("Image") or ""], timeout=30)
+    if rc_i == 0:
+        try:
+            image_env = set(json.loads(out_i) or [])
+        except Exception:
+            pass
     ports = []
     for cport in ((str(KASM_HTTPS),) if entry["profile"] == "kasm"
                   else (str(SELKIES_HTTP), str(SELKIES_HTTPS))):
@@ -3157,7 +3653,22 @@ def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
         opts["password"] = env["VNC_PW"]
     if env.get("LC_ALL"):
         opts["locale"] = env["LC_ALL"]
+    ours = ("PUID", "PGID", "TZ", "TITLE", "CUSTOM_USER", "PASSWORD", "VNC_PW", "LC_ALL",
+            "SELKIES_MANUAL_WIDTH", "SELKIES_MANUAL_HEIGHT", "MAX_RES")
+    opts["env"] = ["%s=%s" % (k, v) for k, v in env.items()
+                   if k not in ours and "%s=%s" % (k, v) not in image_env]
+    opts["display"] = want_display if want_display in ("fit", "fixed") else "auto"
+    if want_res:
+        opts["resolution"] = want_res
     image = (c.get("Config") or {}).get("Image")
+    if repair or entry.get("profile") != "kasm":
+        # Always run on the newest forge layer; a repair rebuilds it if needed.
+        base = entry["image"] if entry["kind"] == "pull" else build_image_tag(entry)
+        if image_present(base):
+            image = ensure_layer(entry, base)
+        elif repair:
+            raise RuntimeError("the desktop image %s is gone from this machine; "
+                               "forge this desktop again instead" % base)
     was_running = bool((c.get("State") or {}).get("Running"))
 
     tunnel = (reg_load().get(name) or {}).get("tunnel")
@@ -3169,8 +3680,8 @@ def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     rc, out, err = run(args, timeout=180)
     if rc != 0:
         raise RuntimeError("recreate failed: %s" % (err or out).strip())
-    reg_update(name, {"plan": plan})
-    if not was_running:
+    reg_update(name, {"plan": plan, "image": image})
+    if not was_running and not repair:
         run(["docker", "stop", name], timeout=120)
     elif tunnel:
         try:
@@ -3178,7 +3689,14 @@ def reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
             tunnel_start(name, ports[0], mode=tunnel.get("mode", "http"))
         except Exception:
             pass
-    return {"ok": True, "recreated": True}
+    out = {"ok": True, "recreated": True, "image": image}
+    if repair:
+        try:
+            wait_http(name, ports[0], entry["profile"], timeout=300)
+            out["session"] = wait_session(name, entry, timeout=150)
+        except LaunchProblem as lp:
+            out["warning"] = "%s\n%s" % (lp, (lp.detail or "")[-800:])
+    return out
 
 
 def retune(name, memory_mb=None, cpus=None):
@@ -3465,6 +3983,335 @@ def term_get(sid):
 # ===========================================================================
 
 SERVER_JSON = os.path.join(STATE, "server.json")
+LIFE_JSON = os.path.join(STATE, "webui-life.json")
+LAST_STOP_JSON = os.path.join(STATE, "last-stop.json")
+STOP_REQUEST_JSON = os.path.join(STATE, "stop-request.json")
+
+
+# ---------------------------------------------------------------------------
+# how did the web UI last stop?  (crash, you, a reboot, a shutdown)
+# ---------------------------------------------------------------------------
+
+def boot_id():
+    try:
+        with open("/proc/sys/kernel/random/boot_id") as fh:
+            return fh.read().strip()
+    except OSError:
+        return ""
+
+
+def boot_time():
+    try:
+        with open("/proc/stat") as fh:
+            for line in fh:
+                if line.startswith("btime "):
+                    return int(line.split()[1])
+    except OSError:
+        pass
+    return 0
+
+
+def host_going_down():
+    """'reboot', 'shutdown' or None, asked while we are being stopped."""
+    try:
+        rc, out, _ = run(["systemctl", "list-jobs", "--no-legend", "--no-pager"], timeout=4)
+        jobs = out if rc == 0 else ""
+        if re.search(r"\breboot\.target|kexec\.target", jobs):
+            return "reboot"
+        if re.search(r"\b(poweroff|halt|shutdown)\.target", jobs):
+            return "shutdown"
+        rc, out, _ = run(["systemctl", "is-system-running"], timeout=4)
+        if out.strip() == "stopping":
+            return "shutdown"
+    except Exception:
+        pass
+    if os.path.exists("/run/nologin") and os.path.exists("/run/systemd/shutdown/scheduled"):
+        return "shutdown"
+    return None
+
+
+def running_desktop_names():
+    rc, out, _ = run(["docker", "ps", "--filter", "label=%s.entry" % LABEL,
+                      "--format", "{{.Names}}"], timeout=15)
+    return sorted(out.split()) if rc == 0 else []
+
+
+def _oom_hint(pid, since):
+    """Best effort: did the kernel's OOM killer take this pid?"""
+    for cmd in (["journalctl", "-k", "--no-pager", "-q", "--since", "@%d" % int(since)],
+                ["dmesg"]):
+        try:
+            rc, out, _ = run(cmd, timeout=6)
+        except Exception:
+            continue
+        if rc == 0 and re.search(r"Killed process %s\b" % pid, out):
+            return True
+    return False
+
+
+STOP_LABELS = {
+    "user": "you stopped it",
+    "ctrl-c": "you stopped it with ctrl-c",
+    "restart": "it was restarted",
+    "update": "it restarted to install an update",
+    "host-reboot": "this machine rebooted",
+    "host-shutdown": "this machine shut down",
+    "signal": "something sent it a stop signal",
+    "service": "its systemd service was stopped",
+    "error": "it hit an error and exited",
+    "host-crash": "this machine crashed or lost power",
+    "crash": "the web UI process died unexpectedly",
+    "oom": "the system ran out of memory and killed it",
+}
+
+
+def analyze_life(life, now_boot=None):
+    """Explain how a recorded web UI run ended."""
+    if not life:
+        return None
+    now_boot = now_boot if now_boot is not None else boot_id()
+    stopped = life.get("stopped") or {}
+    boot_changed = bool(life.get("boot_id") and now_boot and life["boot_id"] != now_boot)
+    out = {"pid": life.get("pid"), "started": life.get("started"),
+           "last_seen": life.get("heartbeat") or life.get("started"),
+           "desktops_running": life.get("desktops_running") or [],
+           "boot_changed": boot_changed, "boot_time": boot_time() if boot_changed else None}
+    if stopped.get("reason"):
+        out.update(reason=stopped["reason"], at=stopped.get("at"),
+                   detail=stopped.get("detail") or "")
+        # A clean SIGTERM we could not place, followed by a new boot, was the
+        # machine going down.
+        if stopped["reason"] == "signal" and boot_changed:
+            out["reason"] = "host-shutdown"
+    elif pid_alive(life.get("pid")) and not boot_changed:
+        return None                                   # still running
+    elif boot_changed:
+        out.update(reason="host-crash", at=life.get("heartbeat"),
+                   detail="the last sign of life was its heartbeat; nothing "
+                          "recorded a clean shutdown")
+    else:
+        oom = _oom_hint(life.get("pid"), life.get("heartbeat") or life.get("started") or 0)
+        out.update(reason="oom" if oom else "crash", at=life.get("heartbeat"),
+                   detail=_webui_log_tail())
+    out["label"] = STOP_LABELS.get(out["reason"], out["reason"])
+    out["clean"] = out["reason"] in ("user", "ctrl-c", "restart", "update", "service",
+                                     "host-reboot", "host-shutdown")
+    return out
+
+
+def _webui_log_tail():
+    try:
+        with open(os.path.join(LOGDIR, "webui.log"), errors="replace") as fh:
+            lines = [l.rstrip() for l in fh.readlines()[-30:]
+                     if l.strip() and not l.lstrip().startswith("{")]
+        tb = [l for l in lines if "Error" in l or "Traceback" in l or "Exception" in l]
+        return (tb[-1] if tb else "")[:300]
+    except OSError:
+        return ""
+
+
+def last_stop_report():
+    """What the CLI and UI show about the previous run, or None."""
+    info = jload(SERVER_JSON, None)
+    life = jload(LIFE_JSON, None)
+    up = bool(info and pid_alive(info.get("pid")))
+    if up:
+        rep = jload(LAST_STOP_JSON, None)
+        if not rep or rep.get("dismissed") or time.time() - float(rep.get("recorded") or 0) > 7 * 86400:
+            return None
+    else:
+        rep = analyze_life(life)
+        if rep:
+            prev = jload(LAST_STOP_JSON, {}) or {}
+            if prev.get("dismissed") and prev.get("pid") == rep.get("pid"):
+                rep["dismissed"] = True
+    if not rep:
+        return None
+    running = set(running_desktop_names())
+    rc, out, _ = run(["docker", "ps", "-a", "--filter", "label=%s.entry" % LABEL,
+                      "--format", "{{.Names}}"], timeout=15)
+    exists = set(out.split()) if rc == 0 else set()
+    rep["restore"] = [n for n in rep.get("desktops_running") or []
+                      if n in exists and n not in running]
+    return rep
+
+
+def dismiss_last_stop():
+    rep = last_stop_report() or {}
+    rep["dismissed"] = True
+    rep.setdefault("recorded", time.time())
+    jsave(LAST_STOP_JSON, rep)
+    return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# start the web UI when the machine boots (systemd user unit, or cron)
+# ---------------------------------------------------------------------------
+
+BOOT_JSON = os.path.join(STATE, "boot.json")
+UNIT_NAME = "selkies-forge.service"
+CRON_MARK = "# selkies-forge-boot"
+
+
+def _unit_path():
+    base = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    return os.path.join(base, "systemd", "user", UNIT_NAME)
+
+
+def _user():
+    import pwd
+    try:
+        return pwd.getpwuid(os.getuid()).pw_name
+    except Exception:
+        return os.environ.get("USER") or ""
+
+
+def systemd_user_ok():
+    if not have("systemctl"):
+        return False
+    rc, _, _ = run(["systemctl", "--user", "show-environment"], timeout=8)
+    return rc == 0
+
+
+def linger_on():
+    if not have("loginctl"):
+        return None
+    rc, out, _ = run(["loginctl", "show-user", _user(), "-p", "Linger", "--value"], timeout=8)
+    if rc != 0:
+        return None
+    return out.strip() == "yes"
+
+
+def _serve_argv(port, bind, expose):
+    a = [sys.executable, os.path.join(APPDIR, "engine.py"), "serve",
+         "--port", str(int(port)), "--bind", bind]
+    if expose:
+        a.append("--tunnel")
+    return a
+
+
+def _crontab_lines():
+    if not have("crontab"):
+        return None
+    rc, out, err = run(["crontab", "-l"], timeout=10)
+    if rc != 0:
+        return [] if "no crontab" in (err or "").lower() or not err.strip() else []
+    return out.splitlines()
+
+
+def _crontab_write(lines):
+    p = subprocess.run(["crontab", "-"], input="\n".join(lines) + "\n", text=True,
+                       capture_output=True, timeout=10)
+    if p.returncode != 0:
+        raise RuntimeError("crontab refused the change: %s" % (p.stderr or p.stdout).strip())
+
+
+def boot_report():
+    st = jload(BOOT_JSON, {}) or {}
+    out = {"asked": bool(st.get("asked")), "enabled": False, "method": st.get("method"),
+           "port": st.get("port"), "bind": st.get("bind"), "expose": st.get("expose")}
+    try:
+        if os.path.exists(_unit_path()) and have("systemctl"):
+            rc, o, _ = run(["systemctl", "--user", "is-enabled", UNIT_NAME], timeout=8)
+            if o.strip() == "enabled":
+                out.update(enabled=True, method="systemd", linger=linger_on())
+                return out
+        lines = _crontab_lines() or []
+        if any(CRON_MARK in l for l in lines):
+            out.update(enabled=True, method="cron")
+    except Exception:
+        pass
+    return out
+
+
+def boot_enable(port=8787, bind="127.0.0.1", expose=False, try_linger=True):
+    argv = _serve_argv(port, bind, expose)
+    log = os.path.join(LOGDIR, "webui.log")
+    res = {"ok": True}
+    if os.environ.get("FORGE_BOOT_METHOD") != "cron" and systemd_user_ok():
+        path = _unit_path()
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        unit = "\n".join([
+            "[Unit]",
+            "Description=Selkies Forge web UI",
+            "Documentation=https://github.com/adatskov-wcpss/animated-fiesta",
+            "After=network-online.target",
+            "",
+            "[Service]",
+            "Type=simple",
+            "Environment=FORGE_BOOT=1",
+            "Environment=FORGE_HOME=%s" % ROOT,
+            "Environment=PATH=%s" % ":".join(dict.fromkeys(
+                p for p in os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin").split(":")
+                if p and " " not in p)),
+            "ExecStart=%s" % " ".join(shlex.quote(a) for a in argv),
+            "StandardOutput=append:%s" % log,
+            "StandardError=append:%s" % log,
+            # A crash (or the OOM killer) brings it back; a clean stop does not.
+            "Restart=on-failure",
+            "RestartSec=5",
+            "",
+            "[Install]",
+            "WantedBy=default.target",
+            ""])
+        with open(path, "w") as fh:
+            fh.write(unit)
+        run(["systemctl", "--user", "daemon-reload"], timeout=20)
+        rc, out, err = run(["systemctl", "--user", "enable", UNIT_NAME], timeout=20)
+        if rc != 0:
+            raise RuntimeError("systemctl --user enable failed: %s" % (err or out).strip())
+        res["method"] = "systemd"
+        lg = linger_on()
+        if lg is False and try_linger:
+            run(["loginctl", "enable-linger", _user()], timeout=15)
+            lg = linger_on()
+        res["linger"] = lg
+        if lg is False:
+            res["needs"] = "sudo loginctl enable-linger %s" % _user()
+    elif _crontab_lines() is not None:
+        lines = [l for l in (_crontab_lines() or []) if CRON_MARK not in l]
+        lines.append("@reboot sleep 20; FORGE_BOOT=1 FORGE_HOME=%s %s >> %s 2>&1 %s"
+                     % (shlex.quote(ROOT), " ".join(shlex.quote(a) for a in argv),
+                        shlex.quote(log), CRON_MARK))
+        _crontab_write(lines)
+        res["method"] = "cron"
+    else:
+        raise RuntimeError("this machine has neither a systemd user session nor cron; "
+                           "add `selkies-cli start` to your own startup instead")
+    jsave(BOOT_JSON, {"asked": True, "enabled": True, "method": res["method"],
+                      "port": int(port), "bind": bind, "expose": bool(expose)})
+    return res
+
+
+def boot_disable():
+    if os.path.exists(_unit_path()):
+        run(["systemctl", "--user", "disable", UNIT_NAME], timeout=20)
+        try:
+            os.remove(_unit_path())
+        except OSError:
+            pass
+        run(["systemctl", "--user", "daemon-reload"], timeout=20)
+    lines = _crontab_lines()
+    if lines and any(CRON_MARK in l for l in lines):
+        _crontab_write([l for l in lines if CRON_MARK not in l])
+    st = jload(BOOT_JSON, {}) or {}
+    st.update(asked=True, enabled=False)
+    jsave(BOOT_JSON, st)
+    return {"ok": True}
+
+
+def boot_mark_asked():
+    st = jload(BOOT_JSON, {}) or {}
+    st["asked"] = True
+    jsave(BOOT_JSON, st)
+    return {"ok": True}
+
+
+def request_stop(reason):
+    """Tell a running web UI why it is about to be stopped (read by its signal handler)."""
+    info = jload(SERVER_JSON, None) or {}
+    jsave(STOP_REQUEST_JSON, {"pid": info.get("pid"), "reason": reason, "at": time.time()})
+    return {"ok": True, "pid": info.get("pid")}
 MIME = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
         ".js": "application/javascript; charset=utf-8", ".svg": "image/svg+xml",
         ".json": "application/json", ".ico": "image/x-icon",
@@ -3638,6 +4485,7 @@ class Handler(BaseHTTPRequestHandler):
                 "desktops": sorted({e["de_label"] for e in catalog.CATALOG}),
                 "tastes": TASTE_BLURB,
                 "quick_picks": catalog.QUICK_PICKS,
+                "shots": shots_index(),
                 "instances": docker_instances(),
                 "counts": {"total": len(catalog.CATALOG),
                            "runnable": sum(1 for e in catalog.CATALOG
@@ -3645,6 +4493,8 @@ class Handler(BaseHTTPRequestHandler):
             })
         if route == "/api/host":
             return self._send(200, host_info(fresh=True))
+        if route == "/api/lifecycle":
+            return self._send(200, {"last_stop": last_stop_report(), "boot": boot_report()})
         if route == "/api/update":
             return self._send(200, update_report())
         if route == "/api/doctor":
@@ -3732,7 +4582,28 @@ class Handler(BaseHTTPRequestHandler):
         if m:
             return self._send(200, reconfigure(
                 m.group(1), body.get("memory_mb"), body.get("cpus"), body.get("shm_mb"),
-                body.get("disk_mb"), body.get("autostart")))
+                body.get("disk_mb"), body.get("autostart"), body.get("display"),
+                body.get("resolution")))
+        if route == "/api/autostart-ui":
+            srv = jload(SERVER_JSON, {}) or {}
+            if body.get("enable"):
+                return self._send(200, boot_enable(srv.get("port") or 8787,
+                                                   srv.get("bind") or "127.0.0.1",
+                                                   bool(srv.get("tunnel"))))
+            return self._send(200, boot_disable())
+        if route == "/api/restore":
+            names = (last_stop_report() or {}).get("restore") or []
+            started, errors = [], {}
+            for n in names:
+                try:
+                    instance_action(n, "start")
+                    started.append(n)
+                except Exception as ex:
+                    errors[n] = str(ex)
+            dismiss_last_stop()
+            return self._send(200, {"started": started, "errors": errors})
+        if route == "/api/last-stop/dismiss":
+            return self._send(200, dismiss_last_stop())
         m = re.match(r"^/api/instance/([A-Za-z0-9_.-]+)/([a-z]+)$", route)
         if m:
             return self._send(200, instance_action(m.group(1), m.group(2), body))
@@ -3864,6 +4735,53 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
             "payload": SERVE_PAYLOAD}
     jsave(SERVER_JSON, info)
 
+    # Keep a record of this run so the next CLI start can say how it ended.
+    prev = jload(LIFE_JSON, None)
+    if prev and prev.get("pid") != os.getpid():
+        rep = analyze_life(prev)
+        if rep:
+            rep["recorded"] = time.time()
+            jsave(LAST_STOP_JSON, rep)
+    life = {"pid": os.getpid(), "started": time.time(), "heartbeat": time.time(),
+            "boot_id": boot_id(), "port": port, "bind": bind,
+            "boot_start": os.environ.get("FORGE_BOOT") == "1",
+            "desktops_running": running_desktop_names(), "stopped": None}
+    jsave(LIFE_JSON, life)
+    stop_state = {"reason": None, "detail": ""}
+
+    def heartbeat():
+        while True:
+            time.sleep(20)
+            try:
+                life["heartbeat"] = time.time()
+                life["desktops_running"] = running_desktop_names()
+                jsave(LIFE_JSON, life)
+            except Exception:
+                pass
+    threading.Thread(target=heartbeat, daemon=True).start()
+
+    def on_signal(signum, _frame):
+        req = jload(STOP_REQUEST_JSON, {}) or {}
+        if req.get("pid") == os.getpid() and time.time() - float(req.get("at") or 0) < 120:
+            stop_state["reason"] = req.get("reason") or "user"
+        else:
+            down = host_going_down()
+            if down:
+                stop_state["reason"] = "host-" + down
+            elif os.environ.get("INVOCATION_ID") and signum == signal.SIGTERM:
+                stop_state["reason"] = "service"     # systemctl --user stop
+            else:
+                stop_state["reason"] = "signal"
+            stop_state["detail"] = ("another program sent it %s"
+                                    % ("SIGTERM" if signum == signal.SIGTERM else "SIGHUP"))
+        threading.Thread(target=httpd.shutdown, daemon=True).start()
+
+    for sig in (signal.SIGTERM, signal.SIGHUP):
+        try:
+            signal.signal(sig, on_signal)
+        except (ValueError, OSError):
+            pass
+
     tun = None
     if open_tunnel:
         try:
@@ -3884,8 +4802,23 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     try:
         httpd.serve_forever(poll_interval=0.4)
     except KeyboardInterrupt:
-        pass
+        stop_state["reason"] = stop_state["reason"] or "ctrl-c"
+    except Exception as ex:
+        stop_state["reason"] = "error"
+        stop_state["detail"] = "%s: %s" % (type(ex).__name__, ex)
+        raise
     finally:
+        try:
+            life["stopped"] = {"reason": stop_state["reason"] or "signal",
+                               "at": time.time(), "detail": stop_state["detail"]}
+            life["heartbeat"] = time.time()
+            jsave(LIFE_JSON, life)
+            try:
+                os.remove(STOP_REQUEST_JSON)
+            except OSError:
+                pass
+        except Exception:
+            pass
         STATS.stop()
         if tun:
             tunnel_stop("__webui__")
@@ -3938,6 +4871,7 @@ def cli_launch_stream(args):
         plan["disk_mb"] = int(args.disk)
     opts = {"tunnel": not args.no_tunnel, "name": args.name, "autostart": args.autostart,
             "gpu": args.gpu, "seccomp_unconfined": args.seccomp,
+            "display": args.display, "resolution": args.resolution,
             "health_timeout": args.timeout}
     if args.user and args.password:
         opts["username"], opts["password"] = args.user, args.password
@@ -4226,7 +5160,8 @@ def restart_webui_detached():
     cli = os.path.join(APPDIR, "selkies-cli")
     # FORGE_JUST_UPDATED only stops the CLI re-checking during the restart; it
     # must not be FORGE_AUTO_UPDATE=0, which the new server would inherit.
-    env = dict(os.environ, FORGE_HOME=ROOT, FORGE_AS_CLI="1", FORGE_JUST_UPDATED="1")
+    env = dict(os.environ, FORGE_HOME=ROOT, FORGE_AS_CLI="1", FORGE_JUST_UPDATED="1",
+               FORGE_STOP_REASON="update")
     with open(os.path.join(LOGDIR, "restart.log"), "ab") as log:
         subprocess.Popen(["bash", cli, "restart"], stdin=subprocess.DEVNULL, stdout=log,
                          stderr=subprocess.STDOUT, env=env, start_new_session=True)
@@ -4276,7 +5211,12 @@ def forge_status():
     except Exception:
         pass
     ok, err = docker_ok()
+    try:
+        last = last_stop_report()
+    except Exception:
+        last = None
     return {"version": VERSION, "webui": webui_status(), "docker": ok,
+            "last_stop": last, "boot": boot_report(),
             "docker_error": None if ok else err, "desktops": items,
             "running": sum(1 for i in items if i["running"]),
             "stopped": sum(1 for i in items if not i["running"])}
@@ -4340,6 +5280,18 @@ def main(argv=None):
 
     sub.add_parser("host")
     sub.add_parser("status")
+    p = sub.add_parser("boot")
+    p.add_argument("action", choices=["status", "enable", "disable", "asked"])
+    p.add_argument("--port", type=int, default=8787)
+    p.add_argument("--bind", default="127.0.0.1")
+    p.add_argument("--expose", action="store_true")
+    p.add_argument("--no-linger", action="store_true")
+    p = sub.add_parser("stop-request")
+    p.add_argument("reason")
+    sub.add_parser("last-stop")
+    sub.add_parser("dismiss-last-stop")
+    p = sub.add_parser("restore")
+    p.add_argument("names", nargs="*")
     p = sub.add_parser("check-update")
     p.add_argument("--install", action="store_true")
     p.add_argument("--max-age", type=int, default=0)
@@ -4384,11 +5336,14 @@ def main(argv=None):
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--autostart", action="store_true",
                    help="start this desktop again whenever Docker starts")
+    p.add_argument("--display", default="auto", choices=["auto", "fit", "fixed"],
+                   help="fit: follow the browser window; fixed: one size, scaled")
+    p.add_argument("--resolution", default="1920x1080", help="size for --display fixed")
 
     p = sub.add_parser("do")
     p.add_argument("name")
     p.add_argument("action", choices=["start", "stop", "restart", "remove",
-                                      "tunnel", "untunnel"])
+                                      "tunnel", "untunnel", "repair"])
     p.add_argument("--purge", action="store_true")
     p.add_argument("--subdomain")
 
@@ -4415,6 +5370,41 @@ def main(argv=None):
         return 0
     if a.cmd == "status":
         print(json.dumps(forge_status()))
+        return 0
+    if a.cmd == "boot":
+        try:
+            if a.action == "enable":
+                out = boot_enable(a.port, a.bind, a.expose, try_linger=not a.no_linger)
+            elif a.action == "disable":
+                out = boot_disable()
+            elif a.action == "asked":
+                out = boot_mark_asked()
+            else:
+                out = boot_report()
+        except Exception as ex:
+            out = {"ok": False, "error": str(ex)}
+        print(json.dumps(out))
+        return 0 if out.get("ok", True) else 1
+    if a.cmd == "stop-request":
+        print(json.dumps(request_stop(a.reason)))
+        return 0
+    if a.cmd == "last-stop":
+        print(json.dumps(last_stop_report()))
+        return 0
+    if a.cmd == "dismiss-last-stop":
+        print(json.dumps(dismiss_last_stop()))
+        return 0
+    if a.cmd == "restore":
+        names = a.names or (last_stop_report() or {}).get("restore") or []
+        done = []
+        for n in names:
+            try:
+                instance_action(n, "start")
+                done.append(n)
+            except Exception as ex:
+                print(json.dumps({"name": n, "error": str(ex)}), file=sys.stderr)
+        dismiss_last_stop()
+        print(json.dumps({"started": done}))
         return 0
     if a.cmd == "host":
         print(json.dumps(host_info(fresh=True), indent=2))
@@ -4508,6 +5498,1071 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         sys.exit(130)
 __FORGE_FILE_ENGINE_PY__
+  cat > "$FORGE_APP/layer.py" <<'__FORGE_FILE_LAYER_PY__'
+"""
+Selkies Forge - the forge layer.
+
+Every Selkies desktop the forge runs, pulled or built, gets a thin image layer
+on top with three things in it:
+
+  seed    a one-shot s6 service that runs before the desktop starts and writes
+          sane first-run configs, so nothing opens a setup wizard that is sized
+          for a screen you do not have (Enlightenment's language picker, i3's
+          "generate a config?" prompt, the Xfce panel question, KDE's welcome
+          centre, screen lockers that ask for a password nobody set).
+  agent   a small supervised service that watches the X screen. When Selkies
+          resizes the screen to your browser window, any window that would
+          now hang off the edge is pulled back inside it. It also writes a
+          health file the engine reads to know the desktop really came up.
+  startwm (built desktops only) runs the session under a supervisor that logs
+          what it prints, and drops to a rescue session that shows the log
+          instead of a black screen if the desktop keeps crashing.
+
+The layer is a few kilobytes and builds in seconds, so it is rebuilt whenever
+this file changes, without touching the big package layers underneath.
+"""
+
+import base64
+import hashlib
+
+LAYER_VERSION = "6"
+
+AGENT = r"""#!/bin/bash
+# Selkies Forge agent: keeps windows on the visible screen, reports health.
+export DISPLAY="${DISPLAY:-:1}"
+S=/tmp/forge
+mkdir -p "$S" 2>/dev/null
+LOG="$S/agent.log"
+until xprop -root >/dev/null 2>&1; do sleep 1; done
+echo "$(date '+%F %T') agent up on $DISPLAY" >> "$LOG"
+
+geom() { xdotool getdisplaygeometry 2>/dev/null; }
+
+# Windows the window manager says it manages. Only when there is no EWMH
+# window manager at all (twm, ratpoison...) fall back to mapped top-levels.
+clients() {
+  if xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -q '0x'; then
+    xprop -root _NET_CLIENT_LIST 2>/dev/null | grep -o '0x[0-9a-fA-F]*'
+  else
+    xdotool search --onlyvisible --maxdepth 1 --name '' 2>/dev/null
+  fi
+}
+
+nums() { grep -o -- '-\?[0-9]\+' | tr '\n' ' '; }
+
+fit_one() {  # fit_one <window> <screen w> <screen h>
+  local id=$1 W=$2 H=$3 t st X= Y= WIDTH= HEIGHT=
+  t=$(xprop -id "$id" _NET_WM_WINDOW_TYPE 2>/dev/null)
+  case "$t" in *DOCK*|*DESKTOP*|*NOTIFICATION*|*TOOLTIP*|*MENU*|*SPLASH*|*COMBO*|*DND*) return ;; esac
+  st=$(xprop -id "$id" _NET_WM_STATE 2>/dev/null)
+  case "$st" in *FULLSCREEN*|*MAXIMIZED_VERT*|*HIDDEN*) return ;; esac
+  eval "$(xdotool getwindowgeometry --shell "$id" 2>/dev/null | grep -E '^(X|Y|WIDTH|HEIGHT)=-?[0-9]+$')"
+  [ -n "$WIDTH" ] && [ -n "$HEIGHT" ] || return
+  [ "$WIDTH" -lt 40 ] || [ "$HEIGHT" -lt 40 ] && return
+  # Exactly screen-sized at the origin: a desktop, a backdrop or a fullscreen
+  # app. The window manager owns those.
+  if [ "$X" -le 0 ] && [ "$Y" -le 0 ] && [ "$WIDTH" -ge "$W" ] && [ "$HEIGHT" -ge "$H" ]; then return; fi
+
+  # Decorations (title bar, borders) and the usable work area (screen minus panels).
+  local l=0 r=0 tp=0 b=0 wx=0 wy=0 ww=$W wh=$H e wa
+  e=$(xprop -id "$id" _NET_FRAME_EXTENTS 2>/dev/null | sed -n 's/.*= //p' | nums)
+  [ -n "$e" ] && set -- $e && l=${1:-0} r=${2:-0} tp=${3:-0} b=${4:-0}
+  wa=$(xprop -root _NET_WORKAREA 2>/dev/null | sed -n 's/.*= //p' | nums)
+  if [ -n "$wa" ]; then
+    set -- $wa
+    wx=${1:-0}; wy=${2:-0}; ww=${3:-$W}; wh=${4:-$H}
+  fi
+  # Right after a resize the work area can still describe the old screen.
+  [ $((wx + ww)) -gt "$W" ] && ww=$((W - wx))
+  [ $((wy + wh)) -gt "$H" ] && wh=$((H - wy))
+  [ "$ww" -lt 200 ] && { wx=0; ww=$W; }
+  [ "$wh" -lt 150 ] && { wy=0; wh=$H; }
+
+  local maxw=$((ww - l - r)) maxh=$((wh - tp - b))
+  local nw=$WIDTH nh=$HEIGHT
+  [ "$nw" -gt "$maxw" ] && nw=$maxw
+  [ "$nh" -gt "$maxh" ] && nh=$maxh
+  local fx=$((X - l)) fy=$((Y - tp)) fw=$((nw + l + r)) fh=$((nh + tp + b))
+  local tx=$fx ty=$fy
+  [ $((tx + fw)) -gt $((wx + ww)) ] && tx=$((wx + ww - fw))
+  [ $((ty + fh)) -gt $((wy + wh)) ] && ty=$((wy + wh - fh))
+  [ "$tx" -lt "$wx" ] && tx=$wx
+  [ "$ty" -lt "$wy" ] && ty=$wy
+  if [ "$nw" = "$WIDTH" ] && [ "$nh" = "$HEIGHT" ] && [ "$tx" = "$fx" ] && [ "$ty" = "$fy" ]; then
+    return
+  fi
+  if [ "$nw" != "$WIDTH" ] || [ "$nh" != "$HEIGHT" ]; then
+    xdotool windowsize "$id" "$nw" "$nh" 2>/dev/null
+  fi
+  xdotool windowmove "$id" "$tx" "$ty" 2>/dev/null
+  # Window managers disagree on whether a move means the frame or the client.
+  # Look at where it actually landed and correct once.
+  sleep 0.2
+  local X2= Y2=
+  eval "$(xdotool getwindowgeometry --shell "$id" 2>/dev/null | grep -E '^(X|Y)=-?[0-9]+$' | sed 's/^/2/;s/^2X/X2/;s/^2Y/Y2/')"
+  if [ -n "$X2" ] && [ -n "$Y2" ]; then
+    local dx=$((tx - (X2 - l))) dy=$((ty - (Y2 - tp)))
+    if [ "$dx" != 0 ] || [ "$dy" != 0 ]; then
+      xdotool windowmove "$id" $((tx + dx)) $((ty + dy)) 2>/dev/null
+    fi
+  fi
+  echo "$(date '+%F %T') fit $id ${WIDTH}x${HEIGHT}+$X+$Y -> ${nw}x${nh} frame@$tx,$ty in ${ww}x${wh}+$wx+$wy" >> "$LOG"
+}
+
+health() {  # health <screen>
+  local wid wm n mode
+  wid=$(xprop -root _NET_SUPPORTING_WM_CHECK 2>/dev/null | grep -o '0x[0-9a-fA-F]*' | head -n 1)
+  wm=""
+  [ -n "$wid" ] && wm=$(xprop -id "$wid" _NET_WM_NAME 2>/dev/null | sed -n 's/^[^"]*"\(.*\)"$/\1/p' | tr -d '"\\')
+  n=$(printf '%s\n' $2 | grep -c .)
+  mode=$(cat "$S/mode" 2>/dev/null || echo normal)
+  printf '{"ts": %s, "screen": "%s", "wm": "%s", "clients": %s, "mode": "%s"}\n' \
+    "$(date +%s)" "$1" "$wm" "$n" "$mode" > "$S/health.json.tmp" && mv -f "$S/health.json.tmp" "$S/health.json"
+}
+
+# Xvfb starts at a huge virtual size (15360x8640) and svc-de shrinks it once.
+# When a session restarts, the screen can fall back to that huge size and stay
+# there: half a gigabyte of framebuffer and a blank screen until a browser
+# reconnects. Put it back to the last real size.
+MAXRES=$(xrandr 2>/dev/null | sed -n 's/.*maximum \([0-9]*\) x \([0-9]*\).*/\1 \2/p' | head -n 1)
+good="1024 768" huge=0
+set_mode() {  # set_mode <w> <h>
+  local m n
+  m=$(cvt "$1" "$2" 2>/dev/null | sed -n 's/^Modeline //p' | tr -d '"')
+  [ -n "$m" ] || return
+  n=$(echo $m | cut -d' ' -f1)
+  xrandr --newmode $m >/dev/null 2>&1
+  xrandr --addmode screen "$n" >/dev/null 2>&1
+  xrandr --output screen --mode "$n" >/dev/null 2>&1
+}
+
+last="" prev="" done_ids="" tick=0
+while :; do
+  g=$(geom)
+  if [ -z "$g" ]; then sleep 2; continue; fi
+  W=${g% *}; H=${g#* }
+  if [ -z "${SELKIES_MANUAL_WIDTH:-}" ] && [ -n "$MAXRES" ] && [ "$g" = "$MAXRES" ] && \
+     [ "${MAXRES%% *}" -ge 7000 ]; then
+    huge=$((huge + 1))
+    if [ "$huge" -ge 3 ]; then
+      echo "$(date '+%F %T') screen stuck at the ${MAXRES/ /x} default, back to ${good/ /x}" >> "$LOG"
+      set_mode $good
+      huge=0
+      sleep 1
+      continue
+    fi
+  else
+    huge=0
+    [ "$W" -ge 320 ] && [ "$H" -ge 240 ] && good="$g"
+  fi
+  ids=$(clients | tr '\n' ' ')
+  if [ "$g" != "$last" ]; then
+    [ -n "$last" ] && { echo "$(date '+%F %T') screen ${last/ /x} -> ${W}x${H}" >> "$LOG"; sleep 0.7; ids=$(clients | tr '\n' ' '); }
+    for id in $ids; do fit_one "$id" "$W" "$H"; done
+    done_ids="$ids"
+  else
+    # New windows get one tick to be placed by the window manager first.
+    for id in $ids; do
+      case " $done_ids " in *" $id "*) continue ;; esac
+      case " $prev " in *" $id "*) fit_one "$id" "$W" "$H"; done_ids="$done_ids $id" ;; esac
+    done
+  fi
+  last="$g"; prev="$ids"
+  tick=$((tick + 1))
+  if [ $((tick % 3)) = 1 ]; then
+    health "${W}x${H}" "$ids"
+    if [ "$(wc -c < "$LOG" 2>/dev/null || echo 0)" -gt 200000 ]; then
+      tail -n 400 "$LOG" > "$LOG.tmp" && mv -f "$LOG.tmp" "$LOG"
+    fi
+  fi
+  sleep 1
+done
+"""
+
+# Runs as root before the desktop starts. Only ever writes files that do not
+# exist yet, so anything you change inside the desktop is kept.
+SEED = r"""#!/usr/bin/with-contenv bash
+H="${HOME:-/config}"
+[ -d "$H" ] || H=/config
+mkdir -p /tmp/forge && chown abc:abc /tmp/forge 2>/dev/null
+rm -f /tmp/forge/quick-exits /tmp/forge/mode
+CE=/run/s6/container_environment
+have() { command -v "$1" >/dev/null 2>&1; }
+put() {  # put <path relative to $H> [mode]: stdin becomes the file, if it is missing
+  local f="$H/$1"
+  if [ -e "$f" ]; then cat >/dev/null; return 0; fi
+  mkdir -p "$(dirname "$f")"
+  cat > "$f"
+  [ -n "${2:-}" ] && chmod "$2" "$f"
+  echo "[forge] seeded $1"
+}
+term() { for t in "$@" kitty alacritty xfce4-terminal qterminal lxterminal mate-terminal gnome-terminal konsole terminology xterm; do have "$t" && { echo "$t"; return; }; done; echo xterm; }
+launcher() { if have rofi; then echo "rofi -show drun"; else echo "dmenu_run"; fi; }
+
+# --- Enlightenment: skip the first-run wizard (it is sized for 1024x768 and
+# its Next button falls off a smaller screen).
+if have enlightenment; then
+  [ -d "$CE" ] && printf 'standard' > "$CE/E_CONF_PROFILE"
+fi
+
+# Enlightenment's system helper (mounts, brightness, shutdown menu) only lets
+# listed users and groups in. On Arch the desktop user is in none of them, and
+# E greets you with "Error in Enlightenment System Service".
+SA=/etc/enlightenment/sysactions.conf
+if [ -f "$SA" ] && ! grep -q '^user: *abc ' "$SA"; then
+  sed -i '0,/^user:/s//user:     abc       allow: *\nuser:/' "$SA" && echo "[forge] allowed abc in sysactions.conf"
+fi
+
+# --- i3: without a config i3 opens "generate a config?" on a black screen.
+if have i3 && [ ! -e "$H/.config/i3/config" ] && [ ! -e "$H/.i3/config" ]; then
+  T=$(term); L=$(launcher)
+  GAPS=""
+  v=$(i3 --version 2>/dev/null | sed -n 's/^i3 version \([0-9]*\)\.\([0-9]*\).*/\1 \2/p')
+  set -- $v
+  if [ -n "${1:-}" ] && { [ "$1" -gt 4 ] || { [ "$1" -eq 4 ] && [ "${2:-0}" -ge 22 ]; }; }; then
+    GAPS="gaps inner 6"
+  fi
+  put .config/i3/config <<I3EOF
+# Selkies Forge i3 config. The modifier is Alt, because browsers and the
+# host OS usually swallow the Super key before it reaches the desktop.
+#   Alt+Enter terminal   Alt+d launcher   Alt+Shift+q close
+#   Alt+1..5 workspaces  Alt+f fullscreen Alt+Shift+space float
+set \$mod Mod1
+font pango:DejaVu Sans Mono 10
+floating_modifier \$mod
+default_border pixel 2
+default_floating_border normal
+$GAPS
+client.focused #5aa0ff #2a5db0 #ffffff #8cc4ff #5aa0ff
+client.unfocused #1b2433 #121a26 #9aa7b8 #1b2433 #1b2433
+for_window [window_role="pop-up"] floating enable
+for_window [window_type="dialog"] floating enable
+bindsym \$mod+Return exec $T
+bindsym \$mod+d exec --no-startup-id $L
+bindsym \$mod+Shift+q kill
+bindsym \$mod+h focus left
+bindsym \$mod+j focus down
+bindsym \$mod+k focus up
+bindsym \$mod+l focus right
+bindsym \$mod+Left focus left
+bindsym \$mod+Down focus down
+bindsym \$mod+Up focus up
+bindsym \$mod+Right focus right
+bindsym \$mod+Shift+h move left
+bindsym \$mod+Shift+j move down
+bindsym \$mod+Shift+k move up
+bindsym \$mod+Shift+l move right
+bindsym \$mod+Shift+Left move left
+bindsym \$mod+Shift+Down move down
+bindsym \$mod+Shift+Up move up
+bindsym \$mod+Shift+Right move right
+bindsym \$mod+b split h
+bindsym \$mod+v split v
+bindsym \$mod+f fullscreen toggle
+bindsym \$mod+s layout stacking
+bindsym \$mod+w layout tabbed
+bindsym \$mod+e layout toggle split
+bindsym \$mod+Shift+space floating toggle
+bindsym \$mod+space focus mode_toggle
+bindsym \$mod+1 workspace number 1
+bindsym \$mod+2 workspace number 2
+bindsym \$mod+3 workspace number 3
+bindsym \$mod+4 workspace number 4
+bindsym \$mod+5 workspace number 5
+bindsym \$mod+Shift+1 move container to workspace number 1
+bindsym \$mod+Shift+2 move container to workspace number 2
+bindsym \$mod+Shift+3 move container to workspace number 3
+bindsym \$mod+Shift+4 move container to workspace number 4
+bindsym \$mod+Shift+5 move container to workspace number 5
+bindsym \$mod+Shift+c reload
+bindsym \$mod+Shift+r restart
+mode "resize" {
+  bindsym h resize shrink width 10 px or 10 ppt
+  bindsym j resize grow height 10 px or 10 ppt
+  bindsym k resize shrink height 10 px or 10 ppt
+  bindsym l resize grow width 10 px or 10 ppt
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+bindsym \$mod+r mode "resize"
+bar {
+  status_command i3status
+  position bottom
+  colors {
+    background #0b1422
+    statusline #c9d6e8
+    separator #33435a
+    focused_workspace #5aa0ff #2a5db0 #ffffff
+    inactive_workspace #0b1422 #0b1422 #8a98ab
+  }
+}
+exec_always --no-startup-id sh -c 'feh --no-fehbg --bg-fill /usr/local/share/forge/wallpaper.jpg 2>/dev/null || xsetroot -solid "#10233d" 2>/dev/null || true'
+exec --no-startup-id $T
+I3EOF
+fi
+if have i3status && [ ! -e "$H/.config/i3status/config" ]; then
+  put .config/i3status/config <<'ISEOF'
+general {
+  colors = true
+  interval = 5
+}
+order += "cpu_usage"
+order += "memory"
+order += "disk /"
+order += "tztime local"
+cpu_usage { format = "cpu %usage" }
+memory { format = "mem %used / %total" }
+disk "/" { format = "disk %avail free" }
+tztime local { format = "%a %d %b  %H:%M" }
+ISEOF
+fi
+
+# --- bspwm does nothing at all without a bspwmrc and an sxhkdrc.
+if have bspwm && [ ! -e "$H/.config/bspwm/bspwmrc" ]; then
+  T=$(term); L=$(launcher)
+  put .config/bspwm/bspwmrc 755 <<BSEOF
+#!/bin/sh
+pgrep -x sxhkd >/dev/null || sxhkd &
+bspc monitor -d 1 2 3 4 5
+bspc config border_width 2
+bspc config window_gap 10
+bspc config split_ratio 0.52
+bspc config borderless_monocle true
+bspc config gapless_monocle true
+bspc config focused_border_color "#5aa0ff"
+bspc config normal_border_color "#1b2433"
+xsetroot -cursor_name left_ptr 2>/dev/null
+feh --no-fehbg --bg-fill /usr/local/share/forge/wallpaper.jpg 2>/dev/null || xsetroot -solid "#10233d" 2>/dev/null
+pgrep -x $T >/dev/null || $T &
+BSEOF
+  put .config/sxhkd/sxhkdrc <<SXEOF
+# Alt is the modifier: browsers swallow Super.
+alt + Return
+	$T
+alt + d
+	$L
+alt + shift + q
+	bspc node -c
+alt + {h,j,k,l}
+	bspc node -f {west,south,north,east}
+alt + shift + {h,j,k,l}
+	bspc node -s {west,south,north,east}
+alt + {_,shift + }{1-5}
+	bspc {desktop -f,node -d} '^{1-5}'
+alt + f
+	bspc node -t ~fullscreen
+alt + s
+	bspc node -t ~floating
+alt + shift + r
+	bspc wm -r
+SXEOF
+fi
+
+# Ready-made images (webtops) already ship tuned first-run configs; only the
+# desktops the forge built itself need the panel and locker defaults below.
+BUILT=0
+[ -f /usr/local/share/forge/built ] && BUILT=1
+
+# --- Xfce: the panel asks "default config or one empty panel?" on first run.
+if [ "$BUILT" = 1 ] && have xfce4-panel; then
+  for d in /etc/xdg/xfce4/panel/default.xml /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml; do
+    if [ -f "$d" ]; then
+      put .config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml < "$d"
+      break
+    fi
+  done
+fi
+# xfwm4's compositor does not repaint after the screen is resized under Xvfb,
+# which leaves a black band where the desktop grew. LinuxServer's own Xfce
+# webtops turn it off for the same reason.
+if [ "$BUILT" = 1 ] && have xfwm4; then
+  put .config/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml <<'XWEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="use_compositing" type="bool" value="false"/>
+    <property name="borderless_maximize" type="bool" value="true"/>
+    <property name="click_to_focus" type="bool" value="true"/>
+    <property name="workspace_count" type="int" value="2"/>
+  </property>
+</channel>
+XWEOF
+fi
+if [ "$BUILT" = 1 ] && have xfdesktop; then
+  put .config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'XDEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorscreen" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/local/share/forge/wallpaper.jpg"/>
+        </property>
+        <property name="workspace1" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/local/share/forge/wallpaper.jpg"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+XDEOF
+fi
+if [ "$BUILT" = 1 ] && { have xfce4-screensaver || have xfce4-power-manager; }; then
+  put .config/xfce4/xfconf/xfce-perchannel-xml/xfce4-screensaver.xml <<'XSEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-screensaver" version="1.0">
+  <property name="saver" type="empty">
+    <property name="enabled" type="bool" value="false"/>
+    <property name="idle-activation" type="empty">
+      <property name="enabled" type="bool" value="false"/>
+    </property>
+  </property>
+  <property name="lock" type="empty">
+    <property name="enabled" type="bool" value="false"/>
+  </property>
+</channel>
+XSEOF
+  put .config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml <<'XPEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-power-manager" version="1.0">
+  <property name="xfce4-power-manager" type="empty">
+    <property name="dpms-enabled" type="bool" value="false"/>
+    <property name="lock-screen-suspend-hibernate" type="bool" value="false"/>
+    <property name="blank-on-ac" type="int" value="0"/>
+  </property>
+</channel>
+XPEOF
+fi
+
+# --- KDE: no welcome centre, no wallet prompts, no splash, no file indexer.
+if have plasmashell || have startplasma-x11; then
+  put .config/plasma-welcomerc <<'KEOF'
+[General]
+LastSeenVersion=9.9.9
+ShouldShow=false
+KEOF
+  put .config/kwalletrc <<'KEOF'
+[Wallet]
+Enabled=false
+First Use=false
+KEOF
+  put .config/ksplashrc <<'KEOF'
+[KSplash]
+Engine=none
+Theme=None
+KEOF
+  put .config/baloofilerc <<'KEOF'
+[Basic Settings]
+Indexing-Enabled=false
+KEOF
+  put .config/kscreenlockerrc <<'KEOF'
+[Daemon]
+Autolock=false
+LockOnResume=false
+Timeout=0
+KEOF
+fi
+
+# --- GNOME Flashback and Budgie run on gnome-session, which shows "Oh no!
+# Something has gone wrong" when any *required* component dies. Power,
+# Sharing, Smartcard, Wacom and friends need logind, UPower or hardware a
+# container does not have, so a user copy of the session drops them.
+for f in /usr/share/gnome-session/sessions/*.session; do
+  [ -f "$f" ] || continue
+  b=$(basename "$f")
+  for d in .config/gnome-session/sessions .local/share/gnome-session/sessions; do
+    [ -e "$H/$d/$b" ] && continue
+    mkdir -p "$H/$d"
+    sed -E '/^RequiredComponents=/{s/org\.gnome\.SettingsDaemon\.(Power|Sharing|Smartcard|UsbProtection|Wacom|Rfkill|PrintNotifications|ScreensaverProxy);//g}' \
+      "$f" > "$H/$d/$b" && echo "[forge] relaxed $b"
+    # Ubuntu starts gnome-flashback itself (desktop, background, notifications)
+    # from a systemd user unit; there is no systemd here, so name it directly.
+    case "$b" in
+      gnome-flashback-*) grep -q '=gnome-flashback;' "$H/$d/$b" || \
+        sed -i 's/^RequiredComponents=/RequiredComponents=gnome-flashback;/' "$H/$d/$b" ;;
+    esac
+  done
+done
+
+# --- LXQt's desktop (pcmanfm-qt) defaults to a wallpaper some bases lack.
+if have pcmanfm-qt && have lxqt-session; then
+  put .config/pcmanfm-qt/lxqt/settings.conf <<'PQEOF'
+[Desktop]
+Wallpaper=/usr/local/share/forge/wallpaper.jpg
+WallpaperMode=zoom
+BgColor=#0a1730
+PQEOF
+fi
+
+# --- LXQt asks which window manager to use unless it is already set.
+if have lxqt-session && have openbox; then
+  put .config/lxqt/session.conf <<'LQEOF'
+[General]
+window_manager=openbox
+LQEOF
+fi
+
+# Everything above was written as root; hand it all to the desktop user
+# (a root-owned ~/.local broke xmonad and gnome-session's migrations).
+chown -R abc:abc "$H/.config" "$H/.local" "$H/.e" "$H/.i3" 2>/dev/null || true
+exit 0
+"""
+
+# Replaces the base image's svc-xsettingsd/run: LinuxServer's version only
+# stands aside for Xfce, but GNOME, Cinnamon, MATE and Budgie bring their own
+# XSETTINGS manager too, and theirs exits ("only one xsettings manager at a
+# time"), which gnome-session treats as a fatal error.
+XSETTINGSD_RUN = """#!/usr/bin/with-contenv bash
+for b in xfce4-session /usr/libexec/gsd-xsettings /usr/bin/csd-xsettings \\
+         /usr/lib/cinnamon-settings-daemon/csd-xsettings mate-settings-daemon \\
+         budgie-daemon ukui-settings-daemon; do
+  if command -v "$b" >/dev/null 2>&1 || [ -x "$b" ]; then exec sleep infinity; fi
+done
+if [[ "${PIXELFLUX_WAYLAND,,}" == "true" ]]; then exec sleep infinity; fi
+if [ ! -f "${HOME}/.xsettingsd" ]; then
+  echo "Xft/DPI 98304" > "${HOME}/.xsettingsd"
+fi
+chown abc:abc "${HOME}/.xsettingsd"
+exec s6-setuidgid abc xsettingsd
+"""
+
+# GTK's newest image loaders (glycin, on Arch) run every SVG/PNG decode inside
+# bwrap. Docker does not let an unprivileged container create the namespaces
+# bwrap needs, so every icon fails to load and Xfce, MATE and LXQt abort on
+# start. This shim, placed ahead of the real bwrap on PATH, uses the real
+# sandbox when it works and otherwise runs the loader directly.
+BWRAP_SHIM = r"""#!/bin/sh
+REAL=/usr/bin/bwrap
+OK=/tmp/forge/bwrap-works
+if [ ! -f "$OK" ] && [ ! -f "$OK.no" ]; then
+  mkdir -p /tmp/forge 2>/dev/null
+  if "$REAL" --unshare-all --die-with-parent --ro-bind / / true >/dev/null 2>&1; then
+    : > "$OK"
+  else
+    : > "$OK.no"
+  fi
+fi
+[ -f "$OK" ] && exec "$REAL" "$@"
+# Unsandboxed: drop bwrap's own options, keep its --setenv, run the program.
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --setenv) export "$2=$3"; shift 3 ;;
+    --unsetenv) unset "$2"; shift 2 ;;
+    --bind|--bind-try|--ro-bind|--ro-bind-try|--dev-bind|--dev-bind-try|--symlink|\
+    --file|--bind-data|--ro-bind-data|--chmod|--overlay-src) shift 3 ;;
+    --chdir) cd "$2" 2>/dev/null; shift 2 ;;
+    --dev|--proc|--tmpfs|--dir|--remount-ro|--seccomp|--add-seccomp-fd|--hostname|\
+    --uid|--gid|--lock-file|--sync-fd|--info-fd|--json-status-fd|--block-fd|\
+    --userns-block-fd|--userns|--userns2|--pidns|--perms|--size|--cap-add|--cap-drop|\
+    --args|--mqueue|--exec-label|--file-label|--argv0|--tmp-overlay|--ro-overlay) shift 2 ;;
+    --) shift; break ;;
+    --*) shift ;;
+    *) break ;;
+  esac
+done
+exec "$@"
+"""
+
+AGENT_RUN = """#!/usr/bin/with-contenv bash
+# Wayland webtops (LinuxServer's KDE images default to it): there is no X
+# screen to manage, so only report which compositor is up.
+if [[ "${PIXELFLUX_WAYLAND,,}" == "true" ]]; then
+  mkdir -p /tmp/forge && chown abc:abc /tmp/forge
+  while :; do
+    wm=""
+    for p in kwin_wayland gnome-shell mutter sway wayfire Hyprland labwc; do
+      if pgrep -x "$p" >/dev/null 2>&1; then wm="$p"; break; fi
+    done
+    printf '{"ts": %s, "screen": "wayland", "wm": "%s", "clients": 0, "mode": "normal"}\\n' \\
+      "$(date +%s)" "$wm" > /tmp/forge/health.json.tmp && mv -f /tmp/forge/health.json.tmp /tmp/forge/health.json
+    sleep 3
+  done
+fi
+exec s6-setuidgid abc /bin/bash /usr/local/share/forge/agent
+"""
+
+# Lines that run inside the session's D-Bus, just before the desktop itself:
+# turn off every screen locker that would ask for a password nobody set.
+PRESESSION = r"""
+W=/usr/local/share/forge/wallpaper.jpg
+if command -v gsettings >/dev/null 2>&1 && [ -f "$W" ]; then
+  for sk in "org.gnome.desktop.background picture-uri" \
+            "org.gnome.desktop.background picture-uri-dark" \
+            "org.cinnamon.desktop.background picture-uri" \
+            "org.mate.background picture-filename"; do
+    cur=$(gsettings get $sk 2>/dev/null | tr -d "'")
+    [ -n "$cur" ] || continue
+    f=$(readlink -f "${cur#file://}" 2>/dev/null || echo "${cur#file://}")
+    svgok=0
+    ls /usr/lib/*/gdk-pixbuf-2.0/*/loaders/*svg* /usr/lib/gdk-pixbuf-2.0/*/loaders/*svg* >/dev/null 2>&1 && svgok=1
+    case "$f" in *.svg) [ "$svgok" = 1 ] || f="" ;; esac
+    if [ -z "$f" ] || [ ! -e "$f" ]; then
+      case "$sk" in *picture-filename) gsettings set $sk "$W" ;; *) gsettings set $sk "file://$W" ;; esac
+    fi
+  done
+fi
+if command -v gsettings >/dev/null 2>&1; then
+  for kv in "org.gnome.desktop.screensaver lock-enabled false" \
+            "org.gnome.desktop.screensaver idle-activation-enabled false" \
+            "org.gnome.desktop.session idle-delay uint32 0" \
+            "org.gnome.desktop.lockdown disable-lock-screen true" \
+            "org.cinnamon.desktop.screensaver lock-enabled false" \
+            "org.cinnamon.desktop.session idle-delay uint32 0" \
+            "org.mate.screensaver lock-enabled false" \
+            "org.mate.screensaver idle-activation-enabled false" \
+            "org.mate.power-manager sleep-display-ac 0" \
+            "org.mate.Marco.general compositing-manager false" \
+            "org.gnome.metacity compositing-manager false" \
+            "org.gnome.metacity.general compositing-manager false" \
+            "com.solus-project.budgie-panel dark-theme true"; do
+    gsettings set $kv >/dev/null 2>&1 || true
+  done
+fi
+"""
+
+
+def supervised_session(session):
+    """The tail of startwm.sh: run the session under a crash supervisor."""
+    pre = PRESESSION.replace("'", "'\"'\"'")
+    return r"""
+S=/tmp/forge
+mkdir -p "$S" 2>/dev/null
+LOG="$S/session.log"
+[ -f "$LOG" ] && [ "$(wc -c < "$LOG")" -gt 400000 ] && tail -n 600 "$LOG" > "$LOG.1" && mv -f "$LOG.1" "$LOG"
+echo "== $(date '+%%F %%T') starting: %(session)s" >> "$LOG"
+# dbus-run-session keeps the session bus alive exactly as long as the desktop.
+# dbus-launch --exit-with-session watches stdin instead, and s6 starts us with
+# stdin closed: on Arch (dbus 1.16) the bus is gone before the desktop starts,
+# so Xfce hangs, LXQt exits and Enlightenment aborts.
+if command -v dbus-run-session >/dev/null 2>&1; then
+  BUS="dbus-run-session --"
+else
+  BUS="dbus-launch --exit-with-session"
+fi
+t0=$(date +%%s)
+$BUS sh -c '%(pre)s
+exec %(session_q)s' >> "$LOG" 2>&1
+rc=$?
+dt=$(( $(date +%%s) - t0 ))
+echo "== $(date '+%%F %%T') session ended rc=$rc after ${dt}s" >> "$LOG"
+if [ "$dt" -lt 30 ]; then
+  n=$(( $(cat "$S/quick-exits" 2>/dev/null || echo 0) + 1 ))
+else
+  n=0
+fi
+echo "$n" > "$S/quick-exits"
+if [ "$n" -ge 3 ] && command -v openbox-session >/dev/null 2>&1; then
+  echo rescue > "$S/mode"
+  echo "== $(date '+%%F %%T') crashed $n times in a row, starting the rescue session" >> "$LOG"
+  ( sleep 2
+    xterm -geometry 120x34+30+30 -T "Selkies Forge rescue" -e sh -c '
+      echo "The desktop session (%(session_q2)s) crashed $0 times in a row.";
+      echo "This is a rescue session so you can see why. Last lines of /tmp/forge/session.log:";
+      echo; tail -n 40 /tmp/forge/session.log; echo;
+      echo "Fix it here, then remove /tmp/forge/quick-exits and log out of openbox to retry.";
+      exec bash' "$n" & ) &
+  exec $BUS openbox-session >> "$LOG" 2>&1
+fi
+# A short pause, then s6 starts the desktop again.
+sleep 2
+exit "$rc"
+""" % {"session": session.replace("%", "%%"), "pre": pre,
+       "session_q": session.replace("'", "'\"'\"'"),
+       "session_q2": session.replace("'", "").replace('"', "")}
+
+
+# A quiet Selkies Forge wallpaper (1920x1080 JPEG, ~24 KB), used wherever a
+# desktop's own default points at a file the base image does not ship, which
+# otherwise leaves a black desktop.
+WALLPAPER_B64 = """
+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
+mlAH/9k=
+"""
+
+
+def wallpaper_bytes():
+    return base64.b64decode("".join(WALLPAPER_B64.split()))
+
+
+def files(startwm=None):
+    """{path in build context: (content, mode)} for the forge layer."""
+    out = {
+        "forge/agent": (AGENT, 0o755),
+        "forge/seed": (SEED, 0o755),
+        "forge/xsettingsd-run": (XSETTINGSD_RUN, 0o755),
+        "forge/bwrap": (BWRAP_SHIM, 0o755),
+        "forge/wallpaper.jpg": (wallpaper_bytes(), 0o644),
+        "s6/init-forge/type": ("oneshot\n", 0o644),
+        "s6/init-forge/up": ("/usr/local/share/forge/seed\n", 0o644),
+        "s6/init-forge/dependencies.d/init-config": ("", 0o644),
+        "s6/svc-forge-agent/type": ("longrun\n", 0o644),
+        "s6/svc-forge-agent/run": (AGENT_RUN, 0o755),
+        "s6/svc-forge-agent/dependencies.d/init-services": ("", 0o644),
+        "s6/svc-forge-agent/dependencies.d/svc-xorg": ("", 0o644),
+    }
+    if startwm:
+        out["forge/startwm.sh"] = (startwm, 0o755)
+        out["forge/built"] = ("built by selkies-forge\n", 0o644)
+    return out
+
+
+def dockerfile(base_image, label, entry_id, digest, startwm=False):
+    lines = [
+        "FROM %s" % base_image,
+        "COPY forge/ /usr/local/share/forge/",
+        "COPY s6/ /etc/s6-overlay/s6-rc.d/",
+        "RUN chmod 755 /usr/local/share/forge/agent /usr/local/share/forge/seed"
+        " /usr/local/share/forge/xsettingsd-run /usr/local/share/forge/bwrap"
+        " /etc/s6-overlay/s6-rc.d/svc-forge-agent/run"
+        " && if [ -x /usr/bin/bwrap ]; then cp -f /usr/local/share/forge/bwrap /usr/local/bin/bwrap; fi"
+        " && chmod 644 /usr/local/share/forge/wallpaper.jpg"
+        " && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d /etc/s6-overlay/s6-rc.d/svc-de/dependencies.d"
+        " && touch /etc/s6-overlay/s6-rc.d/user/contents.d/init-forge"
+        " /etc/s6-overlay/s6-rc.d/user/contents.d/svc-forge-agent"
+        " /etc/s6-overlay/s6-rc.d/svc-de/dependencies.d/init-forge"
+        " && if [ -f /etc/s6-overlay/s6-rc.d/svc-xsettingsd/run ]; then"
+        " cp -f /usr/local/share/forge/xsettingsd-run /etc/s6-overlay/s6-rc.d/svc-xsettingsd/run"
+        " && chmod 755 /etc/s6-overlay/s6-rc.d/svc-xsettingsd/run; fi"
+        + (" && cp -f /usr/local/share/forge/startwm.sh /defaults/startwm.sh"
+           " && chmod 755 /defaults/startwm.sh" if startwm else ""),
+        'LABEL %s.layer="%s"' % (label, digest),
+        'LABEL %s.entry="%s"' % (label, entry_id),
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def digest(base_image_id, startwm=None):
+    h = hashlib.sha256()
+    h.update(LAYER_VERSION.encode())
+    h.update((base_image_id or "").encode())
+    for path, (content, mode) in sorted(files(startwm).items()):
+        h.update(path.encode())
+        h.update(content if isinstance(content, bytes) else content.encode())
+        h.update(str(mode).encode())
+    return h.hexdigest()[:12]
+__FORGE_FILE_LAYER_PY__
   cat > "$FORGE_APP/index.html" <<'__FORGE_FILE_INDEX_HTML__'
 <!doctype html>
 <html lang="en">
@@ -4548,6 +6603,7 @@ __FORGE_FILE_ENGINE_PY__
 
   <main class="main">
     <div class="updbar" id="updBar" hidden></div>
+    <div class="updbar life" id="lifeBar" hidden></div>
 
     <!-- ------------------------------------------------------- browse -->
     <section class="view on" id="v-browse">
@@ -4678,18 +6734,19 @@ __FORGE_FILE_ENGINE_PY__
       <div class="cfg">
         <div class="panel"><h3>Checks</h3><div class="result" id="hostChecks"></div></div>
         <div class="panel"><h3>Facts</h3><div id="hostFacts"></div></div>
+        <div class="panel"><h3>Web UI</h3><div id="hostLife"></div></div>
       </div>
     </section>
 
   </main>
 </div>
 
-<div id="modal" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(3,7,14,.72);place-items:center;padding:24px">
-  <div class="panel" id="modalPanel" style="max-width:860px;width:100%;margin:0;max-height:90vh;overflow:auto">
-    <div class="row" style="margin-bottom:10px">
+<div id="modal" style="display:none">
+  <div class="panel" id="modalPanel">
+    <div class="row modal-head">
       <h3 id="modalTitle" style="margin:0">-</h3>
       <div class="spacer"></div>
-      <button class="btn sm ghost" id="modalClose">Close</button>
+      <button class="btn sm ghost" id="modalClose" type="button">Close</button>
     </div>
     <div id="modalBody"></div>
   </div>
@@ -5959,6 +8016,52 @@ html.lite .skel { animation: none; }
   .main { padding: 14px; }
   .brand small { display: none; }
 }
+
+/* ------------------------------------------------------------------ modal */
+/* The backdrop scrolls, and the panel's header sticks, so Close is always on
+   screen: phones with a browser bar, short windows, long logs. */
+#modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(3, 7, 14, 0.72);
+  padding: 24px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  place-items: start center;
+}
+#modalPanel {
+  max-width: 860px;
+  width: 100%;
+  margin: auto 0;
+  max-height: calc(100dvh - 48px);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  padding-top: 0;
+}
+@supports (height: 100dvh) {
+  #modalPanel { max-height: calc(100dvh - 48px); }
+}
+#modalPanel .modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 0 -2px 10px;
+  padding: 16px 2px 10px;
+  background: inherit;
+  background: rgba(12, 20, 36, 0.97);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 560px) {
+  #modal { padding: 10px; }
+  #modalPanel { max-height: calc(100vh - 20px); }
+}
+
+/* the real capture of the entry leads the gallery, full width */
+.shot.real { margin: 0 0 14px; }
+.shot.real .ph { aspect-ratio: 16 / 9; }
+.shot.real figcaption b { color: var(--ok, #3ddc97); }
+.galsub { font-size: 12.5px; color: var(--dim); margin: 4px 0 10px; }
 __FORGE_FILE_APP_CSS__
   cat > "$FORGE_APP/app.js" <<'__FORGE_FILE_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -6168,6 +8271,7 @@ __FORGE_FILE_APP_CSS__
       setInterval(refreshInstances, 6000);
       setInterval(refreshHost, 15000);
       pollUpdate();
+      pollLife();
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
         '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
@@ -6424,25 +8528,50 @@ __FORGE_FILE_APP_CSS__
       (noArch ? '<div class="warnbox bad" style="margin:14px 0 0">This image has no ' + h(hst.arch) +
         " build, so it cannot run on this machine.</div>" : "");
 
-    /* -- screenshots */
-    var imgs = inf.images || [];
+    /* -- screenshots: first the real thing, captured by the forge running this
+       exact entry; then Wikimedia's pictures of the distro and desktop in general */
+    var shots = (S.boot && S.boot.shots) || {};
+    var real = shots.ids && shots.ids[e.id] ? [{
+      src: shots.base + e.id + ".jpg?d=" + encodeURIComponent(shots.ids[e.id].taken || ""),
+      caption: "This exact desktop, running in Selkies Forge (captured " + (shots.ids[e.id].taken || "") + ")",
+      about: e.name, real: true
+    }] : [];
+    var wiki = (inf.images || []).map(function (im) {
+      return Object.assign({}, im, { caption: (im.caption || "") });
+    });
+    var imgs = real.concat(wiki);
     var gal = $("#dGallery");
     if (imgs.length) {
       S.gallery = imgs;
       gal.hidden = false;
-      gal.innerHTML = "<h3>Screenshots <span class=\"hint\">" + imgs.length +
-        " from Wikimedia Commons · click to enlarge</span></h3>" +
-        '<div class="gallery">' + imgs.map(function (im, i) {
+      var realHtml = real.length ? '<figure class="shot real" data-shot="0"><div class="ph">' +
+        '<img decoding="async" src="' + h(real[0].src) + '" alt="' + h(e.name) + '"></div>' +
+        "<figcaption><b>What you get</b>" + h(real[0].caption) + "</figcaption></figure>" : "";
+      gal.innerHTML = "<h3>Screenshots <span class=\"hint\">" +
+        (real.length ? "a real capture of this desktop, then " : "") +
+        (wiki.length ? wiki.length + " general pictures from Wikimedia Commons" : "") +
+        " · click to enlarge</span></h3>" + realHtml +
+        (wiki.length ? (real.length ? '<div class="galsub">From Wikipedia: ' + h(e.de_label) + " and " +
+          h(e.family_label) + " in general, so themes and versions differ from this build</div>" : "") +
+        '<div class="gallery">' + wiki.map(function (im, j) {
+          var i = j + real.length;
           return '<figure class="shot" data-shot="' + i + '"><div class="ph">' +
             '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="' + h(im.src) +
             '" alt="' + h(im.caption) + '"></div><figcaption><b>' +
             h(im.about || "") + "</b>" + h(im.caption) + "</figcaption></figure>";
-        }).join("") + "</div>" +
+        }).join("") + "</div>" : "") +
         '<p class="credit">Descriptions from Wikipedia and images from Wikimedia Commons, used under ' +
         "their CC licences. Open an image for its author and licence.</p>";
       $$("#dGallery img").forEach(function (img) {
         img.onload = function () { img.classList.add("ok"); };
-        img.onerror = function () { var f = img.closest(".shot"); if (f) f.remove(); };
+        img.onerror = function () {
+          var f = img.closest(".shot");
+          if (f && f.classList.contains("real")) {
+            var hint = $("#dGallery h3 .hint");
+            if (hint) hint.textContent = (S.gallery.length - 1) + " pictures from Wikimedia Commons \u00b7 click to enlarge";
+          }
+          if (f) f.remove();
+        };
         if (img.complete && img.naturalWidth) img.classList.add("ok");
       });
     } else {
@@ -6514,7 +8643,8 @@ __FORGE_FILE_APP_CSS__
         "off: it only runs when you start it, not after a reboot") +
       toggle("oGpu", false, "Pass the GPU through",
         S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
-      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start");
+      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
+      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
 
     /* -- dockerfile */
     var dd = $("#dDocker");
@@ -6551,6 +8681,24 @@ __FORGE_FILE_APP_CSS__
       '<p class="prose">' + h(trimText(art.extract || "", 300)) + "</p>" +
       (art.url ? '<a class="srclink" href="' + h(art.url) + '" target="_blank" rel="noopener">' +
         "Read on Wikipedia ↗</a>" : "");
+  }
+
+  /* Screen: follow the browser window, or a fixed size scaled to fit. Desktops
+     that cannot cope with the screen changing size default to fixed. */
+  function screenField(p, preferred, cur, res) {
+    var auto = "Automatic \u00b7 " + (preferred === "fixed" ? "fixed size, scaled" : "follows your window");
+    var opt = function (v, t) { return '<option value="' + v + '"' + (cur === v ? " selected" : "") + ">" + t + "</option>"; };
+    var ropt = function (v) { return '<option value="' + v + '"' + (res === v ? " selected" : "") + ">" + v.replace("x", " \u00d7 ") + "</option>"; };
+    return '<label class="field" style="margin-top:12px"><span>Screen</span><select id="' + p + 'Display" data-pref="' + preferred + '">' +
+      opt("auto", auto) + opt("fit", "Follow my browser window") + opt("fixed", "Fixed size, scaled to fit") +
+      "</select></label>" +
+      '<label class="field" id="' + p + 'ResWrap" style="display:' +
+      ((cur === "fixed" || (cur === "auto" && preferred === "fixed")) ? "block" : "none") +
+      '"><span>Fixed size</span><select id="' + p + 'Res">' +
+      ["1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"].map(ropt).join("") + "</select></label>" +
+      '<p class="sub" style="margin:2px 0 0;font-size:12px">' +
+      (preferred === "fixed" ? "This desktop misdraws when the screen changes size under it, so it runs at a fixed size by default."
+        : "Follow suits most desktops; choose fixed if anything ever ends up off the edge.") + "</p>";
   }
 
   function slider(id, label, min, max, step, val, fmt, advice) {
@@ -6608,6 +8756,10 @@ __FORGE_FILE_APP_CSS__
       gpu: $("#oGpu") ? $("#oGpu").checked : false,
       seccomp_unconfined: $("#oSeccomp") ? $("#oSeccomp").checked : false
     };
+    if ($("#oDisplay")) {
+      opts.display = $("#oDisplay").value;
+      opts.resolution = $("#oRes").value;
+    }
     var nm = $("#oName") && $("#oName").value.trim();
     if (nm) opts.name = nm;
     if ($("#oAuth") && $("#oAuth").checked) {
@@ -6695,7 +8847,8 @@ __FORGE_FILE_APP_CSS__
   }
 
   var PHASES = [["resolve", "check"], ["fetch", "fetch image"], ["build", "build"],
-    ["create", "start"], ["health", "handshake"], ["tunnel", "tunnel"], ["ready", "ready"]];
+    ["layer", "forge layer"], ["create", "start"], ["health", "handshake"],
+    ["session", "desktop"], ["tunnel", "tunnel"], ["ready", "ready"]];
 
   function renderSteps(active) {
     var idx = PHASES.findIndex(function (p) { return p[0] === active; });
@@ -6726,8 +8879,20 @@ __FORGE_FILE_APP_CSS__
     var cred = res.credentials ? '<div class="warnbox"><b>Sign in with</b> ' +
       h(res.credentials.user) + " / " + h(res.credentials.password) + "</div>" : "";
 
+    var warn = res.warning ? '<div class="warnbox bad"><b>Heads up.</b> ' + h(res.warning) +
+      (res.session && res.session.log ? '<pre class="code" style="margin-top:10px;max-height:220px">' +
+        h(res.session.log) + "</pre>" : "") + "</div>" : "";
+    var fixed = (res.fixes && res.fixes.length) ? '<div class="warnbox"><b>Fixed on the way:</b> ' +
+      h(res.fixes.map(function (f) {
+        return ({ memory: "gave it more memory", shm: "more shared memory", seccomp: "relaxed seccomp",
+                  slow: "waited longer for a slow first boot", restart: "restarted it once" })[f] || f;
+      }).join(", ")) + ". Nothing for you to do.</div>" : "";
+    var sess = res.session && res.session.wm ? '<div class="sub" style="margin:0 0 10px">' +
+      h(res.session.wm) + " is up" + (res.display ? " \u00b7 screen: " + h(res.display === "fit" ?
+        "follows your browser window" : res.display + ", scaled to fit") : "") + "</div>" : "";
     $("#lResult").innerHTML = '<div class="panel"><h3>' + h(e ? e.name : res.name) +
-      " is running</h3>" + cred + '<div class="result">' + rows.join("") + "</div>" +
+      (res.warning ? " started, with a problem" : " is running") + "</h3>" + sess + warn + fixed + cred +
+      '<div class="result">' + rows.join("") + "</div>" +
       '<dl class="kv" style="margin-top:14px">' +
       "<dt>Container</dt><dd style=\"font-family:var(--mono);font-size:12px\">" + h(res.name) + "</dd>" +
       "<dt>Host ports</dt><dd>" + h((res.ports || []).join(", ")) + "</dd>" +
@@ -6862,6 +9027,8 @@ __FORGE_FILE_APP_CSS__
           (running ? (tun ? '<button data-act="untunnel">' + I.unplug + "Drop public link</button>"
                           : '<button data-act="tunnel">' + I.plug + "Open public link</button>") : "") +
           '<button data-logs="' + h(i.name) + '">' + I.logs + "Container logs</button>" +
+          (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest forge layer; files are kept">' +
+            I.restart + "Repair</button>") +
           '<button data-tune="' + h(i.name) + '">' + I.tune + "Edit limits</button>" +
           "<hr>" +
           '<button class="danger" data-act="remove">' + I.trash + "Remove</button>" +
@@ -6871,6 +9038,11 @@ __FORGE_FILE_APP_CSS__
   }
 
   function cap(s) { s = String(s || ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function catEntry(id) {
+    var c = (S.boot && S.boot.catalog) || [];
+    for (var k = 0; k < c.length; k++) if (c[k].id === id) return c[k];
+    return null;
+  }
 
   function arow(icon, label, valHtml, copyText, openUrl, cls, title) {
     return '<div class="arow ' + (cls || "") + '"' + (title ? ' title="' + h(title) + '"' : "") + ">" +
@@ -6957,6 +9129,8 @@ __FORGE_FILE_APP_CSS__
 
   function instAction(name, act) {
     var body = {};
+    if (act === "repair" && !confirm("Repair " + name + "?\n\nIt is recreated on the newest forge layer " +
+        "(first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.")) return;
     if (act === "remove") {
       if (!confirm("Remove " + name + "?")) return;
       body.purge = confirm("Also delete its saved files (the /config volume)?\n\nOK deletes them, Cancel keeps them.");
@@ -6966,7 +9140,8 @@ __FORGE_FILE_APP_CSS__
     toast(cap(act) + "\u2026", name);
     api("/api/instance/" + encodeURIComponent(name) + "/" + act, { body: body })
       .then(function (r) {
-        toast(cap(act) + " done", (r.tunnel && r.tunnel.url) || name, "ok");
+        if (r.warning) toast(cap(act) + " done, with a problem", r.warning, "bad");
+        else toast(cap(act) + " done", (r.tunnel && r.tunnel.url) || name, "ok");
         S.instKey = "";
         refreshInstances();
       })
@@ -6981,7 +9156,12 @@ __FORGE_FILE_APP_CSS__
     $("#modal").style.display = "grid";
   }
 
-  function closeModal() { $("#modal").style.display = "none"; $("#modalBody").innerHTML = ""; }
+  // Every close path hides first and tidies up after, so nothing that goes
+  // wrong while tidying can leave a panel stuck open.
+  function closeModal() {
+    $("#modal").style.display = "none";
+    try { $("#modalBody").innerHTML = ""; } catch (e) { console.error(e); }
+  }
 
   function showLogs(name) {
     openModal("Logs \u00b7 " + name, '<div class="skel" style="height:200px"></div>');
@@ -6998,13 +9178,15 @@ __FORGE_FILE_APP_CSS__
     var L = i.limits || {};
     var cur = {
       mem: L.memory_mb || 1024, cpu: L.cpus || 1, shm: L.shm_mb || 256,
-      disk: i.disk_cap_mb || 10240, auto: !!i.autostart
+      disk: i.disk_cap_mb || 10240, auto: !!i.autostart,
+      display: (i.display || "").indexOf("fixed") === 0 ? "fixed" : (i.display === "fit" ? "fit" : "auto"),
+      res: (i.display || "").indexOf("fixed:") === 0 ? i.display.slice(6) : ""
     };
     var maxMem = Math.max(512, S.host.mem_total_mb - 256);
     var maxDisk = Math.max(20480, Math.min(S.host.disk_free_mb, 400000));
     openModal("Limits \u00b7 " + i.title,
       '<p class="sub" style="margin-top:-4px">Memory, CPU and auto-start change instantly. ' +
-      "Shared memory and storage need the desktop recreated; your files in /config are kept.</p>" +
+      "Shared memory, storage and the screen mode need the desktop recreated; your files in /config are kept.</p>" +
       slider("tMem", "Memory", 256, maxMem, 128, cur.mem, mb, "live") +
       slider("tCpu", "CPU cores", 0.5, S.host.cpus, 0.5, cur.cpu,
         function (v) { return Number(v).toFixed(1) + " cores"; }, "live") +
@@ -7012,6 +9194,8 @@ __FORGE_FILE_APP_CSS__
       slider("tDisk", "Storage", 5120, maxDisk, 1024, cur.disk, mb,
         S.host.quota_support ? "restarts it" : "restarts it \u00b7 tracked budget") +
       toggle("tAuto", cur.auto, "Start with Docker", "on: comes back after a reboot. off: only when you start it") +
+      (i.profile === "kasm" ? "" : screenField("t", (catEntry(i.entry_id) || {}).display || "fit",
+        cur.display, cur.res || "1920x1080")) +
       '<div class="row" style="margin-top:16px"><span class="sub" id="tNote" style="margin:0;flex:1"></span>' +
       '<button class="btn ghost" id="tCancel" type="button">Cancel</button>' +
       '<button class="btn primary" id="tApply" type="button">Apply</button></div>');
@@ -7020,12 +9204,15 @@ __FORGE_FILE_APP_CSS__
     function changed() {
       return {
         mem: Number($("#tMem").value), cpu: Number($("#tCpu").value),
-        shm: Number($("#tShm").value), disk: Number($("#tDisk").value), auto: $("#tAuto").checked
+        shm: Number($("#tShm").value), disk: Number($("#tDisk").value), auto: $("#tAuto").checked,
+        display: $("#tDisplay") ? $("#tDisplay").value : cur.display,
+        res: $("#tRes") ? $("#tRes").value : cur.res
       };
     }
     function note() {
       var c = changed();
-      var restart = c.shm !== cur.shm || c.disk !== cur.disk;
+      var screen = c.display !== cur.display || (c.display === "fixed" && c.res !== cur.res);
+      var restart = c.shm !== cur.shm || c.disk !== cur.disk || screen;
       var any = restart || c.mem !== cur.mem || c.cpu !== cur.cpu || c.auto !== cur.auto;
       $("#tNote").textContent = !any ? "Nothing changed yet." :
         restart ? "This restarts the desktop to apply (about half a minute). Files are kept." :
@@ -7051,10 +9238,15 @@ __FORGE_FILE_APP_CSS__
       if (c.shm !== cur.shm) body.shm_mb = c.shm;
       if (c.disk !== cur.disk) body.disk_mb = c.disk;
       if (c.auto !== cur.auto) body.autostart = c.auto;
+      if (c.display !== cur.display || (c.display === "fixed" && c.res !== cur.res)) {
+        body.display = c.display;
+        body.resolution = c.res;
+      }
       var btn = $("#tApply");
       btn.disabled = true;
-      btn.textContent = (body.shm_mb || body.disk_mb) ? "Recreating\u2026" : "Applying\u2026";
-      if (S.drawerName === name && (body.shm_mb || body.disk_mb)) closeDrawer();
+      var rec = body.shm_mb || body.disk_mb || body.display;
+      btn.textContent = rec ? "Recreating\u2026" : "Applying\u2026";
+      if (S.drawerName === name && rec) closeDrawer();
       api("/api/instance/" + encodeURIComponent(name) + "/retune", { body: body })
         .then(function (r) {
           toast(r.recreated ? "Recreated with new limits" : "Limits applied", name, "ok");
@@ -7186,14 +9378,18 @@ __FORGE_FILE_APP_CSS__
   }
 
   function closeShell() {
-    if (S.shell) { S.shell.close(); S.shell = null; }
+    var s = S.shell;
+    S.shell = null;
+    if (s) { try { s.close(); } catch (e) { console.error(e); } }
   }
 
   function closeDrawer() {
-    if (S.drawerSess) { S.drawerSess.close(); S.drawerSess = null; }
     var d = $("#drawerHost");
     if (d) d.remove();
+    var s = S.drawerSess;
+    S.drawerSess = null;
     S.drawerName = null;
+    if (s) { try { s.close(); } catch (e) { console.error(e); } }
   }
 
   /* The shell slides out inside the card you clicked, so you keep the
@@ -7236,6 +9432,7 @@ __FORGE_FILE_APP_CSS__
 
   /* ---------------------------------------------------------------- host */
   function renderHost() {
+    renderHostLife();
     api("/api/doctor").then(function (d) {
       var hst = d.host;
       $("#hostChecks").innerHTML = d.checks.map(function (c) {
@@ -7259,6 +9456,72 @@ __FORGE_FILE_APP_CSS__
     }).catch(function (e) {
       $("#hostChecks").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
     });
+  }
+
+  /* ----------------------------------------------------------- lifecycle */
+  /* After a reboot or a crash the server knows which desktops were running;
+     offer to start them again, and show whether the UI starts on boot. */
+  function pollLife() {
+    api("/api/lifecycle").then(renderLife).catch(function () {}).then(function () {
+      setTimeout(pollLife, 90000);
+    });
+  }
+
+  function renderLife(L) {
+    S.life = L;
+    var bar = $("#lifeBar");
+    var ls = L && L.last_stop;
+    if (ls && !ls.dismissed && ls.restore && ls.restore.length) {
+      var n = ls.restore.length;
+      bar.className = "updbar life" + (ls.clean ? "" : " warn");
+      bar.innerHTML = '<span class="ic">' + I.restart + "</span>" +
+        '<div class="msg"><b>Last stop: ' + h(ls.label || "the web UI stopped") + "</b><small>" + n +
+        " desktop" + (n === 1 ? " that was" : "s that were") + " running then " + (n === 1 ? "is" : "are") +
+        " stopped now: " + h(ls.restore.map(function (x) { return x.replace(/^forge-/, ""); }).join(", ")) + "</small></div>" +
+        '<button class="btn primary sm" id="lifeRestore" type="button">Start ' + (n === 1 ? "it" : "them") + " again</button>" +
+        '<button class="iconbtn" id="lifeHide" type="button" title="Dismiss">' + I.close + "</button>";
+      bar.hidden = false;
+      $("#lifeRestore").onclick = function () {
+        var b = $("#lifeRestore");
+        b.disabled = true; b.textContent = "Starting\u2026";
+        api("/api/restore", { body: {} }).then(function (r) {
+          toast("Started again", (r.started || []).join(", ") || "nothing needed starting", "ok");
+          bar.hidden = true; S.instKey = ""; refreshInstances();
+        }).catch(function (e) { toast("Could not start them", e.message, "bad"); b.disabled = false; });
+      };
+      $("#lifeHide").onclick = function () {
+        bar.hidden = true;
+        api("/api/last-stop/dismiss", { body: {} }).catch(function () {});
+      };
+    } else {
+      bar.hidden = true;
+    }
+    if (S.view === "host") renderHostLife();
+  }
+
+  function renderHostLife() {
+    var el = $("#hostLife");
+    if (!el) return;
+    var L = S.life || {};
+    var b = L.boot || {}, ls = L.last_stop;
+    el.innerHTML = toggle("bootToggle", !!b.enabled, "Start the web UI when this machine boots",
+        b.enabled ? ("on, through " + (b.method === "systemd" ? "a systemd user service" : "cron") +
+          (b.method === "systemd" && b.linger === false ? "; it waits for you to log in until linger is on " +
+            "(sudo loginctl enable-linger $USER)" : "")) : "off: start it yourself with selkies-cli") +
+      (ls ? '<p class="sub" style="margin:12px 0 0">Last stop: ' + h(ls.label || ls.reason) +
+        (ls.at ? " \u00b7 " + h(new Date(ls.at * 1000).toLocaleString()) : "") + "</p>" : "");
+    $("#bootToggle").onchange = function (ev) {
+      var on = ev.target.checked;
+      ev.target.disabled = true;
+      api("/api/autostart-ui", { body: { enable: on } }).then(function (r) {
+        toast(on ? "Starts on boot" : "No longer starts on boot",
+          r.needs ? "run: " + r.needs + " so it starts before anyone logs in" : (r.method || ""), r.needs ? "" : "ok");
+        return api("/api/lifecycle").then(renderLife);
+      }).catch(function (e) {
+        toast("Could not change that", e.message, "bad");
+        ev.target.checked = !on;
+      }).then(function () { ev.target.disabled = false; });
+    };
   }
 
   /* ------------------------------------------------------------- updates */
@@ -7421,8 +9684,21 @@ __FORGE_FILE_APP_CSS__
       if (ev.target.id === "lightbox" || ev.target.classList.contains("lb-img")) closeShot();
     });
 
+    /* Close buttons: caught in the capture phase on the document, so no other
+       handler (or an error in one) can swallow the click. */
+    document.addEventListener("click", function (ev) {
+      var b = ev.target.closest && ev.target.closest("#modalClose, #modalX, #drawerClose, #shClose, #lbClose, .toast .x, #updHide");
+      if (!b) return;
+      if (b.id === "modalClose" || b.id === "modalX") closeModal();
+      else if (b.id === "drawerClose") closeDrawer();
+      else if (b.id === "lbClose") closeShot();
+      else if (b.id === "shClose") { closeShell(); show("manager"); }
+      else if (b.classList.contains("x")) { var t = b.closest(".toast"); if (t) t.remove(); }
+      else if (b.id === "updHide") { $("#updBar").hidden = true; return; }
+      ev.stopPropagation();
+      ev.preventDefault();
+    }, true);
     /* modal: its own listeners, so nothing can swallow the close click */
-    $("#modalClose").addEventListener("click", closeModal);
     $("#modal").addEventListener("click", function (ev) {
       if (ev.target.id === "modal") closeModal();
     });
@@ -7487,6 +9763,11 @@ __FORGE_FILE_APP_CSS__
 
     document.addEventListener("change", function (ev) {
       if (ev.target.id === "oAuth") $("#authFields").style.display = ev.target.checked ? "block" : "none";
+      if (ev.target.id === "oDisplay" || ev.target.id === "tDisplay") {
+        var p = ev.target.id.charAt(0), pref = ev.target.dataset.pref || (S.sel && S.sel.display) || "fit";
+        var v = ev.target.value;
+        $("#" + p + "ResWrap").style.display = (v === "fixed" || (v === "auto" && pref === "fixed")) ? "block" : "none";
+      }
     });
 
     /* shell view */
@@ -7495,7 +9776,7 @@ __FORGE_FILE_APP_CSS__
       var f = S.shell.refit();
       toast("Resized", f.cols + "×" + f.rows);
     });
-    $("#shClose").addEventListener("click", function () { closeShell(); show("manager"); });
+
 
     var rsz = null;
     window.addEventListener("resize", function () {
@@ -8115,39 +10396,12 @@ __FORGE_FILE_BRANDS_JS__
      "license": "GPL"
     },
     {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Debian_GNU_HURD_XFCE_desktop_screenshot.png/960px-Debian_GNU_HURD_XFCE_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Debian_GNU_HURD_XFCE_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Debian_GNU_HURD_XFCE_desktop_screenshot.png",
-     "w": 1280,
-     "h": 768,
-     "caption": "Screenshot of Debian GNU Hurd with Xfce desktop environment running on QEMU",
-     "license": "GPL"
-    },
-    {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Debian10_Gnome.png/960px-Debian10_Gnome.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Debian10_Gnome.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
      "page": "https://commons.wikimedia.org/wiki/File:Debian10_Gnome.png",
      "w": 1920,
      "h": 1200,
      "caption": "Screenshot of Debian 10 (buster) with GNOME desktop environment running a couple of free software applications",
-     "license": "CC BY-SA 4.0"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Debian_Etch-ja.png/960px-Debian_Etch-ja.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Debian_Etch-ja.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Debian_Etch-ja.png",
-     "w": 1024,
-     "h": 768,
-     "caption": "A screenshot of Debian 4.0 (Etch)",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Debian-Woody.png/960px-Debian-Woody.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Debian-Woody.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Debian-Woody.png",
-     "w": 1024,
-     "h": 768,
-     "caption": "Debian 3.0 (Woody)",
      "license": "CC BY-SA 4.0"
     }
    ]
@@ -8178,24 +10432,6 @@ __FORGE_FILE_BRANDS_JS__
      "license": "GPL"
     },
     {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Fedora_21_desktop_screenshot.png/960px-Fedora_21_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Fedora_21_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Fedora_21_desktop_screenshot.png",
-     "w": 1440,
-     "h": 900,
-     "caption": "Fedora 21 desktop screenshot showing basic settings menu",
-     "license": "CC BY-SA 4.0"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/da/Fedora_Workstation_41_%E2%80%94_default_applications_%281%29.png/960px-Fedora_Workstation_41_%E2%80%94_default_applications_%281%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/d/da/Fedora_Workstation_41_%E2%80%94_default_applications_%281%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Fedora_Workstation_41_%E2%80%94_default_applications_(1).png",
-     "w": 1920,
-     "h": 1080,
-     "caption": "Fedora Workstation 41's Apps Page",
-     "license": "GPL"
-    },
-    {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Fedora_44_Workstation.png/960px-Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/3/32/Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
      "page": "https://commons.wikimedia.org/wiki/File:Fedora_44_Workstation.png",
@@ -8203,15 +10439,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 1080,
      "caption": "Fedora 44 Workstation",
      "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/Fedora_15_Lovelock_Gnome3.png/960px-Fedora_15_Lovelock_Gnome3.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/21/Fedora_15_Lovelock_Gnome3.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Fedora_15_Lovelock_Gnome3.png",
-     "w": 1680,
-     "h": 1050,
-     "caption": "Fedora 15 mit dem Standarddesktop Gnome 3",
-     "license": "CC BY-SA 4.0"
     }
    ]
   },
@@ -8230,51 +10457,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 1080,
      "caption": "Arch Linux screenshot showcasing KDE Plasma 6. Taken on December 6, 2024 (Arch Linux is a rolling release…",
      "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Arch_Linux_bootup_screenshot.png/960px-Arch_Linux_bootup_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/4/46/Arch_Linux_bootup_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_bootup_screenshot.png",
-     "w": 1280,
-     "h": 760,
-     "caption": "Screenshot of Arch Linux booting with systemd",
-     "license": "LGPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Example_of_pacman_in_Arch_Linux_screenshot.png/960px-Example_of_pacman_in_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Example_of_pacman_in_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Example_of_pacman_in_Arch_Linux_screenshot.png",
-     "w": 1263,
-     "h": 882,
-     "caption": "Screenshot of pacman command-line tool on Arch Linux, here updating some packages",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Pacstrap_screenshot.png/960px-Pacstrap_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Pacstrap_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Pacstrap_screenshot.png",
-     "w": 1024,
-     "h": 768,
-     "caption": "Screenshot of pacstrap during installation of Arch Linux",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Archinstall%2C_Minimal.png/960px-Archinstall%2C_Minimal.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/6/64/Archinstall%2C_Minimal.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Archinstall,_Minimal.png",
-     "w": 1280,
-     "h": 800,
-     "caption": "An example configuration of Archinstall, in a Minimal profile",
-     "license": "GPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Arch_Linux_Minimal_Neofetch_Output.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Arch_Linux_Minimal_Neofetch_Output.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_Minimal_Neofetch_Output.png",
-     "w": 708,
-     "h": 476,
-     "caption": "A login and neofetch output of a Arch Linux with 6.12.7 kernel base installation on a virtual machine",
-     "license": "GPL"
     }
    ]
   },
@@ -8285,24 +10467,6 @@ __FORGE_FILE_BRANDS_JS__
    "lead": null,
    "lead_full": null,
    "images": [
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/3/39/Alpine_1.00.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/3/39/Alpine_1.00.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Alpine_1.00.png",
-     "w": 796,
-     "h": 482,
-     "caption": "Screen shot of Alpine version 1.00 and a KDE desktop of a Gentoo GNU/Linux box",
-     "license": "Public domain"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Alpine_linux.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Alpine_linux.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Alpine_linux.JPG",
-     "w": 818,
-     "h": 528,
-     "caption": "Screenshot of Alpine via SSH on a Debian Server",
-     "license": "Public domain"
-    },
     {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Alpine-xfce.jpg/960px-Alpine-xfce.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Alpine-xfce.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
@@ -8319,15 +10483,6 @@ __FORGE_FILE_BRANDS_JS__
      "w": 1366,
      "h": 768,
      "caption": "Alpine Linux 3.19 Standard ejecutandose en Xfce 4.19 con modificaciones",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Alpine_Linux_3.21_set_up_-_English.png/960px-Alpine_Linux_3.21_set_up_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/a/af/Alpine_Linux_3.21_set_up_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Alpine_Linux_3.21_set_up_-_English.png",
-     "w": 1283,
-     "h": 895,
-     "caption": "Alpine Linux 3.21 set up",
      "license": "GPL"
     },
     {
@@ -8464,51 +10619,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 1080,
      "caption": "Screenshot of openSUSE Leap 16.0",
      "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp/960px-Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Agama_installer_partitioning_on_SUSE_Linux_Enterprise_16_screenshot.webp",
-     "w": 1280,
-     "h": 800,
-     "caption": "A screenshot of Agama installer during disk partitioning setup for SUSE Linux Enterprise",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/22/Cockpit_web_interface_on_openSUSE_screenshot.webp/960px-Cockpit_web_interface_on_openSUSE_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/22/Cockpit_web_interface_on_openSUSE_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Cockpit_web_interface_on_openSUSE_screenshot.webp",
-     "w": 1088,
-     "h": 615,
-     "caption": "A screenshot of Cockpit web interface (351) running on Firefox",
-     "license": "LGPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Myrlyn_1.0.0_screenshot.webp/960px-Myrlyn_1.0.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Myrlyn_1.0.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Myrlyn_1.0.0_screenshot.webp",
-     "w": 1074,
-     "h": 711,
-     "caption": "A screenshot of Myrlyn 1.0.0 running on openSUSE Tumbleweed",
-     "license": "GPLv2"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/c/c7/YaST2_ncurses_mode_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c7/YaST2_ncurses_mode_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:YaST2_ncurses_mode_screenshot.png",
-     "w": 874,
-     "h": 610,
-     "caption": "Screenshot of YaST in text mode (ncurses)",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Webyast.png/960px-Webyast.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Webyast.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Webyast.png",
-     "w": 1440,
-     "h": 870,
-     "caption": "Webyast in action",
-     "license": "CC BY-SA 3.0"
     }
    ]
   },
@@ -8536,15 +10646,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 768,
      "caption": "Linux Mint Debian Edition running Cinnamon 2.8",
      "license": "CC BY-SA 4.0"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/2/28/Linux_Mint_22.1_mintupdate.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/28/Linux_Mint_22.1_mintupdate.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Linux_Mint_22.1_mintupdate.png",
-     "w": 790,
-     "h": 602,
-     "caption": "Update Manager on Linux Mint 22.1 (taken on a virtual machine)",
-     "license": "GPL"
     }
    ]
   },
@@ -8573,15 +10674,6 @@ __FORGE_FILE_BRANDS_JS__
    "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Pop_OS-Logo-nobg.svg/960px-Pop_OS-Logo-nobg.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
    "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Pop_OS-Logo-nobg.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
    "images": [
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/System76_product_pang11.webp/960px-System76_product_pang11.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/4/41/System76_product_pang11.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:System76_product_pang11.webp",
-     "w": 1920,
-     "h": 1188,
-     "caption": "A photo of a System76 computer model",
-     "license": "GPLv3"
-    },
     {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Apps_Pop%21_OS_21.10.png/960px-Apps_Pop%21_OS_21.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apps_Pop%21_OS_21.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
@@ -8644,15 +10736,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 1080,
      "caption": "Screenshot of elementary OS 5.1",
      "license": "GPLv3"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/ElementaryOS_Loki.png/960px-ElementaryOS_Loki.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/3/3c/ElementaryOS_Loki.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:ElementaryOS_Loki.png",
-     "w": 1680,
-     "h": 1050,
-     "caption": "A screenshot of the default desktop on elementary OS 0.4 \"Loki\"",
-     "license": "GPLv3"
     }
    ]
   },
@@ -8684,48 +10767,12 @@ __FORGE_FILE_BRANDS_JS__
    "lead_full": "https://upload.wikimedia.org/wikipedia/commons/e/ed/XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
    "images": [
     {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Mousepad_screenshot.png/960px-Mousepad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/26/Mousepad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Mousepad_screenshot.png",
-     "w": 1302,
-     "h": 1028,
-     "caption": "Screenshot of the Mousepad text editor running on Arch Linux in the xfce Desktop Environment",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Parole_Media_Player_1.0.5_%282019-11%29.png/960px-Parole_Media_Player_1.0.5_%282019-11%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Parole_Media_Player_1.0.5_%282019-11%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Parole_Media_Player_1.0.5_(2019-11).png",
-     "w": 2034,
-     "h": 1080,
-     "caption": "Parole Media Player 1.0.5",
-     "license": "CC BY 4.0"
-    },
-    {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/XFCE_4.20.png/960px-XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/e/ed/XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
      "page": "https://commons.wikimedia.org/wiki/File:XFCE_4.20.png",
      "w": 1920,
      "h": 1080,
      "caption": "XFCE 4.20 desktop environment",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Xfce-4.4.png/960px-Xfce-4.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/7/71/Xfce-4.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Xfce-4.4.png",
-     "w": 1280,
-     "h": 1024,
-     "caption": "Screenshot of Xfce 4.4.0, Murrine theme",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Default_plus_xffm_and_utils.png/960px-Default_plus_xffm_and_utils.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/Default_plus_xffm_and_utils.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Default_plus_xffm_and_utils.png",
-     "w": 1280,
-     "h": 1024,
-     "caption": "Linux-Praxisbuch/ Grafische Benutzeroberflächen: XFce Screenshot - von www.xfce.org Unter verschiedenen…",
      "license": "GPL"
     },
     {
@@ -8772,15 +10819,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 768,
      "caption": "MATE 1.10 on Manjaro Linux, GTK+3 version, taken by myself",
      "license": "LGPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/7/75/Mate-caja-1.26.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/Mate-caja-1.26.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Mate-caja-1.26.png",
-     "w": 828,
-     "h": 598,
-     "caption": "This is a screenshot of Caja file-manager, version 1.26. Caja is a core component of MATE desktop…",
-     "license": "GPL"
     }
    ]
   },
@@ -8798,15 +10836,6 @@ __FORGE_FILE_BRANDS_JS__
      "w": 1920,
      "h": 1080,
      "caption": "KDE Plasma 5.24 screenshot with Konsole and System Settings showing Wayland information",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/KDE_Plasma_Desktop_4.9.png/960px-KDE_Plasma_Desktop_4.9.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/KDE_Plasma_Desktop_4.9.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_Desktop_4.9.png",
-     "w": 1280,
-     "h": 800,
-     "caption": "KDE Plasma Desktop 4.9",
      "license": "GPL"
     },
     {
@@ -8880,33 +10909,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 800,
      "caption": "LXDE desktop on ArchLinux",
      "license": "GPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Pcmanfm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Pcmanfm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Pcmanfm.png",
-     "w": 678,
-     "h": 506,
-     "caption": "LXDE, PCManFM",
-     "license": "GPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/9/96/LXDE_Gpicview.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/9/96/LXDE_Gpicview.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:LXDE_Gpicview.png",
-     "w": 651,
-     "h": 540,
-     "caption": "LXDE GpicView",
-     "license": "GPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/1/11/LXappearance.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/1/11/LXappearance.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:LXappearance.png",
-     "w": 644,
-     "h": 477,
-     "caption": "LXDE Appearance Settings",
-     "license": "GPL"
     }
    ]
   },
@@ -8924,33 +10926,6 @@ __FORGE_FILE_BRANDS_JS__
      "w": 1920,
      "h": 1080,
      "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the Cinnamon desktop. Customization's to the background, icons and…",
-     "license": "GPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Cinnamon_System_Settings_4.0.10_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Cinnamon_System_Settings_4.0.10_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Cinnamon_System_Settings_4.0.10_screenshot.png",
-     "w": 802,
-     "h": 629,
-     "caption": "Screenshot of Cinnamon (desktop environment) System Settings 4.0.10",
-     "license": "GPL"
-    },
-    {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/8/83/Nemo_6.0.2_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/8/83/Nemo_6.0.2_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Nemo_6.0.2_screenshot.png",
-     "w": 800,
-     "h": 587,
-     "caption": "Screenshot of Nemo (file manager) 6.0.2, running under Cinnamon",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Cinnamon_1.6_Workspace_OSD.png/960px-Cinnamon_1.6_Workspace_OSD.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/7/70/Cinnamon_1.6_Workspace_OSD.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Cinnamon_1.6_Workspace_OSD.png",
-     "w": 1946,
-     "h": 1226,
-     "caption": "A Linux Mint's Cinnamon 1.6 showing a Workspace OSD",
      "license": "GPL"
     },
     {
@@ -9044,24 +11019,6 @@ __FORGE_FILE_BRANDS_JS__
    "lead_full": "https://upload.wikimedia.org/wikipedia/commons/6/68/Gnomelogo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
    "images": [
     {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Gnome-2.18-screenshot1.png/960px-Gnome-2.18-screenshot1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/6/62/Gnome-2.18-screenshot1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Gnome-2.18-screenshot1.png",
-     "w": 1024,
-     "h": 768,
-     "caption": "This is the screenshot from the 2.18 release notes",
-     "license": "CC BY-SA 3.0"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/GNOME_Clocks_40_%28released_in_2021-03%29.png/960px-GNOME_Clocks_40_%28released_in_2021-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/23/GNOME_Clocks_40_%28released_in_2021-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:GNOME_Clocks_40_(released_in_2021-03).png",
-     "w": 2564,
-     "h": 1052,
-     "caption": "GNOME Clocks",
-     "license": "GPL"
-    },
-    {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png/960px-GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/3/3d/GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
      "page": "https://commons.wikimedia.org/wiki/File:GNOME_Flashback_3.36_with_GNOME_Panel_3.36_(2020-03).png",
@@ -9078,24 +11035,6 @@ __FORGE_FILE_BRANDS_JS__
      "h": 900,
      "caption": "GNOME Classic 3.36",
      "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Phone-concept-2022.png/960px-Phone-concept-2022.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Phone-concept-2022.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Phone-concept-2022.png",
-     "w": 1200,
-     "h": 768,
-     "caption": "Mockups of mobile GNOME Shell views (overview, app grid, system status area)",
-     "license": "GPL"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Gnome_Builder_46.1.png/960px-Gnome_Builder_46.1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Gnome_Builder_46.1.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Gnome_Builder_46.1.png",
-     "w": 2730,
-     "h": 1758,
-     "caption": "The screenshot of the repo for \"Gnome Clocks\" app",
-     "license": "CC0"
     }
    ]
   },
@@ -9283,55 +11222,9 @@ __FORGE_FILE_BRANDS_JS__
    "title": "Tiling window manager",
    "url": "https://en.wikipedia.org/wiki/Tiling_window_manager",
    "extract": "In computing, a tiling window manager is a window manager with the organization of the screen often dependent on mathematical formulas to organise the windows into a non-overlapping frame. This is opposed to the more common approach used by stacking window managers, which allow the user to drag windows around, instead of windows snapping into a position. This allows for a different style of organization, although it departs from the traditional desktop metaphor.",
-   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Dwm-screenshot.png/960px-Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead": null,
    "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/17/Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
-   "images": [
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Dwm-screenshot.png/960px-Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/1/17/Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Dwm-screenshot.png",
-     "w": 1280,
-     "h": 800,
-     "caption": "dwm 4.7 showing translucent rxvt windows along with dclock and rox-filer",
-     "license": "CC BY-SA 3.0"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Bluetile_screenshot2.png/960px-Bluetile_screenshot2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/2/20/Bluetile_screenshot2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Bluetile_screenshot2.png",
-     "w": 1024,
-     "h": 768,
-     "caption": "Screenshot of Bluetile (tiling window manager) in a tiled layout",
-     "license": "CC BY-SA 3.0"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Scrotwm.png/960px-Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/3/39/Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Scrotwm.png",
-     "w": 1920,
-     "h": 1200,
-     "caption": "scrotwm in action",
-     "license": "Public domain"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Wmfs-2011-03-11.png/960px-Wmfs-2011-03-11.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Wmfs-2011-03-11.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Wmfs-2011-03-11.png",
-     "w": 1280,
-     "h": 1024,
-     "caption": "WMFS created by Martin Duquesnoy",
-     "license": "CC0"
-    },
-    {
-     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Dwm-shot.png/960px-Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:Dwm-shot.png",
-     "w": 1280,
-     "h": 801,
-     "caption": "Screenshot of the dwm window manager in use",
-     "license": "Public domain"
-    }
-   ]
+   "images": []
   },
   "xmonad": {
    "title": "Xmonad",
@@ -9575,15 +11468,6 @@ __FORGE_FILE_BRANDS_JS__
    "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c1/UKUI.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
    "images": [
     {
-     "src": "https://upload.wikimedia.org/wikipedia/commons/f/f7/ReactOS_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-     "full": "https://upload.wikimedia.org/wikipedia/commons/f/f7/ReactOS_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
-     "page": "https://commons.wikimedia.org/wiki/File:ReactOS_screenshot.png",
-     "w": 800,
-     "h": 600,
-     "caption": "Screenshot of ReactOS 0.3.4",
-     "license": "GPL"
-    },
-    {
      "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Ubuntu_kylin.png/960px-Ubuntu_kylin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
      "full": "https://upload.wikimedia.org/wikipedia/commons/3/38/Ubuntu_kylin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
      "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_kylin.png",
@@ -9625,11 +11509,28 @@ __FORGE_FILE_BRANDS_JS__
    "extract": null,
    "lead": null,
    "lead_full": null,
-   "images": []
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Scrotwm.png/960px-Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/39/Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Scrotwm.png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "spectrwm (then called scrotwm) in action",
+     "license": "Public domain"
+    }
+   ]
   }
- }
+ },
+ "curated": true
 }
 __FORGE_FILE_INFO_JSON__
+  cat > "$FORGE_APP/shots.json" <<'__FORGE_FILE_SHOTS_JSON__'
+{
+"base": "https://raw.githubusercontent.com/adatskov-wcpss/animated-fiesta/main/shots/",
+"ids": {}
+}
+__FORGE_FILE_SHOTS_JSON__
   cat > "$FORGE_APP/selkies-cli" <<'__FORGE_FILE_SELKIES_CLI__'
 #!/usr/bin/env bash
 # selkies-cli front end, generated by build.sh
@@ -9671,7 +11572,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.3.0"
+FORGE_VERSION="1.4.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -10228,9 +12129,28 @@ rows.append(("shared mem", "%d MB" % plan.get("shm_mb", 0), "/dev/shm"))
 rows.append(("storage", "%d MB" % plan.get("disk_mb", 0),
              "enforced" if d.get("quota_enforced") else "tracked, not enforced here"))
 rows.append(("image", d.get("image"), ""))
+sess = d.get("session") or {}
+if sess.get("wm"):
+    rows.insert(0, ("desktop", "%s is up" % sess["wm"],
+                    "screen " + ("follows your window" if d.get("display") == "fit"
+                                 else (d.get("display") or "") + ", scaled to fit")))
 print()
-print("  " + c("1;38;5;79", "▰ READY") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
+if d.get("warning"):
+    print("  " + c("1;38;5;221", "▰ STARTED, WITH A PROBLEM") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
+else:
+    print("  " + c("1;38;5;79", "▰ READY") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
 print("  " + c("2", "─" * 66))
+if d.get("warning"):
+    import textwrap
+    for ln in textwrap.wrap(d["warning"], 70):
+        print("  " + c("38;5;221", ln))
+    for ln in ((sess.get("log") or "").strip().splitlines()[-8:]):
+        print("    " + c("2", ln[:100]))
+    print("  " + c("2", "─" * 66))
+fx = {"memory": "gave it more memory", "shm": "more shared memory", "seccomp": "relaxed seccomp",
+      "slow": "waited longer for a slow first boot", "restart": "restarted it once"}
+if d.get("fixes"):
+    print("  %s %s" % (c("38;5;79", "\u2714 fixed on the way:"), ", ".join(fx.get(f, f) for f in d["fixes"])))
 for k, v, note in rows:
     if not v:
         continue
@@ -10707,6 +12627,8 @@ print()
   command -v xdg-open >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ] && \
     xdg-open "$srv_url" >/dev/null 2>&1 &
 
+  ask_boot_once
+
   # Background, or hold the terminal until ctrl-c?
   local mode="$WEBUI_MODE"
   if [ -z "$mode" ]; then
@@ -10743,6 +12665,7 @@ print()
   done
   trap - INT
   if [ "$stopping" = 1 ]; then
+    engine stop-request ctrl-c >/dev/null 2>&1
     kill "$srv_pid" 2>/dev/null
     printf '\n'
     ok "web UI stopped"
@@ -10761,6 +12684,8 @@ cmd_stop() {
   fi
   pid=$("$PY" -c "import json;print(json.load(open('$sj')).get('pid',''))" 2>/dev/null)
   if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+    # Tell it why, so the next start can say "you stopped it" rather than guess.
+    engine stop-request "${FORGE_STOP_REASON:-user}" >/dev/null 2>&1
     kill "$pid" 2>/dev/null
     sleep 1
     kill -0 "$pid" 2>/dev/null && kill -9 "$pid" 2>/dev/null
@@ -10832,6 +12757,7 @@ cmd_uninstall() {
       sed -i '/# >>> selkies-forge >>>/,/# <<< selkies-forge <<</d' "$rc" && ok "cleaned the PATH line from $rc"
     fi
   done
+  engine boot disable >/dev/null 2>&1
   rm -rf "$FORGE_HOME"
   ok "removed $FORGE_HOME"
   printf '\n  %sthanks for using the forge%s\n\n' "$DIM" "$NC"
@@ -10991,6 +12917,16 @@ print("DOCKER_OK=" + q(1 if d.get("docker") else 0))
 print("RUNNING=" + q(d.get("running", 0)))
 print("STOPPED=" + q(d.get("stopped", 0)))
 print("TOTAL=" + q(len(d.get("desktops") or [])))
+ls = d.get("last_stop") or {}
+print("LAST_REASON=" + q(ls.get("reason", "")))
+print("LAST_CLEAN=" + q(1 if ls.get("clean") else 0))
+print("LAST_DISMISSED=" + q(1 if ls.get("dismissed") else 0))
+print("RESTORE_N=" + q(len(ls.get("restore") or [])))
+b = d.get("boot") or {}
+print("BOOT_ON=" + q(1 if b.get("enabled") else 0))
+print("BOOT_ASKED=" + q(1 if b.get("asked") else 0))
+print("BOOT_METHOD=" + q(b.get("method") or ""))
+print("BOOT_LINGER=" + q("" if b.get("linger") is None else (1 if b.get("linger") else 0)))
 PYEOF
 }
 
@@ -11034,6 +12970,36 @@ elif st == "stale":
           c("38;5;221", "stopped unexpectedly"), c("2", "· " + (w.get("why") or ""))))
 else:
     print("  %s %s  %s" % (c("2", "%-9s" % "Web UI"), c("2", "○"), "not running"))
+
+import time as _t
+def when(ts):
+    if not ts: return ""
+    ago = _t.time() - float(ts)
+    stamp = _t.strftime("%H:%M", _t.localtime(float(ts))) if ago < 86400 else \
+        _t.strftime("%a %d %b %H:%M", _t.localtime(float(ts)))
+    return "%s, %s ago" % (stamp, dur(ago))
+ls = d.get("last_stop") or {}
+if ls and not ls.get("dismissed"):
+    clean = ls.get("clean")
+    col = "38;5;79" if clean else ("38;5;203" if ls.get("reason") in ("host-crash", "crash", "oom", "error") else "38;5;221")
+    head = "Last time" if st == "up" else "Stopped"
+    print("  %s %s  %s  %s" % (c("2", "%-9s" % head), c(col, "●" if clean else "!"),
+          ls.get("label", ""), c("2", "· " + when(ls.get("at") or ls.get("last_seen")))))
+    if ls.get("boot_changed") and ls.get("boot_time"):
+        print("  %s    %s" % (" " * 9, c("2", "machine up since " + _t.strftime("%a %H:%M", _t.localtime(ls["boot_time"])))))
+    if ls.get("detail") and not clean and ls.get("reason") != "host-crash":
+        print("  %s    %s" % (" " * 9, c("2", str(ls["detail"])[:70])))
+    if ls.get("restore"):
+        n = len(ls["restore"])
+        print("  %s    %s" % (" " * 9, c("38;5;221", "%d desktop%s that %s running then %s stopped now" % (
+            n, "" if n == 1 else "s", "was" if n == 1 else "were", "is" if n == 1 else "are"))))
+b = d.get("boot") or {}
+if b.get("enabled"):
+    extra = ""
+    if b.get("method") == "systemd" and b.get("linger") is False:
+        extra = c("38;5;221", " · only after you log in (linger is off)")
+    print("  %s %s  %s%s" % (c("2", "%-9s" % "On boot"), c("38;5;79", "●"),
+          "the web UI starts by itself (%s)" % b.get("method"), extra))
 
 items = d.get("desktops") or []
 run, stop = d.get("running", 0), d.get("stopped", 0)
@@ -11086,7 +13052,7 @@ cmd_restart() {
   if [ -n "$UI_PORT" ] && [ "$WEBUI_PORT_SET" != 1 ]; then WEBUI_PORT="$UI_PORT"; fi
   if [ -n "$UI_BIND" ] && [ "$WEBUI_BIND" = "127.0.0.1" ]; then WEBUI_BIND="$UI_BIND"; fi
   [ "$UI_EXPOSED" = 1 ] && WEBUI_EXPOSE=1
-  [ "$UI_STATE" = "down" ] || cmd_stop >/dev/null 2>&1
+  [ "$UI_STATE" = "down" ] || FORGE_STOP_REASON="${FORGE_STOP_REASON:-restart}" cmd_stop >/dev/null 2>&1
   WEBUI_MODE="${WEBUI_MODE:-bg}" cmd_webui
 }
 
@@ -11157,6 +13123,80 @@ pick_new() {
   esac
 }
 
+# Start the web UI when this machine boots? Asked once, the first time the
+# web UI is started from an interactive terminal; `selkies-cli boot` changes it.
+ask_boot_once() {
+  [ -n "$TTY_IN" ] || return 0
+  [ "${FORGE_BOOT:-0}" = 1 ] && return 0
+  local b; b=$(engine boot status 2>/dev/null)
+  printf '%s' "$b" | grep -q '"asked": true' && return 0
+  printf '%s' "$b" | grep -q '"enabled": true' && return 0
+  printf '\n'
+  if confirm "Start the web UI automatically whenever this machine boots?" y; then
+    cmd_boot on
+  else
+    engine boot asked >/dev/null 2>&1
+    info "it will not start on boot; turn it on later with: ${B}selkies-cli boot on${NC}"
+  fi
+}
+
+cmd_boot() {
+  local act="${1:-status}"
+  case "$act" in
+    on|enable)
+      [ -n "${UI_PORT:-}" ] || eval "$(status_vars "$(forge_status_json)")"
+      local -a a=(boot enable --port "${UI_PORT:-$WEBUI_PORT}" --bind "${UI_BIND:-$WEBUI_BIND}")
+      [ "${UI_EXPOSED:-0}" = 1 ] || [ "$WEBUI_EXPOSE" = 1 ] && a+=(--expose)
+      local r; r=$(engine "${a[@]}" 2>&1)
+      if ! printf '%s' "$r" | grep -q '"ok": true'; then
+        bad "could not set that up: $(printf '%s' "$r" | "$PY" -c 'import json,sys
+try: print(json.load(sys.stdin).get("error",""))
+except Exception: print("")')"
+        return 1
+      fi
+      local method; method=$(printf '%s' "$r" | "$PY" -c 'import json,sys; print(json.load(sys.stdin).get("method",""))')
+      ok "the web UI will start by itself when this machine boots ($method)"
+      if printf '%s' "$r" | grep -q '"needs"'; then
+        warn "systemd only starts your services at boot once \"linger\" is on for your user"
+        if confirm "Turn it on now? (runs: sudo loginctl enable-linger $USER)" y; then
+          if run_root loginctl enable-linger "$USER"; then
+            ok "linger is on: it now starts at boot, even before anyone logs in"
+          else
+            warn "that did not work; until it does, it starts when you log in"
+          fi
+        else
+          info "until then it starts when you log in, not at boot"
+        fi
+      fi
+      ;;
+    off|disable)
+      engine boot disable >/dev/null 2>&1 && ok "the web UI will no longer start on boot"
+      ;;
+    *)
+      local r; r=$(engine boot status 2>/dev/null)
+      if printf '%s' "$r" | grep -q '"enabled": true'; then
+        ok "starts on boot ($(printf '%s' "$r" | "$PY" -c 'import json,sys; print(json.load(sys.stdin).get("method"))'))"
+      else
+        info "does not start on boot · turn it on with: selkies-cli boot on"
+      fi
+      ;;
+  esac
+}
+
+cmd_restore() {
+  spin_start "starting the desktops that were running before"
+  local r; r=$(engine restore 2>/dev/null)
+  spin_stop
+  printf '%s' "$r" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+for n in d.get("started") or []:
+    print("  ✔ started " + n)
+if not d.get("started"):
+    print("  ! nothing needed starting")
+'
+}
+
 main_menu() {
   review_autostart
   while :; do
@@ -11166,16 +13206,27 @@ main_menu() {
     render_status "$js"
 
     # Suggestions first: what you most likely want given what is running.
+    # "Browse / forge a new desktop" always sits third, wherever the list starts.
     local -a items=()
+    local newitem=$'new\tBrowse & forge a new desktop\tpick from 150+ desktops'
+    [ "$TOTAL" -eq 0 ] && newitem=$'new\tBrowse & forge your first desktop\tpick from 150+ desktops'
     if [ "$DOCKER_OK" != 1 ]; then
       items+=($'doctor\tFind out why Docker is not answering\tchecks docker, memory, disk')
+    fi
+    if [ "$RESTORE_N" -gt 0 ] 2>/dev/null && [ "$LAST_DISMISSED" != 1 ]; then
+      local why="they were running before it stopped"
+      case "$LAST_REASON" in
+        host-reboot) why="they were running before the reboot" ;;
+        host-shutdown) why="they were running before the shutdown" ;;
+        host-crash) why="they were running before the machine went down" ;;
+      esac
+      items+=("restore"$'\t'"Start the $RESTORE_N desktop(s) again"$'\t'"$why")
     fi
     case "$UI_STATE" in
       up)
         [ "$UI_RESTART" = 1 ] && items+=($'uirestart\tRestart the web UI\ta new version is installed')
         items+=("open"$'\t'"Open the web UI"$'\t'"running at $UI_URL")
         [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops"$'\t'"$RUNNING running, $STOPPED stopped")
-        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
         items+=($'uistop\tStop the web UI\tyour desktops keep running')
         [ "$UI_RESTART" = 1 ] || items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
         ;;
@@ -11183,21 +13234,35 @@ main_menu() {
         items+=($'uistart\tStart the web UI again\tit stopped unexpectedly')
         items+=($'uilog\tShow why it stopped\tlast lines of its log')
         [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
-        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
         ;;
       *)
-        if [ "$TOTAL" -eq 0 ]; then
-          items+=($'new\tForge your first desktop\tpick from 150+ desktops')
-          items+=($'uistart\tStart the web UI\tbrowse everything with screenshots')
-        else
-          items+=("uistart"$'\t'"Start the web UI"$'\t'"manage your $TOTAL desktop(s) in the browser")
-          items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
-          items+=($'new\tForge a new desktop\tpick from 150+ desktops')
-        fi
+        local hint="browse everything with screenshots"
+        [ "$TOTAL" -gt 0 ] && hint="manage your $TOTAL desktop(s) in the browser"
+        case "$LAST_REASON" in
+          crash|oom|error|host-crash) hint="it stopped unexpectedly last time" ;;
+        esac
+        items+=("uistart"$'\t'"Start the web UI"$'\t'"$hint")
+        [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
+        case "$LAST_REASON" in
+          crash|oom|error) items+=($'uilog\tShow why it stopped\tlast lines of its log') ;;
+        esac
         ;;
     esac
+    # Slot the browse entry in as the third choice (or last, if the list is shorter).
+    if [ "${#items[@]}" -ge 2 ]; then
+      items=("${items[@]:0:2}" "$newitem" "${items[@]:2}")
+    else
+      items+=("$newitem")
+    fi
+    if [ "$BOOT_ON" = 1 ]; then
+      items+=($'bootoff\tStop starting the web UI on boot\tit currently starts by itself')
+    else
+      items+=($'booton\tStart the web UI on boot\tcomes back by itself after a reboot')
+    fi
     [ "$DOCKER_OK" = 1 ] && items+=($'doctor\tCheck this machine\tdocker, memory, disk, tunnels')
     items+=($'update\tUpdate Selkies Forge\tget the latest version from GitHub')
+    [ "$RESTORE_N" -gt 0 ] 2>/dev/null && [ "$LAST_DISMISSED" != 1 ] && \
+      items+=($'dismiss\tForget about the last stop\tstop suggesting the restart')
     items+=($'quit\tQuit\t')
 
     local choice
@@ -11210,6 +13275,10 @@ main_menu() {
       uilog) cmd_ui_log ;;
       manager) cmd_manager ;;
       new) pick_new ;;
+      restore) cmd_restore ;;
+      dismiss) engine dismiss-last-stop >/dev/null 2>&1; ok "ok, it will not ask again" ;;
+      booton) cmd_boot on ;;
+      bootoff) cmd_boot off ;;
       doctor) cmd_doctor ;;
       update) cmd_update ;;
       quit|"") printf '\n  %sbye%s\n\n' "$DIM" "$NC"; return 0 ;;
@@ -11241,6 +13310,8 @@ After the first run:
    selkies-cli restart | open      restart it, or print/open its link
    selkies-cli manager | new       manage desktops, or forge a new one
    selkies-cli update              install the latest version from GitHub
+   selkies-cli boot on | off       start the web UI by itself when the machine boots
+   selkies-cli restore             start the desktops that were running before a reboot
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
@@ -11256,16 +13327,18 @@ USAGE
 # =========================================================================
 
 main() {
-  local MODE="menu" LAUNCH_ID=""
+  local MODE="menu" LAUNCH_ID="" BOOT_ACT=""
   local -a ORIG_ARGS=("$@")
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
-    status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help)
+    status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help|boot|restore)
       local verb="$1"; shift
       case "$verb" in
         start) set -- --bg "$@" ;;
         new) set -- --cli "$@" ;;
         help) set -- --help "$@" ;;
+        boot) BOOT_ACT="${1:-status}"; [ $# -gt 0 ] && shift; set -- --boot "$@" ;;
+        restore) set -- --restore "$@" ;;
         *) set -- "--$verb" "$@" ;;
       esac
       ;;
@@ -11273,6 +13346,8 @@ main() {
   while [ $# -gt 0 ]; do
     case "$1" in
       --status) MODE="status" ;;
+      --boot) MODE="boot" ;;
+      --restore) MODE="restore" ;;
       --restart) MODE="restart" ;;
       --open) MODE="open" ;;
       --update) MODE="update" ;;
@@ -11303,7 +13378,7 @@ main() {
 
   ensure_dirs
   case "$MODE" in
-    uninstall|status) : ;;
+    uninstall|status|boot) : ;;
     *) banner ;;
   esac
 
@@ -11327,6 +13402,8 @@ main() {
       exit 0
       ;;
     status) cmd_status; exit 0 ;;
+    boot) cmd_boot "${BOOT_ACT:-status}"; exit $? ;;
+    restore) cmd_restore; exit 0 ;;
     open) cmd_open; exit 0 ;;
     restart) cmd_restart; exit $? ;;
     update) cmd_update; exit 0 ;;
@@ -11439,9 +13516,28 @@ rows.append(("shared mem", "%d MB" % plan.get("shm_mb", 0), "/dev/shm"))
 rows.append(("storage", "%d MB" % plan.get("disk_mb", 0),
              "enforced" if d.get("quota_enforced") else "tracked, not enforced here"))
 rows.append(("image", d.get("image"), ""))
+sess = d.get("session") or {}
+if sess.get("wm"):
+    rows.insert(0, ("desktop", "%s is up" % sess["wm"],
+                    "screen " + ("follows your window" if d.get("display") == "fit"
+                                 else (d.get("display") or "") + ", scaled to fit")))
 print()
-print("  " + c("1;38;5;79", "▰ READY") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
+if d.get("warning"):
+    print("  " + c("1;38;5;221", "▰ STARTED, WITH A PROBLEM") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
+else:
+    print("  " + c("1;38;5;79", "▰ READY") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
 print("  " + c("2", "─" * 66))
+if d.get("warning"):
+    import textwrap
+    for ln in textwrap.wrap(d["warning"], 70):
+        print("  " + c("38;5;221", ln))
+    for ln in ((sess.get("log") or "").strip().splitlines()[-8:]):
+        print("    " + c("2", ln[:100]))
+    print("  " + c("2", "─" * 66))
+fx = {"memory": "gave it more memory", "shm": "more shared memory", "seccomp": "relaxed seccomp",
+      "slow": "waited longer for a slow first boot", "restart": "restarted it once"}
+if d.get("fixes"):
+    print("  %s %s" % (c("38;5;79", "\u2714 fixed on the way:"), ", ".join(fx.get(f, f) for f in d["fixes"])))
 for k, v, note in rows:
     if not v:
         continue
@@ -11918,6 +14014,8 @@ print()
   command -v xdg-open >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ] && \
     xdg-open "$srv_url" >/dev/null 2>&1 &
 
+  ask_boot_once
+
   # Background, or hold the terminal until ctrl-c?
   local mode="$WEBUI_MODE"
   if [ -z "$mode" ]; then
@@ -11954,6 +14052,7 @@ print()
   done
   trap - INT
   if [ "$stopping" = 1 ]; then
+    engine stop-request ctrl-c >/dev/null 2>&1
     kill "$srv_pid" 2>/dev/null
     printf '\n'
     ok "web UI stopped"
@@ -11972,6 +14071,8 @@ cmd_stop() {
   fi
   pid=$("$PY" -c "import json;print(json.load(open('$sj')).get('pid',''))" 2>/dev/null)
   if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+    # Tell it why, so the next start can say "you stopped it" rather than guess.
+    engine stop-request "${FORGE_STOP_REASON:-user}" >/dev/null 2>&1
     kill "$pid" 2>/dev/null
     sleep 1
     kill -0 "$pid" 2>/dev/null && kill -9 "$pid" 2>/dev/null
@@ -12043,6 +14144,7 @@ cmd_uninstall() {
       sed -i '/# >>> selkies-forge >>>/,/# <<< selkies-forge <<</d' "$rc" && ok "cleaned the PATH line from $rc"
     fi
   done
+  engine boot disable >/dev/null 2>&1
   rm -rf "$FORGE_HOME"
   ok "removed $FORGE_HOME"
   printf '\n  %sthanks for using the forge%s\n\n' "$DIM" "$NC"
@@ -12202,6 +14304,16 @@ print("DOCKER_OK=" + q(1 if d.get("docker") else 0))
 print("RUNNING=" + q(d.get("running", 0)))
 print("STOPPED=" + q(d.get("stopped", 0)))
 print("TOTAL=" + q(len(d.get("desktops") or [])))
+ls = d.get("last_stop") or {}
+print("LAST_REASON=" + q(ls.get("reason", "")))
+print("LAST_CLEAN=" + q(1 if ls.get("clean") else 0))
+print("LAST_DISMISSED=" + q(1 if ls.get("dismissed") else 0))
+print("RESTORE_N=" + q(len(ls.get("restore") or [])))
+b = d.get("boot") or {}
+print("BOOT_ON=" + q(1 if b.get("enabled") else 0))
+print("BOOT_ASKED=" + q(1 if b.get("asked") else 0))
+print("BOOT_METHOD=" + q(b.get("method") or ""))
+print("BOOT_LINGER=" + q("" if b.get("linger") is None else (1 if b.get("linger") else 0)))
 PYEOF
 }
 
@@ -12245,6 +14357,36 @@ elif st == "stale":
           c("38;5;221", "stopped unexpectedly"), c("2", "· " + (w.get("why") or ""))))
 else:
     print("  %s %s  %s" % (c("2", "%-9s" % "Web UI"), c("2", "○"), "not running"))
+
+import time as _t
+def when(ts):
+    if not ts: return ""
+    ago = _t.time() - float(ts)
+    stamp = _t.strftime("%H:%M", _t.localtime(float(ts))) if ago < 86400 else \
+        _t.strftime("%a %d %b %H:%M", _t.localtime(float(ts)))
+    return "%s, %s ago" % (stamp, dur(ago))
+ls = d.get("last_stop") or {}
+if ls and not ls.get("dismissed"):
+    clean = ls.get("clean")
+    col = "38;5;79" if clean else ("38;5;203" if ls.get("reason") in ("host-crash", "crash", "oom", "error") else "38;5;221")
+    head = "Last time" if st == "up" else "Stopped"
+    print("  %s %s  %s  %s" % (c("2", "%-9s" % head), c(col, "●" if clean else "!"),
+          ls.get("label", ""), c("2", "· " + when(ls.get("at") or ls.get("last_seen")))))
+    if ls.get("boot_changed") and ls.get("boot_time"):
+        print("  %s    %s" % (" " * 9, c("2", "machine up since " + _t.strftime("%a %H:%M", _t.localtime(ls["boot_time"])))))
+    if ls.get("detail") and not clean and ls.get("reason") != "host-crash":
+        print("  %s    %s" % (" " * 9, c("2", str(ls["detail"])[:70])))
+    if ls.get("restore"):
+        n = len(ls["restore"])
+        print("  %s    %s" % (" " * 9, c("38;5;221", "%d desktop%s that %s running then %s stopped now" % (
+            n, "" if n == 1 else "s", "was" if n == 1 else "were", "is" if n == 1 else "are"))))
+b = d.get("boot") or {}
+if b.get("enabled"):
+    extra = ""
+    if b.get("method") == "systemd" and b.get("linger") is False:
+        extra = c("38;5;221", " · only after you log in (linger is off)")
+    print("  %s %s  %s%s" % (c("2", "%-9s" % "On boot"), c("38;5;79", "●"),
+          "the web UI starts by itself (%s)" % b.get("method"), extra))
 
 items = d.get("desktops") or []
 run, stop = d.get("running", 0), d.get("stopped", 0)
@@ -12297,7 +14439,7 @@ cmd_restart() {
   if [ -n "$UI_PORT" ] && [ "$WEBUI_PORT_SET" != 1 ]; then WEBUI_PORT="$UI_PORT"; fi
   if [ -n "$UI_BIND" ] && [ "$WEBUI_BIND" = "127.0.0.1" ]; then WEBUI_BIND="$UI_BIND"; fi
   [ "$UI_EXPOSED" = 1 ] && WEBUI_EXPOSE=1
-  [ "$UI_STATE" = "down" ] || cmd_stop >/dev/null 2>&1
+  [ "$UI_STATE" = "down" ] || FORGE_STOP_REASON="${FORGE_STOP_REASON:-restart}" cmd_stop >/dev/null 2>&1
   WEBUI_MODE="${WEBUI_MODE:-bg}" cmd_webui
 }
 
@@ -12368,6 +14510,80 @@ pick_new() {
   esac
 }
 
+# Start the web UI when this machine boots? Asked once, the first time the
+# web UI is started from an interactive terminal; `selkies-cli boot` changes it.
+ask_boot_once() {
+  [ -n "$TTY_IN" ] || return 0
+  [ "${FORGE_BOOT:-0}" = 1 ] && return 0
+  local b; b=$(engine boot status 2>/dev/null)
+  printf '%s' "$b" | grep -q '"asked": true' && return 0
+  printf '%s' "$b" | grep -q '"enabled": true' && return 0
+  printf '\n'
+  if confirm "Start the web UI automatically whenever this machine boots?" y; then
+    cmd_boot on
+  else
+    engine boot asked >/dev/null 2>&1
+    info "it will not start on boot; turn it on later with: ${B}selkies-cli boot on${NC}"
+  fi
+}
+
+cmd_boot() {
+  local act="${1:-status}"
+  case "$act" in
+    on|enable)
+      [ -n "${UI_PORT:-}" ] || eval "$(status_vars "$(forge_status_json)")"
+      local -a a=(boot enable --port "${UI_PORT:-$WEBUI_PORT}" --bind "${UI_BIND:-$WEBUI_BIND}")
+      [ "${UI_EXPOSED:-0}" = 1 ] || [ "$WEBUI_EXPOSE" = 1 ] && a+=(--expose)
+      local r; r=$(engine "${a[@]}" 2>&1)
+      if ! printf '%s' "$r" | grep -q '"ok": true'; then
+        bad "could not set that up: $(printf '%s' "$r" | "$PY" -c 'import json,sys
+try: print(json.load(sys.stdin).get("error",""))
+except Exception: print("")')"
+        return 1
+      fi
+      local method; method=$(printf '%s' "$r" | "$PY" -c 'import json,sys; print(json.load(sys.stdin).get("method",""))')
+      ok "the web UI will start by itself when this machine boots ($method)"
+      if printf '%s' "$r" | grep -q '"needs"'; then
+        warn "systemd only starts your services at boot once \"linger\" is on for your user"
+        if confirm "Turn it on now? (runs: sudo loginctl enable-linger $USER)" y; then
+          if run_root loginctl enable-linger "$USER"; then
+            ok "linger is on: it now starts at boot, even before anyone logs in"
+          else
+            warn "that did not work; until it does, it starts when you log in"
+          fi
+        else
+          info "until then it starts when you log in, not at boot"
+        fi
+      fi
+      ;;
+    off|disable)
+      engine boot disable >/dev/null 2>&1 && ok "the web UI will no longer start on boot"
+      ;;
+    *)
+      local r; r=$(engine boot status 2>/dev/null)
+      if printf '%s' "$r" | grep -q '"enabled": true'; then
+        ok "starts on boot ($(printf '%s' "$r" | "$PY" -c 'import json,sys; print(json.load(sys.stdin).get("method"))'))"
+      else
+        info "does not start on boot · turn it on with: selkies-cli boot on"
+      fi
+      ;;
+  esac
+}
+
+cmd_restore() {
+  spin_start "starting the desktops that were running before"
+  local r; r=$(engine restore 2>/dev/null)
+  spin_stop
+  printf '%s' "$r" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+for n in d.get("started") or []:
+    print("  ✔ started " + n)
+if not d.get("started"):
+    print("  ! nothing needed starting")
+'
+}
+
 main_menu() {
   review_autostart
   while :; do
@@ -12377,16 +14593,27 @@ main_menu() {
     render_status "$js"
 
     # Suggestions first: what you most likely want given what is running.
+    # "Browse / forge a new desktop" always sits third, wherever the list starts.
     local -a items=()
+    local newitem=$'new\tBrowse & forge a new desktop\tpick from 150+ desktops'
+    [ "$TOTAL" -eq 0 ] && newitem=$'new\tBrowse & forge your first desktop\tpick from 150+ desktops'
     if [ "$DOCKER_OK" != 1 ]; then
       items+=($'doctor\tFind out why Docker is not answering\tchecks docker, memory, disk')
+    fi
+    if [ "$RESTORE_N" -gt 0 ] 2>/dev/null && [ "$LAST_DISMISSED" != 1 ]; then
+      local why="they were running before it stopped"
+      case "$LAST_REASON" in
+        host-reboot) why="they were running before the reboot" ;;
+        host-shutdown) why="they were running before the shutdown" ;;
+        host-crash) why="they were running before the machine went down" ;;
+      esac
+      items+=("restore"$'\t'"Start the $RESTORE_N desktop(s) again"$'\t'"$why")
     fi
     case "$UI_STATE" in
       up)
         [ "$UI_RESTART" = 1 ] && items+=($'uirestart\tRestart the web UI\ta new version is installed')
         items+=("open"$'\t'"Open the web UI"$'\t'"running at $UI_URL")
         [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops"$'\t'"$RUNNING running, $STOPPED stopped")
-        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
         items+=($'uistop\tStop the web UI\tyour desktops keep running')
         [ "$UI_RESTART" = 1 ] || items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
         ;;
@@ -12394,21 +14621,35 @@ main_menu() {
         items+=($'uistart\tStart the web UI again\tit stopped unexpectedly')
         items+=($'uilog\tShow why it stopped\tlast lines of its log')
         [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
-        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
         ;;
       *)
-        if [ "$TOTAL" -eq 0 ]; then
-          items+=($'new\tForge your first desktop\tpick from 150+ desktops')
-          items+=($'uistart\tStart the web UI\tbrowse everything with screenshots')
-        else
-          items+=("uistart"$'\t'"Start the web UI"$'\t'"manage your $TOTAL desktop(s) in the browser")
-          items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
-          items+=($'new\tForge a new desktop\tpick from 150+ desktops')
-        fi
+        local hint="browse everything with screenshots"
+        [ "$TOTAL" -gt 0 ] && hint="manage your $TOTAL desktop(s) in the browser"
+        case "$LAST_REASON" in
+          crash|oom|error|host-crash) hint="it stopped unexpectedly last time" ;;
+        esac
+        items+=("uistart"$'\t'"Start the web UI"$'\t'"$hint")
+        [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
+        case "$LAST_REASON" in
+          crash|oom|error) items+=($'uilog\tShow why it stopped\tlast lines of its log') ;;
+        esac
         ;;
     esac
+    # Slot the browse entry in as the third choice (or last, if the list is shorter).
+    if [ "${#items[@]}" -ge 2 ]; then
+      items=("${items[@]:0:2}" "$newitem" "${items[@]:2}")
+    else
+      items+=("$newitem")
+    fi
+    if [ "$BOOT_ON" = 1 ]; then
+      items+=($'bootoff\tStop starting the web UI on boot\tit currently starts by itself')
+    else
+      items+=($'booton\tStart the web UI on boot\tcomes back by itself after a reboot')
+    fi
     [ "$DOCKER_OK" = 1 ] && items+=($'doctor\tCheck this machine\tdocker, memory, disk, tunnels')
     items+=($'update\tUpdate Selkies Forge\tget the latest version from GitHub')
+    [ "$RESTORE_N" -gt 0 ] 2>/dev/null && [ "$LAST_DISMISSED" != 1 ] && \
+      items+=($'dismiss\tForget about the last stop\tstop suggesting the restart')
     items+=($'quit\tQuit\t')
 
     local choice
@@ -12421,6 +14662,10 @@ main_menu() {
       uilog) cmd_ui_log ;;
       manager) cmd_manager ;;
       new) pick_new ;;
+      restore) cmd_restore ;;
+      dismiss) engine dismiss-last-stop >/dev/null 2>&1; ok "ok, it will not ask again" ;;
+      booton) cmd_boot on ;;
+      bootoff) cmd_boot off ;;
       doctor) cmd_doctor ;;
       update) cmd_update ;;
       quit|"") printf '\n  %sbye%s\n\n' "$DIM" "$NC"; return 0 ;;
@@ -12452,6 +14697,8 @@ After the first run:
    selkies-cli restart | open      restart it, or print/open its link
    selkies-cli manager | new       manage desktops, or forge a new one
    selkies-cli update              install the latest version from GitHub
+   selkies-cli boot on | off       start the web UI by itself when the machine boots
+   selkies-cli restore             start the desktops that were running before a reboot
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
@@ -12467,16 +14714,18 @@ USAGE
 # =========================================================================
 
 main() {
-  local MODE="menu" LAUNCH_ID=""
+  local MODE="menu" LAUNCH_ID="" BOOT_ACT=""
   local -a ORIG_ARGS=("$@")
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
-    status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help)
+    status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help|boot|restore)
       local verb="$1"; shift
       case "$verb" in
         start) set -- --bg "$@" ;;
         new) set -- --cli "$@" ;;
         help) set -- --help "$@" ;;
+        boot) BOOT_ACT="${1:-status}"; [ $# -gt 0 ] && shift; set -- --boot "$@" ;;
+        restore) set -- --restore "$@" ;;
         *) set -- "--$verb" "$@" ;;
       esac
       ;;
@@ -12484,6 +14733,8 @@ main() {
   while [ $# -gt 0 ]; do
     case "$1" in
       --status) MODE="status" ;;
+      --boot) MODE="boot" ;;
+      --restore) MODE="restore" ;;
       --restart) MODE="restart" ;;
       --open) MODE="open" ;;
       --update) MODE="update" ;;
@@ -12514,7 +14765,7 @@ main() {
 
   ensure_dirs
   case "$MODE" in
-    uninstall|status) : ;;
+    uninstall|status|boot) : ;;
     *) banner ;;
   esac
 
@@ -12538,6 +14789,8 @@ main() {
       exit 0
       ;;
     status) cmd_status; exit 0 ;;
+    boot) cmd_boot "${BOOT_ACT:-status}"; exit $? ;;
+    restore) cmd_restore; exit 0 ;;
     open) cmd_open; exit 0 ;;
     restart) cmd_restart; exit $? ;;
     update) cmd_update; exit 0 ;;
