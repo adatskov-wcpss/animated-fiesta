@@ -17,6 +17,9 @@
 #     ./selkies-forge.sh --smart      let it choose for this machine
 #     ./selkies-forge.sh --list       print the catalog
 #     ./selkies-forge.sh --manager    manage running desktops
+#     ./selkies-forge.sh --bg         web UI in the background, shell back
+#     ./selkies-forge.sh --fg         web UI in the foreground until ctrl-c
+#     ./selkies-forge.sh --stop       stop a backgrounded web UI
 #     ./selkies-forge.sh --doctor     check this machine
 #     ./selkies-forge.sh --uninstall  remove everything it created
 #
@@ -37,6 +40,7 @@ NO_TUNNEL=0
 WEBUI_PORT="${FORGE_PORT:-8787}"
 WEBUI_BIND="${FORGE_BIND:-127.0.0.1}"
 WEBUI_EXPOSE=0
+WEBUI_MODE=""
 FORCE_EXTRACT=0
 
 # ---------------------------------------------------------------- colours
@@ -486,13 +490,13 @@ install_extras() {
 # =========================================================================
 
 FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
-FORGE_SHA_ENGINE_PY="b89892195dd349840b4feaaf5fa198ece5fc98f59c60c1ead7df8f7fa90671aa"
+FORGE_SHA_ENGINE_PY="092ec3006f6c7e17b06ac12c5feedee66d5ab61254c280b9289f2e4d69c844c7"
 FORGE_SHA_INDEX_HTML="9478e1fdaf4df021dd6900610f19c6b2ead6fed6e4a2a03dba0a02effcaa88a6"
 FORGE_SHA_APP_CSS="ab1899039cc0d47d1a0a8bda2a9c162be222edf8cffb1b396177c6c9b0575577"
-FORGE_SHA_APP_JS="5970f0104325c29c552788e186957406233f708b1de4c4f8b150ff1edb95091d"
+FORGE_SHA_APP_JS="4e6723ba448447fd8ff07ea4d5118b73a92123a86ae86a5da7f1c9888a16f520"
 FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_LOGOS_JS="7d210251df9e2bfca5c2caaf07377042219f18650c7ca97149d4218c29d8bbaa"
-FORGE_PAYLOAD_SHA="d341ce31831f9eb0b7fd5ebc3e3994d5fdb3746eb0d754df00305711fe5a5521"
+FORGE_PAYLOAD_SHA="d8e0ca28caca5641a9fcdd50cb0f58fbe94a7185c7e8046cb49cbff5e3dae093"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -3487,7 +3491,15 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, instance_action(m.group(1), m.group(2), body))
         if route == "/api/term":
             name = body.get("container") or ""
-            if not any(i["name"] == name and i["running"] for i in docker_instances()):
+            if not re.match(r"^[A-Za-z0-9_.-]+$", name):
+                return self._err(400, "bad container name")
+            # One targeted inspect; scanning every forge container here cost
+            # a couple of seconds before the shell even started.
+            rc, out, _ = run(["docker", "inspect", "-f",
+                              '{{.State.Running}}|{{index .Config.Labels "%s.entry"}}' % LABEL,
+                              name], timeout=20)
+            running, _, lbl = (out.strip().partition("|"))
+            if rc != 0 or running != "true" or not lbl:
                 return self._err(400, "%s is not a running forge container" % name)
             s = term_open(name, body.get("cols") or 100, body.get("rows") or 28,
                           user=body.get("user"))
@@ -5675,12 +5687,40 @@ __FORGE_FILE_APP_CSS__
     S.termName = name;
     var term = new window.ForgeTerm(el, { cols: 100, rows: 28 });
     S.term = term;
+
+    /* Attaching takes a second or two (docker exec, then the pty), so say so
+       rather than showing an empty black box. */
+    var head = $("#shHead");
+    var t0 = Date.now();
+    var frames = "\u280b\u2819\u2839\u2838\u283c\u2834\u2826\u2827\u2807\u280f";
+    var fi = 0;
+    var live = false;
+    var spin = setInterval(function () {
+      var secs = ((Date.now() - t0) / 1000).toFixed(1);
+      head.textContent = frames.charAt(fi++ % 10) + "  attaching to " + name + "  " + secs + "s";
+      if (fi === 90) {
+        term.line("still waiting on docker exec, the container may be busy", "d");
+      }
+    }, 90);
+    function settled(text) {
+      if (spin) { clearInterval(spin); spin = null; }
+      head.textContent = text;
+    }
+    term.line("connecting to " + name + " ...", "d");
+    term.line("");
+
     var fit = term.fit();
     api("/api/term", { body: { container: name, cols: fit.cols, rows: fit.rows } })
       .then(function (r) {
         S.termId = r.id;
+        head.textContent = "handshaking with the shell...";
         S.termES = sse("/api/term/" + r.id + "/stream", {
           data: function (d) {
+            if (!live) {
+              live = true;
+              settled("docker exec \u00b7 " + name + "  \u00b7  " +
+                      ((Date.now() - t0) / 1000).toFixed(1) + "s to attach");
+            }
             var raw = atob(typeof d === "string" ? d.replace(/^"|"$/g, "") : d);
             var out;
             try {
@@ -5692,6 +5732,7 @@ __FORGE_FILE_APP_CSS__
             term.write(out);
           },
           closed: function () {
+            settled("session closed \u00b7 " + name);
             term.line("");
             term.line("[session closed]", "d");
           },
@@ -5700,6 +5741,7 @@ __FORGE_FILE_APP_CSS__
         el.focus();
       })
       .catch(function (e) {
+        settled("could not attach");
         term.line("could not open a shell: " + e.message, "e");
       });
   }
@@ -6892,21 +6934,36 @@ cmd_webui() {
     warn "this exposes docker control beyond localhost; a token is required in the URL"
   fi
 
+  # Always start it detached, then decide whether to sit on it or hand the
+  # shell back. setsid keeps it alive if this script exits.
+  local log="$FORGE_LOGS/webui.log"
+  : > "$log"
+  if command -v setsid >/dev/null 2>&1; then
+    setsid nohup "$PY" "$FORGE_APP/engine.py" "${args[@]}" >>"$log" 2>&1 </dev/null &
+  else
+    nohup "$PY" "$FORGE_APP/engine.py" "${args[@]}" >>"$log" 2>&1 </dev/null &
+  fi
+  disown 2>/dev/null
+
   spin_start "starting the engine"
-  local out line info_json=""
-  exec 3< <(engine "${args[@]}" 2>&1)
-  while IFS= read -r line <&3; do
-    case "$line" in
-      '{'*) info_json="$line"; break ;;
-      *) : ;;
-    esac
+  local info_json="" i=0
+  while [ "$i" -lt 900 ]; do
+    info_json=$(grep -m1 '^{' "$log" 2>/dev/null)
+    [ -n "$info_json" ] && break
+    sleep 0.1
+    i=$((i + 1))
   done
   spin_stop
 
   if [ -z "$info_json" ]; then
     bad "the web UI did not start"
+    [ -s "$log" ] && sed 's/^/    /' "$log" | tail -12
     return 1
   fi
+
+  local srv_pid srv_url
+  srv_pid=$(printf '%s' "$info_json" | "$PY" -c 'import json,sys;print(json.load(sys.stdin)["pid"])')
+  srv_url=$(printf '%s' "$info_json" | "$PY" -c 'import json,sys;print(json.load(sys.stdin)["url"])')
 
   printf '%s' "$info_json" | "$PY" -c '
 import json, sys, os
@@ -6923,15 +6980,68 @@ if d.get("tunnel_error"):
     print("  %s %s" % (c("2", "%-10s" % "tunnel"), "failed: " + d["tunnel_error"]))
 print("  %s %s" % (c("2", "%-10s" % "pid"), d["pid"]))
 print()
-print("  " + c("2", "ctrl-c here shuts the web UI down; running desktops keep running"))
-print()
 ' FORGE_COLOR=$COLOR
 
   command -v xdg-open >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ] && \
-    xdg-open "$(printf '%s' "$info_json" | "$PY" -c 'import json,sys;print(json.load(sys.stdin)["url"])')" >/dev/null 2>&1 &
+    xdg-open "$srv_url" >/dev/null 2>&1 &
 
-  cat <&3
-  exec 3<&-
+  # Background, or hold the terminal until ctrl-c?
+  local mode="$WEBUI_MODE"
+  if [ -z "$mode" ]; then
+    if [ -t 0 ] && [ -r /dev/tty ]; then
+      mode=$(menu_choose "Leave it running?" \
+        $'bg\tRun it in the background\tyou get your shell back, the UI keeps serving' \
+        $'fg\tHold this terminal\tstays in the foreground until ctrl-c') || mode="bg"
+    else
+      mode="fg"
+    fi
+  fi
+
+  if [ "$mode" = "bg" ]; then
+    printf '\n'
+    ok "running in the background as pid $srv_pid"
+    info "stop it with:  $0 --stop      (or: kill $srv_pid)"
+    info "log:           $log"
+    printf '\n'
+    return 0
+  fi
+
+  printf '\n  %sholding this terminal · ctrl-c stops the web UI%s\n' "$DIM" "$NC"
+  printf '  %srunning desktops are not affected%s\n\n' "$DIM" "$NC"
+  local stopping=0
+  trap 'stopping=1' INT
+  while kill -0 "$srv_pid" 2>/dev/null; do
+    [ "$stopping" = 1 ] && break
+    sleep 1
+  done
+  trap - INT
+  if [ "$stopping" = 1 ]; then
+    kill "$srv_pid" 2>/dev/null
+    printf '\n'
+    ok "web UI stopped"
+  else
+    warn "the web UI exited on its own, see $log"
+  fi
+  printf '\n'
+}
+
+cmd_stop() {
+  local sj="$FORGE_STATE/server.json" pid
+  if [ ! -f "$sj" ]; then
+    warn "no web UI is recorded as running"
+    return 1
+  fi
+  pid=$("$PY" -c "import json;print(json.load(open('$sj')).get('pid',''))" 2>/dev/null)
+  if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" 2>/dev/null
+    sleep 1
+    kill -0 "$pid" 2>/dev/null && kill -9 "$pid" 2>/dev/null
+    ok "stopped the web UI (pid $pid)"
+  else
+    warn "the recorded web UI (pid ${pid:-?}) is not running"
+  fi
+  rm -f "$sj"
+  info "running desktops are untouched; use --manager to see them"
 }
 
 # =========================================================================
@@ -7047,6 +7157,9 @@ main() {
       --port) WEBUI_PORT="${2:-8787}"; shift ;;
       --bind) WEBUI_BIND="${2:-127.0.0.1}"; shift ;;
       --expose) WEBUI_EXPOSE=1; WEBUI_BIND="0.0.0.0" ;;
+      --bg) MODE="webui"; WEBUI_MODE="bg" ;;
+      --fg) MODE="webui"; WEBUI_MODE="fg" ;;
+      --stop) MODE="stop" ;;
       --no-tunnel) NO_TUNNEL=1 ;;
       --yes|-y) ASSUME_YES=1 ;;
       --force-extract) FORCE_EXTRACT=1 ;;
@@ -7066,6 +7179,7 @@ main() {
   extract_payload
 
   case "$MODE" in
+    stop) cmd_stop; exit $? ;;
     uninstall) cmd_uninstall; exit 0 ;;
     doctor) cmd_doctor; exit 0 ;;
     list) engine list --runnable --format tsv | column -t -s $'\t' 2>/dev/null || engine list --runnable --format tsv; exit 0 ;;
