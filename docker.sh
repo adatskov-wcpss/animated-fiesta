@@ -31,6 +31,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
+BOLD='\033[1m'
 NC='\033[0m'
 
 # Initialize directories
@@ -68,30 +69,62 @@ show_urls() {
     fi
 }
 
-# Display menu
-show_menu() {
+# Display main menu
+show_main_menu() {
     clear
-    echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║   Selkies Multi-Distro Launcher v2.0   ║${NC}"
-    echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
+    echo -e "${BLUE}╔════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║   ${BOLD}Selkies Multi-Distro Launcher v2.0${NC}${BLUE}                  ║${NC}"
+    echo -e "${BLUE}╚════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    echo -e "${CYAN}Available Distros:${NC}"
+    echo -e "${CYAN}${BOLD}Available Distros:${NC}"
     for key in "${!DISTROS[@]}"; do
         IFS='|' read -r name image <<< "${DISTROS[$key]}"
         printf "  ${YELLOW}%2d${NC}) %s\n" "$key" "$name"
     done
     echo ""
-    echo -e "${CYAN}Options:${NC}"
-    echo "  14) Start Web Portal (Port $PORTAL_PORT)"
-    echo "  15) List Running Instances"
-    echo "  16) Stop All Instances"
-    echo "  0) Exit"
+    echo -e "${CYAN}${BOLD}Management Options:${NC}"
+    echo "  ${YELLOW}14${NC}) Start Web Portal (Port $PORTAL_PORT)"
+    echo "  ${YELLOW}15${NC}) List Running Instances"
+    echo "  ${YELLOW}16${NC}) Stop All Instances"
+    echo "  ${YELLOW}0${NC}) Exit"
     echo ""
+}
+
+# Get user input with validation
+get_menu_choice() {
+    local choice
+    while true; do
+        read -p "$(echo -e ${CYAN}Enter your choice:${NC} )" choice
+        
+        # Validate input is a number
+        if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+            echo -e "${RED}✗ Invalid input. Please enter a number.${NC}"
+            continue
+        fi
+        
+        # Validate choice is in valid range
+        if [ "$choice" -eq 0 ] || [ "$choice" -eq 14 ] || [ "$choice" -eq 15 ] || [ "$choice" -eq 16 ]; then
+            echo "$choice"
+            return 0
+        elif [ "$choice" -ge 1 ] && [ "$choice" -le 13 ]; then
+            echo "$choice"
+            return 0
+        else
+            echo -e "${RED}✗ Invalid choice. Please select a valid option.${NC}"
+        fi
+    done
 }
 
 # Start container with live output
 start_container() {
     local distro_key=$1
+    
+    if [ ! -v "DISTROS[$distro_key]" ]; then
+        echo -e "${RED}✗ Invalid distro selection${NC}"
+        read -p "Press Enter to continue..."
+        return 1
+    fi
+    
     local distro_name distro_image
     IFS='|' read -r distro_name distro_image <<< "${DISTROS[$distro_key]}"
     
@@ -99,19 +132,27 @@ start_container() {
     local port=$((3000 + distro_key))
     local log_file="$LOG_DIR/${container_name}.log"
     
-    echo -e "\n${CYAN}Starting: $distro_name${NC}"
+    clear
+    echo -e "\n${CYAN}${BOLD}Starting: $distro_name${NC}"
     echo -e "${YELLOW}Container:${NC} $container_name"
     echo -e "${YELLOW}Port:${NC} $port"
     echo -e "${YELLOW}Image:${NC} $distro_image"
     echo ""
     
     # Pull image with live output
-    echo -e "${CYAN}Pulling image...${NC}"
-    docker pull "$distro_image" 2>&1 | sed 's/^/  /'
+    echo -e "${CYAN}${BOLD}Pulling image...${NC}"
+    if docker pull "$distro_image" 2>&1 | tee -a "$log_file" | sed 's/^/  /'; then
+        echo -e "${GREEN}✓ Image pulled successfully${NC}\n"
+    else
+        echo -e "${RED}✗ Failed to pull image${NC}"
+        read -p "Press Enter to continue..."
+        return 1
+    fi
     
     # Run container with live output
-    echo -e "\n${CYAN}Starting container...${NC}"
-    docker run -d \
+    echo -e "${CYAN}${BOLD}Starting container...${NC}"
+    local container_id
+    if container_id=$(docker run -d \
         --name "$container_name" \
         -p "$port:3000" \
         -p "$((port+1)):3001" \
@@ -120,17 +161,15 @@ start_container() {
         -e PUID=1000 \
         -e PGID=1000 \
         --restart unless-stopped \
-        "$distro_image" \
-        2>&1 | tee -a "$log_file"
-    
-    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        "$distro_image" 2>&1 | tee -a "$log_file"); then
         echo -e "${GREEN}✓ Container started successfully${NC}"
+        echo -e "Container ID: ${YELLOW}$container_id${NC}\n"
         
         # Wait a moment for container to be ready
         sleep 2
         
         # Show container logs
-        echo -e "\n${CYAN}Container Status:${NC}"
+        echo -e "${CYAN}${BOLD}Container Status:${NC}"
         docker logs "$container_name" 2>&1 | tail -10 | sed 's/^/  /'
         
         # Show URLs
@@ -140,6 +179,8 @@ start_container() {
         save_instance_info "$container_name" "$distro_name" "$port" "$distro_image"
     else
         echo -e "${RED}✗ Failed to start container${NC}"
+        read -p "Press Enter to continue..."
+        return 1
     fi
     
     read -p "Press Enter to continue..."
@@ -156,23 +197,22 @@ save_instance_info() {
         echo '{"instances":[]}' > "$STATE_FILE"
     fi
     
-    # Simple JSON append (basic implementation)
-    # In production, use jq or similar
+    # Simple manifest append
     echo "$container|$name|$port|$image" >> "$INSTANCES_DIR/manifest.txt"
 }
 
 # List running instances
 list_instances() {
     clear
-    echo -e "${BLUE}Running Instances:${NC}\n"
+    echo -e "${BLUE}${BOLD}Running Instances:${NC}\n"
     
-    local count=$(docker ps --filter "name=selkies_" --format "{{.Names}}" | wc -l)
+    local count=$(docker ps --filter "name=selkies_" --format "{{.Names}}" 2>/dev/null | wc -l)
     
     if [ $count -eq 0 ]; then
         echo -e "${YELLOW}No instances running${NC}"
     else
-        docker ps --filter "name=selkies_" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | while IFS=$'\t' read -r name status ports; do
-            echo -e "${GREEN}$name${NC}"
+        docker ps --filter "name=selkies_" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null | while IFS=$'\t' read -r name status ports; do
+            echo -e "${GREEN}${BOLD}$name${NC}"
             echo "  Status: $status"
             echo "  Ports: $ports"
             echo ""
@@ -180,28 +220,39 @@ list_instances() {
     fi
     
     if [ -f "$INSTANCES_DIR/manifest.txt" ]; then
-        echo -e "${CYAN}Instance Summary:${NC}"
-        wc -l < "$INSTANCES_DIR/manifest.txt"
-        echo "total instances launched"
+        local total=$(wc -l < "$INSTANCES_DIR/manifest.txt" 2>/dev/null || echo 0)
+        echo -e "${CYAN}Total instances launched: ${YELLOW}$total${NC}"
     fi
     
+    echo ""
     read -p "Press Enter to continue..."
 }
 
 # Stop all instances
 stop_all_instances() {
-    echo -e "${YELLOW}Stopping all instances...${NC}"
-    docker ps --filter "name=selkies_" --format "{{.Names}}" | while read -r container; do
-        echo "Stopping $container..."
-        docker stop "$container" 2>&1 | sed 's/^/  /'
-    done
-    echo -e "${GREEN}All instances stopped${NC}"
+    clear
+    echo -e "${YELLOW}${BOLD}Stopping all instances...${NC}\n"
+    
+    local containers=$(docker ps --filter "name=selkies_" --format "{{.Names}}" 2>/dev/null)
+    
+    if [ -z "$containers" ]; then
+        echo -e "${YELLOW}No instances running${NC}"
+    else
+        echo "$containers" | while read -r container; do
+            echo -e "${CYAN}Stopping $container...${NC}"
+            docker stop "$container" 2>&1 | sed 's/^/  /'
+        done
+        echo -e "${GREEN}✓ All instances stopped${NC}"
+    fi
+    
+    echo ""
     read -p "Press Enter to continue..."
 }
 
 # Start web portal for instance management
 start_web_portal() {
-    echo -e "\n${CYAN}Starting Web Portal on port $PORTAL_PORT...${NC}"
+    clear
+    echo -e "\n${CYAN}${BOLD}Starting Web Portal on port $PORTAL_PORT...${NC}"
     
     # Create a simple web server container
     local portal_container="selkies-portal-$RANDOM"
@@ -597,19 +648,18 @@ server.listen(PORT, () => {
 NODEEOF
 
     # Start portal with Node.js
-    docker run -d \
+    if docker run -d \
         --name "$portal_container" \
         -p "$PORTAL_PORT:$PORTAL_PORT" \
         -v "$INSTANCES_DIR:/app" \
         -w /app \
         -e PORT="$PORTAL_PORT" \
         node:18-alpine \
-        node server.js 2>&1 | sed 's/^/  /'
-    
-    if [ $? -eq 0 ]; then
-        echo -e "\n${GREEN}✓ Web Portal started successfully!${NC}"
+        node server.js > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Web Portal started successfully!${NC}"
         echo -e "${CYAN}Access at:${NC} ${YELLOW}http://localhost:$PORTAL_PORT${NC}"
-        echo -e "\n${CYAN}Features:${NC}"
+        echo ""
+        echo -e "${CYAN}${BOLD}Features:${NC}"
         echo "  • Launch instances from web interface"
         echo "  • Real-time instance monitoring"
         echo "  • Quick access to running containers"
@@ -622,52 +672,43 @@ NODEEOF
     read -p "Press Enter to continue..."
 }
 
-# Interactive selector with arrow keys
-select_distro() {
-    local selected=1
-    local key
-    
-    while true; do
-        show_menu
-        read -rsn1 key
-        
-        case "$key" in
-            [0-9])
-                selected="${key}${selected}"
-                selected="${selected: -2}"
-                selected="${selected##0}"
-                ;;
-            $'\x0a')
-                if [ "$selected" -ge 0 ] && [ "$selected" -le 16 ]; then
-                    case "$selected" in
-                        0) exit 0 ;;
-                        14) start_web_portal ;;
-                        15) list_instances ;;
-                        16) stop_all_instances ;;
-                        *)
-                            if [ -v "DISTROS[$selected]" ]; then
-                                start_container "$selected"
-                            fi
-                            ;;
-                    esac
-                fi
-                selected=1
-                ;;
-        esac
-    done
-}
-
-# Main
+# Main loop
 main() {
     init_dirs
     
     # Check for Docker
     if ! command -v docker &> /dev/null; then
-        echo -e "${RED}Docker is not installed!${NC}"
+        echo -e "${RED}✗ Docker is not installed!${NC}"
         exit 1
     fi
     
-    select_distro
+    while true; do
+        show_main_menu
+        
+        # Get user choice with validation
+        choice=$(get_menu_choice)
+        
+        case "$choice" in
+            0)
+                echo -e "\n${CYAN}Goodbye!${NC}\n"
+                exit 0
+                ;;
+            14)
+                start_web_portal
+                ;;
+            15)
+                list_instances
+                ;;
+            16)
+                stop_all_instances
+                ;;
+            *)
+                if [ -v "DISTROS[$choice]" ]; then
+                    start_container "$choice"
+                fi
+                ;;
+        esac
+    done
 }
 
 main "$@"
