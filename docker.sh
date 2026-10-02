@@ -20,6 +20,11 @@
 #     ./selkies-forge.sh --bg         web UI in the background, shell back
 #     ./selkies-forge.sh --fg         web UI in the foreground until ctrl-c
 #     ./selkies-forge.sh --stop       stop a backgrounded web UI
+#     ./selkies-forge.sh --setup      install everything, then exit
+#
+#  After the first run, "selkies-cli" brings you back here from any shell:
+#     selkies-cli                     home screen: what is running, what next
+#     selkies-cli status | start | stop | restart | open | update
 #
 #  Piped straight from GitHub, pass options after "bash -s --":
 #     curl -fsSL <url>/docker.sh | bash -s -- --webui
@@ -31,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.0.0"
+FORGE_VERSION="1.1.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -41,6 +46,7 @@ PY=""
 ASSUME_YES=0
 NO_TUNNEL=0
 WEBUI_PORT="${FORGE_PORT:-8787}"
+WEBUI_PORT_SET=0
 WEBUI_BIND="${FORGE_BIND:-127.0.0.1}"
 WEBUI_EXPOSE=0
 WEBUI_MODE=""
@@ -73,8 +79,14 @@ fi
 
 # How to run this script again, for the hints it prints. Under "curl | bash"
 # $0 is just "bash", so point at the published copy instead.
-FORGE_URL="https://raw.githubusercontent.com/adatskov-wcpss/animated-fiesta/main/docker.sh"
-if [ -f "$0" ] && grep -q '^FORGE_VERSION=' "$0" 2>/dev/null; then
+FORGE_URL="${FORGE_URL:-https://raw.githubusercontent.com/adatskov-wcpss/animated-fiesta/main/docker.sh}"
+FORGE_AS_CLI="${FORGE_AS_CLI:-0}"     # 1 when started as the selkies-cli command
+CLI_PATH=""
+CLI_NEW=0
+CLI_RC_ADDED=0
+if [ "$FORGE_AS_CLI" = 1 ]; then
+  FORGE_RUN="selkies-cli"
+elif [ -f "$0" ] && grep -q '^FORGE_VERSION=' "$0" 2>/dev/null; then
   FORGE_RUN="bash $0"
 else
   FORGE_RUN="curl -fsSL $FORGE_URL | bash -s --"
@@ -508,11 +520,11 @@ install_extras() {
 }
 
 # =========================================================================
-#  embedded payload: the engine and the web UI, written out on first run
+#  embedded payload: the engine, the web UI and the selkies-cli front end
 # =========================================================================
 
 FORGE_SHA_CATALOG_PY="c6723f6eddedba50f4aef0efc768a2b37770508ef7d71f2e3da1677ca47ef4de"
-FORGE_SHA_ENGINE_PY="5bde62d7775e37bfea0fac36d578f5dc7b996949670e99d40a36d8d7bb7e7a1e"
+FORGE_SHA_ENGINE_PY="f0864530afbc236ac7ae3452e84affead9ff5d70b7ebbc240370d490b1ecf054"
 FORGE_SHA_INDEX_HTML="220cc292f318046f9f8cacab221469fb13c741a033513e18fc830c841d0e744c"
 FORGE_SHA_APP_CSS="685cd8ef93a5bfe79c5a79d950a3ec24f1327e5ea07ff14415c5fd213b405721"
 FORGE_SHA_APP_JS="c9484cf2234595a670bef18eb353ac8b350c693ff1aa6a4ac1cf8c9b3eee06db"
@@ -520,7 +532,9 @@ FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99
 FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_INFO_JSON="55b317e435e760e51ea56e39b6dfdd67c8f0266940b9769ff748d94cfa0aac57"
-FORGE_PAYLOAD_SHA="7c2235ab96a6c0cf87f5d963a03400acf8915fc51ab1d5950a58ad536f70fe03"
+FORGE_SHA_SELKIES_CLI="5c5e54b453ddb0db9e88faa6a70b7b368ebeefd3590bd2db9fc065d0fdc789da"
+FORGE_PAYLOAD_SHA="78569df79d42189d9e142051e6ddf3db27b832a176cc30026a497e7f308173e6"
+FORGE_PAYLOAD_FILES="catalog.py engine.py index.html app.css app.js term.js logos.js brands.js info.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -1245,7 +1259,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import catalog  # noqa: E402
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 APPDIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.environ.get("FORGE_HOME") or os.path.join(os.path.expanduser("~"), ".selkies-forge")
 STATE = os.path.join(ROOT, "state")
@@ -3952,6 +3966,53 @@ def cli_launch_stream(args):
     return 0 if done["result"] else 1
 
 
+def webui_status():
+    """Is the web UI up?  up / stale (recorded but dead or not answering) / down."""
+    info = jload(SERVER_JSON, None)
+    if not info or not info.get("pid"):
+        return {"state": "down"}
+    out = {"state": "stale", "pid": info.get("pid"), "port": info.get("port"),
+           "url": info.get("url"), "bind": info.get("bind"),
+           "tunnel": info.get("tunnel"), "started": info.get("started"),
+           "uptime_s": int(time.time() - float(info.get("started") or time.time())),
+           "log": os.path.join(LOGDIR, "webui.log")}
+    if not pid_alive(info["pid"]):
+        out["why"] = "its process (pid %s) is gone" % info["pid"]
+        return out
+    try:
+        req = urllib.request.Request("http://127.0.0.1:%d/api/host" % int(info["port"]),
+                                     headers={"User-Agent": "selkies-cli",
+                                              "X-Forge-Token": info.get("token") or ""})
+        with urllib.request.urlopen(req, timeout=4) as r:
+            ok = r.status < 500
+    except urllib.error.HTTPError as ex:
+        ok = ex.code in (401, 403)          # token-protected, but alive
+    except Exception as ex:
+        ok = False
+        out["why"] = "it is running but not answering (%s)" % type(ex).__name__
+    if ok:
+        out["state"] = "up"
+    return out
+
+
+def forge_status():
+    items = []
+    try:
+        for i in docker_instances():
+            t = i.get("tunnel") or {}
+            items.append({"name": i["name"], "title": i["title"], "running": i["running"],
+                          "status": i.get("status"), "local_url": i.get("local_url"),
+                          "public_url": t.get("url") if t.get("alive") else None,
+                          "autostart": i.get("autostart"), "started_at": i.get("started_at")})
+    except Exception:
+        pass
+    ok, err = docker_ok()
+    return {"version": VERSION, "webui": webui_status(), "docker": ok,
+            "docker_error": None if ok else err, "desktops": items,
+            "running": sum(1 for i in items if i["running"]),
+            "stopped": sum(1 for i in items if not i["running"])}
+
+
 def cli_doctor():
     host = host_info(fresh=True)
     checks = []
@@ -4009,6 +4070,7 @@ def main(argv=None):
     p.add_argument("--quiet", action="store_true")
 
     sub.add_parser("host")
+    sub.add_parser("status")
     sub.add_parser("doctor")
     sub.add_parser("instances")
     sub.add_parser("stats")
@@ -4075,6 +4137,9 @@ def main(argv=None):
 
     if a.cmd == "serve":
         serve(a.bind, a.port, a.tunnel, a.quiet)
+        return 0
+    if a.cmd == "status":
+        print(json.dumps(forge_status()))
         return 0
     if a.cmd == "host":
         print(json.dumps(host_info(fresh=True), indent=2))
@@ -9196,29 +9261,1715 @@ __FORGE_FILE_BRANDS_JS__
  }
 }
 __FORGE_FILE_INFO_JSON__
-  if command -v sha256sum >/dev/null 2>&1; then
-    local bad=0 f want got
-    for f in catalog.py engine.py index.html app.css app.js term.js logos.js brands.js info.json; do
-      case "$f" in
-        catalog.py) want="$FORGE_SHA_CATALOG_PY" ;;
-        engine.py) want="$FORGE_SHA_ENGINE_PY" ;;
-        index.html) want="$FORGE_SHA_INDEX_HTML" ;;
-        app.css) want="$FORGE_SHA_APP_CSS" ;;
-        app.js) want="$FORGE_SHA_APP_JS" ;;
-        term.js) want="$FORGE_SHA_TERM_JS" ;;
-        logos.js) want="$FORGE_SHA_LOGOS_JS" ;;
-        brands.js) want="$FORGE_SHA_BRANDS_JS" ;;
-        info.json) want="$FORGE_SHA_INFO_JSON" ;;
+  cat > "$FORGE_APP/selkies-cli" <<'__FORGE_FILE_SELKIES_CLI__'
+#!/usr/bin/env bash
+# selkies-cli front end, generated by build.sh
+FORGE_AS_CLI=1
+#
+#  ███████ ███████ ██      ██   ██ ██ ███████ ███████
+#  ██      ██      ██      ██  ██  ██ ██      ██
+#  ███████ █████   ██      █████   ██ █████   ███████
+#       ██ ██      ██      ██  ██  ██ ██           ██
+#  ███████ ███████ ███████ ██   ██ ██ ███████ ███████   F O R G E
+#
+#  One file. Installs what it needs, then runs any of 150+ Linux desktops
+#  in Docker and streams them to your browser over a serveo tunnel.
+#
+#  Usage:
+#     ./selkies-forge.sh              interactive menu
+#     ./selkies-forge.sh --webui      straight to the web UI
+#     ./selkies-forge.sh --cli        straight to the terminal picker
+#     ./selkies-forge.sh --launch ID  forge one entry and exit
+#     ./selkies-forge.sh --smart      let it choose for this machine
+#     ./selkies-forge.sh --list       print the catalog
+#     ./selkies-forge.sh --manager    manage running desktops
+#     ./selkies-forge.sh --bg         web UI in the background, shell back
+#     ./selkies-forge.sh --fg         web UI in the foreground until ctrl-c
+#     ./selkies-forge.sh --stop       stop a backgrounded web UI
+#     ./selkies-forge.sh --setup      install everything, then exit
+#
+#  After the first run, "selkies-cli" brings you back here from any shell:
+#     selkies-cli                     home screen: what is running, what next
+#     selkies-cli status | start | stop | restart | open | update
+#
+#  Piped straight from GitHub, pass options after "bash -s --":
+#     curl -fsSL <url>/docker.sh | bash -s -- --webui
+#     ./selkies-forge.sh --doctor     check this machine
+#     ./selkies-forge.sh --uninstall  remove everything it created
+#
+#  MIT licensed. No telemetry, no accounts, nothing phones home except
+#  docker pulls and the serveo tunnel you asked for.
+
+set -uo pipefail
+
+FORGE_VERSION="1.1.0"
+FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
+FORGE_APP="$FORGE_HOME/app"
+FORGE_STATE="$FORGE_HOME/state"
+FORGE_LOGS="$FORGE_HOME/logs"
+FORGE_LOCK="$FORGE_STATE/forge.lock"
+PY=""
+ASSUME_YES=0
+NO_TUNNEL=0
+WEBUI_PORT="${FORGE_PORT:-8787}"
+WEBUI_PORT_SET=0
+WEBUI_BIND="${FORGE_BIND:-127.0.0.1}"
+WEBUI_EXPOSE=0
+WEBUI_MODE=""
+FORGE_FROM_MENU=0
+FORCE_EXTRACT=0
+
+# ---------------------------------------------------------------- colours
+if [ -t 1 ] && [ "${NO_COLOR:-}" = "" ] && [ "${TERM:-dumb}" != "dumb" ]; then
+  COLOR=1
+  NC=$'\033[0m'; B=$'\033[1m'; DIM=$'\033[2m'; IT=$'\033[3m'
+  RED=$'\033[38;5;203m'; GRN=$'\033[38;5;79m'; YEL=$'\033[38;5;221m'
+  BLU=$'\033[38;5;75m'; VIO=$'\033[38;5;141m'; CYA=$'\033[38;5;80m'
+  GRY=$'\033[38;5;245m'; WHT=$'\033[38;5;255m'
+  HIDE=$'\033[?25l'; SHOW=$'\033[?25h'; CLRL=$'\033[2K\r'
+else
+  COLOR=0
+  NC=""; B=""; DIM=""; IT=""
+  RED=""; GRN=""; YEL=""; BLU=""; VIO=""; CYA=""; GRY=""; WHT=""
+  HIDE=""; SHOW=""; CLRL=$'\r'
+fi
+
+# Where answers come from. A piped install (curl ... | bash) has the script
+# itself on stdin, so every question has to read the keyboard via /dev/tty.
+TTY_IN=""
+if [ -t 0 ]; then
+  TTY_IN="/dev/stdin"
+elif ( : </dev/tty ) 2>/dev/null; then
+  TTY_IN="/dev/tty"
+fi
+
+# How to run this script again, for the hints it prints. Under "curl | bash"
+# $0 is just "bash", so point at the published copy instead.
+FORGE_URL="${FORGE_URL:-https://raw.githubusercontent.com/adatskov-wcpss/animated-fiesta/main/docker.sh}"
+FORGE_AS_CLI="${FORGE_AS_CLI:-0}"     # 1 when started as the selkies-cli command
+CLI_PATH=""
+CLI_NEW=0
+CLI_RC_ADDED=0
+if [ "$FORGE_AS_CLI" = 1 ]; then
+  FORGE_RUN="selkies-cli"
+elif [ -f "$0" ] && grep -q '^FORGE_VERSION=' "$0" 2>/dev/null; then
+  FORGE_RUN="bash $0"
+else
+  FORGE_RUN="curl -fsSL $FORGE_URL | bash -s --"
+fi
+
+TRUECOLOR=0
+case "${COLORTERM:-}" in
+  truecolor|24bit) [ "$COLOR" = 1 ] && TRUECOLOR=1 ;;
+esac
+
+cols() { local c; c=$(tput cols 2>/dev/null || echo 80); [ "$c" -ge 20 ] 2>/dev/null || c=80; echo "$c"; }
+
+# Blue -> violet gradient across a string.
+grad() {
+  local text="$1" n i r g b out=""
+  n=${#text}
+  if [ "$TRUECOLOR" != 1 ] || [ "$n" -eq 0 ]; then printf '%s' "${BLU}${text}${NC}"; return; fi
+  for ((i = 0; i < n; i++)); do
+    r=$((70 + (120 * i / (n > 1 ? n - 1 : 1))))
+    g=$((150 - (40 * i / (n > 1 ? n - 1 : 1))))
+    b=255
+    out+=$'\033[38;2;'"${r};${g};${b}m${text:i:1}"
+  done
+  printf '%s%s' "$out" "$NC"
+}
+
+say()  { printf '%s\n' "$*"; }
+dim()  { printf '%s%s%s\n' "$DIM" "$*" "$NC"; }
+ok()   { printf '  %s✔%s %s\n' "$GRN" "$NC" "$*"; }
+warn() { printf '  %s!%s %s\n' "$YEL" "$NC" "$*"; }
+bad()  { printf '  %s✘%s %s\n' "$RED" "$NC" "$*"; }
+info() { printf '  %s·%s %s\n' "$BLU" "$NC" "$*"; }
+die()  { printf '\n  %s✘ %s%s\n\n' "$RED" "$*" "$NC" >&2; exit 1; }
+
+rule() {
+  local w c; w=$(cols); c=$((w - 4))
+  [ "$c" -gt 76 ] && c=76
+  [ "$c" -lt 10 ] && c=10
+  printf '  %s' "$DIM"
+  printf '─%.0s' $(seq 1 "$c")
+  printf '%s\n' "$NC"
+}
+
+title() {
+  printf '\n  %s%s%s\n' "$B$WHT" "$1" "$NC"
+  [ $# -gt 1 ] && printf '  %s%s%s\n' "$DIM" "$2" "$NC"
+  rule
+}
+
+# ------------------------------------------------------------------ banner
+banner() {
+  local w; w=$(cols)
+  printf '\n'
+  if [ "$w" -lt 62 ]; then
+    printf '  %s  %s\n' "$(grad '▲ SELKIES FORGE')" "${DIM}v$FORGE_VERSION$NC"
+    printf '  %sdesktops on tap%s\n\n' "$DIM" "$NC"
+    return
+  fi
+  local l1='███████ ███████ ██      ██   ██ ██ ███████ ███████'
+  local l2='██      ██      ██      ██  ██  ██ ██      ██     '
+  local l3='███████ █████   ██      █████   ██ █████   ███████'
+  local l4='     ██ ██      ██      ██  ██  ██ ██           ██'
+  local l5='███████ ███████ ███████ ██   ██ ██ ███████ ███████'
+  printf '  %s\n' "$(grad "$l1")"
+  printf '  %s\n' "$(grad "$l2")"
+  printf '  %s\n' "$(grad "$l3")"
+  printf '  %s\n' "$(grad "$l4")"
+  printf '  %s\n' "$(grad "$l5")"
+  printf '  %s%s%s   %sF O R G E%s   %sv%s · desktops on tap%s\n\n' \
+    "$DIM" "────────────────────" "$NC" "$B$VIO" "$NC" "$DIM" "$FORGE_VERSION" "$NC"
+}
+
+# ----------------------------------------------------------------- spinner
+SPIN_PID=""
+spin_start() {
+  [ -t 1 ] || { printf '  %s...\n' "$1"; return; }
+  local msg="$1"
+  printf '%s' "$HIDE"
+  (
+    local frames='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏' i=0
+    while :; do
+      i=$(((i + 1) % 10))
+      printf '%s  %s%s%s %s' "$CLRL" "$BLU" "${frames:i:1}" "$NC" "$msg"
+      sleep 0.08
+    done
+  ) &
+  SPIN_PID=$!
+}
+
+spin_stop() {
+  [ -n "$SPIN_PID" ] || return 0
+  kill "$SPIN_PID" 2>/dev/null
+  wait "$SPIN_PID" 2>/dev/null
+  SPIN_PID=""
+  printf '%s%s' "$CLRL" "$SHOW"
+}
+
+cleanup() { spin_stop; printf '%s' "$SHOW"; }
+trap cleanup EXIT INT TERM
+
+# ------------------------------------------------------------ progress bar
+# bar <pct> <label>
+bar() {
+  [ -t 1 ] || return 0
+  local pct="${1:-0}" label="${2:-}" w bw filled i out=""
+  w=$(cols)
+  bw=$((w - 34)); [ "$bw" -lt 10 ] && bw=10; [ "$bw" -gt 46 ] && bw=46
+  filled=$((pct * bw / 100))
+  [ "$filled" -gt "$bw" ] && filled=$bw
+  [ "$filled" -lt 0 ] && filled=0
+  for ((i = 0; i < bw; i++)); do
+    if [ "$i" -lt "$filled" ]; then
+      if [ "$TRUECOLOR" = 1 ]; then
+        out+=$'\033[38;2;'"$((80 + 110 * i / bw));$((150 - 30 * i / bw));255m█"
+      else
+        out+="${BLU}█"
+      fi
+    else
+      out+="${DIM}░"
+    fi
+  done
+  printf '%s  %s%s %s%3d%%%s  %s%-24.24s%s' "$CLRL" "$out" "$NC" "$B" "$pct" "$NC" "$DIM" "$label" "$NC"
+}
+
+# ------------------------------------------------------------------ prompts
+ask() {  # ask <prompt> <default>
+  local p="$1" d="${2:-}" r
+  if [ -z "$TTY_IN" ]; then printf '%s' "$d"; return; fi
+  if [ -n "$d" ]; then
+    read -r -p "  $(printf '%s%s%s %s[%s]%s ' "$B" "$p" "$NC" "$DIM" "$d" "$NC")" r <"$TTY_IN"
+  else
+    read -r -p "  $(printf '%s%s%s ' "$B" "$p" "$NC")" r <"$TTY_IN"
+  fi
+  printf '%s' "${r:-$d}"
+}
+
+confirm() {  # confirm <prompt> <default y|n>
+  local p="$1" d="${2:-n}" r
+  [ "$ASSUME_YES" = 1 ] && return 0
+  if [ -z "$TTY_IN" ]; then [ "$d" = "y" ]; return $?; fi
+  read -r -p "  $(printf '%s%s%s %s(%s)%s ' "$B" "$p" "$NC" "$DIM" "$([ "$d" = y ] && echo 'Y/n' || echo 'y/N')" "$NC")" r <"$TTY_IN"
+  r="${r:-$d}"
+  case "$r" in [yY]*) return 0 ;; *) return 1 ;; esac
+}
+
+# -------------------------------------------------------------- arrow menu
+# menu_choose <title> <array name of "value<TAB>label<TAB>hint">
+# echoes the chosen value on stdout, returns 1 if cancelled.
+MENU_RESULT=""
+menu_choose() {
+  local title="$1"; shift
+  local -a items=("$@")
+  local n=${#items[@]}
+  [ "$n" -eq 0 ] && return 1
+  MENU_RESULT=""
+
+  # Callers read the answer with $(...), so every pixel of the menu goes to
+  # the terminal directly and only the chosen value lands on stdout.
+  local UI="/dev/stderr"
+  [ -w /dev/tty ] && UI="/dev/tty"
+  local interactive=0
+  [ -n "$TTY_IN" ] && interactive=1
+
+  if [ "$interactive" != 1 ]; then
+    local i=1
+    printf '\n  %s%s%s\n' "$B" "$title" "$NC" >"$UI"
+    for it in "${items[@]}"; do
+      printf '   %2d) %s\n' "$i" "$(printf '%s' "$it" | cut -f2)" >"$UI"
+      i=$((i + 1))
+    done
+    local pick; read -r -p "  number: " pick
+    [ -z "$pick" ] && return 1
+    [ "$pick" -ge 1 ] 2>/dev/null && [ "$pick" -le "$n" ] || return 1
+    MENU_RESULT=$(printf '%s' "${items[$((pick - 1))]}" | cut -f1)
+    printf '%s' "$MENU_RESULT"
+    return 0
+  fi
+
+  local sel=0 top=0 page rows key
+  rows=$(tput lines 2>/dev/null || echo 24)
+  page=$((rows - 9)); [ "$page" -lt 5 ] && page=5; [ "$page" -gt 16 ] && page=16
+  [ "$page" -gt "$n" ] && page=$n
+
+  exec 9<"$TTY_IN" 2>/dev/null || exec 9<&0
+  printf '%s' "$HIDE" >"$UI"
+  local drawn=0
+  while :; do
+    [ "$drawn" -gt 0 ] && printf '\033[%dA' "$drawn" >"$UI"
+    drawn=0
+    printf '%s  %s%s%s\n' "$CLRL" "$B$WHT" "$title" "$NC" >"$UI"; drawn=$((drawn + 1))
+    printf '%s  %s↑↓ move · enter choose · q back%s\n' "$CLRL" "$DIM" "$NC" >"$UI"; drawn=$((drawn + 1))
+    local i
+    for ((i = top; i < top + page && i < n; i++)); do
+      local lab hint
+      lab=$(printf '%s' "${items[$i]}" | cut -f2)
+      hint=$(printf '%s' "${items[$i]}" | cut -f3)
+      if [ "$i" -eq "$sel" ]; then
+        printf '%s  %s❯%s %s%-34.34s%s %s%s%s\n' "$CLRL" "$VIO" "$NC" "$B$WHT" "$lab" "$NC" "$CYA" "$hint" "$NC" >"$UI"
+      else
+        printf '%s    %s%-34.34s%s %s%s%s\n' "$CLRL" "$NC" "$lab" "$NC" "$DIM" "$hint" "$NC" >"$UI"
+      fi
+      drawn=$((drawn + 1))
+    done
+    printf '%s  %s%d of %d%s\n' "$CLRL" "$DIM" "$((sel + 1))" "$n" "$NC" >"$UI"; drawn=$((drawn + 1))
+
+    IFS= read -rsn1 key <&9 || { printf '%s' "$SHOW" >"$UI"; exec 9<&-; return 1; }
+    case "$key" in
+      $'\x1b')
+        IFS= read -rsn2 -t 0.05 key2 <&9 || key2=""
+        case "$key2" in
+          '[A') sel=$((sel > 0 ? sel - 1 : n - 1)) ;;
+          '[B') sel=$((sel < n - 1 ? sel + 1 : 0)) ;;
+          '[5') IFS= read -rsn1 -t 0.05 _ <&9; sel=$((sel - page)); [ "$sel" -lt 0 ] && sel=0 ;;
+          '[6') IFS= read -rsn1 -t 0.05 _ <&9; sel=$((sel + page)); [ "$sel" -ge "$n" ] && sel=$((n - 1)) ;;
+          '[H') sel=0 ;;
+          '[F') sel=$((n - 1)) ;;
+          '') printf '%s' "$SHOW" >"$UI"; exec 9<&-; return 1 ;;
+        esac
+        ;;
+      k) sel=$((sel > 0 ? sel - 1 : n - 1)) ;;
+      j) sel=$((sel < n - 1 ? sel + 1 : 0)) ;;
+      g) sel=0 ;;
+      G) sel=$((n - 1)) ;;
+      q|Q) printf '%s\n' "$SHOW" >"$UI"; exec 9<&-; return 1 ;;
+      "") MENU_RESULT=$(printf '%s' "${items[$sel]}" | cut -f1)
+          printf '%s\n' "$SHOW" >"$UI"; exec 9<&-
+          printf '%s' "$MENU_RESULT"; return 0 ;;
+    esac
+    if [ "$sel" -lt "$top" ]; then top=$sel; fi
+    if [ "$sel" -ge $((top + page)) ]; then top=$((sel - page + 1)); fi
+  done
+}
+
+# ------------------------------------------------------------ privileges
+SUDO=""
+need_root() {
+  if [ "$(id -u)" = "0" ]; then SUDO=""; return 0; fi
+  if command -v sudo >/dev/null 2>&1; then SUDO="sudo"; return 0; fi
+  return 1
+}
+
+run_root() {
+  if [ -z "$SUDO" ]; then "$@"; else $SUDO "$@"; fi
+}
+
+# ----------------------------------------------------------- package mgmt
+PKG=""
+detect_pkg() {
+  for p in apt-get dnf yum pacman apk zypper brew; do
+    if command -v "$p" >/dev/null 2>&1; then PKG="$p"; return 0; fi
+  done
+  PKG=""
+  return 1
+}
+
+pkg_refresh() {
+  case "$PKG" in
+    apt-get) run_root apt-get update -qq ;;
+    apk) run_root apk update >/dev/null ;;
+    pacman) run_root pacman -Sy --noconfirm >/dev/null ;;
+    *) : ;;
+  esac
+}
+
+pkg_install() {
+  case "$PKG" in
+    apt-get) DEBIAN_FRONTEND=noninteractive run_root apt-get install -y -qq "$@" ;;
+    dnf) run_root dnf install -y "$@" ;;
+    yum) run_root yum install -y "$@" ;;
+    pacman) run_root pacman -S --noconfirm --needed "$@" ;;
+    apk) run_root apk add --no-cache "$@" ;;
+    zypper) run_root zypper --non-interactive install "$@" ;;
+    brew) brew install "$@" ;;
+    *) return 1 ;;
+  esac
+}
+
+pkg_has() {
+  case "$PKG" in
+    apt-get) apt-cache show "$1" >/dev/null 2>&1 ;;
+    dnf) dnf -q list "$1" >/dev/null 2>&1 ;;
+    yum) yum -q list "$1" >/dev/null 2>&1 ;;
+    pacman) pacman -Si "$1" >/dev/null 2>&1 ;;
+    apk) apk info "$1" >/dev/null 2>&1 ;;
+    zypper) zypper -q info "$1" >/dev/null 2>&1 ;;
+    brew) brew info "$1" >/dev/null 2>&1 ;;
+    *) return 1 ;;
+  esac
+}
+
+# -------------------------------------------------------------- python
+python_ver_ok() {  # >= 3.8
+  "$1" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3,8) else 1)' 2>/dev/null
+}
+
+find_python() {
+  local c
+  for c in python3.14 python3.13 python3.12 python3.11 python3.10 python3.9 python3 python; do
+    if command -v "$c" >/dev/null 2>&1 && python_ver_ok "$c"; then
+      PY=$(command -v "$c")
+      return 0
+    fi
+  done
+  return 1
+}
+
+install_python() {
+  title "Python" "needed to run the forge engine, standard library only"
+  if find_python; then
+    ok "found $($PY --version 2>&1) at $PY"
+    return 0
+  fi
+  warn "no usable Python 3.8+ on this machine"
+  detect_pkg || die "no supported package manager found; install Python 3 yourself and re-run"
+  need_root || die "need root (or sudo) to install Python"
+  confirm "Install Python 3 with $PKG?" y || die "cannot continue without Python 3"
+  spin_start "installing the newest Python $PKG offers"
+  pkg_refresh >/dev/null 2>&1
+  local cand installed=0
+  # Take the newest interpreter this distro actually packages.
+  for cand in python3.14 python3.13 python3.12 python3.11 python3; do
+    if pkg_has "$cand" >/dev/null 2>&1; then
+      if pkg_install "$cand" >/dev/null 2>&1; then installed=1; break; fi
+    fi
+  done
+  [ "$installed" = 1 ] || pkg_install python3 >/dev/null 2>&1
+  spin_stop
+  find_python || die "Python install did not take; install python3 yourself and re-run"
+  ok "installed $($PY --version 2>&1)"
+}
+
+# -------------------------------------------------------------- docker
+docker_usable() {
+  command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1
+}
+
+install_docker() {
+  title "Docker" "every desktop runs as a container"
+  if docker_usable; then
+    ok "docker $(docker version --format '{{.Server.Version}}' 2>/dev/null) is up"
+    return 0
+  fi
+  if command -v docker >/dev/null 2>&1; then
+    warn "docker is installed but not answering"
+    if [ -S /var/run/docker.sock ] && ! docker info >/dev/null 2>&1; then
+      if need_root; then
+        info "trying to start the docker service"
+        run_root systemctl start docker >/dev/null 2>&1 || run_root service docker start >/dev/null 2>&1
+        sleep 2
+      fi
+    fi
+    if docker_usable; then ok "docker is up now"; return 0; fi
+    if ! groups 2>/dev/null | grep -qw docker; then
+      warn "you are not in the 'docker' group"
+      if need_root && confirm "Add $USER to the docker group?" y; then
+        run_root usermod -aG docker "$USER" 2>/dev/null
+        warn "log out and back in (or run: newgrp docker) and re-run this script"
+        exit 1
+      fi
+    fi
+    die "docker is not usable: $(docker info 2>&1 | head -1)"
+  fi
+
+  warn "docker is not installed"
+  need_root || die "need root (or sudo) to install Docker"
+  confirm "Install Docker now?" y || die "cannot continue without Docker"
+  detect_pkg
+  case "$PKG" in
+    apk)
+      spin_start "installing docker with apk"
+      pkg_install docker docker-cli docker-engine >/dev/null 2>&1
+      run_root rc-update add docker default >/dev/null 2>&1
+      run_root service docker start >/dev/null 2>&1
+      spin_stop
+      ;;
+    pacman)
+      spin_start "installing docker with pacman"
+      pkg_install docker >/dev/null 2>&1
+      run_root systemctl enable --now docker >/dev/null 2>&1
+      spin_stop
+      ;;
+    brew)
+      die "install Docker Desktop for Mac yourself, then re-run"
+      ;;
+    *)
+      command -v curl >/dev/null 2>&1 || pkg_install curl >/dev/null 2>&1
+      spin_start "running the official Docker install script (this takes a few minutes)"
+      curl -fsSL https://get.docker.com -o "$FORGE_STATE/get-docker.sh" 2>/dev/null
+      if [ -s "$FORGE_STATE/get-docker.sh" ]; then
+        run_root sh "$FORGE_STATE/get-docker.sh" >"$FORGE_LOGS/docker-install.log" 2>&1
+      fi
+      spin_stop
+      run_root systemctl enable --now docker >/dev/null 2>&1
+      ;;
+  esac
+
+  if ! docker_usable; then
+    if command -v docker >/dev/null 2>&1 && need_root; then
+      run_root usermod -aG docker "$USER" 2>/dev/null
+      warn "docker installed, but your shell is not in the docker group yet"
+      warn "run:  newgrp docker    (or log out and back in), then re-run this script"
+      exit 1
+    fi
+    die "docker install failed, see $FORGE_LOGS/docker-install.log"
+  fi
+  ok "docker $(docker version --format '{{.Server.Version}}' 2>/dev/null) installed"
+}
+
+install_extras() {
+  local missing=()
+  command -v ssh >/dev/null 2>&1 || missing+=(ssh)
+  command -v curl >/dev/null 2>&1 || missing+=(curl)
+  [ ${#missing[@]} -eq 0 ] && return 0
+  detect_pkg || return 0
+  need_root || return 0
+  title "Extras" "${missing[*]} needed for tunnels and downloads"
+  confirm "Install ${missing[*]}?" y || return 0
+  local pkgs=()
+  for m in "${missing[@]}"; do
+    case "$m:$PKG" in
+      ssh:apt-get) pkgs+=(openssh-client) ;;
+      ssh:apk) pkgs+=(openssh-client) ;;
+      ssh:*) pkgs+=(openssh-clients) ;;
+      curl:*) pkgs+=(curl) ;;
+    esac
+  done
+  spin_start "installing ${pkgs[*]}"
+  pkg_install "${pkgs[@]}" >/dev/null 2>&1
+  spin_stop
+  ok "extras installed"
+}
+
+# The engine and UI were unpacked by docker.sh; nothing to extract here.
+extract_payload() {
+  if [ ! -f "$FORGE_APP/engine.py" ]; then
+    die "Selkies Forge is not installed in $FORGE_HOME. Run: curl -fsSL $FORGE_URL | bash"
+  fi
+}
+
+# =========================================================================
+#  engine plumbing
+# =========================================================================
+
+engine() { "$PY" "$FORGE_APP/engine.py" "$@"; }
+
+ensure_dirs() { mkdir -p "$FORGE_HOME" "$FORGE_APP" "$FORGE_STATE" "$FORGE_LOGS"; }
+
+# A second copy of the forge must not fight the first one over ports.
+singleton_check() {
+  local sj="$FORGE_STATE/server.json" pid url
+  [ -f "$sj" ] || return 0
+  pid=$("$PY" -c "import json;print(json.load(open('$sj')).get('pid',''))" 2>/dev/null)
+  url=$("$PY" -c "import json;print(json.load(open('$sj')).get('url',''))" 2>/dev/null)
+  [ -n "$pid" ] || return 0
+  if kill -0 "$pid" 2>/dev/null; then
+    title "Already running" "a forge web UI is live as pid $pid"
+    info "$url"
+    local act
+    act=$(menu_choose "What now?" \
+      $'open\tUse the running one\tprint the link and exit' \
+      $'kill\tStop it and carry on\tfrees the port' \
+      $'ignore\tLeave it, start another\ta second UI on another port')
+    case "$act" in
+      open) printf '\n'; ok "web UI: $url"; exit 0 ;;
+      kill) kill "$pid" 2>/dev/null; sleep 1; rm -f "$sj"; ok "stopped pid $pid" ;;
+      *) : ;;
+    esac
+  else
+    rm -f "$sj"
+  fi
+}
+
+# =========================================================================
+#  launching, with a live progress bar
+# =========================================================================
+
+render_result() {
+  "$PY" - "$1" <<'PYEOF'
+import json, sys, os
+d = json.loads(sys.argv[1])
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s):
+    return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+rows = []
+tun = d.get("tunnel") or {}
+if tun.get("url"):
+    rows.append(("public link", tun["url"],
+                 "serveo " + tun.get("mode", "http") +
+                 (" (anonymous TCP tunnels are short lived)" if tun.get("mode") == "tcp" else "")))
+rows.append(("on this box", d.get("local_url"), "no tunnel needed"))
+if d.get("https_url"):
+    rows.append(("local https", d["https_url"], "for other devices on your LAN"))
+cred = d.get("credentials")
+if cred:
+    rows.append(("sign in", "%s / %s" % (cred["user"], cred["password"]), ""))
+plan = d.get("plan") or {}
+rows.append(("container", d.get("name"), "docker name"))
+rows.append(("ports", ", ".join(str(p) for p in d.get("ports") or []), "picked free on this host"))
+rows.append(("memory", "%d MB" % plan.get("memory_mb", 0), "hard cap"))
+rows.append(("cpu", "%s cores" % plan.get("cpus"), "hard cap"))
+rows.append(("shared mem", "%d MB" % plan.get("shm_mb", 0), "/dev/shm"))
+rows.append(("storage", "%d MB" % plan.get("disk_mb", 0),
+             "enforced" if d.get("quota_enforced") else "tracked, not enforced here"))
+rows.append(("image", d.get("image"), ""))
+print()
+print("  " + c("1;38;5;79", "▰ READY") + "  " + c("2", (d.get("entry") or {}).get("name", "")))
+print("  " + c("2", "─" * 66))
+for k, v, note in rows:
+    if not v:
+        continue
+    line = "  %s %s" % (c("2", "%-12s" % k), c("1;38;5;75", v) if "link" in k or "http" in str(v)[:5] else v)
+    if note:
+        line += "  " + c("2", "· " + note)
+    print(line)
+print()
+print("  " + c("2", "next:") + "  open the link above, or run this script again for the manager")
+print()
+PYEOF
+}
+
+stream_launch() {
+  local id="$1"; shift
+  local -a eargs=("$@")
+  local pct=0 phase="working" result="" failed=0
+  local log="$FORGE_LOGS/launch-$(date +%Y%m%d-%H%M%S).log"
+
+  title "Forging $id" "live output below, full log at $log"
+  printf '%s' "$HIDE"
+
+  while IFS= read -r line; do
+    printf '%s' "$line" >>"$log"
+    printf '\n' >>"$log"
+    case "$line" in
+      P\ *)
+        local _t p ph rest
+        read -r _t p ph rest <<<"$line"
+        pct="$p"; phase="${rest:-$ph}"
+        bar "$pct" "$phase"
+        ;;
+      L\ *)
+        printf '%s  %s%s%s\n' "$CLRL" "$DIM" "$(printf '%.160s' "${line#L }")" "$NC"
+        bar "$pct" "$phase"
+        ;;
+      D\ *) result="${line#D }" ;;
+      E\ *) failed=1; printf '%s' "$CLRL"; bad "${line#E }" ;;
+      H\ *) printf '%s' "$CLRL"; info "try: ${line#H }" ;;
+      *) : ;;
+    esac
+  done < <(engine launch "$id" "${eargs[@]}" 2>&1)
+
+  printf '%s%s' "$CLRL" "$SHOW"
+  if [ -n "$result" ]; then
+    FORGE_COLOR=$COLOR render_result "$result"
+    return 0
+  fi
+  [ "$failed" = 1 ] && printf '\n  %sthe full log is at %s%s\n\n' "$DIM" "$log" "$NC"
+  return 1
+}
+
+# Ask about resources, then launch.
+configure_and_launch() {
+  local id="$1"
+  local info_json plan_mem plan_cpu plan_shm plan_disk name ram_free cores
+  info_json=$(engine info "$id" 2>/dev/null)
+  [ -n "$info_json" ] || { bad "unknown entry: $id"; return 1; }
+
+  eval "$("$PY" - "$info_json" <<'PYEOF'
+import json, sys
+d = json.loads(sys.argv[1])
+p = d["plan"]
+def q(s): return str(s).replace("'", "")
+print("E_NAME='%s'" % q(d["name"]))
+print("E_DESC='%s'" % q(d["desc"][:150]))
+print("E_KIND='%s'" % q(d["kind"]))
+print("E_PROFILE='%s'" % q(d["profile"]))
+print("E_DL=%d" % d["dl_mb"])
+print("E_DISK=%d" % d["disk_mb"])
+print("E_RAMMIN=%d" % d["ram_min"])
+print("P_MEM=%d" % p["memory_mb"])
+print("P_CPU=%s" % p["cpus"])
+print("P_SHM=%d" % p["shm_mb"])
+print("P_DISK=%d" % p["disk_mb"])
+PYEOF
+)"
+
+  title "$E_NAME" "$E_DESC"
+  info "$([ "$E_KIND" = pull ] && echo "prebuilt image" || echo "built on this machine") · about $((E_DL)) MB to download · roughly $((E_DISK)) MB on disk"
+  printf '\n'
+
+  local disk_gb=$((P_DISK / 1024))
+  if confirm "Use the suggested resources (${P_MEM} MB RAM, ${P_CPU} cores, ${disk_gb} GB storage)?" y; then
+    :
+  else
+    P_MEM=$(ask "memory in MB (floor ${E_RAMMIN})" "$P_MEM")
+    P_CPU=$(ask "cpu cores" "$P_CPU")
+    P_SHM=$(ask "shared memory in MB" "$P_SHM")
+    P_DISK=$(ask "storage budget in MB" "$P_DISK")
+  fi
+  name=$(ask "name for this instance (blank = auto)" "")
+
+  local -a args=(--memory "$P_MEM" --cpus "$P_CPU" --shm "$P_SHM" --disk "$P_DISK")
+  [ -n "$name" ] && args+=(--name "$name")
+
+  # Sign-in. Without this anyone who reaches the URL is already inside.
+  local want_auth=n
+  [ "$E_PROFILE" = "kasm" ] && want_auth=y
+  if confirm "Set a username and password for this desktop?" "$want_auth"; then
+    local u pw
+    if [ "$E_PROFILE" = "kasm" ]; then
+      u="kasm_user"
+      info "this image always signs you in as kasm_user"
+    else
+      u=$(ask "username" "forge")
+    fi
+    pw=$(ask "password (blank generates one)" "")
+    if [ -z "$pw" ]; then
+      pw=$("$PY" -c "import secrets,string
+a = string.ascii_letters + string.digits
+print(''.join(secrets.choice(a) for _ in range(16)))")
+      info "generated password: $pw"
+      warn "write it down, it is set inside the container and cannot be read back"
+    fi
+    args+=(--user "$u" --password "$pw")
+  fi
+  if [ "$NO_TUNNEL" = 1 ]; then
+    args+=(--no-tunnel)
+  elif ! confirm "Open a public serveo tunnel?" y; then
+    args+=(--no-tunnel)
+  fi
+  if confirm "Start it automatically whenever Docker starts (after a reboot)?" n; then
+    args+=(--autostart)
+  fi
+  stream_launch "$id" "${args[@]}"
+}
+
+# =========================================================================
+#  catalog pickers
+# =========================================================================
+
+catalog_menu_items() {  # args passed to `engine list`
+  engine list "$@" --format tsv 2>/dev/null | "$PY" -c '
+import sys
+for line in sys.stdin:
+    f = line.rstrip("\n").split("\t")
+    if len(f) < 12:
+        continue
+    eid, name, fam, de, kind, weight, dl, ram, cpu, beauty, sub, desc = f[:12]
+    dl = int(dl); ram = int(ram)
+    tag = "ready" if kind == "pull" else "build"
+    hint = "%-9s %5s MB dl  %5s MB ram  %s cores  %s" % (weight, dl, ram, cpu, tag)
+    print("%s\t%s\t%s" % (eid, "%s  (%s)" % (name, de), hint))
+'
+}
+
+pick_quick() {
+  local -a items
+  mapfile -t items < <(catalog_menu_items --quick --runnable)
+  [ ${#items[@]} -eq 0 ] && { bad "no catalog entries run on this architecture"; return 1; }
+  local choice
+  choice=$(menu_choose "Hand picked desktops" "${items[@]}") || return 1
+  [ -n "$choice" ] && configure_and_launch "$choice"
+}
+
+pick_family() {
+  local -a fams
+  mapfile -t fams < <(engine list --runnable 2>/dev/null | "$PY" -c '
+import json, sys, collections
+d = json.load(sys.stdin)
+c = collections.Counter(e["family"] for e in d["entries"])
+lab = {}
+for e in d["entries"]:
+    lab[e["family"]] = e["family_label"]
+for fam, n in c.most_common():
+    print("%s\t%s\t%d desktops" % (fam, lab[fam], n))
+')
+  local fam
+  fam=$(menu_choose "Which family?" "${fams[@]}") || return 1
+  local -a items
+  mapfile -t items < <(catalog_menu_items --runnable --family "$fam")
+  local choice
+  choice=$(menu_choose "$fam desktops" "${items[@]}") || return 1
+  [ -n "$choice" ] && configure_and_launch "$choice"
+}
+
+pick_search() {
+  local term
+  term=$(ask "search for" "")
+  [ -z "$term" ] && return 1
+  local -a items
+  mapfile -t items < <(catalog_menu_items --runnable | grep -i -- "$term")
+  if [ ${#items[@]} -eq 0 ]; then warn "nothing matched '$term'"; return 1; fi
+  local choice
+  choice=$(menu_choose "Matches for '$term'" "${items[@]}") || return 1
+  [ -n "$choice" ] && configure_and_launch "$choice"
+}
+
+cmd_smart() {
+  title "Let it choose" "scored against this machine's free memory, cores and disk"
+  local taste purpose
+  taste=$(menu_choose "What matters most?" \
+    $'balanced\tBalanced\tan even trade between looks and lightness' \
+    $'beautiful\tBeautiful\tthe prettiest thing that still runs well' \
+    $'lightest\tLightest\tsmallest footprint that is still pleasant' \
+    $'fastest\tFastest\tlowest latency over the stream') || return 1
+  purpose=$(menu_choose "What for?" \
+    $'general\tAnything\tno particular slant' \
+    $'dev\tWriting code\tfavours tooling-friendly bases' \
+    $'security\tSecurity work\tKali and Parrot style images' \
+    $'retro\tRetro and tiny\told school window managers' \
+    $'media\tMedia\tricher desktops') || return 1
+
+  spin_start "weighing every entry against this machine"
+  local out
+  out=$(engine smart --taste "$taste" --purpose "$purpose" --limit 3 2>/dev/null)
+  spin_stop
+
+  local -a items
+  mapfile -t items < <(printf '%s' "$out" | "$PY" -c '
+import json, sys
+d = json.load(sys.stdin)
+for p in d["picks"]:
+    e = p["entry"]
+    print("%s\t%s  (%s)\tscore %.0f  ·  %s" % (
+        p["id"], e["name"], e["de_label"], p["score"], p["why"][0]))
+')
+  if [ ${#items[@]} -eq 0 ]; then
+    warn "nothing in the catalog fits this machine right now"
+    return 1
+  fi
+  printf '%s' "$out" | "$PY" -c '
+import json, sys, os
+d = json.load(sys.stdin)
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+print()
+for i, p in enumerate(d["picks"]):
+    e = p["entry"]
+    print("  %s %s  %s" % (c("1;38;5;141", "%d." % (i + 1)), c("1", e["name"]),
+                           c("2", "score %.0f" % p["score"])))
+    for w in p["why"]:
+        print("     %s %s" % (c("2", "·"), w))
+    pl = p["plan"]
+    print("     %s" % c("2", "plan: %d MB RAM · %s cores · %d MB shm" % (
+        pl["memory_mb"], pl["cpus"], pl["shm_mb"])))
+    print()
+' FORGE_COLOR=$COLOR
+  local choice
+  choice=$(menu_choose "Forge which one?" "${items[@]}") || return 1
+  [ -n "$choice" ] && configure_and_launch "$choice"
+}
+
+# =========================================================================
+#  manager
+# =========================================================================
+
+print_instances() {
+  engine instances 2>/dev/null | "$PY" -c '
+import json, sys, os
+d = json.load(sys.stdin)
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+items = d["instances"]
+if not items:
+    print("\n  nothing forged yet\n")
+    raise SystemExit(0)
+print()
+for i in items:
+    state = "running" if i["running"] else (i.get("status") or "stopped")
+    dot = c("38;5;79", "●") if i["running"] else c("2", "○")
+    print("  %s %s  %s" % (dot, c("1", i["title"]), c("2", i["name"])))
+    print("     %s %s" % (c("2", "%-9s" % "state"), state))
+    if i.get("local_url"):
+        print("     %s %s" % (c("2", "%-9s" % "local"), c("38;5;75", i["local_url"])))
+    t = i.get("tunnel") or {}
+    if t.get("url"):
+        print("     %s %s %s" % (c("2", "%-9s" % "tunnel"), c("38;5;75", t["url"]),
+                                 "" if t.get("alive") else c("38;5;203", "(down)")))
+    lim = i.get("limits") or {}
+    print("     %s %s MB ram cap · %s cores · ports %s" % (
+        c("2", "%-9s" % "limits"), lim.get("memory_mb"), lim.get("cpus"),
+        ", ".join(str(v) for v in (i.get("ports") or {}).values())))
+    print()
+' FORGE_COLOR=$COLOR
+}
+
+cmd_manager() {
+  while :; do
+    title "Manager" "every desktop this forge has built"
+    print_instances
+    local -a items
+    mapfile -t items < <(engine instances 2>/dev/null | "$PY" -c '
+import json, sys
+for i in json.load(sys.stdin)["instances"]:
+    st = "running" if i["running"] else (i.get("status") or "stopped")
+    print("%s\t%s\t%s · %s" % (i["name"], i["title"], st, i["name"]))
+')
+    if [ ${#items[@]} -eq 0 ]; then
+      confirm "Nothing to manage. Forge one now?" y && { pick_quick; continue; }
+      return 0
+    fi
+    items+=($'__stats\tLive stats\tcpu, memory and bandwidth right now')
+    items+=($'__back\tBack\treturn to the main menu')
+    local pick
+    pick=$(menu_choose "Pick an instance" "${items[@]}") || return 0
+    case "$pick" in
+      __back|"") return 0 ;;
+      __stats)
+        spin_start "sampling docker stats"
+        local s; s=$(engine stats 2>/dev/null)
+        spin_stop
+        printf '%s' "$s" | "$PY" -c '
+import json, sys
+d = json.load(sys.stdin)["stats"]
+if not d:
+    print("\n  no running instances\n"); raise SystemExit
+print()
+print("  %-26s %7s %12s %12s %12s" % ("instance", "cpu", "memory", "net in", "net out"))
+print("  " + "-" * 74)
+def human(n):
+    n = float(n or 0)
+    for u in ("B", "KB", "MB", "GB", "TB"):
+        if abs(n) < 1024: return "%.1f %s" % (n, u)
+        n /= 1024
+    return "%.1f PB" % n
+for name, v in sorted(d.items()):
+    print("  %-26s %6.1f%% %12s %12s %12s" % (
+        name[:26], v["cpu"], "%d/%d MB" % (v["mem_mb"], v["mem_limit_mb"]),
+        human(v["rx_total"]), human(v["tx_total"])))
+print()
+'
+        [ -n "$TTY_IN" ] && read -r -p "  press enter " _ <"$TTY_IN"
+        ;;
+      *)
+        local act
+        act=$(menu_choose "$pick" \
+          $'open\tShow its links\tlocal and tunnel URLs' \
+          $'shell\tOpen a shell in it\tdocker exec' \
+          $'tunnel\tOpen or replace the tunnel\tfresh serveo URL' \
+          $'untunnel\tDrop the tunnel\tkeep it local only' \
+          $'limits\tChange limits\tmemory, cpu, shared memory, storage' \
+          $'autostart\tToggle auto-start\tcome back after a reboot, or not' \
+          $'restart\tRestart it\t' \
+          $'stop\tStop it\t' \
+          $'start\tStart it\t' \
+          $'logs\tShow recent logs\tlast 120 lines' \
+          $'remove\tRemove it\tasks about the data volume too' \
+          $'back\tBack\t') || continue
+        case "$act" in
+          back|"") : ;;
+          open) print_instances ;;
+          shell)
+            printf '\n'; info "handing you a shell inside $pick, type exit to come back"; printf '\n'
+            if [ -z "$TTY_IN" ]; then
+              warn "a shell needs a terminal; run this script from one"
+            else
+              docker exec -it "$pick" /bin/sh -c 'if command -v bash >/dev/null 2>&1; then exec bash -l; else exec /bin/sh -l; fi' <"$TTY_IN"
+            fi
+            ;;
+          logs) engine logs "$pick" --tail 120 | sed 's/^/    /' ;;
+          limits)
+            local cur; cur=$(engine instances 2>/dev/null | "$PY" -c "
+import json,sys
+for i in json.load(sys.stdin)['instances']:
+    if i['name']=='$pick':
+        l=i.get('limits') or {}
+        print(l.get('memory_mb') or 1024, l.get('cpus') or 1, l.get('shm_mb') or 256, i.get('disk_cap_mb') or 10240)")
+            local cm cc cs cd nm nc ns nd
+            read -r cm cc cs cd <<<"$cur"
+            nm=$(ask "memory in MB" "$cm"); nc=$(ask "cpu cores" "$cc")
+            ns=$(ask "shared memory in MB (browsers want 512+)" "$cs"); nd=$(ask "storage in MB" "$cd")
+            if [ "$ns" != "$cs" ] || [ "$nd" != "$cd" ]; then
+              info "shared memory and storage need the desktop recreated; files in /config are kept"
+            fi
+            spin_start "applying limits to $pick"
+            local r; r=$(engine retune "$pick" --memory "$nm" --cpus "$nc" --shm "$ns" --disk "$nd" 2>&1)
+            spin_stop
+            if printf '%s' "$r" | grep -q '"error"'; then bad "$r"
+            elif printf '%s' "$r" | grep -q '"recreated": true'; then ok "recreated $pick with the new limits"
+            else ok "limits applied live"; fi
+            ;;
+          autostart)
+            local now; now=$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$pick" 2>/dev/null)
+            if [ "$now" = "no" ] || [ -z "$now" ]; then
+              engine retune "$pick" --autostart on >/dev/null && ok "$pick now starts with Docker"
+            else
+              engine retune "$pick" --autostart off >/dev/null && ok "$pick only starts when you start it"
+            fi
+            ;;
+          remove)
+            if confirm "Remove $pick?" n; then
+              local purge=""
+              confirm "Also delete its saved /config volume?" n && purge="--purge"
+              engine do "$pick" remove $purge >/dev/null && ok "removed $pick"
+            fi
+            ;;
+          *)
+            spin_start "$act $pick"
+            local r; r=$(engine do "$pick" "$act" 2>&1)
+            spin_stop
+            if printf '%s' "$r" | grep -q '"error"'; then
+              bad "$(printf '%s' "$r" | "$PY" -c 'import json,sys;print(json.load(sys.stdin).get("error",""))' 2>/dev/null)"
+            else
+              ok "$act done"
+              printf '%s' "$r" | "$PY" -c '
+import json,sys
+try:
+    t=(json.load(sys.stdin).get("tunnel") or {}).get("url")
+    if t: print("    " + t)
+except Exception: pass
+' 2>/dev/null
+            fi
+            ;;
+        esac
+        [ -n "$TTY_IN" ] && read -r -p "  press enter " _ <"$TTY_IN"
+        ;;
+    esac
+  done
+}
+
+# =========================================================================
+#  web UI
+# =========================================================================
+
+cmd_webui() {
+  title "Web UI" "the full catalog, live build output and the instance manager"
+  local args=(serve --port "$WEBUI_PORT" --bind "$WEBUI_BIND")
+  [ "$WEBUI_EXPOSE" = 1 ] && args+=(--tunnel)
+
+  if [ "$WEBUI_BIND" != "127.0.0.1" ] || [ "$WEBUI_EXPOSE" = 1 ]; then
+    warn "this exposes docker control beyond localhost; a token is required in the URL"
+  fi
+
+  # Always start it detached, then decide whether to sit on it or hand the
+  # shell back. setsid keeps it alive if this script exits.
+  local log="$FORGE_LOGS/webui.log"
+  : > "$log"
+  if command -v setsid >/dev/null 2>&1; then
+    setsid nohup "$PY" "$FORGE_APP/engine.py" "${args[@]}" >>"$log" 2>&1 </dev/null &
+  else
+    nohup "$PY" "$FORGE_APP/engine.py" "${args[@]}" >>"$log" 2>&1 </dev/null &
+  fi
+  disown 2>/dev/null
+
+  spin_start "starting the engine"
+  local info_json="" i=0
+  while [ "$i" -lt 900 ]; do
+    info_json=$(grep -m1 '^{' "$log" 2>/dev/null)
+    [ -n "$info_json" ] && break
+    sleep 0.1
+    i=$((i + 1))
+  done
+  spin_stop
+
+  if [ -z "$info_json" ]; then
+    bad "the web UI did not start"
+    [ -s "$log" ] && sed 's/^/    /' "$log" | tail -12
+    return 1
+  fi
+
+  local srv_pid srv_url
+  srv_pid=$(printf '%s' "$info_json" | "$PY" -c 'import json,sys;print(json.load(sys.stdin)["pid"])')
+  srv_url=$(printf '%s' "$info_json" | "$PY" -c 'import json,sys;print(json.load(sys.stdin)["url"])')
+
+  printf '%s' "$info_json" | "$PY" -c '
+import json, sys, os
+d = json.load(sys.stdin)
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+print()
+print("  " + c("1;38;5;79", "▰ WEB UI IS UP"))
+print("  " + c("2", "─" * 56))
+print("  %s %s" % (c("2", "%-10s" % "local"), c("1;38;5;75", d["url"])))
+if d.get("tunnel"):
+    print("  %s %s" % (c("2", "%-10s" % "public"), c("1;38;5;75", d["tunnel"])))
+if d.get("tunnel_error"):
+    print("  %s %s" % (c("2", "%-10s" % "tunnel"), "failed: " + d["tunnel_error"]))
+print("  %s %s" % (c("2", "%-10s" % "pid"), d["pid"]))
+print()
+' FORGE_COLOR=$COLOR
+
+  command -v xdg-open >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ] && \
+    xdg-open "$srv_url" >/dev/null 2>&1 &
+
+  # Background, or hold the terminal until ctrl-c?
+  local mode="$WEBUI_MODE"
+  if [ -z "$mode" ]; then
+    if [ -n "$TTY_IN" ]; then
+      mode=$(menu_choose "Leave it running?" \
+        $'bg\tRun it in the background\tyou get your shell back, the UI keeps serving' \
+        $'fg\tHold this terminal\tstays in the foreground until ctrl-c') || mode="bg"
+    else
+      mode="fg"
+    fi
+  fi
+
+  if [ "$mode" = "bg" ]; then
+    printf '\n'
+    ok "running in the background as pid $srv_pid"
+    info "open:          $srv_url"
+    info "stop it with:  $FORGE_RUN --stop"
+    info "           or:  kill $srv_pid"
+    info "log:           $log"
+    printf '\n  %syour shell is back · the forge menu has exited so the prompt is yours%s\n\n' \
+      "$DIM" "$NC"
+    # Leaving the menu running would just redraw it over the shell we were
+    # asked to hand back, which looks like the whole thing restarted.
+    exit 0
+  fi
+
+  printf '\n  %sholding this terminal · ctrl-c stops the web UI%s\n' "$DIM" "$NC"
+  printf '  %srunning desktops are not affected%s\n\n' "$DIM" "$NC"
+  local stopping=0
+  trap 'stopping=1' INT
+  while kill -0 "$srv_pid" 2>/dev/null; do
+    [ "$stopping" = 1 ] && break
+    sleep 1
+  done
+  trap - INT
+  if [ "$stopping" = 1 ]; then
+    kill "$srv_pid" 2>/dev/null
+    printf '\n'
+    ok "web UI stopped"
+  else
+    warn "the web UI exited on its own, see $log"
+  fi
+  [ "$FORGE_FROM_MENU" = 1 ] && printf '  %sback to the forge menu%s\n' "$DIM" "$NC"
+  printf '\n'
+}
+
+cmd_stop() {
+  local sj="$FORGE_STATE/server.json" pid
+  if [ ! -f "$sj" ]; then
+    warn "no web UI is recorded as running"
+    return 1
+  fi
+  pid=$("$PY" -c "import json;print(json.load(open('$sj')).get('pid',''))" 2>/dev/null)
+  if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+    kill "$pid" 2>/dev/null
+    sleep 1
+    kill -0 "$pid" 2>/dev/null && kill -9 "$pid" 2>/dev/null
+    ok "stopped the web UI (pid $pid)"
+  else
+    warn "the recorded web UI (pid ${pid:-?}) is not running"
+  fi
+  rm -f "$sj"
+  info "running desktops are untouched; use --manager to see them"
+}
+
+# =========================================================================
+#  doctor / uninstall
+# =========================================================================
+
+cmd_doctor() {
+  title "This machine" "what the forge checked before offering you anything"
+  engine doctor | "$PY" -c '
+import json, sys, os
+d = json.load(sys.stdin)
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+for ch in d["checks"]:
+    if ch["ok"]:
+        mark = c("38;5;79", "✔")
+    elif ch.get("severity") == "info":
+        mark = c("38;5;75", "·")
+    else:
+        mark = c("38;5;221", "!")
+    print("  %s %-14s %s" % (mark, ch["name"], ch["detail"]))
+    if not ch["ok"] and ch.get("fix") and ch.get("severity") != "info":
+        print("    %s" % c("2", "fix: " + ch["fix"]))
+h = d["host"]
+print()
+print("  " + c("2", "%s · %s · %d cores · %d MB free of %d MB · docker %s" % (
+    h.get("os_pretty"), h["arch"], h["cpus"], h["mem_avail_mb"], h["mem_total_mb"],
+    h.get("docker_version"))))
+print()
+' FORGE_COLOR=$COLOR
+}
+
+cmd_uninstall() {
+  title "Uninstall" "removes containers, images and the forge directory"
+  warn "this deletes every desktop this forge created"
+  confirm "Really remove everything?" n || return 0
+  local names
+  names=$(docker ps -aq --filter "label=io.selkiesforge.entry" 2>/dev/null)
+  if [ -n "$names" ]; then
+    spin_start "removing containers"
+    docker rm -f $names >/dev/null 2>&1
+    spin_stop
+    ok "containers removed"
+  fi
+  if confirm "Also delete the built images and data volumes?" n; then
+    spin_start "removing images and volumes"
+    docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null | grep '^selkies-forge/' | \
+      xargs -r docker rmi -f >/dev/null 2>&1
+    docker volume ls -q 2>/dev/null | grep '^forge-config-' | xargs -r docker volume rm -f >/dev/null 2>&1
+    spin_stop
+    ok "images and volumes removed"
+  fi
+  local cli; cli=$(cat "$FORGE_STATE/cli-path" 2>/dev/null)
+  if [ -n "$cli" ] && grep -q 'Installed by docker.sh' "$cli" 2>/dev/null; then
+    rm -f "$cli" && ok "removed the selkies-cli command ($cli)"
+  fi
+  local rc
+  for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+    if [ -f "$rc" ] && grep -q '# >>> selkies-forge >>>' "$rc" 2>/dev/null; then
+      sed -i '/# >>> selkies-forge >>>/,/# <<< selkies-forge <<</d' "$rc" && ok "cleaned the PATH line from $rc"
+    fi
+  done
+  rm -rf "$FORGE_HOME"
+  ok "removed $FORGE_HOME"
+  printf '\n  %sthanks for using the forge%s\n\n' "$DIM" "$NC"
+}
+
+# =========================================================================
+#  main menu
+# =========================================================================
+
+# Older versions created every desktop with --restart unless-stopped, so they
+# all came back whenever Docker or the machine restarted. Offer to undo that once.
+review_autostart() {
+  local marker="$FORGE_STATE/autostart-reviewed"
+  [ -f "$marker" ] && return 0
+  local names
+  names=$(docker ps -a --filter "label=io.selkiesforge.entry" \
+    --format '{{.Names}}' 2>/dev/null | while read -r n; do
+      [ -n "$n" ] || continue
+      p=$(docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' "$n" 2>/dev/null)
+      [ "$p" != "no" ] && [ -n "$p" ] && printf '%s ' "$n"
+    done)
+  if [ -z "$names" ]; then touch "$marker"; return 0; fi
+  title "Desktops that start on their own" "these come back every time Docker or this machine restarts"
+  for n in $names; do info "$n"; done
+  if confirm "Stop them starting automatically? (you can turn it back on per desktop)" y; then
+    for n in $names; do docker update --restart no "$n" >/dev/null 2>&1 && ok "$n: auto-start off"; done
+  else
+    info "left as they are; change any of them later in the manager"
+  fi
+  # Only remember the question once it has actually been answered.
+  touch "$marker"
+}
+
+# =========================================================================
+#  the selkies-cli command
+# =========================================================================
+
+# A small wrapper on your PATH that runs the copy of this front end unpacked
+# next to the engine. That copy exists even after "curl ... | bash", where no
+# copy of this script is ever saved to disk.
+cli_bin_dir() {
+  if [ -n "${FORGE_BIN_DIR:-}" ]; then printf '%s' "$FORGE_BIN_DIR"; return; fi
+  local d
+  for d in "$HOME/.local/bin" "$HOME/bin"; do
+    case ":$PATH:" in
+      *":$d:"*) if [ -d "$d" ] && [ -w "$d" ]; then printf '%s' "$d"; return; fi ;;
+    esac
+  done
+  if [ -d /usr/local/bin ] && [ -w /usr/local/bin ]; then printf '%s' /usr/local/bin; return; fi
+  printf '%s' "$HOME/.local/bin"
+}
+
+add_path_to_rc() {
+  local dir="$1" rc added=0
+  for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+    [ -f "$rc" ] || [ "$rc" = "$HOME/.bashrc" ] || continue
+    grep -q '# >>> selkies-forge >>>' "$rc" 2>/dev/null && continue
+    {
+      printf '\n# >>> selkies-forge >>>\n'
+      printf 'case ":$PATH:" in *":%s:"*) ;; *) export PATH="%s:$PATH" ;; esac\n' "$dir" "$dir"
+      printf '# <<< selkies-forge <<<\n'
+    } >>"$rc" 2>/dev/null && added=1
+  done
+  [ "$added" = 1 ] && CLI_RC_ADDED=1
+  return 0
+}
+
+install_cli() {
+  local dir target body
+  dir=$(cli_bin_dir)
+  target="$dir/selkies-cli"
+  body="#!/usr/bin/env bash
+# selkies-cli: brings Selkies Forge back up. Installed by docker.sh.
+export FORGE_HOME=\"\${FORGE_HOME:-$FORGE_HOME}\"
+if [ ! -f \"\$FORGE_HOME/app/selkies-cli\" ]; then
+  echo \"selkies-cli: Selkies Forge is no longer installed in \$FORGE_HOME.\" >&2
+  echo \"Reinstall it with: curl -fsSL $FORGE_URL | bash\" >&2
+  exit 1
+fi
+exec bash \"\$FORGE_HOME/app/selkies-cli\" \"\$@\""
+
+  if [ -e "$target" ] && ! grep -q 'Installed by docker.sh' "$target" 2>/dev/null; then
+    warn "$target already exists and is not ours, so selkies-cli was not installed"
+    return 1
+  fi
+  if [ -f "$target" ] && [ "$(cat "$target")" = "$body" ]; then
+    CLI_PATH="$target"
+  else
+    mkdir -p "$dir" 2>/dev/null
+    if ! printf '%s\n' "$body" >"$target" 2>/dev/null; then
+      warn "could not write $target, so selkies-cli was not installed"
+      return 1
+    fi
+    chmod 755 "$target"
+    CLI_PATH="$target"
+    CLI_NEW=1
+  fi
+  printf '%s' "$CLI_PATH" >"$FORGE_STATE/cli-path"
+  case ":$PATH:" in
+    *":$dir:"*) FORGE_RUN="selkies-cli" ;;
+    *)
+      # A directory you picked yourself (FORGE_BIN_DIR) is your business;
+      # only the default location gets a PATH line in your shell profile.
+      [ -z "${FORGE_BIN_DIR:-}" ] && add_path_to_rc "$dir"
+      FORGE_RUN="$CLI_PATH"
+      ;;
+  esac
+  return 0
+}
+
+announce_cli() {
+  [ "$CLI_NEW" = 1 ] || return 0
+  printf '\n'
+  ok "installed ${B}selkies-cli${NC}: run it from any terminal to come back here"
+  if [ "$CLI_RC_ADDED" = 1 ]; then
+    info "added $(dirname "$CLI_PATH") to your PATH in your shell profile;"
+    info "open a new terminal first, or run:  export PATH=\"$(dirname "$CLI_PATH"):\$PATH\""
+  fi
+}
+
+# Quiet when everything is already in place, which is the normal case for
+# selkies-cli; the full installers only speak up when something is missing.
+preflight() {
+  if [ "$FORGE_AS_CLI" = 1 ] && find_python && docker_usable; then
+    return 0
+  fi
+  install_python
+  install_docker
+  install_extras
+}
+
+# =========================================================================
+#  status + home screen
+# =========================================================================
+
+forge_status_json() { engine status 2>/dev/null || printf '{}'; }
+
+# Turns the status JSON into shell variables the menu can branch on.
+status_vars() {
+  "$PY" - "$1" <<'PYEOF'
+import json, sys
+try:
+    d = json.loads(sys.argv[1] or "{}")
+except Exception:
+    d = {}
+w = d.get("webui") or {}
+def q(v): return "'" + str(v if v is not None else "").replace("'", "") + "'"
+print("UI_STATE=" + q(w.get("state", "down")))
+print("UI_URL=" + q(w.get("url", "")))
+print("UI_PID=" + q(w.get("pid", "")))
+print("UI_PORT=" + q(w.get("port", "")))
+print("UI_BIND=" + q(w.get("bind", "")))
+print("UI_EXPOSED=" + q(1 if w.get("tunnel") else 0))
+print("UI_LOG=" + q(w.get("log", "")))
+print("DOCKER_OK=" + q(1 if d.get("docker") else 0))
+print("RUNNING=" + q(d.get("running", 0)))
+print("STOPPED=" + q(d.get("stopped", 0)))
+print("TOTAL=" + q(len(d.get("desktops") or [])))
+PYEOF
+}
+
+render_status() {
+  FORGE_COLOR=$COLOR "$PY" - "$1" <<'PYEOF'
+import json, os, sys
+try:
+    d = json.loads(sys.argv[1] or "{}")
+except Exception:
+    d = {}
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+def dur(s):
+    s = int(s or 0)
+    if s < 60: return "%ds" % s
+    if s < 3600: return "%dm" % (s // 60)
+    if s < 86400: return "%dh %dm" % (s // 3600, s % 3600 // 60)
+    return "%dd %dh" % (s // 86400, s % 86400 // 3600)
+def short(url):
+    if not url: return ""
+    host = url.split("://", 1)[-1].split("/")[0]
+    head, _, tail = host.partition(".")
+    return (head[:8] + "…." + tail) if len(head) > 10 and tail else host
+
+w = d.get("webui") or {}
+st = w.get("state", "down")
+print()
+print("  " + c("1;38;5;255", "Status"))
+print("  " + c("2", "─" * 64))
+if not d.get("docker", True):
+    print("  %s %s  %s" % (c("2", "%-9s" % "Docker"), c("38;5;203", "!"),
+                           c("38;5;203", "not answering: " + str(d.get("docker_error") or "")[:60])))
+if st == "up":
+    print("  %s %s  running at %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;79", "●"),
+          c("1;38;5;75", w.get("url", "")), c("2", "· up " + dur(w.get("uptime_s")))))
+elif st == "stale":
+    print("  %s %s  %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;221", "!"),
+          c("38;5;221", "stopped unexpectedly"), c("2", "· " + (w.get("why") or ""))))
+else:
+    print("  %s %s  %s" % (c("2", "%-9s" % "Web UI"), c("2", "○"), "not running"))
+
+items = d.get("desktops") or []
+run, stop = d.get("running", 0), d.get("stopped", 0)
+if not items:
+    print("  %s %s  %s" % (c("2", "%-9s" % "Desktops"), c("2", "○"), "none yet"))
+else:
+    print("  %s %s  %d running · %d stopped" % (c("2", "%-9s" % "Desktops"),
+          c("38;5;79", "●") if run else c("2", "○"), run, stop))
+    for i in sorted(items, key=lambda x: (not x["running"], x["title"]))[:6]:
+        dot = c("38;5;79", "●") if i["running"] else c("2", "○")
+        where = i.get("local_url") or "" if i["running"] else c("2", "stopped")
+        pub = (c("2", "  public ") + short(i["public_url"])) if i.get("public_url") else ""
+        print("     %s %-22.22s %s%s" % (dot, i["title"], where.replace("http://", ""), pub))
+    if len(items) > 6:
+        print("     " + c("2", "and %d more" % (len(items) - 6)))
+print("  " + c("2", "─" * 64))
+PYEOF
+}
+
+cmd_status() {
+  local js; js=$(forge_status_json)
+  render_status "$js"
+  printf '\n'
+}
+
+cmd_open() {
+  local js; js=$(forge_status_json)
+  eval "$(status_vars "$js")"
+  if [ "$UI_STATE" != "up" ]; then
+    warn "the web UI is not running"
+    if confirm "Start it in the background now?" y; then
+      WEBUI_MODE="bg" cmd_webui
+    fi
+    return 0
+  fi
+  printf '\n  %s%s%s\n\n' "$B$BLU" "$UI_URL" "$NC"
+  if command -v xdg-open >/dev/null 2>&1 && [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
+    xdg-open "$UI_URL" >/dev/null 2>&1 &
+    ok "opened in your browser"
+  else
+    info "open that link in your browser"
+  fi
+  printf '\n'
+}
+
+cmd_restart() {
+  local js; js=$(forge_status_json)
+  eval "$(status_vars "$js")"
+  # Come back on the same address, unless you asked for a different one.
+  if [ -n "$UI_PORT" ] && [ "$WEBUI_PORT_SET" != 1 ]; then WEBUI_PORT="$UI_PORT"; fi
+  if [ -n "$UI_BIND" ] && [ "$WEBUI_BIND" = "127.0.0.1" ]; then WEBUI_BIND="$UI_BIND"; fi
+  [ "$UI_EXPOSED" = 1 ] && WEBUI_EXPOSE=1
+  [ "$UI_STATE" = "down" ] || cmd_stop >/dev/null 2>&1
+  WEBUI_MODE="${WEBUI_MODE:-bg}" cmd_webui
+}
+
+cmd_ui_log() {
+  local log="$FORGE_LOGS/webui.log"
+  title "Web UI log" "$log"
+  if [ -s "$log" ]; then tail -n 25 "$log" | sed 's/^/    /'; else info "the log is empty"; fi
+  [ -n "$TTY_IN" ] && read -r -p "  press enter " _ <"$TTY_IN"
+}
+
+cmd_update() {
+  title "Update" "fetch the latest docker.sh and install it"
+  local tmp="$FORGE_STATE/docker.sh.new"
+  spin_start "downloading the latest version"
+  local okdl=0
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$FORGE_URL" -o "$tmp" 2>/dev/null && okdl=1
+  else
+    "$PY" -c "import urllib.request,sys; open(sys.argv[2],'wb').write(urllib.request.urlopen(sys.argv[1],timeout=60).read())" \
+      "$FORGE_URL" "$tmp" 2>/dev/null && okdl=1
+  fi
+  spin_stop
+  [ "$okdl" = 1 ] && [ -s "$tmp" ] || die "could not download $FORGE_URL"
+  bash -n "$tmp" 2>/dev/null || die "the download is not a valid script; nothing was changed"
+  local newv; newv=$(grep -m1 '^FORGE_VERSION=' "$tmp" | cut -d'"' -f2)
+  info "you have $FORGE_VERSION, the latest is ${newv:-unknown}"
+
+  local js; js=$(forge_status_json)
+  eval "$(status_vars "$js")"
+  FORGE_HOME="$FORGE_HOME" bash "$tmp" --setup --yes || die "the update did not install cleanly"
+  rm -f "$tmp"
+  ok "updated to ${newv:-the latest version}"
+  if [ "$UI_STATE" = "up" ] && confirm "Restart the web UI so it runs the new version?" y; then
+    exec bash "$FORGE_APP/selkies-cli" restart
+  fi
+}
+
+pick_new() {
+  local choice
+  choice=$(menu_choose "Forge a new desktop" \
+    $'quick\tFrom the hand picked list\tone strong choice per taste' \
+    $'smart\tLet it choose for me\tscored against this machine' \
+    $'family\tBrowse by distro family\tUbuntu, Debian, Arch, Alpine, Kali...' \
+    $'search\tSearch the catalog\tby name, desktop or tag' \
+    $'back\tBack\t') || return 0
+  case "$choice" in
+    quick) pick_quick ;;
+    smart) cmd_smart ;;
+    family) pick_family ;;
+    search) pick_search ;;
+  esac
+}
+
+main_menu() {
+  review_autostart
+  while :; do
+    local js
+    js=$(forge_status_json)
+    eval "$(status_vars "$js")"
+    render_status "$js"
+
+    # Suggestions first: what you most likely want given what is running.
+    local -a items=()
+    if [ "$DOCKER_OK" != 1 ]; then
+      items+=($'doctor\tFind out why Docker is not answering\tchecks docker, memory, disk')
+    fi
+    case "$UI_STATE" in
+      up)
+        items+=("open"$'\t'"Open the web UI"$'\t'"running at $UI_URL")
+        [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops"$'\t'"$RUNNING running, $STOPPED stopped")
+        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
+        items+=($'uistop\tStop the web UI\tyour desktops keep running')
+        items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
+        ;;
+      stale)
+        items+=($'uistart\tStart the web UI again\tit stopped unexpectedly')
+        items+=($'uilog\tShow why it stopped\tlast lines of its log')
+        [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
+        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
+        ;;
+      *)
+        if [ "$TOTAL" -eq 0 ]; then
+          items+=($'new\tForge your first desktop\tpick from 150+ desktops')
+          items+=($'uistart\tStart the web UI\tbrowse everything with screenshots')
+        else
+          items+=("uistart"$'\t'"Start the web UI"$'\t'"manage your $TOTAL desktop(s) in the browser")
+          items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
+          items+=($'new\tForge a new desktop\tpick from 150+ desktops')
+        fi
+        ;;
+    esac
+    [ "$DOCKER_OK" = 1 ] && items+=($'doctor\tCheck this machine\tdocker, memory, disk, tunnels')
+    items+=($'update\tUpdate Selkies Forge\tget the latest version from GitHub')
+    items+=($'quit\tQuit\t')
+
+    local choice
+    choice=$(menu_choose "What would you like to do?" "${items[@]}") || { printf '\n'; return 0; }
+    case "$choice" in
+      open) cmd_open; return 0 ;;
+      uistart) FORGE_FROM_MENU=1 cmd_webui ;;
+      uistop) cmd_stop ;;
+      uirestart) cmd_restart ;;
+      uilog) cmd_ui_log ;;
+      manager) cmd_manager ;;
+      new) pick_new ;;
+      doctor) cmd_doctor ;;
+      update) cmd_update ;;
+      quit|"") printf '\n  %sbye%s\n\n' "$DIM" "$NC"; return 0 ;;
+    esac
+  done
+}
+
+usage() {
+  banner
+  cat <<USAGE
+Usage:
+   $FORGE_RUN              interactive menu
+   $FORGE_RUN --webui      straight to the web UI
+   $FORGE_RUN --bg         web UI in the background, shell back
+   $FORGE_RUN --fg         web UI in the foreground until ctrl-c
+   $FORGE_RUN --stop       stop a backgrounded web UI
+   $FORGE_RUN --cli        straight to the terminal picker
+   $FORGE_RUN --smart      let it choose for this machine
+   $FORGE_RUN --launch ID  forge one entry and exit
+   $FORGE_RUN --list       print the catalog
+   $FORGE_RUN --manager    manage running desktops
+   $FORGE_RUN --doctor     check this machine
+   $FORGE_RUN --uninstall  remove everything it created
+
+After the first run:
+   selkies-cli                     home screen: what is running, what to do next
+   selkies-cli status              one-shot status of the web UI and desktops
+   selkies-cli start | stop        web UI in the background, or stop it
+   selkies-cli restart | open      restart it, or print/open its link
+   selkies-cli manager | new       manage desktops, or forge a new one
+   selkies-cli update              install the latest version from GitHub
+
+Options:
+   --port N       web UI port (default 8787, the next free one if taken)
+   --expose       serve the web UI beyond localhost, behind a token
+   --no-tunnel    skip the public serveo link
+   --yes, -y      accept the install prompts (Python, Docker)
+
+USAGE
+}
+
+# =========================================================================
+#  entry point
+# =========================================================================
+
+main() {
+  local MODE="menu" LAUNCH_ID=""
+  # Plain words for the common things: selkies-cli status, selkies-cli stop...
+  case "${1:-}" in
+    status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help)
+      local verb="$1"; shift
+      case "$verb" in
+        start) set -- --bg "$@" ;;
+        new) set -- --cli "$@" ;;
+        help) set -- --help "$@" ;;
+        *) set -- "--$verb" "$@" ;;
       esac
-      got=$(sha256sum "$FORGE_APP/$f" | cut -d' ' -f1)
-      if [ "$got" != "$want" ]; then
+      ;;
+  esac
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --status) MODE="status" ;;
+      --restart) MODE="restart" ;;
+      --open) MODE="open" ;;
+      --update) MODE="update" ;;
+      --setup) MODE="setup" ;;
+      --webui|-w) MODE="webui" ;;
+      --cli|-c) MODE="cli" ;;
+      --smart|-s) MODE="smart" ;;
+      --manager|-m) MODE="manager" ;;
+      --doctor) MODE="doctor" ;;
+      --list|-l) MODE="list" ;;
+      --launch) MODE="launch"; LAUNCH_ID="${2:-}"; shift ;;
+      --uninstall) MODE="uninstall" ;;
+      --port) WEBUI_PORT="${2:-8787}"; WEBUI_PORT_SET=1; shift ;;
+      --bind) WEBUI_BIND="${2:-127.0.0.1}"; shift ;;
+      --expose) WEBUI_EXPOSE=1; WEBUI_BIND="0.0.0.0" ;;
+      --bg) MODE="webui"; WEBUI_MODE="bg" ;;
+      --fg) MODE="webui"; WEBUI_MODE="fg" ;;
+      --stop) MODE="stop" ;;
+      --no-tunnel) NO_TUNNEL=1 ;;
+      --yes|-y) ASSUME_YES=1 ;;
+      --force-extract) FORCE_EXTRACT=1 ;;
+      --version|-V) printf 'selkies-forge %s\n' "$FORGE_VERSION"; exit 0 ;;
+      --help|-h) usage; exit 0 ;;
+      *) printf 'unknown option: %s (try --help)\n' "$1" >&2; exit 2 ;;
+    esac
+    shift
+  done
+
+  ensure_dirs
+  case "$MODE" in
+    uninstall|status) : ;;
+    *) banner ;;
+  esac
+
+  preflight
+  extract_payload
+  install_cli || true
+
+  case "$MODE" in
+    setup)
+      announce_cli
+      printf '\n'
+      ok "Selkies Forge $FORGE_VERSION is ready"
+      info "run ${B}${FORGE_RUN}${NC} any time to see what is running and pick what to do"
+      printf '\n'
+      exit 0
+      ;;
+    status) cmd_status; exit 0 ;;
+    open) cmd_open; exit 0 ;;
+    restart) cmd_restart; exit $? ;;
+    update) cmd_update; exit 0 ;;
+    stop) cmd_stop; exit $? ;;
+    uninstall) cmd_uninstall; exit 0 ;;
+    doctor) cmd_doctor; exit 0 ;;
+    list) engine list --runnable --format tsv | column -t -s $'\t' 2>/dev/null || engine list --runnable --format tsv; exit 0 ;;
+    launch)
+      [ -n "$LAUNCH_ID" ] || die "--launch needs a catalog id (see --list)"
+      local -a a=()
+      [ "$NO_TUNNEL" = 1 ] && a+=(--no-tunnel)
+      stream_launch "$LAUNCH_ID" "${a[@]}"
+      exit $?
+      ;;
+  esac
+
+  announce_cli
+  case "$MODE" in
+    webui) singleton_check ;;
+  esac
+
+  case "$MODE" in
+    webui) cmd_webui ;;
+    cli) pick_quick ;;
+    smart) cmd_smart ;;
+    manager) cmd_manager ;;
+    *) main_menu ;;
+  esac
+}
+
+main "$@"
+__FORGE_FILE_SELKIES_CLI__
+  chmod 755 "$FORGE_APP/selkies-cli" 2>/dev/null
+  if command -v sha256sum >/dev/null 2>&1; then
+    local bad=0 f var
+    for f in $FORGE_PAYLOAD_FILES; do
+      var="FORGE_SHA_$(printf '%s' "$f" | tr '.-' '__' | tr '[:lower:]' '[:upper:]')"
+      if [ "$(sha256sum "$FORGE_APP/$f" | cut -d' ' -f1)" != "${!var}" ]; then
         bad=1
         printf '  %s!%s %s did not extract cleanly\n' "$YEL" "$NC" "$f"
       fi
     done
-    if [ "$bad" = 1 ]; then
-      die "the embedded payload is damaged; re-download this script"
-    fi
+    [ "$bad" = 1 ] && die "the embedded payload is damaged; re-download this script"
   fi
   printf '%s' "$FORGE_PAYLOAD_SHA" > "$stamp"
 }
@@ -9882,6 +11633,16 @@ cmd_uninstall() {
     spin_stop
     ok "images and volumes removed"
   fi
+  local cli; cli=$(cat "$FORGE_STATE/cli-path" 2>/dev/null)
+  if [ -n "$cli" ] && grep -q 'Installed by docker.sh' "$cli" 2>/dev/null; then
+    rm -f "$cli" && ok "removed the selkies-cli command ($cli)"
+  fi
+  local rc
+  for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+    if [ -f "$rc" ] && grep -q '# >>> selkies-forge >>>' "$rc" 2>/dev/null; then
+      sed -i '/# >>> selkies-forge >>>/,/# <<< selkies-forge <<</d' "$rc" && ok "cleaned the PATH line from $rc"
+    fi
+  done
   rm -rf "$FORGE_HOME"
   ok "removed $FORGE_HOME"
   printf '\n  %sthanks for using the forge%s\n\n' "$DIM" "$NC"
@@ -9915,31 +11676,331 @@ review_autostart() {
   touch "$marker"
 }
 
+# =========================================================================
+#  the selkies-cli command
+# =========================================================================
+
+# A small wrapper on your PATH that runs the copy of this front end unpacked
+# next to the engine. That copy exists even after "curl ... | bash", where no
+# copy of this script is ever saved to disk.
+cli_bin_dir() {
+  if [ -n "${FORGE_BIN_DIR:-}" ]; then printf '%s' "$FORGE_BIN_DIR"; return; fi
+  local d
+  for d in "$HOME/.local/bin" "$HOME/bin"; do
+    case ":$PATH:" in
+      *":$d:"*) if [ -d "$d" ] && [ -w "$d" ]; then printf '%s' "$d"; return; fi ;;
+    esac
+  done
+  if [ -d /usr/local/bin ] && [ -w /usr/local/bin ]; then printf '%s' /usr/local/bin; return; fi
+  printf '%s' "$HOME/.local/bin"
+}
+
+add_path_to_rc() {
+  local dir="$1" rc added=0
+  for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+    [ -f "$rc" ] || [ "$rc" = "$HOME/.bashrc" ] || continue
+    grep -q '# >>> selkies-forge >>>' "$rc" 2>/dev/null && continue
+    {
+      printf '\n# >>> selkies-forge >>>\n'
+      printf 'case ":$PATH:" in *":%s:"*) ;; *) export PATH="%s:$PATH" ;; esac\n' "$dir" "$dir"
+      printf '# <<< selkies-forge <<<\n'
+    } >>"$rc" 2>/dev/null && added=1
+  done
+  [ "$added" = 1 ] && CLI_RC_ADDED=1
+  return 0
+}
+
+install_cli() {
+  local dir target body
+  dir=$(cli_bin_dir)
+  target="$dir/selkies-cli"
+  body="#!/usr/bin/env bash
+# selkies-cli: brings Selkies Forge back up. Installed by docker.sh.
+export FORGE_HOME=\"\${FORGE_HOME:-$FORGE_HOME}\"
+if [ ! -f \"\$FORGE_HOME/app/selkies-cli\" ]; then
+  echo \"selkies-cli: Selkies Forge is no longer installed in \$FORGE_HOME.\" >&2
+  echo \"Reinstall it with: curl -fsSL $FORGE_URL | bash\" >&2
+  exit 1
+fi
+exec bash \"\$FORGE_HOME/app/selkies-cli\" \"\$@\""
+
+  if [ -e "$target" ] && ! grep -q 'Installed by docker.sh' "$target" 2>/dev/null; then
+    warn "$target already exists and is not ours, so selkies-cli was not installed"
+    return 1
+  fi
+  if [ -f "$target" ] && [ "$(cat "$target")" = "$body" ]; then
+    CLI_PATH="$target"
+  else
+    mkdir -p "$dir" 2>/dev/null
+    if ! printf '%s\n' "$body" >"$target" 2>/dev/null; then
+      warn "could not write $target, so selkies-cli was not installed"
+      return 1
+    fi
+    chmod 755 "$target"
+    CLI_PATH="$target"
+    CLI_NEW=1
+  fi
+  printf '%s' "$CLI_PATH" >"$FORGE_STATE/cli-path"
+  case ":$PATH:" in
+    *":$dir:"*) FORGE_RUN="selkies-cli" ;;
+    *)
+      # A directory you picked yourself (FORGE_BIN_DIR) is your business;
+      # only the default location gets a PATH line in your shell profile.
+      [ -z "${FORGE_BIN_DIR:-}" ] && add_path_to_rc "$dir"
+      FORGE_RUN="$CLI_PATH"
+      ;;
+  esac
+  return 0
+}
+
+announce_cli() {
+  [ "$CLI_NEW" = 1 ] || return 0
+  printf '\n'
+  ok "installed ${B}selkies-cli${NC}: run it from any terminal to come back here"
+  if [ "$CLI_RC_ADDED" = 1 ]; then
+    info "added $(dirname "$CLI_PATH") to your PATH in your shell profile;"
+    info "open a new terminal first, or run:  export PATH=\"$(dirname "$CLI_PATH"):\$PATH\""
+  fi
+}
+
+# Quiet when everything is already in place, which is the normal case for
+# selkies-cli; the full installers only speak up when something is missing.
+preflight() {
+  if [ "$FORGE_AS_CLI" = 1 ] && find_python && docker_usable; then
+    return 0
+  fi
+  install_python
+  install_docker
+  install_extras
+}
+
+# =========================================================================
+#  status + home screen
+# =========================================================================
+
+forge_status_json() { engine status 2>/dev/null || printf '{}'; }
+
+# Turns the status JSON into shell variables the menu can branch on.
+status_vars() {
+  "$PY" - "$1" <<'PYEOF'
+import json, sys
+try:
+    d = json.loads(sys.argv[1] or "{}")
+except Exception:
+    d = {}
+w = d.get("webui") or {}
+def q(v): return "'" + str(v if v is not None else "").replace("'", "") + "'"
+print("UI_STATE=" + q(w.get("state", "down")))
+print("UI_URL=" + q(w.get("url", "")))
+print("UI_PID=" + q(w.get("pid", "")))
+print("UI_PORT=" + q(w.get("port", "")))
+print("UI_BIND=" + q(w.get("bind", "")))
+print("UI_EXPOSED=" + q(1 if w.get("tunnel") else 0))
+print("UI_LOG=" + q(w.get("log", "")))
+print("DOCKER_OK=" + q(1 if d.get("docker") else 0))
+print("RUNNING=" + q(d.get("running", 0)))
+print("STOPPED=" + q(d.get("stopped", 0)))
+print("TOTAL=" + q(len(d.get("desktops") or [])))
+PYEOF
+}
+
+render_status() {
+  FORGE_COLOR=$COLOR "$PY" - "$1" <<'PYEOF'
+import json, os, sys
+try:
+    d = json.loads(sys.argv[1] or "{}")
+except Exception:
+    d = {}
+C = os.environ.get("FORGE_COLOR") == "1"
+def c(code, s): return "\033[%sm%s\033[0m" % (code, s) if C else str(s)
+def dur(s):
+    s = int(s or 0)
+    if s < 60: return "%ds" % s
+    if s < 3600: return "%dm" % (s // 60)
+    if s < 86400: return "%dh %dm" % (s // 3600, s % 3600 // 60)
+    return "%dd %dh" % (s // 86400, s % 86400 // 3600)
+def short(url):
+    if not url: return ""
+    host = url.split("://", 1)[-1].split("/")[0]
+    head, _, tail = host.partition(".")
+    return (head[:8] + "…." + tail) if len(head) > 10 and tail else host
+
+w = d.get("webui") or {}
+st = w.get("state", "down")
+print()
+print("  " + c("1;38;5;255", "Status"))
+print("  " + c("2", "─" * 64))
+if not d.get("docker", True):
+    print("  %s %s  %s" % (c("2", "%-9s" % "Docker"), c("38;5;203", "!"),
+                           c("38;5;203", "not answering: " + str(d.get("docker_error") or "")[:60])))
+if st == "up":
+    print("  %s %s  running at %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;79", "●"),
+          c("1;38;5;75", w.get("url", "")), c("2", "· up " + dur(w.get("uptime_s")))))
+elif st == "stale":
+    print("  %s %s  %s  %s" % (c("2", "%-9s" % "Web UI"), c("38;5;221", "!"),
+          c("38;5;221", "stopped unexpectedly"), c("2", "· " + (w.get("why") or ""))))
+else:
+    print("  %s %s  %s" % (c("2", "%-9s" % "Web UI"), c("2", "○"), "not running"))
+
+items = d.get("desktops") or []
+run, stop = d.get("running", 0), d.get("stopped", 0)
+if not items:
+    print("  %s %s  %s" % (c("2", "%-9s" % "Desktops"), c("2", "○"), "none yet"))
+else:
+    print("  %s %s  %d running · %d stopped" % (c("2", "%-9s" % "Desktops"),
+          c("38;5;79", "●") if run else c("2", "○"), run, stop))
+    for i in sorted(items, key=lambda x: (not x["running"], x["title"]))[:6]:
+        dot = c("38;5;79", "●") if i["running"] else c("2", "○")
+        where = i.get("local_url") or "" if i["running"] else c("2", "stopped")
+        pub = (c("2", "  public ") + short(i["public_url"])) if i.get("public_url") else ""
+        print("     %s %-22.22s %s%s" % (dot, i["title"], where.replace("http://", ""), pub))
+    if len(items) > 6:
+        print("     " + c("2", "and %d more" % (len(items) - 6)))
+print("  " + c("2", "─" * 64))
+PYEOF
+}
+
+cmd_status() {
+  local js; js=$(forge_status_json)
+  render_status "$js"
+  printf '\n'
+}
+
+cmd_open() {
+  local js; js=$(forge_status_json)
+  eval "$(status_vars "$js")"
+  if [ "$UI_STATE" != "up" ]; then
+    warn "the web UI is not running"
+    if confirm "Start it in the background now?" y; then
+      WEBUI_MODE="bg" cmd_webui
+    fi
+    return 0
+  fi
+  printf '\n  %s%s%s\n\n' "$B$BLU" "$UI_URL" "$NC"
+  if command -v xdg-open >/dev/null 2>&1 && [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
+    xdg-open "$UI_URL" >/dev/null 2>&1 &
+    ok "opened in your browser"
+  else
+    info "open that link in your browser"
+  fi
+  printf '\n'
+}
+
+cmd_restart() {
+  local js; js=$(forge_status_json)
+  eval "$(status_vars "$js")"
+  # Come back on the same address, unless you asked for a different one.
+  if [ -n "$UI_PORT" ] && [ "$WEBUI_PORT_SET" != 1 ]; then WEBUI_PORT="$UI_PORT"; fi
+  if [ -n "$UI_BIND" ] && [ "$WEBUI_BIND" = "127.0.0.1" ]; then WEBUI_BIND="$UI_BIND"; fi
+  [ "$UI_EXPOSED" = 1 ] && WEBUI_EXPOSE=1
+  [ "$UI_STATE" = "down" ] || cmd_stop >/dev/null 2>&1
+  WEBUI_MODE="${WEBUI_MODE:-bg}" cmd_webui
+}
+
+cmd_ui_log() {
+  local log="$FORGE_LOGS/webui.log"
+  title "Web UI log" "$log"
+  if [ -s "$log" ]; then tail -n 25 "$log" | sed 's/^/    /'; else info "the log is empty"; fi
+  [ -n "$TTY_IN" ] && read -r -p "  press enter " _ <"$TTY_IN"
+}
+
+cmd_update() {
+  title "Update" "fetch the latest docker.sh and install it"
+  local tmp="$FORGE_STATE/docker.sh.new"
+  spin_start "downloading the latest version"
+  local okdl=0
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$FORGE_URL" -o "$tmp" 2>/dev/null && okdl=1
+  else
+    "$PY" -c "import urllib.request,sys; open(sys.argv[2],'wb').write(urllib.request.urlopen(sys.argv[1],timeout=60).read())" \
+      "$FORGE_URL" "$tmp" 2>/dev/null && okdl=1
+  fi
+  spin_stop
+  [ "$okdl" = 1 ] && [ -s "$tmp" ] || die "could not download $FORGE_URL"
+  bash -n "$tmp" 2>/dev/null || die "the download is not a valid script; nothing was changed"
+  local newv; newv=$(grep -m1 '^FORGE_VERSION=' "$tmp" | cut -d'"' -f2)
+  info "you have $FORGE_VERSION, the latest is ${newv:-unknown}"
+
+  local js; js=$(forge_status_json)
+  eval "$(status_vars "$js")"
+  FORGE_HOME="$FORGE_HOME" bash "$tmp" --setup --yes || die "the update did not install cleanly"
+  rm -f "$tmp"
+  ok "updated to ${newv:-the latest version}"
+  if [ "$UI_STATE" = "up" ] && confirm "Restart the web UI so it runs the new version?" y; then
+    exec bash "$FORGE_APP/selkies-cli" restart
+  fi
+}
+
+pick_new() {
+  local choice
+  choice=$(menu_choose "Forge a new desktop" \
+    $'quick\tFrom the hand picked list\tone strong choice per taste' \
+    $'smart\tLet it choose for me\tscored against this machine' \
+    $'family\tBrowse by distro family\tUbuntu, Debian, Arch, Alpine, Kali...' \
+    $'search\tSearch the catalog\tby name, desktop or tag' \
+    $'back\tBack\t') || return 0
+  case "$choice" in
+    quick) pick_quick ;;
+    smart) cmd_smart ;;
+    family) pick_family ;;
+    search) pick_search ;;
+  esac
+}
+
 main_menu() {
   review_autostart
   while :; do
-    local running total
-    running=$(docker ps -q --filter "label=io.selkiesforge.entry" 2>/dev/null | wc -l | tr -d ' ')
-    total=$(engine list --runnable --format tsv 2>/dev/null | wc -l | tr -d ' ')
-    printf '\n  %s%s desktops available here · %s running%s\n' "$DIM" "$total" "$running" "$NC"
+    local js
+    js=$(forge_status_json)
+    eval "$(status_vars "$js")"
+    render_status "$js"
+
+    # Suggestions first: what you most likely want given what is running.
+    local -a items=()
+    if [ "$DOCKER_OK" != 1 ]; then
+      items+=($'doctor\tFind out why Docker is not answering\tchecks docker, memory, disk')
+    fi
+    case "$UI_STATE" in
+      up)
+        items+=("open"$'\t'"Open the web UI"$'\t'"running at $UI_URL")
+        [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops"$'\t'"$RUNNING running, $STOPPED stopped")
+        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
+        items+=($'uistop\tStop the web UI\tyour desktops keep running')
+        items+=($'uirestart\tRestart the web UI\tafter an update, or if it misbehaves')
+        ;;
+      stale)
+        items+=($'uistart\tStart the web UI again\tit stopped unexpectedly')
+        items+=($'uilog\tShow why it stopped\tlast lines of its log')
+        [ "$TOTAL" -gt 0 ] && items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
+        items+=($'new\tForge a new desktop\tpick from 150+ desktops')
+        ;;
+      *)
+        if [ "$TOTAL" -eq 0 ]; then
+          items+=($'new\tForge your first desktop\tpick from 150+ desktops')
+          items+=($'uistart\tStart the web UI\tbrowse everything with screenshots')
+        else
+          items+=("uistart"$'\t'"Start the web UI"$'\t'"manage your $TOTAL desktop(s) in the browser")
+          items+=("manager"$'\t'"Manage desktops here"$'\t'"$RUNNING running, $STOPPED stopped")
+          items+=($'new\tForge a new desktop\tpick from 150+ desktops')
+        fi
+        ;;
+    esac
+    [ "$DOCKER_OK" = 1 ] && items+=($'doctor\tCheck this machine\tdocker, memory, disk, tunnels')
+    items+=($'update\tUpdate Selkies Forge\tget the latest version from GitHub')
+    items+=($'quit\tQuit\t')
+
     local choice
-    choice=$(menu_choose "What would you like to do?" \
-      $'webui\tOpen the web UI\tthe whole catalog with live output' \
-      $'quick\tPick from the hand picked list\tone strong choice per taste' \
-      $'family\tBrowse by distro family\tUbuntu, Debian, Arch, Alpine, Kali...' \
-      $'search\tSearch the catalog\tby name, desktop or tag' \
-      $'smart\tLet it choose for me\tscored against this machine' \
-      $'manager\tManage running desktops\tlinks, bandwidth, shells, limits' \
-      $'doctor\tCheck this machine\tdocker, memory, disk, tunnels' \
-      $'quit\tQuit\t') || return 0
+    choice=$(menu_choose "What would you like to do?" "${items[@]}") || { printf '\n'; return 0; }
     case "$choice" in
-      webui) FORGE_FROM_MENU=1 cmd_webui ;;
-      quick) pick_quick ;;
-      family) pick_family ;;
-      search) pick_search ;;
-      smart) cmd_smart ;;
+      open) cmd_open; return 0 ;;
+      uistart) FORGE_FROM_MENU=1 cmd_webui ;;
+      uistop) cmd_stop ;;
+      uirestart) cmd_restart ;;
+      uilog) cmd_ui_log ;;
       manager) cmd_manager ;;
+      new) pick_new ;;
       doctor) cmd_doctor ;;
+      update) cmd_update ;;
       quit|"") printf '\n  %sbye%s\n\n' "$DIM" "$NC"; return 0 ;;
     esac
   done
@@ -9962,6 +12023,14 @@ Usage:
    $FORGE_RUN --doctor     check this machine
    $FORGE_RUN --uninstall  remove everything it created
 
+After the first run:
+   selkies-cli                     home screen: what is running, what to do next
+   selkies-cli status              one-shot status of the web UI and desktops
+   selkies-cli start | stop        web UI in the background, or stop it
+   selkies-cli restart | open      restart it, or print/open its link
+   selkies-cli manager | new       manage desktops, or forge a new one
+   selkies-cli update              install the latest version from GitHub
+
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
    --expose       serve the web UI beyond localhost, behind a token
@@ -9977,8 +12046,25 @@ USAGE
 
 main() {
   local MODE="menu" LAUNCH_ID=""
+  # Plain words for the common things: selkies-cli status, selkies-cli stop...
+  case "${1:-}" in
+    status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help)
+      local verb="$1"; shift
+      case "$verb" in
+        start) set -- --bg "$@" ;;
+        new) set -- --cli "$@" ;;
+        help) set -- --help "$@" ;;
+        *) set -- "--$verb" "$@" ;;
+      esac
+      ;;
+  esac
   while [ $# -gt 0 ]; do
     case "$1" in
+      --status) MODE="status" ;;
+      --restart) MODE="restart" ;;
+      --open) MODE="open" ;;
+      --update) MODE="update" ;;
+      --setup) MODE="setup" ;;
       --webui|-w) MODE="webui" ;;
       --cli|-c) MODE="cli" ;;
       --smart|-s) MODE="smart" ;;
@@ -9987,7 +12073,7 @@ main() {
       --list|-l) MODE="list" ;;
       --launch) MODE="launch"; LAUNCH_ID="${2:-}"; shift ;;
       --uninstall) MODE="uninstall" ;;
-      --port) WEBUI_PORT="${2:-8787}"; shift ;;
+      --port) WEBUI_PORT="${2:-8787}"; WEBUI_PORT_SET=1; shift ;;
       --bind) WEBUI_BIND="${2:-127.0.0.1}"; shift ;;
       --expose) WEBUI_EXPOSE=1; WEBUI_BIND="0.0.0.0" ;;
       --bg) MODE="webui"; WEBUI_MODE="bg" ;;
@@ -10004,14 +12090,28 @@ main() {
   done
 
   ensure_dirs
-  [ "$MODE" = "uninstall" ] || banner
+  case "$MODE" in
+    uninstall|status) : ;;
+    *) banner ;;
+  esac
 
-  install_python
-  install_docker
-  install_extras
+  preflight
   extract_payload
+  install_cli || true
 
   case "$MODE" in
+    setup)
+      announce_cli
+      printf '\n'
+      ok "Selkies Forge $FORGE_VERSION is ready"
+      info "run ${B}${FORGE_RUN}${NC} any time to see what is running and pick what to do"
+      printf '\n'
+      exit 0
+      ;;
+    status) cmd_status; exit 0 ;;
+    open) cmd_open; exit 0 ;;
+    restart) cmd_restart; exit $? ;;
+    update) cmd_update; exit 0 ;;
     stop) cmd_stop; exit $? ;;
     uninstall) cmd_uninstall; exit 0 ;;
     doctor) cmd_doctor; exit 0 ;;
@@ -10025,8 +12125,9 @@ main() {
       ;;
   esac
 
+  announce_cli
   case "$MODE" in
-    menu|webui) singleton_check ;;
+    webui) singleton_check ;;
   esac
 
   case "$MODE" in

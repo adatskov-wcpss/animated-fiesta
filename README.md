@@ -29,7 +29,61 @@ On the first run it:
 
 1. installs Python 3 and Docker if they are missing (it asks first, and needs `sudo`),
 2. unpacks its engine and web UI into `~/.selkies-forge`,
-3. opens the menu.
+3. installs the `selkies-cli` command,
+4. opens the home screen.
+
+## Coming back: `selkies-cli`
+
+After the first run you never need the long command again. From any terminal:
+
+```bash
+selkies-cli
+```
+
+It checks what is going on before it asks you anything:
+
+```
+  Status
+  ────────────────────────────────────────────────────────────────
+  Web UI    ●  running at http://localhost:8787/  · up 2h 14m
+  Desktops  ●  2 running · 1 stopped
+     ● Alpine MATE            localhost:33149  public 8abccb82….serveousercontent.com
+     ● Ubuntu 24.04 Xfce 4    localhost:34961
+     ○ Debian KDE Plasma      stopped
+  ────────────────────────────────────────────────────────────────
+  What would you like to do?
+  ❯ Open the web UI                    running at http://localhost:8787/
+    Manage desktops                    2 running, 1 stopped
+    Forge a new desktop                pick from 150+ desktops
+    Stop the web UI                    your desktops keep running
+    Restart the web UI                 after an update, or if it misbehaves
+```
+
+The first suggestions change with what it finds:
+
+| It finds | It suggests first |
+|---|---|
+| Nothing set up yet | Forge your first desktop, then start the web UI |
+| The web UI running | Open it, manage desktops, forge a new one, stop or restart it |
+| The web UI crashed (its process is gone, or it stopped answering) | Start it again, show why it stopped |
+| Desktops running, but no web UI | Start the web UI, or manage desktops right there in the terminal |
+| Docker not answering | Find out why |
+
+For quick jobs, skip the menu:
+
+| Command | What it does |
+|---|---|
+| `selkies-cli status` | Print the status above and exit |
+| `selkies-cli start` | Start the web UI in the background |
+| `selkies-cli stop` | Stop the web UI (desktops keep running) |
+| `selkies-cli restart` | Restart it on the same address |
+| `selkies-cli open` | Print the web UI's link and open it in a browser if there is one; offers to start it if it is down |
+| `selkies-cli manager` | Manage desktops in the terminal |
+| `selkies-cli new` | Forge a new desktop from the hand picked list |
+| `selkies-cli update` | Install the latest version from GitHub, then offer to restart the web UI so it uses it |
+| `selkies-cli uninstall` | Remove everything, including the command itself |
+
+`selkies-cli` goes in `~/.local/bin` (or `~/bin`) when that folder is on your `PATH`, otherwise in `/usr/local/bin` if you can write to it. If neither works it goes in `~/.local/bin`, and a short marked block is added to `~/.bashrc` (plus `~/.zshrc` and `~/.profile` if you have them) to put that folder on your `PATH`. Open a new terminal once for that to take effect. Set `FORGE_BIN_DIR` to choose the folder yourself; your shell profiles are then left alone.
 
 ## Requirements
 
@@ -46,19 +100,16 @@ macOS and Windows hosts are not supported.
 
 ## Using it
 
-### The menu
+### The home screen
 
-Run the script with no options and pick from:
+Run `selkies-cli` (or the script with no options) to see the status and a menu. Besides the suggestions above, it has:
 
 | Option | What it does |
 |---|---|
-| Open the web UI | The full catalog, live launch output and the manager in your browser |
-| Pick from the hand picked list | 17 strong choices, one per taste |
-| Browse by distro family | Ubuntu, Debian, Arch, Alpine, Kali and the rest |
-| Search the catalog | By name, desktop or tag |
-| Let it choose for me | Scores every entry against this machine's free memory, cores and disk |
-| Manage running desktops | Links, sign-in, limits, auto-start, shells, logs |
+| Forge a new desktop | From the 17 hand picked desktops, by distro family, by search, or "Let it choose" (scored against this machine's free memory, cores and disk) |
+| Manage desktops | Links, sign-in, limits, auto-start, shells, logs |
 | Check this machine | Docker, memory, disk and tunnel checks |
+| Update Selkies Forge | Install the latest version from GitHub |
 
 Use the arrow keys (or `j`/`k`) and Enter. `q` goes back.
 
@@ -97,12 +148,19 @@ bash docker.sh --launch webtop-ubuntu-xfce
 
 ## Options
 
+These work with the script and with `selkies-cli` alike.
+
 | Option | What it does |
 |---|---|
-| *(none)* | Interactive menu |
+| *(none)* | Home screen: status plus suggestions |
 | `--webui`, `-w` | Straight to the web UI (asks background or foreground) |
 | `--bg` / `--fg` | Web UI in the background, or held in the foreground until Ctrl-C |
 | `--stop` | Stop a web UI running in the background |
+| `--restart` | Restart the web UI on the same address |
+| `--status` | Print the status of the web UI and desktops |
+| `--open` | Print the web UI's link and open it if a browser is available |
+| `--setup` | Install everything and the `selkies-cli` command, then exit |
+| `--update` | Install the latest version from GitHub |
 | `--cli`, `-c` | Straight to the hand picked list |
 | `--smart`, `-s` | Let it choose for this machine |
 | `--manager`, `-m` | Manage running desktops |
@@ -149,10 +207,12 @@ Everything lives in `~/.selkies-forge`. Set `FORGE_HOME` to use a different fold
 
 ```
 ~/.selkies-forge/
-├── app/      the engine and web UI, unpacked from the script
+├── app/      the engine, the web UI and the selkies-cli front end
 ├── state/    instances, reserved ports, web UI pid
 ├── logs/     launch, tunnel and web UI logs
 └── builds/   Dockerfiles for desktops built on this machine
+
+~/.local/bin/selkies-cli   a small wrapper that runs app/selkies-cli
 ```
 
 ## Security
@@ -169,10 +229,10 @@ Everything lives in `~/.selkies-forge`. Set `FORGE_HOME` to use a different fold
 ## Uninstall
 
 ```bash
-bash docker.sh --uninstall
+selkies-cli uninstall
 ```
 
-This removes every desktop the script created and the `~/.selkies-forge` folder. It asks before also deleting the images and data volumes. Docker and Python stay installed.
+This removes every desktop the script created, the `~/.selkies-forge` folder, the `selkies-cli` command and any `PATH` lines it added to your shell profiles. It asks before also deleting the images and data volumes. Docker and Python stay installed.
 
 ## Troubleshooting
 
@@ -183,7 +243,9 @@ This removes every desktop the script created and the `~/.selkies-forge` folder.
 | The desktop never answers | Heavy desktops are slow on first boot. Open its logs from the manager. |
 | A built desktop fails | The log names the package that broke; try the same desktop on another distro |
 | No public link | serveo sometimes refuses or rate-limits. The local link still works; retry from the manager menu. |
-| Anything else | Run `bash docker.sh --doctor` |
+| `selkies-cli: command not found` | Open a new terminal (the `PATH` change only reaches new shells), or run `~/.local/bin/selkies-cli` |
+| The web UI says it "stopped unexpectedly" | `selkies-cli`, then "Show why it stopped" to see its log, then "Start the web UI again" |
+| Anything else | Run `selkies-cli doctor` |
 
 ## Credits
 
