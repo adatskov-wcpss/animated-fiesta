@@ -38,8 +38,8 @@ def main():
            "| Column | Meaning |", "|---|---|",
            "| **Kind** | *pull*: a prebuilt image, only downloaded. *build*: a Selkies base image plus "
            "the desktop's packages, built on your machine the first time. |",
-           "| **Screen** | *fit*: the desktop follows your browser window (on a 4K screen, scaled "
-           "up from about 1920 wide). *fixed*: it runs at 1920×1080 and Selkies scales it into your "
+           "| **Screen** | *fit*: the desktop follows your browser window (on phones, HiDPI and 4K "
+           "screens, kept at 96 DPI and scaled). *fixed*: it runs at 1920×1080 and Selkies scales it into your "
            "window (desktops that misdraw when the screen changes size). Changeable per desktop. "
            "[More](forge-layer.md#screen-modes) |",
            "| **RAM** | the floor it needs, then the comfortable amount the planner aims for |",

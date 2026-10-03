@@ -78,25 +78,25 @@ GTK's newest image loaders (glycin, on Arch) decode every icon inside `bwrap`. D
 
 | Mode | What happens | Default for |
 |---|---|---|
-| **fit** | The desktop follows your browser window; Selkies resizes the X screen, capped at 3840×2160. On a 4K-class screen the [screen guard](#the-screen-guard-4k-screens) scales it. | Everything else |
+| **fit** | The desktop follows your browser window; Selkies resizes the X screen, capped at 3840×2160. On phones, Retina laptops, scaled monitors and 4K screens the [screen guard](#the-screen-guard-hidpi-phones-and-4k) keeps it at 96 DPI and scales it. | Everything else |
 | **fixed** | The screen stays one size (1920×1080 by default; 1280×720 up to 2560×1440 to choose from), and Selkies scales it into your window. The size and a 96 DPI are locked, so no browser can change them. Nothing can ever end up off the bottom. | Enlightenment, Cinnamon, Budgie, GNOME Flashback, UKUI: compositing window managers that misdraw when the screen changes size under Xvfb |
 
 Pick it per desktop under **Screen** when you forge it, or later under **Edit limits** (which recreates the desktop; files are kept). From the engine: `launch --display fixed --resolution 1600x900`.
 
-### The screen guard: 4K screens
+### The screen guard: HiDPI, phones and 4K
 
-On a HiDPI screen, Selkies sizes the desktop in the screen's *device* pixels and turns the pixel ratio into a DPI. A 4K screen at 200% gets a 3840×2160 desktop at 192 DPI. Some programs honour that DPI and some don't, so text is huge in one window and tiny in the next, panels land off the edge, and a bigger window runs past the 3840×2160 the forge allows. A 4K screen at 100% gets a 3840×2160 desktop with unreadable text.
+On any screen whose pixel ratio is above 1 (a phone, a Retina laptop, a monitor scaled to 125% or 200%), Selkies sizes the desktop in the screen's *device* pixels and turns the pixel ratio into a DPI. A phone at 2.6× gets 264 DPI; a 4K screen at 200% gets 192. Programs that honour the DPI draw huge text inside panels and title bars that are sized in pixels and don't grow. The Xfce panel's text spills out of the bar, and its clock overlaps itself. Other programs stay tiny, and a big window runs past the 3840×2160 the forge allows. A 4K screen at 100% has no such DPI, but gets a 3840×2160 desktop with unreadable text.
 
 The forge layer puts a few lines of JavaScript (`forge-screen.js`) at the top of Selkies' page. They run **in the viewer's browser** before Selkies does, so the decision is made for the screen actually looking at the desktop, not at launch:
 
 | The viewer's screen (physical pixels) | What happens |
 |---|---|
-| At least 3200×1800 (4K, 5K, a 4K laptop at any scaling) | Selkies' *CSS scaling* is turned on, with a scaling divisor that brings the desktop to about 1920 wide (192 for 4K, 264 for 5K). The desktop runs at 96 DPI in ordinary pixels and is stretched to the window, so it looks like a 1080p desktop on a 4K screen. |
-| Anything smaller (1080p, 1440p, a 1440×900 laptop at 200%…) | Nothing changes: the desktop follows the window, pixel for pixel. |
+| A pixel ratio of 1.125 or more (phones, tablets, Retina and scaled laptops), or at least 3200×1800 (4K, 5K) | Selkies' *CSS scaling* is turned on, with a scaling divisor that sizes the desktop at about 1920 pixels wide (never wider than the screen's own pixels). The desktop always runs at **96 DPI**, so panels and fonts agree, and it is stretched to the window. Examples: a 2340×1080 phone gets about 1872×860, a 2880×1800 Retina laptop 1920×1200, and a 4K screen 1920×1080. |
+| A pixel ratio of 1 and smaller than 4K (1080p, 1440p at 100%) | Nothing changes: the desktop follows the window, pixel for pixel, already at 96 DPI. |
 
 The guard only manages settings it wrote itself. If you pick your own scaling in Selkies' side menu, it leaves that alone. Open the same desktop from a smaller screen, and it takes its own settings back out. Each browser keeps its own settings, so a 4K monitor and a laptop can view the same desktop, each correctly.
 
-Desktops made by 1.6.0, which forced every desktop to a fixed 1920×1080, go back to their own default when they're next recreated: by **Repair**, or by **Edit limits** with Screen on *Automatic*. Desktops made before 1.6.1 also need a **Repair** to get the screen guard.
+Desktops made by 1.6.0, which forced every desktop to a fixed 1920×1080, go back to their own default when they're next recreated: by **Repair**, or by **Edit limits** with Screen on *Automatic*. Desktops made before 1.7.2 need a **Repair** (files are kept) to get this version of the screen guard; 1.6.1 to 1.7.1 only covered 4K screens.
 
 ## Repair
 

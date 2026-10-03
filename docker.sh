@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.7.1"
+FORGE_VERSION="1.7.2"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -539,14 +539,14 @@ FORGE_SHA_FORGE_IMAGES_PY="dc8a0d7f70e43494b1d0e99101c233b92691da41e2c0316321402
 FORGE_SHA_FORGE_INFO_PY="2c7e4c6fb531f111288902458f75491629b546de65301c9613dda0fd5eb3564f"
 FORGE_SHA_FORGE_JOBS_PY="a78f564dadd53f11560bea39907245a2332f9c35402bc1ebe92dd364a1214c86"
 FORGE_SHA_FORGE_LAUNCH_PY="25731de601f0ea04c9e2962813507880f44222f1409ab296887d70450aeaa6ed"
-FORGE_SHA_FORGE_LAYER_PY="fe26fd935322c08e882dbca43d682ec32a5f08e1af560f3a0862c1e980a56408"
+FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="42aaebadb06200b94e1f62c1fa3c3153f5a9a7e9b2c1c5dfa63aeb63806be9f5"
-FORGE_SHA_FORGE_PATHS_PY="b201b3d099de31168fc7a9d1656130bc809fa26c8bb4809a121507745e22d1c7"
+FORGE_SHA_FORGE_PATHS_PY="125af92593fd2afa3e1d90d2961cd7be7616f9576fd547c029ecd7bd17deb95e"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
-FORGE_SHA_FORGE_RUNNER_PY="cfc68a5a813c8b0b07747e07f60f73edb97bfadf9f110b771a65c312d2ed684b"
+FORGE_SHA_FORGE_RUNNER_PY="8fa4cfc1c7db1050ac55df3fa8556d50def6c6d01a06891a90560d2465a90236"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
 FORGE_SHA_FORGE_SERVER_PY="ea38a762c313c06f803a0e0fdfdf94c498c0441435b8fb5a6bdb93e359b70be6"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
@@ -567,8 +567,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="dfb8372e5812cefdd53359f61abaeb90133bab45695038376d303bc68f253564"
-FORGE_PAYLOAD_SHA="967f72376142bf8cf3b2396d6f1f92d85cef78013ad223d3a6d73e0f131a3cc1"
+FORGE_SHA_SELKIES_CLI="4737d68a31fdb9efeef3ad44bca17ef8233514c73a5f65b2e1a4d492bc9f2380"
+FORGE_PAYLOAD_SHA="f2ae0f77c30b03ce99d6289ae87117c339afc552e8e04f8cf8f43a59f93aa656"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -4062,7 +4062,7 @@ this file changes, without touching the big package layers underneath.
 import base64
 import hashlib
 
-LAYER_VERSION = "7"
+LAYER_VERSION = "8"
 
 AGENT = r"""#!/bin/bash
 # Selkies Forge agent: keeps windows on the visible screen, reports health.
@@ -5046,17 +5046,21 @@ def wallpaper_bytes():
 # The screen guard: a few lines of JavaScript the layer puts at the top of
 # Selkies' own page, so they run in the viewer's browser before Selkies does.
 #
-# The 4K bug. On a HiDPI screen Selkies sizes the desktop in device pixels and
-# turns the pixel ratio into a DPI: a 4K screen at 200% gets a 3840x2160
-# desktop at 192 DPI (fonts huge in some programs and tiny in others, panels
-# off the edge, and anything larger runs past the 3840x2160 the forge allows
-# Xvfb). A 4K screen at 100% gets a 3840x2160 desktop with unreadable text.
+# The HiDPI bug. On any screen with a pixel ratio above 1 (phones, Retina
+# laptops, a monitor scaled to 125% or 200%) Selkies sizes the desktop in
+# device pixels and turns the pixel ratio into a DPI: a phone at 2.6x gets
+# 264 DPI, a 4K screen at 200% gets 192. Programs that honour the DPI draw
+# huge text inside panels and title bars that are sized in pixels and do not
+# grow (the Xfce panel's text spills out of the bar), others stay tiny, and a
+# big window runs past the 3840x2160 the forge allows Xvfb. A 4K screen at
+# 100% has no such DPI, but gets a 3840x2160 desktop with unreadable text.
 #
-# The fix, only on 4K-class screens (at least 3200x1800 physical pixels):
-# Selkies' own "CSS scaling" mode, with its scaling DPI as a divisor. The
-# desktop is then sized in ordinary pixels divided down to about 1920 wide,
-# runs at 96 DPI, and is stretched to the window. Every other screen is left
-# exactly as it was: the desktop follows the window, pixel for pixel.
+# The fix, on those screens only: Selkies' own "CSS scaling" mode, with its
+# scaling DPI as a divisor. The desktop always runs at 96 DPI, so every panel
+# and font agree, sized to about 1920 pixels wide (never wider than the
+# screen's own pixels), and is stretched to the window. A screen at 100% that
+# is smaller than 4K is left exactly as it was: the desktop follows the
+# window, pixel for pixel, at 96 DPI already.
 #
 # It only touches what it set itself: once someone picks their own scaling in
 # Selkies' menu, the guard leaves it alone, and on a smaller screen it takes
@@ -5075,9 +5079,11 @@ SCREEN_GUARD = r"""/* Selkies Forge screen guard: see forge/layer.py. */
     try { mine = JSON.parse(ls.getItem(K.mark) || "null"); } catch (e) {}
     var ours = !!mine && ls.getItem(K.css) === "true" && ls.getItem(K.dpi) === mine.dpi;
     var free = ls.getItem(K.css) === null && ls.getItem(K.dpi) === null;
-    if (w >= 3200 && h >= 1800) {
+    /* Selkies raises the DPI from a pixel ratio of 1.125 up (round(r*4)*24) */
+    if (dpr >= 1.125 || (w >= 3200 && h >= 1800)) {
       if (!free && !ours) return;            /* the viewer chose their own scaling */
-      var want = 96 * w / 1920, dpi = 96;
+      var target = Math.min(1920, Math.max(1280, w));
+      var want = 96 * w / target, dpi = 96;
       [96, 120, 144, 168, 192, 216, 240, 264, 288].forEach(function (d) {
         if (Math.abs(d - want) < Math.abs(dpi - want)) dpi = d;
       });
@@ -5525,7 +5531,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.7.1"
+VERSION = "1.7.2"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -6032,8 +6038,8 @@ def display_for(entry, opts):
     """('fit', None) or ('fixed', (w, h)) for this launch.
 
     fit    the desktop follows your browser window (Selkies resizes the screen).
-           On a 4K-class screen the forge layer's screen guard has Selkies
-           size it in ordinary pixels, about 1920 wide, and scale it up
+           On a phone, a HiDPI or a 4K screen the forge layer's screen guard
+           keeps it at 96 DPI and about 1920 wide, and scales it
     fixed  the screen stays one size and Selkies scales it into the window;
            for window managers that cannot cope with the screen changing size
            under them, so nothing can ever end up below the bottom edge
@@ -14450,7 +14456,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.7.1"
+FORGE_VERSION="1.7.2"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

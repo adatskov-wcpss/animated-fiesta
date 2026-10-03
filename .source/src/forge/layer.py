@@ -24,7 +24,7 @@ this file changes, without touching the big package layers underneath.
 import base64
 import hashlib
 
-LAYER_VERSION = "7"
+LAYER_VERSION = "8"
 
 AGENT = r"""#!/bin/bash
 # Selkies Forge agent: keeps windows on the visible screen, reports health.
@@ -1008,17 +1008,21 @@ def wallpaper_bytes():
 # The screen guard: a few lines of JavaScript the layer puts at the top of
 # Selkies' own page, so they run in the viewer's browser before Selkies does.
 #
-# The 4K bug. On a HiDPI screen Selkies sizes the desktop in device pixels and
-# turns the pixel ratio into a DPI: a 4K screen at 200% gets a 3840x2160
-# desktop at 192 DPI (fonts huge in some programs and tiny in others, panels
-# off the edge, and anything larger runs past the 3840x2160 the forge allows
-# Xvfb). A 4K screen at 100% gets a 3840x2160 desktop with unreadable text.
+# The HiDPI bug. On any screen with a pixel ratio above 1 (phones, Retina
+# laptops, a monitor scaled to 125% or 200%) Selkies sizes the desktop in
+# device pixels and turns the pixel ratio into a DPI: a phone at 2.6x gets
+# 264 DPI, a 4K screen at 200% gets 192. Programs that honour the DPI draw
+# huge text inside panels and title bars that are sized in pixels and do not
+# grow (the Xfce panel's text spills out of the bar), others stay tiny, and a
+# big window runs past the 3840x2160 the forge allows Xvfb. A 4K screen at
+# 100% has no such DPI, but gets a 3840x2160 desktop with unreadable text.
 #
-# The fix, only on 4K-class screens (at least 3200x1800 physical pixels):
-# Selkies' own "CSS scaling" mode, with its scaling DPI as a divisor. The
-# desktop is then sized in ordinary pixels divided down to about 1920 wide,
-# runs at 96 DPI, and is stretched to the window. Every other screen is left
-# exactly as it was: the desktop follows the window, pixel for pixel.
+# The fix, on those screens only: Selkies' own "CSS scaling" mode, with its
+# scaling DPI as a divisor. The desktop always runs at 96 DPI, so every panel
+# and font agree, sized to about 1920 pixels wide (never wider than the
+# screen's own pixels), and is stretched to the window. A screen at 100% that
+# is smaller than 4K is left exactly as it was: the desktop follows the
+# window, pixel for pixel, at 96 DPI already.
 #
 # It only touches what it set itself: once someone picks their own scaling in
 # Selkies' menu, the guard leaves it alone, and on a smaller screen it takes
@@ -1037,9 +1041,11 @@ SCREEN_GUARD = r"""/* Selkies Forge screen guard: see forge/layer.py. */
     try { mine = JSON.parse(ls.getItem(K.mark) || "null"); } catch (e) {}
     var ours = !!mine && ls.getItem(K.css) === "true" && ls.getItem(K.dpi) === mine.dpi;
     var free = ls.getItem(K.css) === null && ls.getItem(K.dpi) === null;
-    if (w >= 3200 && h >= 1800) {
+    /* Selkies raises the DPI from a pixel ratio of 1.125 up (round(r*4)*24) */
+    if (dpr >= 1.125 || (w >= 3200 && h >= 1800)) {
       if (!free && !ours) return;            /* the viewer chose their own scaling */
-      var want = 96 * w / 1920, dpi = 96;
+      var target = Math.min(1920, Math.max(1280, w));
+      var want = 96 * w / target, dpi = 96;
       [96, 120, 144, 168, 192, 216, 240, 264, 288].forEach(function (d) {
         if (Math.abs(d - want) < Math.abs(dpi - want)) dpi = d;
       });

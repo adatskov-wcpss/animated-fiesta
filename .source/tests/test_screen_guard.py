@@ -44,9 +44,21 @@ class ScreenGuardTest(unittest.TestCase):
         self.assertEqual(self.run_guard(2560, 1440, 2)[P + "scaling_dpi"], "264")
         self.assertEqual(self.run_guard(2560, 1440, 1.5)[P + "scaling_dpi"], "192")
 
-    def test_smaller_screens_are_left_alone(self):
-        for w, h, dpr in ((1920, 1080, 1), (2560, 1440, 1), (1440, 900, 2), (1366, 768, 1.25)):
+    def test_screens_at_100_percent_are_left_alone(self):
+        for w, h, dpr in ((1920, 1080, 1), (2560, 1440, 1), (1366, 768, 1), (1920, 1200, 1.1)):
             self.assertEqual(self.run_guard(w, h, dpr), {}, (w, h, dpr))
+
+    def test_phones_get_96_dpi_and_a_desktop_sized_desktop(self):
+        # a 2340x1080 phone at 2.625x: Selkies alone would set 264 DPI
+        s = self.run_guard(891, 411, 2.625)
+        self.assertEqual((s[P + "useCssScaling"], s[P + "scaling_dpi"]), ("true", "120"))
+        # in portrait too (the long side decides)
+        self.assertEqual(self.run_guard(411, 891, 2.625)[P + "scaling_dpi"], "120")
+
+    def test_retina_and_scaled_laptops(self):
+        self.assertEqual(self.run_guard(1440, 900, 2)[P + "scaling_dpi"], "144")    # 2880 wide
+        self.assertEqual(self.run_guard(1280, 800, 1.5)[P + "scaling_dpi"], "96")   # 1920 wide
+        self.assertEqual(self.run_guard(1366, 768, 1.25)[P + "scaling_dpi"], "96")  # 1708 wide
 
     def test_a_viewers_own_choice_is_kept(self):
         mine = {P + "useCssScaling": "false", P + "useCssScaling_explicit_choice": "true"}

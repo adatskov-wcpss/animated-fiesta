@@ -37,8 +37,8 @@ def display_for(entry, opts):
     """('fit', None) or ('fixed', (w, h)) for this launch.
 
     fit    the desktop follows your browser window (Selkies resizes the screen).
-           On a 4K-class screen the forge layer's screen guard has Selkies
-           size it in ordinary pixels, about 1920 wide, and scale it up
+           On a phone, a HiDPI or a 4K screen the forge layer's screen guard
+           keeps it at 96 DPI and about 1920 wide, and scales it
     fixed  the screen stays one size and Selkies scales it into the window;
            for window managers that cannot cope with the screen changing size
            under them, so nothing can ever end up below the bottom edge

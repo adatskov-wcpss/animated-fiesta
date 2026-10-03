@@ -52,7 +52,7 @@ These are set when you forge a desktop: in the web UI, the CLI prompts, or the [
 | CPUs | Planned | Live |
 | Shared memory (`/dev/shm`) | 1 GB (a ceiling: what's stored there counts against the memory cap, so it costs nothing until used) | Recreates the desktop |
 | Storage budget | At least 10 GB; enforced only where the storage driver supports quotas | Recreates the desktop |
-| Screen | `auto`: fixed 1920×1080 for compositing desktops, else follows the window (scaled on 4K screens by the [screen guard](forge-layer.md#the-screen-guard-4k-screens)) | Recreates the desktop |
+| Screen | `auto`: fixed 1920×1080 for compositing desktops, else follows the window (scaled on phones, HiDPI and 4K screens by the [screen guard](forge-layer.md#the-screen-guard-hidpi-phones-and-4k)) | Recreates the desktop |
 | Auto-start with Docker | Off | Live |
 | Healing after a crash or freeze | On | At launch |
 | Stop when nobody's watching | The forge default (`FORGE_IDLE_STOP_MIN`, off) | Live, from the menu or `selkies-cli idle` |

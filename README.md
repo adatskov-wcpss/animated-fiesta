@@ -164,7 +164,7 @@ flowchart LR
 | **Cancel anything** | Kills the download or build (and its children) and removes the half-made desktop. Nothing is left behind. |
 | **Watchdog** | Crashes are detected, journalled and healed (up to 3×/hour), and never confused with *you* stopping a desktop. |
 | **The forge layer** | A few kilobytes inside every desktop: no first-run wizards, windows kept on screen, a crash supervisor with a rescue session, and fixes for Cinnamon, GNOME Flashback, KDE, Arch's D-Bus, glycin icons and more. |
-| **Screens that fit** | Desktops follow your browser window. On a 4K screen they're scaled up from about 1920 wide, decided in your browser, so text stays readable and nothing lands off the edge. Desktops that misdraw on resize run at a locked 1920×1080. |
+| **Screens that fit** | Desktops follow your browser window. On phones, Retina laptops and 4K screens they run at 96 DPI and about 1920 wide, scaled to the screen and decided in your browser, so panels and text fit and nothing lands off the edge. Desktops that misdraw on resize run at a locked 1920×1080. |
 | **Event journal** | `created → ready → crashed → healed → repaired`, per desktop, in the CLI, the UI and the API. |
 | **Crash-safe jobs** | Every launch keeps a state file. Launches from the terminal show up (and cancel) in the web UI; a launch whose process died is spotted and its half-made desktop removed. |
 | **Memory booking** | Two desktops starting at once must both fit: launches in flight book their memory, and admission counts it. |

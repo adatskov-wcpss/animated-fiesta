@@ -125,7 +125,7 @@ sequenceDiagram
 - There must be enough free disk for the download and the build.
 - **Memory admission.** If free memory is below the desktop's floor (`ram_min`), the launch is refused before anything downloads. The message names the desktops that are using memory. `--force` overrides it. If free memory is only below the planned cap, the log says it'll run tight.
 - **The memory ledger.** Memory that other launches have booked counts as used. Two desktops starting at once must both fit, not each fit on its own. Once admitted, a launch books its floor in `state/ledger.json` until it is up, fails or is cancelled. A booking belongs to a process, so one whose process died is ignored.
-- **Screen mode.** *fit* (follow the browser window; the layer's [screen guard](forge-layer.md#the-screen-guard-4k-screens) scales it on 4K screens) or *fixed* (a set size and 96 DPI, locked, scaled to fit), from the entry or your choice.
+- **Screen mode.** *fit* (follow the browser window; the layer's [screen guard](forge-layer.md#the-screen-guard-hidpi-phones-and-4k) scales it on phones, HiDPI and 4K screens) or *fixed* (a set size and 96 DPI, locked, scaled to fit), from the entry or your choice.
 
 ### 2. Fetch
 

@@ -15,8 +15,8 @@ In the desktop's `/config` (its home folder), a Docker volume named `forge-confi
 **Why are some desktops "fixed size"?**
 Enlightenment, Cinnamon, Budgie, GNOME Flashback and UKUI are compositing window managers. Under a virtual X server they misdraw, or leave parts of the screen behind, when the screen changes size. Running them at a fixed size and letting Selkies scale the picture avoids that completely. You can switch any desktop to the other mode.
 
-**What happens on a 4K screen?**
-Left alone, Selkies would give a 4K screen a 3840×2160 desktop, at 192 DPI on a HiDPI screen, with mismatched fonts and panels off the edge. The forge's [screen guard](forge-layer.md#the-screen-guard-4k-screens) spots a 4K-class screen in your browser and has Selkies run the desktop at about 1920 wide and scale it up. Smaller screens aren't touched.
+**What happens on a phone, a Retina laptop or a 4K screen?**
+Left alone, Selkies would raise the desktop's DPI to match the screen (264 on a phone), and panels sized in pixels would overflow with text: the Xfce top bar is the classic case. The forge's [screen guard](forge-layer.md#the-screen-guard-hidpi-phones-and-4k) spots a high-density or 4K screen in your browser, keeps the desktop at 96 DPI and about 1920 wide, and scales it to the screen. Ordinary screens at 100% aren't touched.
 
 **Can I back up a desktop, or make a copy of one?**
 Yes. **Back up files** and **Clone…** in the manager's menu, or `selkies-cli backup NAME` and `selkies-cli clone NAME`. A backup is the desktop's home folder, and can become a new desktop later even if the original is gone. See [Backups](operations.md#backups).
