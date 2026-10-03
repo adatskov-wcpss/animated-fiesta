@@ -19,7 +19,7 @@ from .images import ensure_layer
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .recipes import build_image_tag
 from .registry import docker_instances
-from .runner import FIXED_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
+from .runner import FIXED_SCREEN_KEYS, OLD_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
 from .store import reg_delete, reg_load, reg_update
 from .tunnels import tunnel_start, tunnel_stop
 from .util import FileLock, _int_or_none, run, slug
@@ -45,10 +45,11 @@ def _screen_plan(labels, display, resolution):
     from the one running now, so only a real change recreates it."""
     cur_display, cur_res = parse_display_label(labels.get("%s.display" % LABEL))
     running = (cur_display, cur_res)
-    if cur_display == "fit" and _older_than(labels.get("%s.version" % LABEL), (1, 6)):
-        # Before 1.6 "automatic" meant following the browser for most desktops,
-        # and the label could not tell that apart from choosing it. Treat it as
-        # automatic, so the next recreate or repair moves to the fixed screen.
+    if (labels.get("%s.version" % LABEL) == "1.6.0" and cur_display == "fixed"
+            and cur_res == "1920x1080"):
+        # 1.6.0 forced every desktop onto a fixed 1920x1080, and the label
+        # cannot tell that apart from choosing it. Treat it as automatic, so
+        # the next recreate or repair goes back to the desktop's own default.
         cur_display = "auto"
     want_display = cur_display if display in (None, "") else str(display)
     want_res = cur_res if resolution in (None, "") else str(resolution)
@@ -56,15 +57,9 @@ def _screen_plan(labels, display, resolution):
     if display in (None, "") or not entry or entry.get("profile") == "kasm":
         return want_display, want_res, False
     # Compare the screens that would actually run, not the words for them:
-    # "auto" on a 1.5 desktop that follows the window is a real change.
+    # "auto" on a desktop 1.6.0 forced to a fixed screen is a real change.
     mode, res = display_for(entry, {"display": want_display, "resolution": want_res})
     return want_display, want_res, (mode, "%dx%d" % res if res else None) != running
-
-
-def _older_than(version, want):
-    """True when a container's version label is older than `want`, or missing."""
-    nums = tuple(int(x) for x in re.findall(r"\d+", version or "")[:3])
-    return nums < want
 
 
 def instance_action(name, action, opts=None):
@@ -212,7 +207,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     if env.get("LC_ALL"):
         opts["locale"] = env["LC_ALL"]
     ours = ("PUID", "PGID", "TZ", "TITLE", "CUSTOM_USER", "PASSWORD", "VNC_PW", "LC_ALL",
-            "MAX_RES") + FIXED_SCREEN_KEYS
+            "MAX_RES") + FIXED_SCREEN_KEYS + OLD_SCREEN_KEYS
     opts["env"] = ["%s=%s" % (k, v) for k, v in env.items()
                    if k not in ours and "%s=%s" % (k, v) not in image_env]
     opts["display"] = want_display if want_display in ("fit", "fixed") else "auto"

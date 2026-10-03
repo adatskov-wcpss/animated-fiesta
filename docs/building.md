@@ -68,11 +68,11 @@ Press Enter for the repository's own `docker.sh`, or type any path (a directory 
   ✔ docker.sh assembles and passes bash -n (733 KB, 16488 lines)
    8  Unpack and run
   ✔ docker.sh unpacks all 40 files byte for byte
-  ✔ unpacked engine 1.6.0 lists 153 desktops; selkies-cli answers (selkies-forge 1.6.0)
+  ✔ unpacked engine 1.6.1 lists 153 desktops; selkies-cli answers (selkies-forge 1.6.1)
    9  Unit tests
-  ✔ 57 tests passed (3.8s)
+  ✔ 65 tests passed (3.8s)
 
-  ▰ BUILT  Selkies Forge 1.6.0
+  ▰ BUILT  Selkies Forge 1.6.1
 ```
 
 If any check fails, it shows why and **writes nothing**.
@@ -127,7 +127,8 @@ PYTHONPATH=src python3 -m unittest discover -s tests -t .
 |---|---|
 | `test_catalog.py` | Every entry is complete; IDs unique; compositing desktops run fixed; known package traps stay fixed |
 | `test_recipes_layer.py` | startwm/install scripts parse and contain the supervisor; layer files, digest, Dockerfile wiring, seeds |
-| `test_runner.py` | Every desktop defaults to a locked 1920×1080; resolution clamping; moving 1.5 desktops over; `docker run` arguments (caps, labels, sign-in, quota, Kasm) |
+| `test_runner.py` | Screen modes, resolution clamping, undoing 1.6.0's forced screen, `docker run` arguments (caps, labels, sign-in, quota, Kasm) |
+| `test_screen_guard.py` | The 4K screen guard, run in Node against 4K, 5K, 1440p and 1080p screens, and viewers who chose their own scaling |
 | `test_health.py` | Which auto-fix each problem gets, and that each is tried once |
 | `test_jobs_scheduler.py` | Job events and logs; cancelling kills commands (and their children) and health waits; scheduler slots and queueing |
 | `test_events_util.py` | The journal and its trimming; Docker-daemon retries (and what is never retried); helpers |
@@ -154,7 +155,7 @@ The tests run in a throwaway `FORGE_HOME` and never touch Docker containers.
 "mydesk": dict(
     label="My Desk", glyph="mydesk", klass="light", idle=280, add_dl=220,
     beauty=78, speed=85, term="xterm",
-    # display defaults to "fixed" (1920x1080, scaled); only set "fit" if you must
+    display="fit",                       # or "fixed" if it misdraws on resize
     blurb="One line about it.",
     apt=dict(pkgs="mydesk xterm", session="mydesk-session"),
     dnf=dict(pkgs="mydesk xterm", session="mydesk-session"),

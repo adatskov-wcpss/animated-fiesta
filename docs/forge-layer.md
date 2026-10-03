@@ -76,26 +76,27 @@ GTK's newest image loaders (glycin, on Arch) decode every icon inside `bwrap`. D
 
 ## Screen modes
 
-Every Selkies desktop runs on a **fixed 1920×1080 screen**, and Selkies scales it into your browser window. This is forced, because letting the browser size the desktop breaks on 4K and HiDPI monitors. There, the Selkies client asks for the window's *device* pixels and pushes its pixel ratio as a DPI change: a 3840×2160 desktop at 192 DPI, with giant fonts and panels off the edge.
-
 | Mode | What happens | Default for |
 |---|---|---|
-| **fixed** | The screen stays one size: 1920×1080 by default, or anywhere from 1280×720 to 2560×1440 if you choose. Selkies stretches it to your window. The browser can't resize it or change its DPI, and Selkies' own settings menu can't switch that off. Nothing can end up off the bottom. | **Every Selkies desktop** |
-| **fit** | Opt-in only. The desktop follows your browser window, and Selkies resizes the X screen, capped at 3840×2160. Fine on an ordinary monitor; expect trouble on 4K and HiDPI. | Nothing |
+| **fit** | The desktop follows your browser window; Selkies resizes the X screen, capped at 3840×2160. On a 4K-class screen the [screen guard](#the-screen-guard-4k-screens) scales it. | Everything else |
+| **fixed** | The screen stays one size (1920×1080 by default; 1280×720 up to 2560×1440 to choose from), and Selkies scales it into your window. The size and a 96 DPI are locked, so no browser can change them. Nothing can ever end up off the bottom. | Enlightenment, Cinnamon, Budgie, GNOME Flashback, UKUI: compositing window managers that misdraw when the screen changes size under Xvfb |
 
-What *fixed* sets in the container:
+Pick it per desktop under **Screen** when you forge it, or later under **Edit limits** (which recreates the desktop; files are kept). From the engine: `launch --display fixed --resolution 1600x900`.
 
-| Variable | Value | Why |
-|---|---|---|
-| `SELKIES_MANUAL_WIDTH` / `_HEIGHT` | `1920` / `1080` | The server overrides any size the client asks for |
-| `SELKIES_MANUAL_RESOLUTION` | `true\|locked` | The client can't turn manual mode off |
-| `SELKIES_SCALING_DPI` | `96` | A single value locks the DPI; the client's HiDPI DPI sync is ignored |
-| `SELKIES_USE_CSS_SCALING` | `true\|locked` | The stream is stretched to the window instead of drawn 1:1 in device pixels (a quarter-size desktop on 4K) |
-| `MAX_RES` | `3840x2160` | Keeps Xvfb's virtual screen from its 15360×8640 default |
+### The screen guard: 4K screens
 
-Pick a different size, or opt in to *fit*, under **Screen** when you forge a desktop, or later under **Edit limits**, which recreates it and keeps your files. From the engine: `launch --display fixed --resolution 1600x900`, or `launch --display fit`.
+On a HiDPI screen, Selkies sizes the desktop in the screen's *device* pixels and turns the pixel ratio into a DPI. A 4K screen at 200% gets a 3840×2160 desktop at 192 DPI. Some programs honour that DPI and some don't, so text is huge in one window and tiny in the next, panels land off the edge, and a bigger window runs past the 3840×2160 the forge allows. A 4K screen at 100% gets a 3840×2160 desktop with unreadable text.
 
-Desktops made before 1.6 that followed the window move to the fixed screen the next time they're recreated: by **Repair**, or by **Edit limits** with Screen on *Automatic*.
+The forge layer puts a few lines of JavaScript (`forge-screen.js`) at the top of Selkies' page. They run **in the viewer's browser** before Selkies does, so the decision is made for the screen actually looking at the desktop, not at launch:
+
+| The viewer's screen (physical pixels) | What happens |
+|---|---|
+| At least 3200×1800 (4K, 5K, a 4K laptop at any scaling) | Selkies' *CSS scaling* is turned on, with a scaling divisor that brings the desktop to about 1920 wide (192 for 4K, 264 for 5K). The desktop runs at 96 DPI in ordinary pixels and is stretched to the window, so it looks like a 1080p desktop on a 4K screen. |
+| Anything smaller (1080p, 1440p, a 1440×900 laptop at 200%…) | Nothing changes: the desktop follows the window, pixel for pixel. |
+
+The guard only manages settings it wrote itself. If you pick your own scaling in Selkies' side menu, it leaves that alone. Open the same desktop from a smaller screen, and it takes its own settings back out. Each browser keeps its own settings, so a 4K monitor and a laptop can view the same desktop, each correctly.
+
+Desktops made by 1.6.0, which forced every desktop to a fixed 1920×1080, go back to their own default when they're next recreated: by **Repair**, or by **Edit limits** with Screen on *Automatic*. Desktops made before 1.6.1 also need a **Repair** to get the screen guard.
 
 ## Repair
 

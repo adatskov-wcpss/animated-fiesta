@@ -83,7 +83,7 @@ These work with `selkies-cli` and with `docker.sh` itself:
 ```
   ▰ READY  Ubuntu 24.04 LTS Xfce 4
   ──────────────────────────────────────────────────────────────────
-  desktop      Xfwm4 is up  · screen fixed:1920x1080, scaled to fit
+  desktop      Xfwm4 is up  · screen follows your window
   public link  https://8abccb82….serveousercontent.com  · serveo http
   on this box  http://localhost:41820  · no tunnel needed
   container    forge-noble-xfce  · docker name

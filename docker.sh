@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.6.0"
+FORGE_VERSION="1.6.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,8 +528,8 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_CATALOG_PY="1ae767257910e322efbbdb1c1fd731e5a0f9711bb8204ecfd93385d96c1150ed"
-FORGE_SHA_FORGE_CLI_PY="9e4bbeaf160af78534d35afa3c29681ef9978a915d9a4caae8ae11ad6c185a04"
+FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
+FORGE_SHA_FORGE_CLI_PY="86bbf75ad7e1cc815a55242364f852c92489031c96a2522d8d4c27b28977f483"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
 FORGE_SHA_FORGE_EVENTS_PY="970425f0bfdad944f9f9ef90f9b04dfc956a88674f3af831b212c6eb7bb8ed03"
 FORGE_SHA_FORGE_HEALTH_PY="9bb19685643bd2737e17f8551aa7dc843abc4bcb455bfbba4a29720a58fb22a1"
@@ -538,13 +538,13 @@ FORGE_SHA_FORGE_IMAGES_PY="5bd5c36b67b10b16dcf094594b5a9f5e13f6f3a2618f1b1a3aaa8
 FORGE_SHA_FORGE_INFO_PY="2c7e4c6fb531f111288902458f75491629b546de65301c9613dda0fd5eb3564f"
 FORGE_SHA_FORGE_JOBS_PY="83f6b2cdb4fbeb40af0cd1333f9bfc2816680a3f5842bc404cf280415b481fb5"
 FORGE_SHA_FORGE_LAUNCH_PY="323def0ae563e279936e7983c87d8e80cdca274e9b3afdb9f872fff64a40a194"
-FORGE_SHA_FORGE_LAYER_PY="a2ca0e32bfa2d8ddeacac31ed373d60e0667752e52bd319162d0db013ebf60a3"
-FORGE_SHA_FORGE_LIFECYCLE_PY="9d035fcaf1af01326ddc8eefd9a3555c3d14cb12f7cbe02e05c256976092c8c5"
-FORGE_SHA_FORGE_PATHS_PY="13cb31ab4bbdef760330a0fbe6663eedfd22c71925a122b813bd1e6d1b041ecb"
+FORGE_SHA_FORGE_LAYER_PY="fe26fd935322c08e882dbca43d682ec32a5f08e1af560f3a0862c1e980a56408"
+FORGE_SHA_FORGE_LIFECYCLE_PY="f0ad588b063ec121f4c2619b8aa052e9969b3ff6d2967833130af18528866561"
+FORGE_SHA_FORGE_PATHS_PY="1bb66d697f8dbe03c95294edf0d9d20e5479dc8969108f68904902503ecd931b"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="19999de5eedce473ab5aa0bf6609a732de59bd6a5e9e1032eac9e46870c77a96"
-FORGE_SHA_FORGE_RUNNER_PY="9851a4f885d51f1572ffd4acfca2491dff02d7286830a7585ba1e4b9f66bd0b3"
+FORGE_SHA_FORGE_RUNNER_PY="821253c630697dca9b21572bb1f375313686acfe5c22a7c4a21805fa252586d1"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
 FORGE_SHA_FORGE_SERVER_PY="69751515e61c98ca9278d96d0af6602b16465e8a95179fc828efc2ad583fa859"
 FORGE_SHA_FORGE_SMART_PY="a63aac4e80450ecdcd6c77eb3304a86c3d9607e7a74b121ccbc61679c2a7afce"
@@ -558,15 +558,15 @@ FORGE_SHA_FORGE_UTIL_PY="f1e89d65da56dcf71612e4199a29008647b339ba8d2fea86005c4ad
 FORGE_SHA_FORGE_WATCHDOG_PY="33ecc053e500c619dc0cf52fbbea566f74496d2424655409ed3e7bd14adaa3c5"
 FORGE_SHA_FORGE_WEBUI_PY="d952965a3e59d3a66e0660d60db9950acfe8ea21f58407fcec354b4eff7040bc"
 FORGE_SHA_WEB_APP_CSS="070aaef77740e69b46108c0ffcf89c63d595651292bb3be4118d77929fb4f7a6"
-FORGE_SHA_WEB_APP_JS="03e12c6421c83f3642679b0f221286ca9c5b29d0cae50feb2eb7e298e4c811d6"
+FORGE_SHA_WEB_APP_JS="5e244276b4bdff9f3ae57f021997f664e442f789c67e177da517f2ab54929e09"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="d41a2a17a4b893852af9e6b5ab48d9ac76c600d08e7e3129784805be532bc6d7"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="1d9a85f7fb6ae29b1d6a9e60c1c525081168a82a31fe69983fcc948c292855e6"
-FORGE_PAYLOAD_SHA="1e4f6d7ef43e5a97d6d14085e7a64353729ac36abdcbab1e786a92eb383b7e2a"
+FORGE_SHA_SELKIES_CLI="728bd66bec14f78b041e1cf7518f664c2a72e26517629b923aec02c61bb8b6b2"
+FORGE_PAYLOAD_SHA="0e55833a99a56e775bec86b0658ea15411ccaab22eeb4065e7c89adc563d4748"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -1230,7 +1230,7 @@ def build_catalog():
             name="%s %s" % (distro, de["label"]),
             subtitle="Webtop - ready to run",
             family=family, distro=distro, de=de_key, de_label=de["label"],
-            glyph=de["glyph"], kind="pull", display=de.get("display", "fixed"),
+            glyph=de["glyph"], kind="pull", display=de.get("display", "fit"),
             image="lscr.io/linuxserver/webtop:" + tag,
             desc="LinuxServer's prebuilt %s desktop on %s. No build step, "
                  "pulls and runs." % (de["label"], distro),
@@ -1270,7 +1270,7 @@ def build_catalog():
                 subtitle="built on %s" % base["code"],
                 family=base["family"], distro=base["distro"], de=de_key,
                 de_label=de["label"], glyph=de["glyph"], kind="build",
-                display=de.get("display", "fixed"),
+                display=de.get("display", "fit"),
                 image=None, base=base_key, recipe=rec,
                 desc="%s %s" % (de["blurb"], base["note"]),
                 idle=de["idle"], dl=base["dl"] + de["add_dl"],
@@ -1293,7 +1293,7 @@ def build_catalog():
             id=p["id"], name=p["name"], subtitle=p["subtitle"],
             family=p["family"], distro=base["distro"], de=p["de"],
             de_label=de["label"], glyph=de["glyph"], kind="build",
-            display=de.get("display", "fixed"),
+            display=de.get("display", "fit"),
             image=None, base=p["base"], recipe=rec, desc=p["desc"],
             idle=de["idle"] + 60, dl=base["dl"] + de["add_dl"] + p["add_dl"],
             beauty=p["beauty"], speed=max(30, de["speed"] - 6),
@@ -1523,8 +1523,8 @@ def main(argv=None):
     p.add_argument("--force", action="store_true",
                    help="start even if the machine looks short of memory")
     p.add_argument("--display", default="auto", choices=["auto", "fit", "fixed"],
-                   help="auto/fixed: a locked size (default 1920x1080), scaled to the window; "
-                        "fit: follow the browser window (breaks on 4K/HiDPI)")
+                   help="fit: follow the browser window (4K screens are scaled "
+                        "from a ~1920-wide desktop); fixed: one size, scaled")
     p.add_argument("--resolution", default="1920x1080", help="size for --display fixed")
 
     p = sub.add_parser("do")
@@ -3385,7 +3385,7 @@ this file changes, without touching the big package layers underneath.
 import base64
 import hashlib
 
-LAYER_VERSION = "6"
+LAYER_VERSION = "7"
 
 AGENT = r"""#!/bin/bash
 # Selkies Forge agent: keeps windows on the visible screen, reports health.
@@ -4366,6 +4366,57 @@ def wallpaper_bytes():
     return base64.b64decode("".join(WALLPAPER_B64.split()))
 
 
+# The screen guard: a few lines of JavaScript the layer puts at the top of
+# Selkies' own page, so they run in the viewer's browser before Selkies does.
+#
+# The 4K bug. On a HiDPI screen Selkies sizes the desktop in device pixels and
+# turns the pixel ratio into a DPI: a 4K screen at 200% gets a 3840x2160
+# desktop at 192 DPI (fonts huge in some programs and tiny in others, panels
+# off the edge, and anything larger runs past the 3840x2160 the forge allows
+# Xvfb). A 4K screen at 100% gets a 3840x2160 desktop with unreadable text.
+#
+# The fix, only on 4K-class screens (at least 3200x1800 physical pixels):
+# Selkies' own "CSS scaling" mode, with its scaling DPI as a divisor. The
+# desktop is then sized in ordinary pixels divided down to about 1920 wide,
+# runs at 96 DPI, and is stretched to the window. Every other screen is left
+# exactly as it was: the desktop follows the window, pixel for pixel.
+#
+# It only touches what it set itself: once someone picks their own scaling in
+# Selkies' menu, the guard leaves it alone, and on a smaller screen it takes
+# its own settings back out.
+SCREEN_GUARD = r"""/* Selkies Forge screen guard: see forge/layer.py. */
+(function () {
+  try {
+    var ls = window.localStorage;
+    var p = (location.origin + location.pathname).replace(/[^a-zA-Z0-9._-]/g, "_") + "_";
+    var K = { css: p + "useCssScaling", pick: p + "useCssScaling_explicit_choice",
+              dpi: p + "scaling_dpi", mark: p + "forge_screen" };
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.round(Math.max(screen.width, screen.height) * dpr);
+    var h = Math.round(Math.min(screen.width, screen.height) * dpr);
+    var mine = null;
+    try { mine = JSON.parse(ls.getItem(K.mark) || "null"); } catch (e) {}
+    var ours = !!mine && ls.getItem(K.css) === "true" && ls.getItem(K.dpi) === mine.dpi;
+    var free = ls.getItem(K.css) === null && ls.getItem(K.dpi) === null;
+    if (w >= 3200 && h >= 1800) {
+      if (!free && !ours) return;            /* the viewer chose their own scaling */
+      var want = 96 * w / 1920, dpi = 96;
+      [96, 120, 144, 168, 192, 216, 240, 264, 288].forEach(function (d) {
+        if (Math.abs(d - want) < Math.abs(dpi - want)) dpi = d;
+      });
+      ls.setItem(K.css, "true");
+      ls.setItem(K.pick, "true");
+      ls.setItem(K.dpi, String(dpi));
+      ls.setItem(K.mark, JSON.stringify({ dpi: String(dpi), screen: w + "x" + h }));
+    } else if (mine) {
+      if (ours) { ls.removeItem(K.css); ls.removeItem(K.pick); ls.removeItem(K.dpi); }
+      ls.removeItem(K.mark);
+    }
+  } catch (e) { /* storage blocked: Selkies runs as it always did */ }
+})();
+"""
+
+
 def files(startwm=None):
     """{path in build context: (content, mode)} for the forge layer."""
     out = {
@@ -4374,6 +4425,7 @@ def files(startwm=None):
         "forge/xsettingsd-run": (XSETTINGSD_RUN, 0o755),
         "forge/bwrap": (BWRAP_SHIM, 0o755),
         "forge/wallpaper.jpg": (wallpaper_bytes(), 0o644),
+        "forge/screen-guard.js": (SCREEN_GUARD, 0o644),
         "s6/init-forge/type": ("oneshot\n", 0o644),
         "s6/init-forge/up": ("/usr/local/share/forge/seed\n", 0o644),
         "s6/init-forge/dependencies.d/init-config": ("", 0o644),
@@ -4397,7 +4449,14 @@ def dockerfile(base_image, label, entry_id, digest, startwm=False):
         " /usr/local/share/forge/xsettingsd-run /usr/local/share/forge/bwrap"
         " /etc/s6-overlay/s6-rc.d/svc-forge-agent/run"
         " && if [ -x /usr/bin/bwrap ]; then cp -f /usr/local/share/forge/bwrap /usr/local/bin/bwrap; fi"
-        " && chmod 644 /usr/local/share/forge/wallpaper.jpg"
+        " && chmod 644 /usr/local/share/forge/wallpaper.jpg /usr/local/share/forge/screen-guard.js"
+        # The screen guard goes first in <head> of every Selkies page (the
+        # dashboards init-nginx copies to web/ at boot, and the server's own).
+        " && for f in /usr/share/selkies/*/index.html /lsiopy/lib/python3*/site-packages/selkies/selkies_web/index.html; do"
+        " [ -f \"$f\" ] || continue;"
+        " cp -f /usr/local/share/forge/screen-guard.js \"$(dirname \"$f\")/forge-screen.js\";"
+        " grep -q forge-screen.js \"$f\" || sed -i 's|<head>|<head><script src=\"forge-screen.js\"></script>|' \"$f\" || true;"
+        " done"
         " && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d /etc/s6-overlay/s6-rc.d/svc-de/dependencies.d"
         " && touch /etc/s6-overlay/s6-rc.d/user/contents.d/init-forge"
         " /etc/s6-overlay/s6-rc.d/user/contents.d/svc-forge-agent"
@@ -4445,7 +4504,7 @@ from .images import ensure_layer
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .recipes import build_image_tag
 from .registry import docker_instances
-from .runner import FIXED_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
+from .runner import FIXED_SCREEN_KEYS, OLD_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
 from .store import reg_delete, reg_load, reg_update
 from .tunnels import tunnel_start, tunnel_stop
 from .util import FileLock, _int_or_none, run, slug
@@ -4471,10 +4530,11 @@ def _screen_plan(labels, display, resolution):
     from the one running now, so only a real change recreates it."""
     cur_display, cur_res = parse_display_label(labels.get("%s.display" % LABEL))
     running = (cur_display, cur_res)
-    if cur_display == "fit" and _older_than(labels.get("%s.version" % LABEL), (1, 6)):
-        # Before 1.6 "automatic" meant following the browser for most desktops,
-        # and the label could not tell that apart from choosing it. Treat it as
-        # automatic, so the next recreate or repair moves to the fixed screen.
+    if (labels.get("%s.version" % LABEL) == "1.6.0" and cur_display == "fixed"
+            and cur_res == "1920x1080"):
+        # 1.6.0 forced every desktop onto a fixed 1920x1080, and the label
+        # cannot tell that apart from choosing it. Treat it as automatic, so
+        # the next recreate or repair goes back to the desktop's own default.
         cur_display = "auto"
     want_display = cur_display if display in (None, "") else str(display)
     want_res = cur_res if resolution in (None, "") else str(resolution)
@@ -4482,15 +4542,9 @@ def _screen_plan(labels, display, resolution):
     if display in (None, "") or not entry or entry.get("profile") == "kasm":
         return want_display, want_res, False
     # Compare the screens that would actually run, not the words for them:
-    # "auto" on a 1.5 desktop that follows the window is a real change.
+    # "auto" on a desktop 1.6.0 forced to a fixed screen is a real change.
     mode, res = display_for(entry, {"display": want_display, "resolution": want_res})
     return want_display, want_res, (mode, "%dx%d" % res if res else None) != running
-
-
-def _older_than(version, want):
-    """True when a container's version label is older than `want`, or missing."""
-    nums = tuple(int(x) for x in re.findall(r"\d+", version or "")[:3])
-    return nums < want
 
 
 def instance_action(name, action, opts=None):
@@ -4638,7 +4692,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     if env.get("LC_ALL"):
         opts["locale"] = env["LC_ALL"]
     ours = ("PUID", "PGID", "TZ", "TITLE", "CUSTOM_USER", "PASSWORD", "VNC_PW", "LC_ALL",
-            "MAX_RES") + FIXED_SCREEN_KEYS
+            "MAX_RES") + FIXED_SCREEN_KEYS + OLD_SCREEN_KEYS
     opts["env"] = ["%s=%s" % (k, v) for k, v in env.items()
                    if k not in ours and "%s=%s" % (k, v) not in image_env]
     opts["display"] = want_display if want_display in ("fit", "fixed") else "auto"
@@ -4716,7 +4770,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.6.0"
+VERSION = "1.6.1"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -5214,13 +5268,12 @@ RES_RE = re.compile(r"^\s*(\d{3,5})\s*[xX\u00d7]\s*(\d{3,5})\s*$")
 def display_for(entry, opts):
     """('fit', None) or ('fixed', (w, h)) for this launch.
 
-    fixed  the default: the screen stays 1920x1080 and Selkies scales it into
-           the window. The browser cannot resize it or change its DPI, so a
-           4K or HiDPI monitor gets the same, readable desktop as any other,
-           and no window manager ever sees the screen change size under it
-    fit    opt-in only: the desktop follows your browser window. On a HiDPI
-           screen Selkies then asks for the window's device pixels (3840x2160
-           and 192 DPI on a 4K monitor), which most desktops draw badly
+    fit    the desktop follows your browser window (Selkies resizes the screen).
+           On a 4K-class screen the forge layer's screen guard has Selkies
+           size it in ordinary pixels, about 1920 wide, and scale it up
+    fixed  the screen stays one size and Selkies scales it into the window;
+           for window managers that cannot cope with the screen changing size
+           under them, so nothing can ever end up below the bottom edge
     """
     if entry.get("profile") == "kasm":
         return "fit", None
@@ -5228,7 +5281,7 @@ def display_for(entry, opts):
     if mode not in DISPLAY_MODES:
         mode = "auto"
     if mode == "auto":
-        mode = entry.get("display") or "fixed"
+        mode = entry.get("display") or "fit"
     if mode != "fixed":
         return "fit", None
     m = RES_RE.match(str(opts.get("resolution") or ""))
@@ -5236,18 +5289,14 @@ def display_for(entry, opts):
     return "fixed", (int(clamp(w, 800, 3840)), int(clamp(h, 600, 2160)))
 
 
-# Everything Selkies needs to hold a fixed screen, whatever the browser says.
-# The manual size alone is not enough on a 4K or HiDPI monitor: the client
-# still pushes its devicePixelRatio as a DPI change (192 DPI on 4K: giant
-# fonts, panels off the edge) and renders the canvas at device pixels. So:
-#   MANUAL_*         the server overrides any size the client asks for
-#   SCALING_DPI      a single value locks the DPI; client DPI syncs are ignored
-#   USE_CSS_SCALING  the stream is stretched to the window instead of being
-#                    drawn 1:1 in device pixels (a quarter-size desktop on 4K)
-# "|locked" stops the client's settings menu from switching any of it back.
+# A fixed screen, held whatever the browser asks. The server overrides any
+# size the client wants, and the DPI is locked at 96: in manual mode the
+# client would otherwise push its own scaling DPI (192 from a 4K screen)
+# onto a 1920x1080 desktop. "|locked" keeps Selkies' menu from undoing it.
 FIXED_SCREEN_KEYS = ("SELKIES_MANUAL_RESOLUTION", "SELKIES_MANUAL_WIDTH",
-                     "SELKIES_MANUAL_HEIGHT", "SELKIES_SCALING_DPI",
-                     "SELKIES_USE_CSS_SCALING")
+                     "SELKIES_MANUAL_HEIGHT", "SELKIES_SCALING_DPI")
+# Set by 1.6.0 only; listed so a recreate never carries it over.
+OLD_SCREEN_KEYS = ("SELKIES_USE_CSS_SCALING",)
 
 
 def fixed_screen_env(res):
@@ -5255,8 +5304,7 @@ def fixed_screen_env(res):
     return ["-e", "SELKIES_MANUAL_RESOLUTION=true|locked",
             "-e", "SELKIES_MANUAL_WIDTH=%d" % w,
             "-e", "SELKIES_MANUAL_HEIGHT=%d" % h,
-            "-e", "SELKIES_SCALING_DPI=96",
-            "-e", "SELKIES_USE_CSS_SCALING=true|locked"]
+            "-e", "SELKIES_SCALING_DPI=96"]
 
 
 def parse_display_label(txt):
@@ -9892,7 +9940,7 @@ __FORGE_FILE_WEB_APP_CSS__
       toggle("oGpu", false, "Pass the GPU through",
         S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
       toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
-      (kasm ? "" : screenField("o", e.display || "fixed", "auto", "1920x1080"));
+      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
 
     /* -- dockerfile */
     var dd = $("#dDocker");
@@ -9931,23 +9979,24 @@ __FORGE_FILE_WEB_APP_CSS__
         "Read on Wikipedia ↗</a>" : "");
   }
 
-  /* Screen: a fixed size scaled to fit (the default for every desktop: 4K and
-     HiDPI browsers break the follow-the-window mode), or opt in to following
-     the browser window. */
+  /* Screen: follow the browser window, or a fixed size scaled to fit. Desktops
+     that cannot cope with the screen changing size default to fixed. On 4K
+     screens the forge layer's screen guard scales "follow" for the viewer. */
   function screenField(p, preferred, cur, res) {
-    var auto = "Automatic \u00b7 " + (preferred === "fixed" ? "1920 \u00d7 1080, scaled to fit" : "follows your window");
+    var auto = "Automatic \u00b7 " + (preferred === "fixed" ? "fixed size, scaled" : "follows your window");
     var opt = function (v, t) { return '<option value="' + v + '"' + (cur === v ? " selected" : "") + ">" + t + "</option>"; };
     var ropt = function (v) { return '<option value="' + v + '"' + (res === v ? " selected" : "") + ">" + v.replace("x", " \u00d7 ") + "</option>"; };
     return '<label class="field" style="margin-top:12px"><span>Screen</span><select id="' + p + 'Display" data-pref="' + preferred + '">' +
-      opt("auto", auto) + opt("fixed", "Fixed size, scaled to fit") + opt("fit", "Follow my browser window (breaks on 4K / HiDPI)") +
+      opt("auto", auto) + opt("fit", "Follow my browser window") + opt("fixed", "Fixed size, scaled to fit") +
       "</select></label>" +
       '<label class="field" id="' + p + 'ResWrap" style="display:' +
       ((cur === "fixed" || (cur === "auto" && preferred === "fixed")) ? "block" : "none") +
       '"><span>Fixed size</span><select id="' + p + 'Res">' +
       ["1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"].map(ropt).join("") + "</select></label>" +
       '<p class="sub" style="margin:2px 0 0;font-size:12px">' +
-      "Desktops run at a fixed 1920 \u00d7 1080 that Selkies scales into your window, so a 4K or HiDPI screen can't " +
-      "blow up the fonts or push panels off the edge. Following the window resizes the desktop to your browser instead.</p>";
+      (preferred === "fixed" ? "This desktop misdraws when the screen changes size under it, so it runs at a fixed size by default."
+        : "Follow suits most desktops; on a 4K screen it's scaled up from a desktop about 1920 wide, so text stays readable. " +
+          "Choose fixed if anything ever ends up off the edge.") + "</p>";
   }
 
   function slider(id, label, min, max, step, val, fmt, advice) {
@@ -10500,7 +10549,7 @@ __FORGE_FILE_WEB_APP_CSS__
       slider("tDisk", "Storage", 5120, maxDisk, 1024, cur.disk, mb,
         S.host.quota_support ? "restarts it" : "restarts it \u00b7 tracked budget") +
       toggle("tAuto", cur.auto, "Start with Docker", "on: comes back after a reboot. off: only when you start it") +
-      (i.profile === "kasm" ? "" : screenField("t", (catEntry(i.entry_id) || {}).display || "fixed",
+      (i.profile === "kasm" ? "" : screenField("t", (catEntry(i.entry_id) || {}).display || "fit",
         cur.display, cur.res || "1920x1080")) +
       '<div class="row" style="margin-top:16px"><span class="sub" id="tNote" style="margin:0;flex:1"></span>' +
       '<button class="btn ghost" id="tCancel" type="button">Cancel</button>' +
@@ -11113,7 +11162,7 @@ __FORGE_FILE_WEB_APP_CSS__
     document.addEventListener("change", function (ev) {
       if (ev.target.id === "oAuth") $("#authFields").style.display = ev.target.checked ? "block" : "none";
       if (ev.target.id === "oDisplay" || ev.target.id === "tDisplay") {
-        var p = ev.target.id.charAt(0), pref = ev.target.dataset.pref || (S.sel && S.sel.display) || "fixed";
+        var p = ev.target.id.charAt(0), pref = ev.target.dataset.pref || (S.sel && S.sel.display) || "fit";
         var v = ev.target.value;
         $("#" + p + "ResWrap").style.display = (v === "fixed" || (v === "auto" && pref === "fixed")) ? "block" : "none";
       }
@@ -13133,7 +13182,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.6.0"
+FORGE_VERSION="1.6.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

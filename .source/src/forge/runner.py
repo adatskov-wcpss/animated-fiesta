@@ -36,13 +36,12 @@ RES_RE = re.compile(r"^\s*(\d{3,5})\s*[xX\u00d7]\s*(\d{3,5})\s*$")
 def display_for(entry, opts):
     """('fit', None) or ('fixed', (w, h)) for this launch.
 
-    fixed  the default: the screen stays 1920x1080 and Selkies scales it into
-           the window. The browser cannot resize it or change its DPI, so a
-           4K or HiDPI monitor gets the same, readable desktop as any other,
-           and no window manager ever sees the screen change size under it
-    fit    opt-in only: the desktop follows your browser window. On a HiDPI
-           screen Selkies then asks for the window's device pixels (3840x2160
-           and 192 DPI on a 4K monitor), which most desktops draw badly
+    fit    the desktop follows your browser window (Selkies resizes the screen).
+           On a 4K-class screen the forge layer's screen guard has Selkies
+           size it in ordinary pixels, about 1920 wide, and scale it up
+    fixed  the screen stays one size and Selkies scales it into the window;
+           for window managers that cannot cope with the screen changing size
+           under them, so nothing can ever end up below the bottom edge
     """
     if entry.get("profile") == "kasm":
         return "fit", None
@@ -50,7 +49,7 @@ def display_for(entry, opts):
     if mode not in DISPLAY_MODES:
         mode = "auto"
     if mode == "auto":
-        mode = entry.get("display") or "fixed"
+        mode = entry.get("display") or "fit"
     if mode != "fixed":
         return "fit", None
     m = RES_RE.match(str(opts.get("resolution") or ""))
@@ -58,18 +57,14 @@ def display_for(entry, opts):
     return "fixed", (int(clamp(w, 800, 3840)), int(clamp(h, 600, 2160)))
 
 
-# Everything Selkies needs to hold a fixed screen, whatever the browser says.
-# The manual size alone is not enough on a 4K or HiDPI monitor: the client
-# still pushes its devicePixelRatio as a DPI change (192 DPI on 4K: giant
-# fonts, panels off the edge) and renders the canvas at device pixels. So:
-#   MANUAL_*         the server overrides any size the client asks for
-#   SCALING_DPI      a single value locks the DPI; client DPI syncs are ignored
-#   USE_CSS_SCALING  the stream is stretched to the window instead of being
-#                    drawn 1:1 in device pixels (a quarter-size desktop on 4K)
-# "|locked" stops the client's settings menu from switching any of it back.
+# A fixed screen, held whatever the browser asks. The server overrides any
+# size the client wants, and the DPI is locked at 96: in manual mode the
+# client would otherwise push its own scaling DPI (192 from a 4K screen)
+# onto a 1920x1080 desktop. "|locked" keeps Selkies' menu from undoing it.
 FIXED_SCREEN_KEYS = ("SELKIES_MANUAL_RESOLUTION", "SELKIES_MANUAL_WIDTH",
-                     "SELKIES_MANUAL_HEIGHT", "SELKIES_SCALING_DPI",
-                     "SELKIES_USE_CSS_SCALING")
+                     "SELKIES_MANUAL_HEIGHT", "SELKIES_SCALING_DPI")
+# Set by 1.6.0 only; listed so a recreate never carries it over.
+OLD_SCREEN_KEYS = ("SELKIES_USE_CSS_SCALING",)
 
 
 def fixed_screen_env(res):
@@ -77,8 +72,7 @@ def fixed_screen_env(res):
     return ["-e", "SELKIES_MANUAL_RESOLUTION=true|locked",
             "-e", "SELKIES_MANUAL_WIDTH=%d" % w,
             "-e", "SELKIES_MANUAL_HEIGHT=%d" % h,
-            "-e", "SELKIES_SCALING_DPI=96",
-            "-e", "SELKIES_USE_CSS_SCALING=true|locked"]
+            "-e", "SELKIES_SCALING_DPI=96"]
 
 
 def parse_display_label(txt):

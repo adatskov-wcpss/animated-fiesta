@@ -14,15 +14,11 @@ def labels_of(args):
 
 
 class DisplayTest(unittest.TestCase):
-    def test_every_selkies_desktop_defaults_to_a_fixed_1080p(self):
-        for e in catalog.CATALOG:
-            if e["profile"] == "kasm":
-                continue
-            self.assertEqual(runner.display_for(e, {}), ("fixed", (1920, 1080)), e["id"])
-            self.assertEqual(runner.display_for(e, {"display": "auto"}), ("fixed", (1920, 1080)), e["id"])
-
-    def test_following_the_window_is_opt_in(self):
-        self.assertEqual(runner.display_for(catalog.BY_ID["noble-xfce"], {"display": "fit"}), ("fit", None))
+    def test_auto_follows_the_desktop(self):
+        self.assertEqual(runner.display_for(catalog.BY_ID["noble-xfce"], {}), ("fit", None))
+        self.assertEqual(runner.display_for(catalog.BY_ID["webtop-alpine-i3"], {"display": "auto"}), ("fit", None))
+        self.assertEqual(runner.display_for(catalog.BY_ID["noble-enlightenment"], {}),
+                         ("fixed", (1920, 1080)))
 
     def test_explicit_and_clamped(self):
         e = catalog.BY_ID["noble-xfce"]
@@ -30,7 +26,7 @@ class DisplayTest(unittest.TestCase):
                          ("fixed", (1600, 900)))
         self.assertEqual(runner.display_for(e, {"display": "fixed", "resolution": "9999x100"}),
                          ("fixed", (3840, 600)))
-        self.assertEqual(runner.display_for(e, {"display": "nonsense"}), ("fixed", (1920, 1080)))
+        self.assertEqual(runner.display_for(e, {"display": "nonsense"}), ("fit", None))
         kasm = next(x for x in catalog.CATALOG if x["profile"] == "kasm")
         self.assertEqual(runner.display_for(kasm, {"display": "fixed"}), ("fit", None))
 
@@ -49,24 +45,27 @@ class RunArgsTest(unittest.TestCase):
         return a, vol
 
     def test_fit_caps_the_virtual_screen(self):
-        a, vol = self.args("noble-xfce", {"display": "fit"})
+        a, vol = self.args("noble-xfce", {})
         env = env_of(a)
         self.assertEqual(env["MAX_RES"], "3840x2160")
         self.assertNotIn("SELKIES_MANUAL_WIDTH", env)
         self.assertEqual(labels_of(a)["io.selkiesforge.display"], "fit")
+        # fit leaves scaling to the viewer's browser (and the screen guard)
+        self.assertFalse(any(k.startswith("SELKIES_") for k in env), env)
         self.assertEqual(vol, "forge-config-forge-x")
         self.assertIn("--restart", a)
         self.assertEqual(a[a.index("--restart") + 1], "no")
         self.assertEqual(a[a.index("--memory") + 1], a[a.index("--memory-swap") + 1])
 
-    def test_fixed_locks_the_screen_against_hidpi_browsers(self):
-        for eid in ("noble-xfce", "noble-enlightenment"):
-            a, _ = self.args(eid, {})
+    def test_fixed_holds_its_size_and_dpi(self):
+        for eid, opts in (("noble-enlightenment", {}), ("noble-xfce", {"display": "fixed"})):
+            a, _ = self.args(eid, opts)
             env = env_of(a)
             self.assertEqual((env["SELKIES_MANUAL_WIDTH"], env["SELKIES_MANUAL_HEIGHT"]), ("1920", "1080"))
             self.assertEqual(env["SELKIES_MANUAL_RESOLUTION"], "true|locked")
+            # a 4K viewer's scaling DPI must not reach a fixed 1920x1080 desktop
             self.assertEqual(env["SELKIES_SCALING_DPI"], "96")
-            self.assertEqual(env["SELKIES_USE_CSS_SCALING"], "true|locked")
+            self.assertNotIn("SELKIES_USE_CSS_SCALING", env)
             self.assertEqual(env["MAX_RES"], "3840x2160")
             self.assertEqual(labels_of(a)["io.selkiesforge.display"], "fixed:1920x1080")
             self.assertTrue(set(runner.FIXED_SCREEN_KEYS) <= set(env))
@@ -101,28 +100,28 @@ if __name__ == "__main__":
 
 
 class ScreenMigrationTest(unittest.TestCase):
-    """A 1.5 desktop that followed the window moves to the fixed 1080p screen."""
+    """1.6.0 forced every desktop to a fixed 1920x1080; 1.6.1 undoes that."""
 
-    def plan(self, version, display_label, display=None, resolution=None):
+    def plan(self, version, display_label, display=None, resolution=None, entry="noble-xfce"):
         from forge import lifecycle
-        labels = {"io.selkiesforge.entry": "noble-xfce", "io.selkiesforge.version": version,
+        labels = {"io.selkiesforge.entry": entry, "io.selkiesforge.version": version,
                   "io.selkiesforge.display": display_label}
         return lifecycle._screen_plan(labels, display, resolution)
 
-    def test_old_automatic_fit_becomes_fixed(self):
-        self.assertEqual(self.plan("1.5.0", "fit", "auto"), ("auto", None, True))
-        # a repair (no screen asked for) keeps "auto", which now resolves to fixed
-        want, res, _ = self.plan("1.5.0", "fit")
-        self.assertEqual(want, "auto")
-        self.assertEqual(runner.display_for(catalog.BY_ID["noble-xfce"], {"display": want}),
-                         ("fixed", (1920, 1080)))
+    def test_forced_fixed_goes_back_to_following_the_window(self):
+        self.assertEqual(self.plan("1.6.0", "fixed:1920x1080", "auto"), ("auto", "1920x1080", True))
+        want, _, _ = self.plan("1.6.0", "fixed:1920x1080")      # a repair
+        self.assertEqual(runner.display_for(catalog.BY_ID["noble-xfce"], {"display": want}), ("fit", None))
 
-    def test_a_chosen_fit_is_kept(self):
-        self.assertEqual(self.plan("1.6.0", "fit"), ("fit", None, False))
-        self.assertEqual(self.plan("1.6.0", "fit", "fit"), ("fit", None, False))
+    def test_desktops_that_want_fixed_stay_fixed(self):
+        self.assertEqual(self.plan("1.6.0", "fixed:1920x1080", "auto", entry="noble-enlightenment")[2], False)
+
+    def test_chosen_sizes_are_kept(self):
+        self.assertEqual(self.plan("1.6.0", "fixed:1600x900"), ("fixed", "1600x900", False))
+        self.assertEqual(self.plan("1.5.0", "fixed:1920x1080"), ("fixed", "1920x1080", False))
+        self.assertEqual(self.plan("1.6.1", "fixed:1920x1080", "fixed")[2], False)
 
     def test_only_real_changes_recreate(self):
-        self.assertEqual(self.plan("1.6.0", "fixed:1920x1080", "auto")[2], False)
-        self.assertEqual(self.plan("1.6.0", "fixed:1920x1080", "fixed", "1920x1080")[2], False)
-        self.assertEqual(self.plan("1.6.0", "fixed:1920x1080", "fixed", "1600x900")[2], True)
-        self.assertEqual(self.plan("1.6.0", "fixed:1920x1080", "fit")[2], True)
+        self.assertEqual(self.plan("1.6.1", "fit", "auto")[2], False)
+        self.assertEqual(self.plan("1.6.1", "fit", "fixed")[2], True)
+        self.assertEqual(self.plan("1.6.1", "fixed:1920x1080", "fixed", "1600x900")[2], True)

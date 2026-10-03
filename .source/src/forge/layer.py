@@ -24,7 +24,7 @@ this file changes, without touching the big package layers underneath.
 import base64
 import hashlib
 
-LAYER_VERSION = "6"
+LAYER_VERSION = "7"
 
 AGENT = r"""#!/bin/bash
 # Selkies Forge agent: keeps windows on the visible screen, reports health.
@@ -1005,6 +1005,57 @@ def wallpaper_bytes():
     return base64.b64decode("".join(WALLPAPER_B64.split()))
 
 
+# The screen guard: a few lines of JavaScript the layer puts at the top of
+# Selkies' own page, so they run in the viewer's browser before Selkies does.
+#
+# The 4K bug. On a HiDPI screen Selkies sizes the desktop in device pixels and
+# turns the pixel ratio into a DPI: a 4K screen at 200% gets a 3840x2160
+# desktop at 192 DPI (fonts huge in some programs and tiny in others, panels
+# off the edge, and anything larger runs past the 3840x2160 the forge allows
+# Xvfb). A 4K screen at 100% gets a 3840x2160 desktop with unreadable text.
+#
+# The fix, only on 4K-class screens (at least 3200x1800 physical pixels):
+# Selkies' own "CSS scaling" mode, with its scaling DPI as a divisor. The
+# desktop is then sized in ordinary pixels divided down to about 1920 wide,
+# runs at 96 DPI, and is stretched to the window. Every other screen is left
+# exactly as it was: the desktop follows the window, pixel for pixel.
+#
+# It only touches what it set itself: once someone picks their own scaling in
+# Selkies' menu, the guard leaves it alone, and on a smaller screen it takes
+# its own settings back out.
+SCREEN_GUARD = r"""/* Selkies Forge screen guard: see forge/layer.py. */
+(function () {
+  try {
+    var ls = window.localStorage;
+    var p = (location.origin + location.pathname).replace(/[^a-zA-Z0-9._-]/g, "_") + "_";
+    var K = { css: p + "useCssScaling", pick: p + "useCssScaling_explicit_choice",
+              dpi: p + "scaling_dpi", mark: p + "forge_screen" };
+    var dpr = window.devicePixelRatio || 1;
+    var w = Math.round(Math.max(screen.width, screen.height) * dpr);
+    var h = Math.round(Math.min(screen.width, screen.height) * dpr);
+    var mine = null;
+    try { mine = JSON.parse(ls.getItem(K.mark) || "null"); } catch (e) {}
+    var ours = !!mine && ls.getItem(K.css) === "true" && ls.getItem(K.dpi) === mine.dpi;
+    var free = ls.getItem(K.css) === null && ls.getItem(K.dpi) === null;
+    if (w >= 3200 && h >= 1800) {
+      if (!free && !ours) return;            /* the viewer chose their own scaling */
+      var want = 96 * w / 1920, dpi = 96;
+      [96, 120, 144, 168, 192, 216, 240, 264, 288].forEach(function (d) {
+        if (Math.abs(d - want) < Math.abs(dpi - want)) dpi = d;
+      });
+      ls.setItem(K.css, "true");
+      ls.setItem(K.pick, "true");
+      ls.setItem(K.dpi, String(dpi));
+      ls.setItem(K.mark, JSON.stringify({ dpi: String(dpi), screen: w + "x" + h }));
+    } else if (mine) {
+      if (ours) { ls.removeItem(K.css); ls.removeItem(K.pick); ls.removeItem(K.dpi); }
+      ls.removeItem(K.mark);
+    }
+  } catch (e) { /* storage blocked: Selkies runs as it always did */ }
+})();
+"""
+
+
 def files(startwm=None):
     """{path in build context: (content, mode)} for the forge layer."""
     out = {
@@ -1013,6 +1064,7 @@ def files(startwm=None):
         "forge/xsettingsd-run": (XSETTINGSD_RUN, 0o755),
         "forge/bwrap": (BWRAP_SHIM, 0o755),
         "forge/wallpaper.jpg": (wallpaper_bytes(), 0o644),
+        "forge/screen-guard.js": (SCREEN_GUARD, 0o644),
         "s6/init-forge/type": ("oneshot\n", 0o644),
         "s6/init-forge/up": ("/usr/local/share/forge/seed\n", 0o644),
         "s6/init-forge/dependencies.d/init-config": ("", 0o644),
@@ -1036,7 +1088,14 @@ def dockerfile(base_image, label, entry_id, digest, startwm=False):
         " /usr/local/share/forge/xsettingsd-run /usr/local/share/forge/bwrap"
         " /etc/s6-overlay/s6-rc.d/svc-forge-agent/run"
         " && if [ -x /usr/bin/bwrap ]; then cp -f /usr/local/share/forge/bwrap /usr/local/bin/bwrap; fi"
-        " && chmod 644 /usr/local/share/forge/wallpaper.jpg"
+        " && chmod 644 /usr/local/share/forge/wallpaper.jpg /usr/local/share/forge/screen-guard.js"
+        # The screen guard goes first in <head> of every Selkies page (the
+        # dashboards init-nginx copies to web/ at boot, and the server's own).
+        " && for f in /usr/share/selkies/*/index.html /lsiopy/lib/python3*/site-packages/selkies/selkies_web/index.html; do"
+        " [ -f \"$f\" ] || continue;"
+        " cp -f /usr/local/share/forge/screen-guard.js \"$(dirname \"$f\")/forge-screen.js\";"
+        " grep -q forge-screen.js \"$f\" || sed -i 's|<head>|<head><script src=\"forge-screen.js\"></script>|' \"$f\" || true;"
+        " done"
         " && mkdir -p /etc/s6-overlay/s6-rc.d/user/contents.d /etc/s6-overlay/s6-rc.d/svc-de/dependencies.d"
         " && touch /etc/s6-overlay/s6-rc.d/user/contents.d/init-forge"
         " /etc/s6-overlay/s6-rc.d/user/contents.d/svc-forge-agent"

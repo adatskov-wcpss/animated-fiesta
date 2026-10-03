@@ -119,7 +119,7 @@ sequenceDiagram
 - The entry's image must publish a build for this machine's architecture. The engine checks the registry manifest and suggests alternatives when it doesn't.
 - There must be enough free disk for the download and the build.
 - **Memory admission.** If free memory is below the desktop's floor (`ram_min`), the launch is refused before anything downloads. The message names the desktops that are using memory. `--force` overrides it. If free memory is only below the planned cap, the log says it'll run tight.
-- **Screen mode.** *fixed* (1920×1080 unless you choose another size, scaled to fit, and locked against the browser's resizing and HiDPI scaling) for every Selkies desktop. *fit* (follow the browser window) only if you ask for it.
+- **Screen mode.** *fit* (follow the browser window; the layer's [screen guard](forge-layer.md#the-screen-guard-4k-screens) scales it on 4K screens) or *fixed* (a set size and 96 DPI, locked, scaled to fit), from the entry or your choice.
 
 ### 2. Fetch
 
@@ -137,7 +137,7 @@ A few kilobytes on top of the desktop image, rebuilt in seconds whenever the for
 - memory and swap pinned to the same cap (a desktop can't swap the host out)
 - CPUs, `/dev/shm`, the storage quota where the storage driver supports one, and the `/config` volume
 - labels describing everything (`io.selkiesforge.*`)
-- the screen mode (`SELKIES_MANUAL_*`, a locked 96 DPI and CSS scaling for fixed; [details](forge-layer.md#screen-modes)) and `MAX_RES=3840x2160` (Xvfb's default 15360×8640 screen is half a gigabyte of framebuffer)
+- the screen mode (`SELKIES_MANUAL_*` and a locked 96 DPI for fixed; [details](forge-layer.md#screen-modes)) and `MAX_RES=3840x2160` (Xvfb's default 15360×8640 screen is half a gigabyte of framebuffer)
 - sign-in, timezone, PUID/PGID
 
 The run fixes its own refusals: a port someone grabbed (new ports), a name in use (new name), a quota the storage driver refuses (tracked instead of enforced), a CPU count above the machine's (capped). Transient daemon errors are retried.
