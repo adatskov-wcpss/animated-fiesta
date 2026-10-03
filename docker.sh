@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.4.0"
+FORGE_VERSION="1.4.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -526,18 +526,18 @@ install_extras() {
 # =========================================================================
 
 FORGE_SHA_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
-FORGE_SHA_ENGINE_PY="6ca57f359c1d87dec379529096bfc7a49493a53bd11e6b74cd81ef8c2b735dd9"
+FORGE_SHA_ENGINE_PY="9242709bb526e1db66c0b3dbcc4a0e1f807358fe79ab0699a07541987db234dc"
 FORGE_SHA_LAYER_PY="a2ca0e32bfa2d8ddeacac31ed373d60e0667752e52bd319162d0db013ebf60a3"
 FORGE_SHA_INDEX_HTML="72ccc68dcf6edcc7ddcaddd008622f237f96ab0e7a2b462d0b485d3a5935dd63"
-FORGE_SHA_APP_CSS="93430bfa328b8d1a5370f19a47d9829677d17a44f920a9ee72d6e3a0ab56978d"
-FORGE_SHA_APP_JS="055efee1ccc27c284bf35f7dbb94769371f447b1b711ca093d3286e040c2dd47"
+FORGE_SHA_APP_CSS="f52e9cc78fbc14759d1230e3744c35d0046b7a7d4012ae64c6afc0dccb97592c"
+FORGE_SHA_APP_JS="5d2f092abe9440feea1f0495238d825a904432b544a3c9cf093ff834f1e26a72"
 FORGE_SHA_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_INFO_JSON="406c52067917f5e23420d2c9b9d57809dc4ff3cd8a138b46c3853cbc54e53d15"
+FORGE_SHA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="2de50be84a65d94bbd0310b91a738fbbd3cd92be620c24314397fda655b33063"
-FORGE_PAYLOAD_SHA="6b72fa047a876342ca0ce05626414eecd98e684fe7fec8a5a57dd59f298b60df"
+FORGE_SHA_SELKIES_CLI="756912f30367a30e9ac32238aa8dd87508c343b380794d7836b7a7cb9b697095"
+FORGE_PAYLOAD_SHA="3defa095dbdcea6f4b640b74e26245d37680d9c7caef4a91732ddf26d50f1fdd"
 FORGE_PAYLOAD_FILES="catalog.py engine.py layer.py index.html app.css app.js term.js logos.js brands.js info.json shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -1305,7 +1305,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import catalog  # noqa: E402
 import layer  # noqa: E402
 
-VERSION = "1.4.0"
+VERSION = "1.4.1"
 APPDIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.environ.get("FORGE_HOME") or os.path.join(os.path.expanduser("~"), ".selkies-forge")
 STATE = os.path.join(ROOT, "state")
@@ -1971,16 +1971,41 @@ def entry_info(e):
         "source": db.get("source"),
         "fetched": db.get("fetched"),
     }
-    # What you will actually see is the desktop, so its screenshots lead.
+    # What you will actually see is the desktop, so only its screenshots are
+    # shown, plus distro screenshots that show this same desktop (Debian's
+    # "KDE default desktop" for a Debian KDE entry, Alpine's Xfce shots for
+    # Alpine Xfce). A distro's stock screenshot of some other desktop, like
+    # Ubuntu's GNOME under Ubuntu Enlightenment, says nothing about this one.
+    pat = DE_PICTURE_WORDS.get(de_key)
     seen = set()
     for src, tag in ((desktop, "desktop"), (distro, "distro"), (based_on, "base")):
         for img in (src or {}).get("images", []):
             if img["src"] in seen:
                 continue
+            if tag != "desktop":
+                text = "%s %s" % (img.get("caption") or "",
+                                  urllib.parse.unquote(img["src"].split("?")[0].rsplit("/", 1)[-1]))
+                if not pat or not re.search(pat, text.replace("_", " "), re.I):
+                    continue
             seen.add(img["src"])
             out["images"].append(dict(img, about=(src or {}).get("title"), tag=tag))
     out["images"] = out["images"][:9]
     return out
+
+
+# How a desktop is named in screenshot captions and file names.
+DE_PICTURE_WORDS = {
+    "xfce": r"\bxfce", "mate": r"\bmate\b", "kde": r"\bkde\b|\bplasma\b",
+    "lxqt": r"\blxqt\b", "lxde": r"\blxde\b", "cinnamon": r"\bcinnamon\b",
+    "budgie": r"\bbudgie\b", "gnome-flashback": r"flashback|gnome classic",
+    "enlightenment": r"\benlightenment\b", "i3": r"\bi3\b", "openbox": r"\bopenbox\b",
+    "fluxbox": r"\bfluxbox\b", "icewm": r"\bicewm\b", "jwm": r"\bjwm\b|joe's window",
+    "awesome": r"\bawesome\b", "bspwm": r"\bbspwm\b", "herbstluftwm": r"herbstluftwm",
+    "qtile": r"\bqtile\b", "xmonad": r"\bxmonad\b", "pekwm": r"\bpekwm\b",
+    "wmaker": r"window ?maker|wmaker", "fvwm3": r"\bfvwm", "dwm": r"\bdwm\b",
+    "spectrwm": r"spectrwm|scrotwm", "cwm": r"\bcwm\b", "ratpoison": r"ratpoison",
+    "twm": r"\btwm\b", "lumina": r"\blumina\b", "ukui": r"\bukui\b|kylin",
+}
 
 
 _SHOTS = {}
@@ -7781,8 +7806,9 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
 .gallery {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(280px, 32%);
-  gap: 12px;
+  grid-auto-columns: minmax(300px, 34%);
+  align-items: stretch;
+  gap: 14px;
   overflow-x: auto;
   padding-bottom: 6px;
   scroll-snap-type: x mandatory;
@@ -7815,15 +7841,15 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
 .shot img.ok { opacity: 1; }
 .shot:hover img { transform: scale(1.03); }
 
+/* The whole caption shows: the card grows to fit it instead of clipping text
+   against its rounded corners. */
 .shot figcaption {
-  padding: 8px 11px 10px;
-  font-size: 11.5px;
+  flex: 1 0 auto;
+  padding: 10px 14px 14px;
+  font-size: 12px;
   color: var(--dim);
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .shot figcaption b { display: block; color: var(--dim-2); font-weight: 600; font-size: 10.5px;
@@ -8549,10 +8575,11 @@ __FORGE_FILE_APP_CSS__
         "<figcaption><b>What you get</b>" + h(real[0].caption) + "</figcaption></figure>" : "";
       gal.innerHTML = "<h3>Screenshots <span class=\"hint\">" +
         (real.length ? "a real capture of this desktop, then " : "") +
-        (wiki.length ? wiki.length + " general pictures from Wikimedia Commons" : "") +
+        (wiki.length ? wiki.length + " picture" + (wiki.length === 1 ? "" : "s") + " of " + h(e.de_label) +
+          " from Wikimedia Commons" : "") +
         " · click to enlarge</span></h3>" + realHtml +
-        (wiki.length ? (real.length ? '<div class="galsub">From Wikipedia: ' + h(e.de_label) + " and " +
-          h(e.family_label) + " in general, so themes and versions differ from this build</div>" : "") +
+        (wiki.length ? (real.length ? '<div class="galsub">From Wikipedia: ' + h(e.de_label) +
+          " on various systems, so themes and versions differ from this build</div>" : "") +
         '<div class="gallery">' + wiki.map(function (im, j) {
           var i = j + real.length;
           return '<figure class="shot" data-shot="' + i + '"><div class="ph">' +
@@ -10455,7 +10482,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_screenshot,_12.06.2024.png",
      "w": 1920,
      "h": 1080,
-     "caption": "Arch Linux screenshot showcasing KDE Plasma 6. Taken on December 6, 2024 (Arch Linux is a rolling release…",
+     "caption": "Arch Linux screenshot showcasing KDE Plasma 6.",
      "license": "GPL"
     }
    ]
@@ -10635,7 +10662,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English.png",
      "w": 1920,
      "h": 1080,
-     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop. Firefox (with a tab open to…",
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop.",
      "license": "GPL"
     },
     {
@@ -10799,7 +10826,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:PC-BSD_10.1.2_MATE_Screenshot.png",
      "w": 2340,
      "h": 1440,
-     "caption": "Screenshot of a PC-BSD 10.1.2 desktop (MATE) with dual monitor (dual head, pivot). Windows showing running…",
+     "caption": "Screenshot of a PC-BSD 10.1.2 desktop (MATE) with dual monitor (dual head, pivot).",
      "license": "CC BY-SA 4.0"
     },
     {
@@ -10925,7 +10952,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English-CustomDesktop.png",
      "w": 1920,
      "h": 1080,
-     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the Cinnamon desktop. Customization's to the background, icons and…",
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the Cinnamon desktop.",
      "license": "GPL"
     },
     {
@@ -10943,7 +10970,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English.png",
      "w": 1920,
      "h": 1080,
-     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop. Firefox (with a tab open to…",
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop.",
      "license": "GPL"
     }
    ]
@@ -10961,7 +10988,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:BudgieDesktop-v10.7.jpg",
      "w": 2000,
      "h": 1125,
-     "caption": "A screenshot depicting the default configuration of the Budgie desktop environment. Shows the Raven sidebar,…",
+     "caption": "A screenshot depicting the default configuration of the Budgie desktop environment.",
      "license": "Apache License 2.0"
     },
     {
@@ -11051,7 +11078,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:Enlightenment_0.26.0.png",
      "w": 1920,
      "h": 1080,
-     "caption": "A screenshot of the Enlightenment 0.26.0 desktop with various applications open. Clockwise from top left:…",
+     "caption": "A screenshot of the Enlightenment 0.26.0 desktop with various applications open.",
      "license": "CC BY-SA 4.0"
     }
    ]
@@ -11177,7 +11204,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:Icewm-default.jpg",
      "w": 800,
      "h": 600,
-     "caption": "A screenshot showing IceWM's default setup on a Debian machine. Taken by JamesGecko on 12-6-2005 Since all…",
+     "caption": "A screenshot showing IceWM's default setup on a Debian machine.",
      "license": "CC BY-SA 3.0"
     }
    ]
@@ -11302,7 +11329,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:Wmaker-0.80.2.png",
      "w": 800,
      "h": 600,
-     "caption": "A screenshot of the Window Maker window manager. This is the default look of Window Maker (version 0.80.2),…",
+     "caption": "A screenshot of the Window Maker window manager.",
      "license": "GPL"
     }
    ]
@@ -11347,7 +11374,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_CDE_Emulation.png",
      "w": 1024,
      "h": 768,
-     "caption": "FVWM emulating the look of the Common Desktop Environment (CDE), using the \"FVWM-min\" package. Running on…",
+     "caption": "FVWM emulating the look of the Common Desktop Environment (CDE), using the \"FVWM-min\" package.",
      "license": "CC0"
     }
    ]
@@ -11428,7 +11455,7 @@ __FORGE_FILE_BRANDS_JS__
      "page": "https://commons.wikimedia.org/wiki/File:Debian_TWM_Maroon.png",
      "w": 1024,
      "h": 768,
-     "caption": "TWM (Tom's Window Manager) running with its classic maroon theme as seen in early X11 versions. Running on…",
+     "caption": "TWM (Tom's Window Manager) running with its classic maroon theme as seen in early X11 versions.",
      "license": "CC0"
     }
    ]
@@ -11572,7 +11599,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.4.0"
+FORGE_VERSION="1.4.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
