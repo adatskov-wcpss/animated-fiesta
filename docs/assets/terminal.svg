@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="514" viewBox="0 0 900 514" role="img" aria-label="The selkies-cli home screen">
+  <title>selkies-cli</title>
+  <defs>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1526"/><stop offset="1" stop-color="#070b14"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="514" rx="14" fill="url(#t)"/>
+  <rect x="0.5" y="0.5" width="899" height="513" rx="13.5" fill="none" stroke="#9cc3ff" stroke-opacity="0.16"/>
+  <rect width="900" height="38" rx="14" fill="#111b30"/>
+  <rect y="24" width="900" height="14" fill="#111b30"/>
+  <circle cx="24" cy="19" r="6" fill="#ff5f57"/><circle cx="44" cy="19" r="6" fill="#febc2e"/><circle cx="64" cy="19" r="6" fill="#28c840"/>
+  <text x="450" y="24" text-anchor="middle" font-family="'Inter','Segoe UI',Arial,sans-serif" font-size="13" fill="#8a9bb8">you@machine — selkies-cli</text>
+  <g font-family="'DejaVu Sans Mono','Menlo','Consolas','Liberation Mono',monospace" font-size="14">
+        <text x="26" y="76" xml:space="preserve"><tspan fill="#e6edf7">  </tspan><tspan fill="#e6edf7" font-weight="700">Status</tspan></text>
+    <text x="26" y="97" xml:space="preserve"><tspan fill="#6b7a93">  ────────────────────────────────────────────────────────────────────</tspan></text>
+    <text x="26" y="118" xml:space="preserve"><tspan fill="#6b7a93">  Web UI    </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7">  running at </tspan><tspan fill="#7fb8ff" font-weight="700">http://localhost:8787/</tspan><tspan fill="#6b7a93">  · up 2h 14m</tspan></text>
+    <text x="26" y="139" xml:space="preserve"><tspan fill="#6b7a93">  Last time </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7">  this machine rebooted</tspan><tspan fill="#6b7a93">  · 09:12, 3h ago</tspan></text>
+    <text x="26" y="160" xml:space="preserve"><tspan fill="#6b7a93">  On boot   </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7">  the web UI starts by itself (systemd)</tspan></text>
+    <text x="26" y="181" xml:space="preserve"><tspan fill="#6b7a93">  Desktops  </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7">  3 running · 1 stopped</tspan></text>
+    <text x="26" y="202" xml:space="preserve"><tspan fill="#e6edf7">     </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7"> Ubuntu 24.04 Xfce 4    </tspan><tspan fill="#e6edf7">localhost:34961</tspan><tspan fill="#6b7a93">  public </tspan><tspan fill="#e6edf7">8abccb82….serveousercontent.com</tspan></text>
+    <text x="26" y="223" xml:space="preserve"><tspan fill="#e6edf7">     </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7"> Enlightenment          </tspan><tspan fill="#e6edf7">localhost:33149</tspan></text>
+    <text x="26" y="244" xml:space="preserve"><tspan fill="#e6edf7">     </tspan><tspan fill="#3ddc97">●</tspan><tspan fill="#e6edf7"> Fedora 42 KDE Plasma   </tspan><tspan fill="#e6edf7">localhost:41820</tspan></text>
+    <text x="26" y="265" xml:space="preserve"><tspan fill="#e6edf7">     </tspan><tspan fill="#6b7a93">○</tspan><tspan fill="#e6edf7"> Debian 12 i3           </tspan><tspan fill="#6b7a93">stopped</tspan></text>
+    <text x="26" y="286" xml:space="preserve"><tspan fill="#6b7a93">  ────────────────────────────────────────────────────────────────────</tspan></text>
+    <text x="26" y="307" xml:space="preserve"><tspan fill="#e6edf7"></tspan></text>
+    <text x="26" y="328" xml:space="preserve"><tspan fill="#e6edf7" font-weight="700">  What would you like to do?</tspan></text>
+    <text x="26" y="349" xml:space="preserve"><tspan fill="#6b7a93">  ↑↓ move · enter choose · q back</tspan></text>
+    <text x="26" y="370" xml:space="preserve"><tspan fill="#5aa9ff" font-weight="700">  ❯ </tspan><tspan fill="#5aa9ff" font-weight="700">Open the web UI                    </tspan><tspan fill="#6b7a93">running at http://localhost:8787/</tspan></text>
+    <text x="26" y="391" xml:space="preserve"><tspan fill="#e6edf7">    Manage desktops                    </tspan><tspan fill="#6b7a93">3 running, 1 stopped</tspan></text>
+    <text x="26" y="412" xml:space="preserve"><tspan fill="#e6edf7">    Browse &amp; forge a new desktop       </tspan><tspan fill="#6b7a93">pick from 150+ desktops</tspan></text>
+    <text x="26" y="433" xml:space="preserve"><tspan fill="#e6edf7">    Stop the web UI                    </tspan><tspan fill="#6b7a93">your desktops keep running</tspan></text>
+    <text x="26" y="454" xml:space="preserve"><tspan fill="#e6edf7">    Stop starting the web UI on boot   </tspan><tspan fill="#6b7a93">it currently starts by itself</tspan></text>
+    <text x="26" y="475" xml:space="preserve"><tspan fill="#e6edf7">    Free up disk space                 </tspan><tspan fill="#6b7a93">unused images, old layers, build cache</tspan></text>
+  </g>
+</svg>

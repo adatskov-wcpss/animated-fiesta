@@ -1,0 +1,1176 @@
+{
+ "source": "Wikipedia / Wikimedia Commons",
+ "fetched": "2026-10-02",
+ "families": {
+  "ubuntu": {
+   "title": "Ubuntu",
+   "url": "https://en.wikipedia.org/wiki/Ubuntu",
+   "extract": "Ubuntu (uu-BUUN-too) is a Linux distribution based on Debian and composed primarily of free and open-source software. Developed by the British company Canonical and a community of contributors under a meritocratic governance model, Ubuntu is released in multiple official editions: Desktop, Server, and Core for IoT and robotic devices. Ubuntu is published on a six-month release cycle, with long-term support (LTS) versions issued every two years. Canonical provides security updates and support until each release reaches its designated end-of-life (EOL), with optional extended support available through the Ubuntu Pro and Expanded Security Maintenance (ESM) services.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Ubuntu-logo-2022.svg/960px-Ubuntu-logo-2022.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/7/76/Ubuntu-logo-2022.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Ubuntu_26.04_LTS_desktop.png/960px-Ubuntu_26.04_LTS_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/12/Ubuntu_26.04_LTS_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_26.04_LTS_desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of the default desktop environment of Ubuntu 26.04 LTS \"Resolute Raccoon\"",
+     "license": "GPL"
+    }
+   ]
+  },
+  "debian": {
+   "title": "Debian",
+   "url": "https://en.wikipedia.org/wiki/Debian",
+   "extract": "Debian is a free, general-purpose operating system developed by the Debian Project, a worldwide volunteer association founded by Ian Murdock on August 16, 1993. It is the second-oldest Linux distribution still being developed (only Slackware is older) and forms the base of many others. It is deployed across servers, personal computers, and embedded devices. Among Linux distributions, it ranks second only to Ubuntu (a Debian derivative), with 16% of the overall market. According to the 2025 Stack Overflow Developer Survey, 11.4% of developers use it as their primary personal operating system and 10.4% professionally. Its emphasis on stability and long-term support over frequent package updates has made it prevalent in server and embedded deployments.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png/960px-Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png/960px-Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/50/Debian_13_%28Trixie%29_screenshot_-_using_GNOME_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_13_(Trixie)_screenshot_-_using_GNOME_desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Debian Trixie with the GNOME desktop",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Debian_13.0.0_KDE_default_desktop_-_English.png/960px-Debian_13.0.0_KDE_default_desktop_-_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/de/Debian_13.0.0_KDE_default_desktop_-_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_13.0.0_KDE_default_desktop_-_English.png",
+     "w": 1454,
+     "h": 991,
+     "caption": "Debian 13.0.0 KDE default desktop",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Debian10_Gnome.png/960px-Debian10_Gnome.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Debian10_Gnome.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian10_Gnome.png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "Screenshot of Debian 10 (buster) with GNOME desktop environment running a couple of free software applications",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "fedora": {
+   "title": "Fedora Linux",
+   "url": "https://en.wikipedia.org/wiki/Fedora_Linux",
+   "extract": "Fedora Linux is a Linux distribution developed by the Fedora Project. It was originally developed in 2003 as a continuation of the Red Hat Linux project. It contains software distributed under various free and open-source licenses and aims to be on the leading edge of open-source technologies. It is now the upstream source for CentOS Stream and Red Hat Enterprise Linux. Since the release of Fedora 21 in December 2014, three editions have been made available: personal computer, server and cloud computing. This was expanded to five editions for containerization and Internet of Things (IoT) as of the release of Fedora 37 in November 2022. A new version of Fedora Linux is usually released roughly every six months.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Fedora_44_Workstation.png/960px-Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/32/Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Fedora_SilverBlue_41_desktop.png/960px-Fedora_SilverBlue_41_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Fedora_SilverBlue_41_desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_SilverBlue_41_desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Fedora Silverblue 41, desktop screenshot",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Fedora_42_KDE_Plasma_Desktop_English.png/960px-Fedora_42_KDE_Plasma_Desktop_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/86/Fedora_42_KDE_Plasma_Desktop_English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_42_KDE_Plasma_Desktop_English.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Fedora Linux KDE Plasma Desktop Edition release version 42 featuring the KDE Plasma 6.3 Desktop…",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Fedora_44_Workstation.png/960px-Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/32/Fedora_44_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_44_Workstation.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Fedora 44 Workstation",
+     "license": "GPL"
+    }
+   ]
+  },
+  "arch": {
+   "title": "Arch Linux",
+   "url": "https://en.wikipedia.org/wiki/Arch_Linux",
+   "extract": "Arch Linux is an open source, rolling release Linux distribution. Arch Linux is kept up-to-date by regularly updating the individual pieces of software that it comprises. It provides monthly \"snapshots\" which are used as installation media. Arch Linux is intentionally minimal, and is meant to be configured by the user during installation to add only what is needed. Pacman, a package manager written specifically for Arch Linux, is used to install, remove and update software packages. The Arch User Repository (AUR) serves as a community-driven software repository for Arch Linux and provides packages not included in the official repositories and alternative versions of packages. AUR packages can be downloaded and built manually, or installed through an AUR 'helper'. such as Yet Another Yogurt (yay).",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png/960px-Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png/960px-Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Arch_Linux_screenshot%2C_12.06.2024.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_screenshot,_12.06.2024.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Arch Linux screenshot showcasing KDE Plasma 6.",
+     "license": "GPL"
+    }
+   ]
+  },
+  "alpine": {
+   "title": "Alpine Linux",
+   "url": "https://en.wikipedia.org/wiki/Alpine_Linux",
+   "extract": "Alpine Linux is a Linux distribution \"designed for power users who appreciate security, simplicity and resource efficiency\". It uses musl, BusyBox, and OpenRC instead of glibc, GNU Core Utilities, and systemd, respectively. This makes Alpine one of the few Linux distributions not to be based on systemd. For security, Alpine compiles all user-space binaries as position-independent executables with stack-smashing protection. Because of its small size and rapid startup, it is commonly used in containers providing quick boot-up times, on virtual machines (e.g., OS-level virtualization) as well as on real hardware in embedded devices, such as routers, servers and NAS.",
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/Alpine-xfce.jpg/960px-Alpine-xfce.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Alpine-xfce.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine-xfce.jpg",
+     "w": 1280,
+     "h": 720,
+     "caption": "Alpine Linux with XFCE",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/Alpine_Linux_3.19_in_Xfce_4.19.png/960px-Alpine_Linux_3.19_in_Xfce_4.19.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/62/Alpine_Linux_3.19_in_Xfce_4.19.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_Linux_3.19_in_Xfce_4.19.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Alpine Linux 3.19 Standard ejecutandose en Xfce 4.19 con modificaciones",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Alpine_Linux_3.11_Xfce_-_English.png/960px-Alpine_Linux_3.11_Xfce_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Alpine_Linux_3.11_Xfce_-_English.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Alpine_Linux_3.11_Xfce_-_English.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Alpine Linux 3.11 with Xfce desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "kali": {
+   "title": "Kali Linux",
+   "url": "https://en.wikipedia.org/wiki/Kali_Linux",
+   "extract": "Kali Linux is a Linux distribution designed for digital forensics and penetration testing. It is maintained and funded by Offensive Security. The software is based on the testing branch of the Debian Linux Distribution: most packages Kali uses are imported from the Debian repositories. Kali Linux has gained popularity in the cybersecurity community due to its comprehensive set of tools designed for penetration testing, vulnerability analysis, and reverse engineering. It was developed by Mati Aharoni and Devon Kearns of Offensive Security through the rewrite of BackTrack, their previous information security testing Linux distribution based on Knoppix.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Kali_Linux_2.0_wordmark.svg/960px-Kali_Linux_2.0_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Kali_Linux_2.0_wordmark.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/VirtualBox_Kali_Linux_29_03_2022_11_10_35.png/960px-VirtualBox_Kali_Linux_29_03_2022_11_10_35.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e6/VirtualBox_Kali_Linux_29_03_2022_11_10_35.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:VirtualBox_Kali_Linux_29_03_2022_11_10_35.png",
+     "w": 1680,
+     "h": 945,
+     "caption": "Kali Linux",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "parrot": {
+   "title": "Parrot OS",
+   "url": "https://en.wikipedia.org/wiki/Parrot_OS",
+   "extract": "Parrot OS is a Linux distribution based on Debian with a focus on security, privacy, and development.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Parrot_OS_Desktop.png/960px-Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Parrot_OS_Desktop.png/960px-Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Parrot_OS_Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Parrot_OS_Desktop.png",
+     "w": 1920,
+     "h": 952,
+     "caption": "Parrot OS Desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "almalinux": {
+   "title": "AlmaLinux",
+   "url": "https://en.wikipedia.org/wiki/AlmaLinux",
+   "extract": "AlmaLinux is a free and open source Linux distribution, a community-supported, production-grade enterprise operating system that is binary-compatible with Red Hat Enterprise Linux (RHEL). The name of the distribution comes from the word \"alma\", meaning \"soul\" in Spanish and other Latin languages. It was chosen to be a homage to the Linux community. It is developed by the American AlmaLinux OS Foundation, a 501(c) organization. The first stable release of AlmaLinux was published on 30 March 2021, and will be supported until 1 March 2029. AlmaLinux is built using publicly-viewable and reproducible methods using the AlmaLinux Build System (ALBS), which is a customized build system whose source code, like the distribution itself, is publicly distributed and licensed under open-source licenses.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png/960px-AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png/960px-AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/35/AlmaLinux_10.0_desktop_with_GNOME_47.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:AlmaLinux_10.0_desktop_with_GNOME_47.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of default AlmaLinux version 10.0 desktop with GNOME 47",
+     "license": "GPL"
+    }
+   ]
+  },
+  "rocky": {
+   "title": "Rocky Linux",
+   "url": "https://en.wikipedia.org/wiki/Rocky_Linux",
+   "extract": "Rocky Linux is a free and open source Linux distribution developed by Rocky Enterprise Software Foundation, which is a privately owned benefit corporation that describes itself as a \"self-imposed not-for-profit\". It is intended to be a downstream, complete binary-compatible release using the Red Hat Enterprise Linux (RHEL) operating system source code. The project's aim is to provide a community-supported, production-grade enterprise operating system. Rocky Linux, along with RHEL, has become popular for enterprise operating system use. The first release candidate version of Rocky Linux was released on April 30, 2021, and its first general availability version was released on June 21, 2021. Rocky Linux 8 will be supported through May 2029, Rocky Linux 9 through May 2032, and Rocky Linux 10 through May 2035.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Rocky_Linux_10_Workstation.png/960px-Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/Rocky_Linux_10_Workstation.png/960px-Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/d9/Rocky_Linux_10_Workstation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Rocky_Linux_10_Workstation.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of default Rocky Linux version 10.0 desktop with GNOME 47",
+     "license": "GPL"
+    }
+   ]
+  },
+  "oracle": {
+   "title": "Oracle Linux",
+   "url": "https://en.wikipedia.org/wiki/Oracle_Linux",
+   "extract": "Oracle Linux (abbreviated OL, formerly known as Oracle Enterprise Linux or OEL) is a Linux distribution packaged and freely distributed by Oracle, available partially under the GNU General Public License since late 2006. It is, in part, compiled from Red Hat Enterprise Linux (RHEL) source code, replacing Red Hat branding with Oracle's. It is also used by Oracle Cloud and Oracle Engineered Systems such as Oracle Exadata and others. Potential users can freely download Oracle Linux through Oracle's server, or from a variety of mirror sites, and can deploy and distribute it without cost. The company's Oracle Linux Support program aims to provide commercial technical support, covering Oracle Linux and existing RHEL or CentOS installations but without any certification from the former (i.e. without re-installation or re-boot). As of 2016, Oracle Linux had over 15,000 customers subscribed to",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Oracle_Linux_9_screenshot.png/960px-Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Oracle_Linux_9_screenshot.png/960px-Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Oracle_Linux_9_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Oracle_Linux_9_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of an Oracle Linux 9 default desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "centos": {
+   "title": "CentOS",
+   "url": "https://en.wikipedia.org/wiki/CentOS",
+   "extract": "CentOS (from Community Enterprise Operating System; also known as CentOS Linux) is a discontinued Linux distribution that provided a free and open-source community-supported computing platform, functionally compatible with its upstream source, Red Hat Enterprise Linux (RHEL). In January 2014, CentOS announced the official joining with Red Hat while staying independent from RHEL, under a new CentOS governing board. The first CentOS release in May 2004, numbered as CentOS version 2, was forked from RHEL version 2.1AS. Since version 8, CentOS officially supports the x86-64, ARM64, and POWER8 architectures, and releases up to version 6 also supported the IA-32 architecture. As of December 2015, AltArch releases of CentOS 7 are available for the IA-32 architecture, Power ISA, and for the ARMv7hl and AArch64 variants of the ARM architecture. CentOS 8 was released on 24 September 2019.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/CentOS_8.5_screenshot.png/960px-CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/5/51/CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/51/CentOS_8.5_screenshot.png/960px-CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/51/CentOS_8.5_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:CentOS_8.5_screenshot.png",
+     "w": 1360,
+     "h": 768,
+     "caption": "English GUI of CentOS 8.5 (11.16.2021)",
+     "license": "GPL"
+    }
+   ]
+  },
+  "opensuse": {
+   "title": "OpenSUSE",
+   "url": "https://en.wikipedia.org/wiki/OpenSUSE",
+   "extract": "openSUSE is a free and open-source Linux distribution developed by the openSUSE Project. It is offered in two main variations: Tumbleweed, an upstream rolling release distribution, and Leap, a stable release distribution which is sourced from SUSE Linux Enterprise. The openSUSE project is sponsored by SUSE of Germany. The company released the first version as SUSE Linux in 1994. Its development was opened up to the community in 2005, which marked the creation of openSUSE. The focus of the developers is on creating a stable and user-friendly RPM-based operating system with a large target group for workstations and servers.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/OpenSUSE_Logo.svg/960px-OpenSUSE_Logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/d/d0/OpenSUSE_Logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/OpenSUSE_Leap_16.0_screenshot.webp/960px-OpenSUSE_Leap_16.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/7e/OpenSUSE_Leap_16.0_screenshot.webp?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:OpenSUSE_Leap_16.0_screenshot.webp",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of openSUSE Leap 16.0",
+     "license": "GPL"
+    }
+   ]
+  },
+  "mint": {
+   "title": "Linux Mint",
+   "url": "https://en.wikipedia.org/wiki/Linux_Mint",
+   "extract": "Linux Mint is a community-developed Linux distribution for x86-64 systems, based on Ubuntu. First released in 2006, Linux Mint is often noted for its ease of use, out-of-the-box functionality, and appeal to desktop users. It comes bundled with a selection of free and open-source software. The default desktop environment is Cinnamon, developed by the Linux Mint team, with MATE and Xfce available as alternatives. A Debian based version of Linux Mint also exists, called Linux Mint Debian Edition (LMDE).",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/LinuxMint22-Wilma-English.png/960px-LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/a/ac/LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/LinuxMint22-Wilma-English.png/960px-LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/ac/LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop.",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Lmde2.png/960px-Lmde2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/38/Lmde2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Lmde2.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Linux Mint Debian Edition running Cinnamon 2.8",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "zorin": {
+   "title": "Zorin OS",
+   "url": "https://en.wikipedia.org/wiki/Zorin_OS",
+   "extract": "Zorin OS is a Linux distribution based on Ubuntu which provides both free and paid versions. It uses a GNOME and Xfce 4 desktop environment by default, although the desktop is heavily customized and is for users more familiar with Windows, Chrome OS and macOS. Zorin OS Pro is a premium paid version offering additional desktop appearance customization options and apps for creative users such as for photo or video editing. Zorin is marketed as a privacy focused operating system aimed at everyday computer users.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Zorin-18-Desktop_Installed.png/960px-Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/Zorin-18-Desktop_Installed.png/960px-Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Zorin-18-Desktop_Installed.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Zorin-18-Desktop_Installed.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Screenshot of Zorin OS 18 showing the menu using the modified default GNOME desktop",
+     "license": "GPL"
+    }
+   ]
+  },
+  "pop": {
+   "title": "Pop! OS",
+   "url": "https://en.wikipedia.org/wiki/Pop!_OS",
+   "extract": "Pop OS (stylized as Pop!_OS) is a free and open-source Linux distribution based on Ubuntu and developed by the American Linux computer manufacturer System76. It features the COSMIC desktop environment, a Rust-based and Wayland-only desktop created and maintained by System76. Pop!_OS is primarily designed to ship with the company’s computers, but it can also be downloaded and installed on most PCs. Pop!_OS provides full out-of-the-box support for both AMD and Nvidia GPUs. Pop!_OS provides default disk encryption, streamlined window and workspace management, keyboard shortcuts for navigation as well as built-in power management profiles. The latest releases also have packages that allow for easy setup for TensorFlow and CUDA.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Pop_OS-Logo-nobg.svg/960px-Pop_OS-Logo-nobg.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Pop_OS-Logo-nobg.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Apps_Pop%21_OS_21.10.png/960px-Apps_Pop%21_OS_21.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apps_Pop%21_OS_21.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Apps_Pop!_OS_21.10.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Captura de pantalla mostrant el nou menú d'aplicacions anomenat Library més reduït i centrat a l'escriptori…",
+     "license": "GPL"
+    }
+   ]
+  },
+  "elementary": {
+   "title": "Elementary OS",
+   "url": "https://en.wikipedia.org/wiki/Elementary_OS",
+   "extract": "Elementary OS (stylized as elementary OS) is a Linux distribution based on Ubuntu LTS. It promotes itself as \"thoughtful, capable, and ethical computing\" and has a pay-what-you-want model. The operating system, the desktop environment (called Pantheon), and accompanying applications are developed and maintained by elementary, Inc.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/ElementaryOS8.0-Desktop.png/960px-ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/40/ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/ElementaryOS8.0-Desktop.png/960px-ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/40/ElementaryOS8.0-Desktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:ElementaryOS8.0-Desktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "A screenshot of the desktop of elementary OS 8.0",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Scrivania_di_elementary_OS_5.0_Juno.png/960px-Scrivania_di_elementary_OS_5.0_Juno.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/24/Scrivania_di_elementary_OS_5.0_Juno.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Scrivania_di_elementary_OS_5.0_Juno.png",
+     "w": 2560,
+     "h": 1600,
+     "caption": "Screenshot della scrivania di elementary OS 5.0 Juno, basato su Ubuntu 18.04 LTS",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Elementary_odin.png/960px-Elementary_odin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Elementary_odin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Elementary_odin.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "This image is the official screenshot of Elementary OS 6.0 Odin",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Elementary_OS_7.0_Horus.jpg/960px-Elementary_OS_7.0_Horus.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Elementary_OS_7.0_Horus.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Elementary_OS_7.0_Horus.jpg",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of elementary OS 7 desktop",
+     "license": "GPLv3"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c7/Elementary_OS_5.1_Hera.png/960px-Elementary_OS_5.1_Hera.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Elementary_OS_5.1_Hera.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Elementary_OS_5.1_Hera.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of elementary OS 5.1",
+     "license": "GPLv3"
+    }
+   ]
+  },
+  "garuda": {
+   "title": "Garuda Linux",
+   "url": "https://en.wikipedia.org/wiki/Garuda_Linux",
+   "extract": "Garuda Linux is an Arch Linux-based Linux distribution targeted towards gaming. It offers multiple desktop environments, but the KDE Plasma version is the default. The distribution is named after Garuda, the divine eagle mount of the god Vishnu in Hinduism. Garuda Linux features a rolling release update model using Pacman as its package manager.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png/960px-Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png/960px-Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/69/Garuda_Linux_Dr460nized%2C_Bird_of_Prey.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Garuda_Linux_Dr460nized,_Bird_of_Prey.png",
+     "w": 2560,
+     "h": 1600,
+     "caption": "Garuda Linux KDE Dr460nized, \"Bird of Prey\" screenshot",
+     "license": "GPLv3"
+    }
+   ]
+  }
+ },
+ "desktops": {
+  "xfce": {
+   "title": "Xfce",
+   "url": "https://en.wikipedia.org/wiki/Xfce",
+   "extract": "Xfce is a free and open-source desktop environment for Linux and other Unix-like operating systems. Xfce aims to be fast and lightweight while still visually appealing and easy to use. The desktop environment is designed to embody the traditional Unix philosophy of modularity and re-usability, as well as adherence to standards; specifically, those defined at freedesktop.org.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/XFCE_4.20.png/960px-XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/e/ed/XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/XFCE_4.20.png/960px-XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/ed/XFCE_4.20.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:XFCE_4.20.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "XFCE 4.20 desktop environment",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Xfce_4.12_on_Fedora_22.png/960px-Xfce_4.12_on_Fedora_22.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/60/Xfce_4.12_on_Fedora_22.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xfce_4.12_on_Fedora_22.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Xfce 4.12 desktop running on Fedora 22",
+     "license": "GPL"
+    }
+   ]
+  },
+  "mate": {
+   "title": "MATE (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/MATE_(desktop_environment)",
+   "extract": "MATE (MAH-tay) is a desktop environment composed of free and open-source software that runs on Linux, and other Unix-like operating systems such as BSD, and Illumos.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Mate-logo.svg/960px-Mate-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Mate-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/PC-BSD_10.1.2_MATE_Screenshot.png/960px-PC-BSD_10.1.2_MATE_Screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c1/PC-BSD_10.1.2_MATE_Screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:PC-BSD_10.1.2_MATE_Screenshot.png",
+     "w": 2340,
+     "h": 1440,
+     "caption": "Screenshot of a PC-BSD 10.1.2 desktop (MATE) with dual monitor (dual head, pivot).",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Mate-desktop-1.26.en.png/960px-Mate-desktop-1.26.en.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/75/Mate-desktop-1.26.en.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Mate-desktop-1.26.en.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "This is a screenshot of a typical MATE desktop with 1.26 version, which was taken from Fedora Linux 34 by me",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/MATE_1.10.png/960px-MATE_1.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/7a/MATE_1.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:MATE_1.10.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "MATE 1.10 on Manjaro Linux, GTK+3 version, taken by myself",
+     "license": "LGPL"
+    }
+   ]
+  },
+  "kde": {
+   "title": "KDE Plasma",
+   "url": "https://en.wikipedia.org/wiki/KDE_Plasma",
+   "extract": "KDE Plasma is a graphical shell developed by the KDE community for Linux and BSD. It serves as the interface layer between the user and the operating system, providing a graphical user interface (GUI) and workspace environment for launching applications, managing windows, and interacting with files and system settings. Plasma is designed to be modular and adaptable, with different variants tailored for specific device types, such as Plasma Desktop for personal computers, and Plasma Mobile for smartphones. Plasma was first introduced in 2008 as part of KDE Software Compilation 4, as a major technical overhaul, combining traditional desktop functionality with a widget-based system designed for flexibility and visual consistency. With the KDE brand repositioning in 2009, the KDE software compilation was split into three distinct projects: KDE Plasma, KDE Frameworks and KDE Gear, allowing ea",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/KDE_Plasma_6.4.5_Light.png/960px-KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/15/KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/KDE_Plasma_5.24_on_Arch_Linux_screenshot.png/960px-KDE_Plasma_5.24_on_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/46/KDE_Plasma_5.24_on_Arch_Linux_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_5.24_on_Arch_Linux_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "KDE Plasma 5.24 screenshot with Konsole and System Settings showing Wayland information",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/KDE_Plasma_6.4.5_Light.png/960px-KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/15/KDE_Plasma_6.4.5_Light.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_6.4.5_Light.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of KDE Plasma 6.4.5 in Light theme (called Breeze Light)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/KDE_Plasma_6.4.5_Dark.png/960px-KDE_Plasma_6.4.5_Dark.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/52/KDE_Plasma_6.4.5_Dark.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Plasma_6.4.5_Dark.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of KDE Plasma 6.4.5 in Dark theme (called Breeze Dark)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/KDE_Arch.png/960px-KDE_Arch.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c6/KDE_Arch.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:KDE_Arch.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "KDE Plasma running on Arch Linux. Shown are Konsole and Dolphin, two of KDE's core application windows",
+     "license": "GPL"
+    }
+   ]
+  },
+  "lxqt": {
+   "title": "LXQt",
+   "url": "https://en.wikipedia.org/wiki/LXQt",
+   "extract": "LXQt is a free and open source lightweight desktop environment. It was formed from the merger of the LXDE and Razor-qt projects. Like its GTK predecessor LXDE, LXQt does not ship or develop its own window manager; instead, LXQt lets the user decide which (supported) window manager they want to use. Linux distributions commonly default LXQt to Openbox, Xfwm4, or KWin.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/LXQt_2.0.0_Ambiance_screenshot.png/960px-LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/2/29/LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/LXQt_2.0.0_Ambiance_screenshot.png/960px-LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/29/LXQt_2.0.0_Ambiance_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXQt_2.0.0_Ambiance_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "LXQt 2.0.0 with Ambiance theme",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "lxde": {
+   "title": "LXDE",
+   "url": "https://en.wikipedia.org/wiki/LXDE",
+   "extract": "LXDE (abbreviation for Lightweight X11 Desktop Environment) is a free desktop environment with comparatively low resource requirements. This makes it especially suitable for use on older or resource-constrained personal computers such as netbooks or system on a chip computers. LXDE was written in the C programming language, using the GTK 2 toolkit, and runs on Unix and other POSIX-compliant platforms, such as Linux and BSDs. The LXDE project aims to provide a fast and energy-efficient desktop environment.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4c/LXDE_desktop_full.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXDE_desktop_full.png",
+     "w": 801,
+     "h": 601,
+     "caption": "Base LXDE desktop, taken from lubuntu-9.10_lynxis_b14",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/LXDE-ArchLinux.png/960px-LXDE-ArchLinux.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/53/LXDE-ArchLinux.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LXDE-ArchLinux.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "LXDE desktop on ArchLinux",
+     "license": "GPL"
+    }
+   ]
+  },
+  "cinnamon": {
+   "title": "Cinnamon (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/Cinnamon_(desktop_environment)",
+   "extract": "Cinnamon is a free and open-source desktop environment for Linux and other Unix-like operating systems. It was originally based on GNOME 3, but follows traditional desktop metaphor conventions. The development of Cinnamon began by the Linux Mint team following the April 2011 release of GNOME 3, in which the conventional desktop metaphor of GNOME 2 was replaced in favor of GNOME Shell. Following several attempts to extend GNOME 3 so that it would suit the Linux Mint design goals through \"Mint GNOME Shell Extensions\", the Linux Mint team eventually forked several components of GNOME 3 to build an independent desktop environment. This separation from GNOME was completed with the release of Cinnamon 2.0.0 on 9 October 2013. Applets, extensions, actions, and desklets made explicitly for Cinnamon are no longer compatible with GNOME Shell.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5a/Cinnamon-logo.svg/960px-Cinnamon-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Cinnamon-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/LinuxMint22-Wilma-English-CustomDesktop.png/960px-LinuxMint22-Wilma-English-CustomDesktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/69/LinuxMint22-Wilma-English-CustomDesktop.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English-CustomDesktop.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the Cinnamon desktop.",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Linux_Mint_19.1_%22Tessa%22_%28Cinnamon%29.png/960px-Linux_Mint_19.1_%22Tessa%22_%28Cinnamon%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/48/Linux_Mint_19.1_%22Tessa%22_%28Cinnamon%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Linux_Mint_19.1_%22Tessa%22_(Cinnamon).png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "Screenshot of Linux Mint 19.1 \"Tessa\"",
+     "license": "GPLv2"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/LinuxMint22-Wilma-English.png/960px-LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/ac/LinuxMint22-Wilma-English.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:LinuxMint22-Wilma-English.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot of Linux Mint 22 \"Wilma\" using the default Cinnamon desktop.",
+     "license": "GPL"
+    }
+   ]
+  },
+  "budgie": {
+   "title": "Budgie (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/Budgie_(desktop_environment)",
+   "extract": "Budgie is an independent, free and open-source desktop environment for Linux and other Unix-like operating systems that targets the desktop metaphor. Budgie is developed by the Buddies of Budgie organization, which is composed of a team of contributors from Linux distributions such as Fedora, Debian, and Arch Linux. Its design emphasizes simplicity, minimalism, and elegance, while providing the means to extend or customize the desktop in various ways. Unlike desktop environments like Cinnamon, Budgie does not have a reference platform, and all distributions that ship Budgie are recommended to set defaults that best fit their desired user experience. Budgie is also shipped as an edition of certain Linux distributions, such as Ubuntu Budgie.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/BudgieDesktop-v10.7.jpg/960px-BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/4/4e/BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/BudgieDesktop-v10.7.jpg/960px-BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4e/BudgieDesktop-v10.7.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:BudgieDesktop-v10.7.jpg",
+     "w": 2000,
+     "h": 1125,
+     "caption": "A screenshot depicting the default configuration of the Budgie desktop environment.",
+     "license": "Apache License 2.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Budgie_%28desktop_environment%29_v10.4.png/960px-Budgie_%28desktop_environment%29_v10.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Budgie_%28desktop_environment%29_v10.4.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Budgie_(desktop_environment)_v10.4.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Screenshot of Budgie (desktop environment) version 10.4 showing settings dialog, panel, and open menu",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Fedora_Budgie_38_Beta.jpg/960px-Fedora_Budgie_38_Beta.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Fedora_Budgie_38_Beta.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fedora_Budgie_38_Beta.jpg",
+     "w": 2711,
+     "h": 1557,
+     "caption": "The Budgie Desktop version 10.7.1 on the version 38 beta of Fedora Linux, with desktop icons enabled and a…",
+     "license": "Apache License 2.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Ubuntu_Budgie_22.10.png/960px-Ubuntu_Budgie_22.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Ubuntu_Budgie_22.10.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_Budgie_22.10.png",
+     "w": 2048,
+     "h": 1152,
+     "caption": "Ubuntu Budgie 22.10",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Solus_Budgie_4.3.jpg/960px-Solus_Budgie_4.3.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/30/Solus_Budgie_4.3.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Solus_Budgie_4.3.jpg",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Solus 4.3 Operating system with Budgie desktop environment developed by Solus",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Budgie_on_Ultramarine_Linux_37.jpg/960px-Budgie_on_Ultramarine_Linux_37.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Budgie_on_Ultramarine_Linux_37.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Budgie_on_Ultramarine_Linux_37.jpg",
+     "w": 1920,
+     "h": 1080,
+     "caption": "The Budgie Desktop version 10.7.1 on Ultramarine Linux, with desktop icons enabled and a single full-width…",
+     "license": "Apache License 2.0"
+    }
+   ]
+  },
+  "gnome-flashback": {
+   "title": "GNOME",
+   "url": "https://en.wikipedia.org/wiki/GNOME",
+   "extract": "GNOME is a desktop environment and suite of software for Linux and BSD developed by the GNOME Project and released as free and open source software. The primary components of GNOME are the GNOME Shell, which provides features such as virtual desktops and window management; and the GNOME Core Applications, which distribute a suite of software that integrates with the shell and provides basic system features such as a file manager and a computer configuration application. The GNOME Project is composed of both volunteers and paid contributors, the largest contributor being Red Hat. In 2023 and 2024, GNOME received €1,000,000 from Germany's Sovereign Tech Fund.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Gnomelogo.svg/960px-Gnomelogo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/6/68/Gnomelogo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png/960px-GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/3d/GNOME_Flashback_3.36_with_GNOME_Panel_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:GNOME_Flashback_3.36_with_GNOME_Panel_3.36_(2020-03).png",
+     "w": 1920,
+     "h": 1199,
+     "caption": "GNOME Flashback 3.36 with GNOME Panel 3.36 (2020-03)",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d8/GNOME_Classic_3.36_%282020-03%29.png/960px-GNOME_Classic_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/d/d8/GNOME_Classic_3.36_%282020-03%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:GNOME_Classic_3.36_(2020-03).png",
+     "w": 1600,
+     "h": 900,
+     "caption": "GNOME Classic 3.36",
+     "license": "GPL"
+    }
+   ]
+  },
+  "enlightenment": {
+   "title": "Enlightenment (window manager)",
+   "url": "https://en.wikipedia.org/wiki/Enlightenment_(window_manager)",
+   "extract": "Enlightenment, also known simply as E, is a compositing window manager for the X Window System. Since version 0.20, Enlightenment also supports Wayland. It is shipped with some Linux distributions such as Bodhi Linux and Pentoo. Enlightenment is only a window manager at its core; however, with many modules included, it can be extended to resemble a full desktop environment. Since version 0.17 (E17), Enlightenment has been written with the Enlightenment Foundation Libraries (EFL), and the Enlightenment project also writes a set of applications with the EFL.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/E17_enlightenment_logo_shiny_black_curved.svg/960px-E17_enlightenment_logo_shiny_black_curved.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/9/9e/E17_enlightenment_logo_shiny_black_curved.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Enlightenment_0.26.0.png/960px-Enlightenment_0.26.0.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/16/Enlightenment_0.26.0.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Enlightenment_0.26.0.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "A screenshot of the Enlightenment 0.26.0 desktop with various applications open.",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "i3": {
+   "title": "I3 (window manager)",
+   "url": "https://en.wikipedia.org/wiki/I3_(window_manager)",
+   "extract": "i3 is a tiling window manager designed for X11, inspired by wmii and written in C. It supports tiling, stacking, and tabbing layouts, which are handled manually. Its configuration is achieved via a plain text file and extending i3 is possible using its Unix domain socket and JSON based IPC interface from many programming languages. Like wmii, i3 uses a control system very similar to that of vi and Vim. By default, window focus is controlled by what the documentation refers to as the 'Mod1' key (Alt key/Windows key) in addition to the right-hand home row keys (Mod1+J,K,L,Semicolon), while window movement is controlled by the addition of the Shift key (Mod1+Shift+J,K,L,Semicolon).",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/I3_window_manager_logo.svg/960px-I3_window_manager_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/2/27/I3_window_manager_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/I3_window_manager_screenshot.png/960px-I3_window_manager_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/a/af/I3_window_manager_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_screenshot.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "Screenshot of a typical i3 session",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/I3_window_manager_with_tabbed_layout.png/960px-I3_window_manager_with_tabbed_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/85/I3_window_manager_with_tabbed_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_with_tabbed_layout.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Example of i3 window manager with tabbed layout",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3b/I3_window_manager_with_stacking_layout.png/960px-I3_window_manager_with_stacking_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/3b/I3_window_manager_with_stacking_layout.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_with_stacking_layout.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Example of i3 window manager with stacking layout",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fc/I3_window_manager_with_floating_window.png/960px-I3_window_manager_with_floating_window.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/fc/I3_window_manager_with_floating_window.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:I3_window_manager_with_floating_window.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Example of i3 window manager with floating window",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "openbox": {
+   "title": "Openbox",
+   "url": "https://en.wikipedia.org/wiki/Openbox",
+   "extract": "Openbox is a free, stacking window manager for the X Window System, licensed under the GNU General Public License. Originally derived from Blackbox 0.65.0 (a C++ project), Openbox has been completely re-written in the C programming language and since version 3.0 is no longer based upon any code from Blackbox. Since at least 2010, it has been considered feature complete, bug free and a completed project. Occasional maintenance is done to keep it working, but only if needed. Openbox is designed to be small, fast, and fully compliant with the Inter-Client Communication Conventions Manual (ICCCM) and Extended Window Manager Hints (EWMH). It supports many features such as menus by which the user can control applications or which display various dynamic information.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/2010-04-24-133031_1280x800_scrot.png/960px-2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/f/f7/2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/2010-04-24-133031_1280x800_scrot.png/960px-2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/f7/2010-04-24-133031_1280x800_scrot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:2010-04-24-133031_1280x800_scrot.png",
+     "w": 1280,
+     "h": 800,
+     "caption": "Openbox 3.4.11 with the default Clearlooks theme. Other running programs are UXTerm, Vim, and Thunar",
+     "license": "GPL"
+    }
+   ]
+  },
+  "fluxbox": {
+   "title": "Fluxbox",
+   "url": "https://en.wikipedia.org/wiki/Fluxbox",
+   "extract": "Fluxbox is a stacking window manager for the X Window System, which started as a fork of Blackbox 0.61.1 in 2001, with the same aim to be lightweight. Its user interface has only a taskbar, a pop-up menu accessible by right-clicking on the desktop, and minimal support for graphical icons. All basic configurations are controlled by text files, including the construction of menus and the mapping of key-bindings. Fluxbox has high compliance to the Extended Window Manager Hints specification. Fluxbox is basic in appearance, but it can show a few options for improved attractiveness: colors, gradients, borders, and several other basic appearance attributes can be specified. Recent versions support rounded corners and graphical elements. Effects managers such as xcompmgr, cairo-compmgr and transset-df (deprecated) can add true transparency to desktop elements and windows. Enhancements can also",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Fluxbox-logo.svg/960px-Fluxbox-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Fluxbox-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Fluxbox.png/960px-Fluxbox.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/56/Fluxbox.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Fluxbox.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Fluxbox",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "icewm": {
+   "title": "IceWM",
+   "url": "https://en.wikipedia.org/wiki/IceWM",
+   "extract": "IceWM is a stacking window manager for the X Window System, originally written by Marko Maček. It was written from scratch in C++ and is released under the terms of the GNU Lesser General Public License. It is customizable, relatively lightweight in terms of memory and CPU usage, and comes with themes that allow it to imitate the GUI of Windows 95, Windows XP, Windows 7, OS/2, Motif, and other graphical user interfaces. IceWM can be configured from plain text files stored in a user's home directory, making it easy to customize and copy settings. IceWM has an optional, built-in taskbar with a dynamic start menu, tasks display, system tray, network and CPU meters, mail check and configurable clock. It features a task list window and an Alt+Tab task switcher. Official support for GNOME and KDE menus used to be available as a separate package. In recent IceWM versions, support for them is bu",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/7/77/IceWM_Logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/7/77/IceWM_Logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4a/IceWM_with_Xeyes.png/960px-IceWM_with_Xeyes.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/4a/IceWM_with_Xeyes.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:IceWM_with_Xeyes.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "IceWM on Debian Buster, featuring Xeyes and the Futureproto theme",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/IceWM_in_action.png/960px-IceWM_in_action.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/23/IceWM_in_action.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:IceWM_in_action.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "IceWM on Debian Buster, featuring Xcalendar and LXappearance",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/IceWM_NanoBlue_openSUSE.png/960px-IceWM_NanoBlue_openSUSE.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/2d/IceWM_NanoBlue_openSUSE.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:IceWM_NanoBlue_openSUSE.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "Screenshot of IceWM with xterm, using NanoBlue theme on openSUSE",
+     "license": "LGPL"
+    },
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/2/27/Icewm-default.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/27/Icewm-default.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Icewm-default.jpg",
+     "w": 800,
+     "h": 600,
+     "caption": "A screenshot showing IceWM's default setup on a Debian machine.",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "jwm": {
+   "title": "JWM",
+   "url": "https://en.wikipedia.org/wiki/JWM",
+   "extract": "JWM may refer to: Waco JWM, a straight-wing model based on the ASO",
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Openbsd37withjwm.png/960px-Openbsd37withjwm.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/48/Openbsd37withjwm.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Openbsd37withjwm.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "OpenBSD 3.7 with Joe's Window Manager for the window manager, on top of X.org",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "awesome": {
+   "title": "Awesome (window manager)",
+   "url": "https://en.wikipedia.org/wiki/Awesome_(window_manager)",
+   "extract": "awesome, formerly jdwm, is a dynamic window manager for the X Window System developed in the programming languages C and Lua. Lua is also used to configure and extend the system. Its development began as a fork of dwm, though has diverged largely since. It aims to be very small and fast, yet highly customizable. It enables managing windows via keyboard. The fork was initially nicknamed jdwm, where \"jd\" denoted the principal programmer's initials and dwm denoted the software project it was forked from. The first git repository for what was to become awesome was set up in September 2007. jdwm was renamed to awesome, after the same phrase used by the How I Met Your Mother character Barney Stinson. awesome was officially announced on the dwm mailing list on September 20, 2007.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Awesome_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Awesome_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f0/Awesome_screenshot.png/960px-Awesome_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Awesome_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Awesome_screenshot.png",
+     "w": 1280,
+     "h": 1024,
+     "caption": "Awesome screenshot",
+     "license": "GPL"
+    }
+   ]
+  },
+  "qtile": {
+   "title": "Tiling window manager",
+   "url": "https://en.wikipedia.org/wiki/Tiling_window_manager",
+   "extract": "In computing, a tiling window manager is a window manager with the organization of the screen often dependent on mathematical formulas to organise the windows into a non-overlapping frame. This is opposed to the more common approach used by stacking window managers, which allow the user to drag windows around, instead of windows snapping into a position. This allows for a different style of organization, although it departs from the traditional desktop metaphor.",
+   "lead": null,
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/1/17/Dwm-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": []
+  },
+  "xmonad": {
+   "title": "Xmonad",
+   "url": "https://en.wikipedia.org/wiki/Xmonad",
+   "extract": "xmonad is a dynamic window manager (tiling) for the X Window System, noted for being written in the functional programming language Haskell.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Xmonad-2022-new-logo.svg/960px-Xmonad-2022-new-logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Xmonad-2022-new-logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Xmonad_screenshot.png/960px-Xmonad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Xmonad_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xmonad_screenshot.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "XMonad in tiling mode with two URXVT terminals and pcmanFM open",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Xmonad-screen-triplehead-dons.png/960px-Xmonad-screen-triplehead-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/71/Xmonad-screen-triplehead-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xmonad-screen-triplehead-dons.png",
+     "w": 1600,
+     "h": 1200,
+     "caption": "This is a screenshot of an X window manager named Xmonad; it is a screenshot taken by Xmonad developer Don…",
+     "license": "CC BY-SA 3.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Xmonad-tall-status-dons.png/960px-Xmonad-tall-status-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/6/64/Xmonad-tall-status-dons.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Xmonad-tall-status-dons.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "This is a screenshot of an X window manager named Xmonad; it is a screenshot taken by Xmonad developer Don…",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "pekwm": {
+   "title": "PekWM",
+   "url": "https://en.wikipedia.org/wiki/PekWM",
+   "extract": "PekWM is a minimalist window manager. It provides an application menu and window decorations. Other features include the likes of window grouping, xinerama support, automatic properties, and a keygrabber with keychains. PekWM is developed by Claes Nästen and is originally based on the code base of aewm++ but has since then diverged from it. PekWM is suitable to be used as a technical foundation for the user of a computer to build a customized environment around. PekWM is very customizable and has good system performance. PekWM is made for the X windowing system (X11). PekWM is primarily designed for use on operating systems featuring the Linux kernel, and is available in the repositories for many such system distributions.",
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/98/Pekwm.jpg/960px-Pekwm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/9/98/Pekwm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Pekwm.jpg",
+     "w": 1024,
+     "h": 768,
+     "caption": "Une capture d'écran rendant compte de l'aspect de pekwm Screenshot of pekwm",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/Arch_Linux_with_PekWM.png/960px-Arch_Linux_with_PekWM.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/7/73/Arch_Linux_with_PekWM.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Arch_Linux_with_PekWM.png",
+     "w": 1366,
+     "h": 768,
+     "caption": "A screenshot of Arch Linux with PekWM",
+     "license": "GPL"
+    }
+   ]
+  },
+  "wmaker": {
+   "title": "Window Maker",
+   "url": "https://en.wikipedia.org/wiki/Window_Maker",
+   "extract": "Window Maker is a free and open-source window manager for the X Window System. It emulates NeXTSTEP's Look and feel as a GNUstep-compatible environment.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Wmaker-0.80.2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Wmaker-0.80.2.png",
+     "w": 800,
+     "h": 600,
+     "caption": "A screenshot of the Window Maker window manager.",
+     "license": "GPL"
+    }
+   ]
+  },
+  "fvwm3": {
+   "title": "FVWM",
+   "url": "https://en.wikipedia.org/wiki/FVWM",
+   "extract": "The F Virtual Window Manager (FVWM) is a virtual window manager for the X Window System. Originally a twm derivative, FVWM is now a window manager for Unix-like systems.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Debian_FVWM_Green.png/960px-Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://upload.wikimedia.org/wikipedia/commons/0/0a/SUSE_5.1_FVWM_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/0/0a/SUSE_5.1_FVWM_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:SUSE_5.1_FVWM_screenshot.png",
+     "w": 801,
+     "h": 600,
+     "caption": "Screenshot of SUSE Linux 5.1 with FVWM",
+     "license": "GPL"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Debian_FVWM_Motif_MWM_Emulation.png/960px-Debian_FVWM_Motif_MWM_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/87/Debian_FVWM_Motif_MWM_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_Motif_MWM_Emulation.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "FVWM emulating Motif and MWM (Motif Window Manager), using the \"FVWM-min\" package. Running on Debian GNU/Linux",
+     "license": "CC0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Debian_FVWM_Green.png/960px-Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Debian_FVWM_Green.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_Green.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "Green screen style for FVWM, using the \"FVWM-min\" package. Running on Debian GNU/Linux",
+     "license": "CC0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Debian_FVWM_CDE_Emulation.png/960px-Debian_FVWM_CDE_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/5/58/Debian_FVWM_CDE_Emulation.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_FVWM_CDE_Emulation.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "FVWM emulating the look of the Common Desktop Environment (CDE), using the \"FVWM-min\" package.",
+     "license": "CC0"
+    }
+   ]
+  },
+  "dwm": {
+   "title": "Dwm",
+   "url": "https://en.wikipedia.org/wiki/Dwm",
+   "extract": "dwm is a minimalist dynamic window manager for the X Window System developed by Suckless that has influenced the development of several other X window managers, including xmonad and awesome. It is externally similar to wmii, but internally much simpler. dwm is written purely in C for performance and lacks any configuration interface besides editing the source code. One of the project's guidelines is that the source code is intended never to exceed 2000 SLOC, and options meant to be user-configurable are all contained in a single header file.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Dwm-shot.png/960px-Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Dwm-shot.png/960px-Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Dwm-shot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Dwm-shot.png",
+     "w": 1280,
+     "h": 801,
+     "caption": "Screenshot of the dwm window manager in use",
+     "license": "Public domain"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Dwm_dual_monitor.jpeg/960px-Dwm_dual_monitor.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Dwm_dual_monitor.jpeg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Dwm_dual_monitor.jpeg",
+     "w": 1000,
+     "h": 750,
+     "caption": "The Dynamic Window Manager (\"dwm\") X11 window manager displaying its tiled modes running on two screens…",
+     "license": "Public domain"
+    }
+   ]
+  },
+  "cwm": {
+   "title": "Cwm (window manager)",
+   "url": "https://en.wikipedia.org/wiki/Cwm_(window_manager)",
+   "extract": "cwm (Calm Window Manager) is a stacking window manager for the X Window System. While it is primarily developed as a part of OpenBSD's base system, portable versions are available on other Unix-like operating systems.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Cwm_%28window_manager%29.png/960px-Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Cwm_%28window_manager%29.png/960px-Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/36/Cwm_%28window_manager%29.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Cwm_(window_manager).png",
+     "w": 1280,
+     "h": 720,
+     "caption": "OpenBSD desktop managed with cwm running xstatbar, xconsole, xombrero/xxxterm and uxterm (with tmux, scrot…",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "ratpoison": {
+   "title": "Ratpoison",
+   "url": "https://en.wikipedia.org/wiki/Ratpoison",
+   "extract": "ratpoison is a tiling window manager for the X Window System primarily developed by Shawn Betts. The user interface and much of their functionality are inspired by the GNU Screen terminal multiplexer. While ratpoison is written in C, Betts' StumpWM re-implements a similar window manager in Common Lisp.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Ratpoison_new.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Ratpoison_new.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0d/Ratpoison-screenshot.png/960px-Ratpoison-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Ratpoison-screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ratpoison-screenshot.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "en:Ratpoison",
+     "license": "CC BY-SA 3.0"
+    }
+   ]
+  },
+  "twm": {
+   "title": "Twm",
+   "url": "https://en.wikipedia.org/wiki/Twm",
+   "extract": "twm is a window manager for the X Window System. Started in 1987 by Tom LaStrange, it has been the standard window manager for the X Window System since version X11R4. The name originally stood for Tom's Window Manager, but the software was renamed Tab Window Manager by the X Consortium when they adopted it in 1989. twm is a stacking window manager that provides title bars, shaped windows, and icon management. It is highly configurable and extensible. twm was a breakthrough achievement in the early years, but has been superseded by other window managers which, unlike twm, use a widget toolkit rather than a combination of the X Toolkit Intrinsics and XRandR.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Debian_TWM_Maroon.png/960px-Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/Debian_TWM_Maroon.png/960px-Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Debian_TWM_Maroon.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Debian_TWM_Maroon.png",
+     "w": 1024,
+     "h": 768,
+     "caption": "TWM (Tom's Window Manager) running with its classic maroon theme as seen in early X11 versions.",
+     "license": "CC0"
+    }
+   ]
+  },
+  "lumina": {
+   "title": "Lumina (desktop environment)",
+   "url": "https://en.wikipedia.org/wiki/Lumina_(desktop_environment)",
+   "extract": "Lumina Desktop Environment, or simply Lumina, is a plugin-based desktop environment for Unix and Unix-like operating systems. It was designed specifically as a system interface for the now-discontinued TrueOS as well as systems derived from Berkeley Software Distribution (BSD) in general, but it has been ported to various Linux distributions.",
+   "lead": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png/960px-DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png/960px-DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/8/82/DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:DragonFly_BSD_6.2.1_Lumina_desktop_screenshot.png",
+     "w": 1280,
+     "h": 720,
+     "caption": "Screenshot of DragonFly BSD 6.2.1 with Lumina (desktop environment)",
+     "license": "BSD"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Lumina1.0.0-TrueOS.png/960px-Lumina1.0.0-TrueOS.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/4/45/Lumina1.0.0-TrueOS.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Lumina1.0.0-TrueOS.png",
+     "w": 1920,
+     "h": 1080,
+     "caption": "Screenshot which shows Lumina Desktop in TrueOS system",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "ukui": {
+   "title": "UKUI",
+   "url": "https://en.wikipedia.org/wiki/UKUI",
+   "extract": "UKUI (Ultimate Kylin User Interface) is a desktop environment for Linux distributions and other UNIX-like operating systems, originally developed for Ubuntu Kylin, and written using the Qt framework. UKUI was a fork of the MATE Desktop Environment. UKUI is a lightweight desktop environment, which consumes few resources and works with older computers. It has been developed with GTK and Qt technologies. Its visual appearance is similar to Windows 7, making it easier for new users of Linux.",
+   "lead": "https://upload.wikimedia.org/wikipedia/commons/c/c1/UKUI.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled",
+   "lead_full": "https://upload.wikimedia.org/wikipedia/commons/c/c1/UKUI.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Ubuntu_kylin.png/960px-Ubuntu_kylin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/38/Ubuntu_kylin.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Ubuntu_kylin.png",
+     "w": 2560,
+     "h": 1600,
+     "caption": "Image of Ubuntu Kylin 21.10",
+     "license": "CC BY-SA 4.0"
+    },
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/White-theme-Linux-Kylin.jpg/960px-White-theme-Linux-Kylin.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/1/18/White-theme-Linux-Kylin.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:White-theme-Linux-Kylin.jpg",
+     "w": 1366,
+     "h": 672,
+     "caption": "Desktop environment UKUI in Linux Kylin",
+     "license": "CC BY-SA 4.0"
+    }
+   ]
+  },
+  "bspwm": {
+   "title": "bspwm",
+   "url": "https://github.com/baskerville/bspwm",
+   "extract": null,
+   "lead": null,
+   "lead_full": null,
+   "images": []
+  },
+  "herbstluftwm": {
+   "title": "herbstluftwm",
+   "url": "https://herbstluftwm.org",
+   "extract": null,
+   "lead": null,
+   "lead_full": null,
+   "images": []
+  },
+  "spectrwm": {
+   "title": "spectrwm",
+   "url": "https://github.com/conformal/spectrwm",
+   "extract": null,
+   "lead": null,
+   "lead_full": null,
+   "images": [
+    {
+     "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Scrotwm.png/960px-Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+     "full": "https://upload.wikimedia.org/wikipedia/commons/3/39/Scrotwm.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original",
+     "page": "https://commons.wikimedia.org/wiki/File:Scrotwm.png",
+     "w": 1920,
+     "h": 1200,
+     "caption": "spectrwm (then called scrotwm) in action",
+     "license": "Public domain"
+    }
+   ]
+  }
+ },
+ "curated": true
+}

@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Selkies Forge</title>
+<link rel="stylesheet" href="/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235aa6ff'/%3E%3Cpath d='M9 22l7-13 7 13z' fill='%23061020'/%3E%3C/svg%3E">
+</head>
+<body>
+<div class="bg"></div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="spark">▲</span>
+      <span>Selkies Forge<small>desktops on tap</small></span>
+    </div>
+    <div class="search">
+      <span class="mag">⌕</span>
+      <input id="q" type="text" placeholder="Search 150+ desktops &mdash; try xfce, kali, tiny, kde  ( / )" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="meters" id="meters"></div>
+  </header>
+
+  <nav class="rail" id="rail">
+    <button data-view="browse" class="on"><span class="ico">◧</span>Browse<span class="tag" id="tagCat">-</span></button>
+    <button data-view="manager"><span class="ico">▦</span>Manager<span class="tag" id="tagInst">0</span></button>
+    <button data-view="host"><span class="ico">◉</span>This machine</button>
+    <hr>
+    <button id="liteBtn" class="ghost"><span class="ico">✦</span>Lite mode</button>
+    <div class="note">Lite mode drops the blur and animation. It turns itself on for small devices.</div>
+    <hr>
+    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine</div>
+  </nav>
+
+  <main class="main">
+    <div class="updbar" id="updBar" hidden></div>
+    <div class="updbar life" id="lifeBar" hidden></div>
+
+    <!-- ------------------------------------------------------- browse -->
+    <section class="view on" id="v-browse">
+      <h1 class="h1">Pick a desktop</h1>
+      <p class="sub">Real Linux desktops, streamed to your browser. <b id="count">-</b>.
+        Prebuilt ones pull in minutes; the rest are built on this machine.</p>
+
+      <div class="panel">
+        <h3>Not sure? Let it choose <span class="hint">scored against this machine's free memory, cores and disk</span></h3>
+        <div class="smart-row">
+          <div class="grp">
+            <span class="sec-k">What matters most</span>
+            <div class="seg" id="tasteSeg"></div>
+          </div>
+          <div class="grp">
+            <span class="sec-k">What it is for</span>
+            <select id="purposeSel" style="width:auto;min-width:170px">
+              <option value="general">Anything</option>
+              <option value="dev">Writing code</option>
+              <option value="security">Security work</option>
+              <option value="retro">Retro and tiny</option>
+              <option value="media">Media</option>
+            </select>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn primary" id="smartBtn">Choose for me</button>
+        </div>
+        <div id="smartOut"></div>
+      </div>
+
+      <div class="toolbar">
+        <select id="famSel" aria-label="Distro family"></select>
+        <div class="seg" id="weightSeg">
+          <button data-w="" class="on">Any weight</button>
+          <button data-w="feather">Feather</button>
+          <button data-w="light">Light</button>
+          <button data-w="balanced">Balanced</button>
+          <button data-w="full">Full</button>
+          <button data-w="heavy">Heavy</button>
+        </div>
+        <div class="seg" id="kindSeg">
+          <button data-kind="" class="on">All</button>
+          <button data-kind="pull">Ready to run</button>
+          <button data-kind="build">Built here</button>
+        </div>
+        <div class="spacer"></div>
+        <select id="sort" aria-label="Sort">
+          <option value="beauty">Best looking</option>
+          <option value="light">Lightest</option>
+          <option value="fast">Snappiest</option>
+          <option value="small">Smallest download</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <!-- ---------------------------------------------------- configure -->
+    <section class="view" id="v-configure">
+      <button class="btn sm ghost" data-back="browse" style="margin-bottom:14px">&larr; All desktops</button>
+      <div class="panel" id="dHero"></div>
+      <div class="panel" id="dGallery" hidden></div>
+      <div class="dgrid">
+        <div>
+          <div class="panel" id="cfgTune"></div>
+          <div class="panel" id="cfgAuth"></div>
+          <div class="panel" id="cfgOpts"></div>
+        </div>
+        <div>
+          <div class="panel" id="dAbout"></div>
+          <div class="panel" id="cfgSpecs"></div>
+          <div class="panel" id="dDocker" hidden></div>
+        </div>
+      </div>
+      <div class="gobar" id="goBar"></div>
+    </section>
+
+    <!-- ------------------------------------------------------- launch -->
+    <section class="view" id="v-launch">
+      <div class="panel" id="lTitle"></div>
+      <div class="panel">
+        <div class="steps" id="lSteps"></div>
+        <div class="progress-wrap">
+          <span class="what" id="lWhat">starting</span>
+          <div class="progress"><i id="lBar"></i></div>
+          <span class="pct" id="lPct">0%</span>
+          <button class="btn sm ghost" id="lCancel" type="button" hidden>Cancel</button>
+        </div>
+        <div class="term-wrap">
+          <div class="term-head">
+            <span class="lights"><i></i><i></i><i></i></span>
+            <span>live build and pull output</span>
+          </div>
+          <pre class="term tall" id="lTerm"></pre>
+        </div>
+      </div>
+      <div id="lResult"></div>
+    </section>
+
+    <!-- ------------------------------------------------------ manager -->
+    <section class="view" id="v-manager">
+      <h1 class="h1">Running desktops</h1>
+      <p class="sub">Live CPU, memory and bandwidth. Open a shell without leaving the card.</p>
+      <div class="stat-strip" id="instStats"></div>
+      <div class="inst-grid" id="instList"></div>
+    </section>
+
+    <!-- -------------------------------------------------------- shell -->
+    <section class="view" id="v-shell">
+      <h1 class="h1">Shell</h1>
+      <p class="sub">A real pty inside <b id="shTitle">-</b>. Click the terminal and type.</p>
+      <div class="term-wrap">
+        <div class="term-head">
+          <span class="lights"><i></i><i></i><i></i></span>
+          <span id="shHead">docker exec</span>
+          <div class="spacer"></div>
+          <button class="btn sm ghost" id="shFit">Fit</button>
+          <button class="btn sm ghost" id="shClose">Close</button>
+        </div>
+        <pre class="term tall" id="shTerm" tabindex="0" style="outline:none"></pre>
+      </div>
+    </section>
+
+    <!-- --------------------------------------------------------- host -->
+    <section class="view" id="v-host">
+      <h1 class="h1">This machine</h1>
+      <p class="sub">What the forge checked before it offered you anything.</p>
+      <div class="cfg">
+        <div class="panel"><h3>Checks</h3><div class="result" id="hostChecks"></div></div>
+        <div class="panel"><h3>Facts</h3><div id="hostFacts"></div></div>
+        <div class="panel"><h3>Web UI</h3><div id="hostLife"></div></div>
+        <div class="panel"><h3>Disk used by the forge</h3><div id="hostSpace"><div class="skel" style="height:80px"></div></div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="modal" style="display:none">
+  <div class="panel" id="modalPanel">
+    <div class="row modal-head">
+      <h3 id="modalTitle" style="margin:0">-</h3>
+      <div class="spacer"></div>
+      <button class="btn sm ghost" id="modalClose" type="button">Close</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <div class="lb-top">
+    <span id="lbCount"></span>
+    <div class="spacer"></div>
+    <button class="btn sm" id="lbPrev" type="button">&larr; Prev</button>
+    <button class="btn sm" id="lbNext" type="button">Next &rarr;</button>
+    <button class="btn sm" id="lbClose" type="button">Close</button>
+  </div>
+  <div class="lb-img"><img id="lbImg" alt=""></div>
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="/brands.js"></script>
+<script src="/logos.js"></script>
+<script src="/term.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
