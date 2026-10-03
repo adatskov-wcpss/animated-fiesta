@@ -58,7 +58,7 @@ bash docker.sh --launch noble-xfce  # forge one and print its links
 ```
 P 1 resolve Checking Ubuntu 24.04 LTS Xfce 4 against this machine
 L host     : arm64, 4 cores, 12.8 GB RAM free, 364.5 GB disk free
-L plan     : 1.5 GB RAM, 1.5 CPU, 384 MB shm, screen follows your browser window
+L plan     : 1.5 GB RAM, 1.5 CPU, 1.0 GB shm, screen follows your browser window
 L image    : lscr.io/linuxserver/baseimage-selkies:ubuntunoble
 L layer    : adding the forge layer (first-run fixes, screen agent, session supervisor)
 L container: forge-noble-xfce (5cda436c8fc4)

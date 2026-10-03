@@ -60,7 +60,7 @@ class SmartTest(unittest.TestCase):
             p = smart.plan_resources(e, support.FAKE_HOST)
             self.assertGreaterEqual(p["memory_mb"], e["ram_min"], e["id"])
             self.assertGreaterEqual(p["disk_mb"], 10240, e["id"])
-            self.assertGreaterEqual(p["shm_mb"], 256, e["id"])
+            self.assertEqual(p["shm_mb"], 1024, e["id"])
             self.assertGreaterEqual(p["cpus"], 1.0, e["id"])
 
     def test_recommendations_run_here(self):

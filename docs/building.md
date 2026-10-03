@@ -68,11 +68,11 @@ Press Enter for the repository's own `docker.sh`, or type any path (a directory 
   ✔ docker.sh assembles and passes bash -n (733 KB, 16488 lines)
    8  Unpack and run
   ✔ docker.sh unpacks all 40 files byte for byte
-  ✔ unpacked engine 1.7.0 lists 153 desktops; selkies-cli answers (selkies-forge 1.7.0)
+  ✔ unpacked engine 1.7.1 lists 153 desktops; selkies-cli answers (selkies-forge 1.7.1)
    9  Unit tests
   ✔ 81 tests passed (3.8s)
 
-  ▰ BUILT  Selkies Forge 1.7.0
+  ▰ BUILT  Selkies Forge 1.7.1
 ```
 
 If any check fails, it shows why and **writes nothing**.

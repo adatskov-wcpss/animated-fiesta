@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.7.0"
+FORGE_VERSION="1.7.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -542,14 +542,14 @@ FORGE_SHA_FORGE_LAUNCH_PY="25731de601f0ea04c9e2962813507880f44222f1409ab296887d7
 FORGE_SHA_FORGE_LAYER_PY="fe26fd935322c08e882dbca43d682ec32a5f08e1af560f3a0862c1e980a56408"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="42aaebadb06200b94e1f62c1fa3c3153f5a9a7e9b2c1c5dfa63aeb63806be9f5"
-FORGE_SHA_FORGE_PATHS_PY="79ef25719be23b6fc115a27d888219d06a0865f8e967ec804a998826072ac64d"
+FORGE_SHA_FORGE_PATHS_PY="b201b3d099de31168fc7a9d1656130bc809fa26c8bb4809a121507745e22d1c7"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
 FORGE_SHA_FORGE_RUNNER_PY="cfc68a5a813c8b0b07747e07f60f73edb97bfadf9f110b771a65c312d2ed684b"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
 FORGE_SHA_FORGE_SERVER_PY="ea38a762c313c06f803a0e0fdfdf94c498c0441435b8fb5a6bdb93e359b70be6"
-FORGE_SHA_FORGE_SMART_PY="a63aac4e80450ecdcd6c77eb3304a86c3d9607e7a74b121ccbc61679c2a7afce"
+FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
 FORGE_SHA_FORGE_STORE_PY="ff80f149c72bcb9bae180695a7f45c124caeca4fb4e6d7e4fc0bcb4d61c35e03"
@@ -567,8 +567,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="5528d144fda19fd44158b68dca4c1256b558bce610697d8f0e3943c335afc189"
-FORGE_PAYLOAD_SHA="a6d59742bd3cec79bbc31969dd9d6bc03b62a6e96bb84a9969a6ebb76bb7c3a5"
+FORGE_SHA_SELKIES_CLI="dfb8372e5812cefdd53359f61abaeb90133bab45695038376d303bc68f253564"
+FORGE_PAYLOAD_SHA="967f72376142bf8cf3b2396d6f1f92d85cef78013ad223d3a6d73e0f131a3cc1"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -5525,7 +5525,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.7.0"
+VERSION = "1.7.1"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -7137,6 +7137,9 @@ def score_entry(e, host, prefs):
     return score, f, blockers, notes
 
 
+SHM_DEFAULT_MB = 1024
+
+
 def plan_resources(e, host, generous=False):
     """Pick cpu/memory/shm/disk for this entry on this host."""
     avail = max(512, host["mem_avail_mb"])
@@ -7146,7 +7149,11 @@ def plan_resources(e, host, generous=False):
     cores = max(1.0, float(host["cpus"]))
     cpus = clamp(e["cpu_rec"], 1.0, max(1.0, cores - 0.5 if cores > 1 else cores))
     cpus = round(cpus * 2) / 2.0
-    shm = int(clamp(mem / 4.0, 256, 2048))
+    # /dev/shm is a ceiling, not a reservation: what is stored there counts
+    # against the memory cap anyway, so a generous 1 GB costs nothing until a
+    # browser or video player actually uses it, and keeps them from crashing
+    # on a small /dev/shm.
+    shm = SHM_DEFAULT_MB
 
     # Give the desktop room to actually live in: the image itself plus a real
     # working allowance, never less than 10 GB, and never more than most of
@@ -14443,7 +14450,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.7.0"
+FORGE_VERSION="1.7.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

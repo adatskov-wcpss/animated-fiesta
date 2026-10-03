@@ -113,6 +113,9 @@ def score_entry(e, host, prefs):
     return score, f, blockers, notes
 
 
+SHM_DEFAULT_MB = 1024
+
+
 def plan_resources(e, host, generous=False):
     """Pick cpu/memory/shm/disk for this entry on this host."""
     avail = max(512, host["mem_avail_mb"])
@@ -122,7 +125,11 @@ def plan_resources(e, host, generous=False):
     cores = max(1.0, float(host["cpus"]))
     cpus = clamp(e["cpu_rec"], 1.0, max(1.0, cores - 0.5 if cores > 1 else cores))
     cpus = round(cpus * 2) / 2.0
-    shm = int(clamp(mem / 4.0, 256, 2048))
+    # /dev/shm is a ceiling, not a reservation: what is stored there counts
+    # against the memory cap anyway, so a generous 1 GB costs nothing until a
+    # browser or video player actually uses it, and keeps them from crashing
+    # on a small /dev/shm.
+    shm = SHM_DEFAULT_MB
 
     # Give the desktop room to actually live in: the image itself plus a real
     # working allowance, never less than 10 GB, and never more than most of

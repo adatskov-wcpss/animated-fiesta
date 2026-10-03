@@ -50,7 +50,7 @@ These are set when you forge a desktop: in the web UI, the CLI prompts, or the [
 |---|---|---|
 | Memory cap (swap pinned to the same) | Planned for the desktop and this machine | Live |
 | CPUs | Planned | Live |
-| Shared memory (`/dev/shm`) | A quarter of memory, 256 MB to 2 GB | Recreates the desktop |
+| Shared memory (`/dev/shm`) | 1 GB (a ceiling: what's stored there counts against the memory cap, so it costs nothing until used) | Recreates the desktop |
 | Storage budget | At least 10 GB; enforced only where the storage driver supports quotas | Recreates the desktop |
 | Screen | `auto`: fixed 1920×1080 for compositing desktops, else follows the window (scaled on 4K screens by the [screen guard](forge-layer.md#the-screen-guard-4k-screens)) | Recreates the desktop |
 | Auto-start with Docker | Off | Live |
