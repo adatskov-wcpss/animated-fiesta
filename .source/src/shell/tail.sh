@@ -101,11 +101,19 @@ PYEOF
 
 stream_launch() {
   local id="$1"; shift
+  stream_job_view launch "Forging $id" launch "$id" "$@"
+}
+
+# Run an engine command that streams a job (launch, clone, backup, restore)
+# and draw it: a progress bar, the log scrolling above it, then the result.
+# Ctrl-C reaches the engine, which cancels the job and cleans up.
+stream_job_view() {
+  local kind="$1" heading="$2"; shift 2
   local -a eargs=("$@")
   local pct=0 phase="working" result="" failed=0
-  local log="$FORGE_LOGS/launch-$(date +%Y%m%d-%H%M%S).log"
+  local log="$FORGE_LOGS/$kind-$(date +%Y%m%d-%H%M%S).log"
 
-  title "Forging $id" "live output below, full log at $log"
+  title "$heading" "live output below, full log at $log"
   printf '%s' "$HIDE"
 
   while IFS= read -r line; do
@@ -127,11 +135,26 @@ stream_launch() {
       H\ *) printf '%s' "$CLRL"; info "try: ${line#H }" ;;
       *) : ;;
     esac
-  done < <(engine launch "$id" "${eargs[@]}" 2>&1)
+  done < <(engine "${eargs[@]}" 2>&1)
 
   printf '%s%s' "$CLRL" "$SHOW"
   if [ -n "$result" ]; then
-    FORGE_COLOR=$COLOR render_result "$result"
+    case "$kind" in
+      launch|clone) FORGE_COLOR=$COLOR render_result "$result" ;;
+      *) printf '%s' "$result" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+b = d.get("backup") or {}
+if b:
+    print("  \u2714 backed up %s: %s (%.1f MB)" % (d.get("name"), b.get("file"), (b.get("size") or 0) / 1048576.0))
+elif d.get("safety"):
+    print("  \u2714 restored %s from %s" % (d.get("name"), d.get("file")))
+    print("    the files from before are kept in %s" % d["safety"])
+else:
+    print("  \u2714 done")
+' ;;
+    esac
+    printf '\n'
     return 0
   fi
   [ "$failed" = 1 ] && printf '\n  %sthe full log is at %s%s\n\n' "$DIM" "$log" "$NC"
@@ -425,6 +448,9 @@ print()
           $'start\tStart it\t' \
           $'logs\tShow recent logs\tlast 120 lines' \
           $'events\tWhat happened to it\tlaunches, crashes, heals, repairs' \
+          $'backup\tBack up its files\ta copy of its home folder' \
+          $'clone\tClone it\ta second desktop with a copy of its files' \
+          $'idle\tStop it when idle\twhen nobody has had it open for a while' \
           $'repair\tRepair it\trecreate on the newest forge layer; files are kept' \
           $'remove\tRemove it\tasks about the data volume too' \
           $'back\tBack\t') || continue
@@ -441,6 +467,9 @@ print()
             ;;
           logs) engine logs "$pick" --tail 120 | sed 's/^/    /' ;;
           events) engine events --name "$pick" --limit 30 | sed 's/^/    /' ;;
+          backup) cmd_backup "$pick" ;;
+          clone) cmd_clone "$pick" "$(ask "name for the copy" "${pick#forge-}-copy")" ;;
+          idle) cmd_idle "$pick" "$(ask "minutes with nobody watching (0 = never)" "60")" ;;
           limits)
             local cur; cur=$(engine instances 2>/dev/null | "$PY" -c "
 import json,sys
@@ -1187,6 +1216,59 @@ for k, v in (d.get("failed") or {}).items():
 '
 }
 
+# A desktop by its short name or its container name (forge-...).
+resolve_desktop() {
+  local n="$1"
+  if docker inspect "$n" >/dev/null 2>&1; then printf '%s' "$n"
+  elif docker inspect "forge-$n" >/dev/null 2>&1; then printf 'forge-%s' "$n"
+  else printf '%s' "$n"; fi
+}
+
+cmd_backup() {
+  [ -n "${1:-}" ] || die "usage: selkies-cli backup NAME"
+  local n; n=$(resolve_desktop "$1")
+  stream_job_view backup "Backing up $n" backup "$n"
+}
+
+cmd_backups() {
+  title "Backups" "in $FORGE_HOME/backups; restore with: selkies-cli restore-backup NAME FILE"
+  local -a a=(backups)
+  [ -n "${1:-}" ] && a+=(--name "$(resolve_desktop "$1")")
+  engine "${a[@]}" | sed 's/^/  /'
+  printf '\n'
+}
+
+cmd_restore_backup() {
+  [ -n "${2:-}" ] || die "usage: selkies-cli restore-backup NAME FILE"
+  local n; n=$(resolve_desktop "$1")
+  confirm "Replace $n's files with $2? (a safety backup is taken first)" n || return 0
+  stream_job_view restore "Restoring $n" restore-backup "$n" "$2"
+}
+
+cmd_clone() {
+  [ -n "${1:-}" ] || die "usage: selkies-cli clone NAME [NEW-NAME]"
+  local n; n=$(resolve_desktop "$1")
+  local -a a=(clone "$n")
+  [ -n "${2:-}" ] && a+=(--as "$2")
+  stream_job_view clone "Cloning $n" "${a[@]}"
+}
+
+cmd_jobs() {
+  title "Jobs" "launches, backups and clones, from the web UI and the terminal"
+  engine jobs | sed 's/^/  /'
+  printf '\n'
+}
+
+cmd_idle() {
+  [ -n "${2:-}" ] || die "usage: selkies-cli idle NAME MINUTES|0|default"
+  local n; n=$(resolve_desktop "$1")
+  local r; r=$(engine idle "$n" "$2" 2>&1)
+  if printf '%s' "$r" | grep -q '"error"'; then bad "$r"
+  elif [ "$2" = 0 ]; then ok "$n is never stopped for being idle"
+  elif [ "$2" = default ]; then ok "$n follows the forge default (FORGE_IDLE_STOP_MIN)"
+  else ok "$n stops after $2 minutes with nobody watching (needs the web UI running)"; fi
+}
+
 cmd_events() {
   title "What happened" "launches, crashes, heals and repairs, newest last"
   engine events --limit "${1:-40}" | sed 's/^/  /'
@@ -1326,6 +1408,12 @@ After the first run:
    selkies-cli restore             start the desktops that were running before a reboot
    selkies-cli events              what happened: launches, crashes, heals, repairs
    selkies-cli clean               see and free the disk the forge uses
+   selkies-cli jobs                launches, backups and clones in progress or recent
+   selkies-cli backup NAME         back up a desktop's files (its home folder)
+   selkies-cli backups [NAME]      list backups
+   selkies-cli restore-backup NAME FILE   put a backup's files back (safety copy first)
+   selkies-cli clone NAME [NEW]    a second desktop with a copy of its files
+   selkies-cli idle NAME MIN       stop it after MIN minutes unwatched (0 = never)
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
@@ -1343,6 +1431,22 @@ USAGE
 main() {
   local MODE="menu" LAUNCH_ID="" BOOT_ACT="" EXTRACT_TO=""
   local -a ORIG_ARGS=("$@")
+  # Verbs that take desktop names: run them straight after the usual setup.
+  case "${1:-}" in
+    backup|backups|restore-backup|clone|jobs|idle)
+      local verb="$1"; shift
+      ensure_dirs; preflight; extract_payload
+      case "$verb" in
+        backup) cmd_backup "$@" ;;
+        backups) cmd_backups "$@" ;;
+        restore-backup) cmd_restore_backup "$@" ;;
+        clone) cmd_clone "$@" ;;
+        jobs) cmd_jobs ;;
+        idle) cmd_idle "$@" ;;
+      esac
+      exit $?
+      ;;
+  esac
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
     status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help|boot|restore|clean|events)

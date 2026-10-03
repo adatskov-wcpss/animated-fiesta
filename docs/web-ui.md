@@ -39,13 +39,17 @@ The launch view streams everything: steps (*check → fetch → build → forge 
 One card per desktop:
 
 - **Header:** logo, name, distro, desktop, running time or exit status.
-- **Session:** the window manager the agent sees, and the screen ("i3 running · 1600×900"). A red **Session crashed on start** line, with a link to what happened, if it's in rescue mode.
+- **Session:** the window manager the agent sees, the screen, and who is watching ("i3 running · 1600×900 · 2 watching", or "unwatched 14 min, stops in 16 min"). A red **Session crashed on start** line, with a link to what happened, if it's in rescue mode.
 - **Metrics:** CPU, memory against its cap, and network, with a live bandwidth sparkline.
 - **Access:** local and public links (copy, open), sign-in with reveal and copy.
 - **Limits:** RAM, CPU, shared memory, storage, auto-start. **Edit** changes them; memory, CPU and auto-start apply live, the rest recreate the desktop (files kept).
-- **Actions:** **Open desktop**, **Shell** (a live terminal that slides out inside the card), **Stop** / **Start**. The **⋯** menu has restart, open/drop public link, **container logs and what happened** (the event journal), edit limits, **Repair**, and remove (optionally with its files).
+- **Actions:** **Open desktop**, **Shell** (a live terminal that slides out inside the card), **Stop** / **Start**. The **⋯** menu has restart, open/drop public link, **container logs and what happened** (the event journal), edit limits, **Repair**, **Stop when idle…**, **Back up files**, **Backups…** (restore one, start a new desktop from one, delete), **Clone…**, and remove (optionally with its files).
 
 The top strip totals desktops, memory in use, and data downloaded and uploaded.
+
+**Working.** Launches, backups, restores and clones in progress show above the cards with their progress and a **Cancel** button. That includes ones started from `selkies-cli` in a terminal.
+
+**Low memory.** When the machine runs short of memory, the RAM meter turns red and a warning suggests what to stop.
 
 **Last stop banner.** After a reboot or a crash, a banner names what happened and offers to **start the desktops that were running then**.
 

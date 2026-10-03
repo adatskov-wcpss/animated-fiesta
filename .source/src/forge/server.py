@@ -24,10 +24,11 @@ from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
 from .info import entry_info, public_entry, shots_index
-from .jobs import JOBS, JOBS_LOCK, Job, job_get, job_put, jobs_running
-from .watchdog import WATCHDOG, reconcile
+from . import backups
+from .jobs import Job, all_jobs, cancel_foreign, job_get, job_put, jobs_running, read_job_states
+from .watchdog import PRESSURE, WATCHDOG, reconcile, recover_interrupted
 from .launch import launch
-from .lifecycle import instance_action, reconfigure
+from .lifecycle import instance_action, reconfigure, set_idle
 from .paths import (
     WEBDIR,
     KASM_HTTPS,
@@ -281,7 +282,9 @@ class Handler(BaseHTTPRequestHandler):
                                            if host["arch"] in e["arches"])},
             })
         if route == "/api/host":
-            return self._send(200, host_info(fresh=True))
+            out = dict(host_info(fresh=True))
+            out["pressure"] = dict(PRESSURE)
+            return self._send(200, out)
         if route == "/api/lifecycle":
             return self._send(200, {"last_stop": last_stop_report(), "boot": boot_report()})
         if route == "/api/update":
@@ -293,12 +296,17 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/stats":
             return self._send(200, {"stats": STATS.report(), "host": host_info()})
         if route == "/api/jobs":
-            with JOBS_LOCK:
-                return self._send(200, {"jobs": [j.snapshot() for j in JOBS.values()]})
+            # Every job on this machine: this web UI's, and selkies-cli's.
+            return self._send(200, {"jobs": all_jobs()})
         m = re.match(r"^/api/job/([0-9a-f]+)$", route)
         if m:
             job = job_get(m.group(1))
-            return self._send(200, job.snapshot()) if job else self._err(404, "no such job")
+            if job:
+                return self._send(200, job.snapshot())
+            st = next((j for j in read_job_states() if j.get("id") == m.group(1)), None)
+            return self._send(200, dict(st, foreign=True)) if st else self._err(404, "no such job")
+        if route == "/api/backups":
+            return self._send(200, {"backups": backups.list_backups(self._query().get("name") or None)})
         m = re.match(r"^/api/job/([0-9a-f]+)/events$", route)
         if m:
             return self._stream_job(m.group(1))
@@ -345,8 +353,35 @@ class Handler(BaseHTTPRequestHandler):
         if m:
             job = job_get(m.group(1))
             if not job:
-                return self._err(404, "no such job")
+                # A launch running in a terminal: it cancels on SIGINT like Ctrl-C.
+                return self._send(200, {"cancelled": cancel_foreign(m.group(1)), "foreign": True})
             return self._send(200, {"cancelled": job.cancel(), "job": job.snapshot()})
+        m = re.match(r"^/api/instance/([A-Za-z0-9_.-]+)/(backup|clone|idle)$", route)
+        if m:
+            name, what = m.group(1), m.group(2)
+            if what == "idle":
+                mins = body.get("minutes")
+                return self._send(200, set_idle(name, None if mins in (None, "") else int(mins)))
+            if what == "backup":
+                job = job_put(Job("backup", name, "Back up %s" % name))
+                return self._send(200, {"job": _run_job(job, backups.backup, name,
+                                                        include_cache=bool(body.get("include_cache")),
+                                                        job=job)})
+            job = job_put(Job("clone", name, "Clone %s" % name))
+            return self._send(200, {"job": _run_job(job, backups.clone, name,
+                                                    new_name=body.get("name") or None,
+                                                    tunnel=bool(body.get("tunnel")), job=job)})
+        if route == "/api/backups/restore":
+            name, file = body.get("name") or "", body.get("file") or ""
+            job = job_put(Job("restore", name, "Restore %s" % name))
+            return self._send(200, {"job": _run_job(job, backups.restore, name, file, job=job)})
+        if route == "/api/backups/clone":
+            job = job_put(Job("clone", None, "New desktop from %s" % body.get("file")))
+            return self._send(200, {"job": _run_job(job, backups.clone, None,
+                                                    new_name=body.get("name") or None,
+                                                    from_backup=body.get("file") or "", job=job)})
+        if route == "/api/backups/delete":
+            return self._send(200, backups.delete_backup(body.get("file") or ""))
         if route == "/api/space/clean":
             return self._send(200, space.clean(everything=bool(body.get("all")),
                                                volumes=bool(body.get("volumes")),
@@ -505,8 +540,22 @@ class Handler(BaseHTTPRequestHandler):
             return
 
 
+def _run_job(job, fn, *args, **kwargs):
+    """Run fn in a thread as `job`; failures land in the job, not the request."""
+    def work():
+        try:
+            fn(*args, **kwargs)
+        except Exception as ex:
+            if job.status == "running":
+                job.fail(str(ex))
+    job.thread = threading.Thread(target=work, daemon=True)
+    job.thread.start()
+    return job.snapshot()
+
+
 def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     ensure_dirs()
+    os.environ["FORGE_JOB_OWNER"] = "server"
     loopback = bind in ("127.0.0.1", "localhost", "::1")
     Handler.require_token = not loopback
     Handler.token = get_token(create=not loopback) if not loopback else None
@@ -528,6 +577,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     # Forget desktops that were removed behind our back, then keep watching.
     try:
         reconcile()
+        recover_interrupted()          # launches this web UI was running when it stopped
     except Exception:
         pass
     WATCHDOG.start()

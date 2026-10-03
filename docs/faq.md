@@ -18,6 +18,12 @@ Enlightenment, Cinnamon, Budgie, GNOME Flashback and UKUI are compositing window
 **What happens on a 4K screen?**
 Left alone, Selkies would give a 4K screen a 3840×2160 desktop, at 192 DPI on a HiDPI screen, with mismatched fonts and panels off the edge. The forge's [screen guard](forge-layer.md#the-screen-guard-4k-screens) spots a 4K-class screen in your browser and has Selkies run the desktop at about 1920 wide and scale it up. Smaller screens aren't touched.
 
+**Can I back up a desktop, or make a copy of one?**
+Yes. **Back up files** and **Clone…** in the manager's menu, or `selkies-cli backup NAME` and `selkies-cli clone NAME`. A backup is the desktop's home folder, and can become a new desktop later even if the original is gone. See [Backups](operations.md#backups).
+
+**Will a desktop I forgot about keep eating memory?**
+Only if you let it. Set **Stop when nobody's watching** when you forge it, or `FORGE_IDLE_STOP_MIN` for all of them, and the forge stops a desktop no browser tab has had open for that long. Its files are kept.
+
 **Why Alt instead of the Super key in i3 and bspwm?**
 Browsers and host operating systems usually catch the Super (Windows) key before it reaches the desktop.
 

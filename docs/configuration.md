@@ -20,7 +20,11 @@ Selkies Forge needs no configuration file. Everything has a sensible default, an
 | `FORGE_MAX_BUILDS` | `1` | Desktops building at once ([scheduler](engine.md#the-scheduler)) |
 | `FORGE_MAX_PULLS` | `2` | Images downloading at once |
 | `FORGE_MAX_BOOTS` | `2` | Desktops in their first boot at once |
-| `FORGE_HEAL` | `1` | `0` turns off restarting desktops that crash while the web UI runs |
+| `FORGE_HEAL` | `1` | `0` turns off restarting desktops that crash or freeze while the web UI runs |
+| `FORGE_IDLE_STOP_MIN` | `0` | Stop desktops nobody has watched for this many minutes (`0`: never). A desktop's own setting wins. |
+| `FORGE_PRESSURE_STOP` | `0` | `1`: when the machine is out of memory, stop the biggest desktop nobody is watching |
+| `FORGE_PULL_STALL` | `240` | Seconds without progress before a `docker pull` is restarted |
+| `FORGE_BUILD_STALL` | `1200` | Seconds without output before a `docker build` is restarted |
 
 ## Updates
 
@@ -50,11 +54,12 @@ These are set when you forge a desktop: in the web UI, the CLI prompts, or the [
 | Storage budget | At least 10 GB; enforced only where the storage driver supports quotas | Recreates the desktop |
 | Screen | `auto`: fixed 1920×1080 for compositing desktops, else follows the window (scaled on 4K screens by the [screen guard](forge-layer.md#the-screen-guard-4k-screens)) | Recreates the desktop |
 | Auto-start with Docker | Off | Live |
-| Healing after a crash | On | At launch |
+| Healing after a crash or freeze | On | At launch |
+| Stop when nobody's watching | The forge default (`FORGE_IDLE_STOP_MIN`, off) | Live, from the menu or `selkies-cli idle` |
 | Sign-in | Off (Kasm always on) | Recreate |
 | Public link | On | Any time, from the menu |
 | GPU (`/dev/dri`), seccomp unconfined | Off | Recreate |
 
 ## Docker labels
 
-Every container the forge makes carries `io.selkiesforge.*` labels: `entry`, `title`, `family`, `glyph`, `de`, `profile`, `version`, `disk`, `volume`, `display` (`fit` or `fixed:WxH`) and `heal`. These labels, not the engine's own files, are the source of truth.
+Every container the forge makes carries `io.selkiesforge.*` labels: `entry`, `title`, `family`, `glyph`, `de`, `profile`, `version`, `disk`, `volume`, `display` (`fit` or `fixed:WxH`), `heal`, and `job` (the launch that made it, for crash recovery). These labels, not the engine's own files, are the source of truth.

@@ -676,6 +676,26 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 
 @media (max-width: 900px) { .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
+/* Jobs in progress on this machine (this UI's and selkies-cli's). */
+.jobstrip {
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  background: var(--glass-2);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+.jobstrip[hidden] { display: none; }
+.jobstrip > b { color: var(--dim); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.jrow { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.jrow .jt { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+.jrow .jp { color: var(--dim); flex: 1; min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jrow .jbar { width: 120px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.jrow .jbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--acc), var(--acc-2)); }
+.jrow .jn { width: 3.2em; text-align: right; color: var(--dim); font-variant-numeric: tabular-nums; }
+
 .stat {
   border: 1px solid var(--line);
   border-radius: var(--r-m);
@@ -897,6 +917,10 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   z-index: 12;
   display: grid;
   gap: 2px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
 }
 
 .menu[hidden] { display: none; }
@@ -906,7 +930,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 9px 11px;
+  padding: 8px 11px;
   border: 0;
   border-radius: 9px;
   background: transparent;

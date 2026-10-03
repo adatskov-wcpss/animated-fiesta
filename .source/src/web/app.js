@@ -110,6 +110,8 @@
     globe: '<svg ' + SVG + '><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>' +
            '<path d="M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21C9.5 18.4 8.2 15.4 8.2 12S9.5 5.6 12 3z"/></svg>',
     home: '<svg ' + SVG + '><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>',
+    plus: '<svg ' + SVG + '><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/><path d="M14 11v6M11 14h6"/></svg>',
+    save: '<svg ' + SVG + '><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>',
     lock: '<svg ' + SVG + '><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
     copy: '<svg ' + SVG + '><rect x="9" y="9" width="11" height="11" rx="2"/>' +
           '<path d="M5 15V5h10"/></svg>',
@@ -217,7 +219,30 @@
     return api("/api/host").then(function (hh) { S.host = hh; renderMeters(); }).catch(function () {});
   }
 
+  /* Everything running on this machine: this UI's launches and selkies-cli's. */
+  function refreshJobs() {
+    return api("/api/jobs").then(function (r) {
+      S.jobs = (r.jobs || []).filter(function (j) { return j.status === "running"; });
+      renderJobStrip();
+    }).catch(function () {});
+  }
+  function renderJobStrip() {
+    var el = $("#jobStrip");
+    if (!el) return;
+    var jobs = S.jobs || [];
+    el.hidden = !jobs.length;
+    el.innerHTML = jobs.length ? "<b>Working</b>" + jobs.map(function (j) {
+      var pct = Math.round((j.progress || 0) * 100);
+      return '<div class="jrow"><span class="jt">' + h(j.title || j.kind) + "</span>" +
+        '<span class="jp">' + h(j.label || j.phase || "") + (j.foreign ? " \u00b7 from the terminal" : "") + "</span>" +
+        '<span class="jbar"><i style="width:' + pct + '%"></i></span><span class="jn">' + pct + "%</span>" +
+        ((!j.foreign || j.owner === "cli") ? '<button class="btn sm ghost" data-jobcancel="' + h(j.id) + '">Cancel</button>' : "") +
+        "</div>";
+    }).join("") : "";
+  }
+
   function refreshInstances() {
+    if (S.view === "manager") refreshJobs();
     return api("/api/instances").then(function (r) {
       S.instances = r.instances || [];
       renderRail();
@@ -246,8 +271,14 @@
       return '<div class="meter"><b>' + h(label) + '</b><div class="v">' + h(value) +
         '</div><div class="bar ' + cls + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
     }
+    var pr = hst.pressure || {};
+    if (pr.active && !S.pressureToast) {
+      S.pressureToast = true;
+      toast("The machine is low on memory", "Stop a desktop you are not using, or set one to stop when idle.", "bad");
+    }
+    if (!pr.active) S.pressureToast = false;
     $("#meters").innerHTML =
-      m("RAM FREE", mb(hst.mem_avail_mb) + " of " + mb(hst.mem_total_mb), memPct) +
+      m(pr.active ? "RAM LOW" : "RAM FREE", mb(hst.mem_avail_mb) + " of " + mb(hst.mem_total_mb), pr.active ? 100 : memPct) +
       m("CPU LOAD", (hst.load1 || 0).toFixed(2) + " of " + (hst.cpus || "?") + " cores", cpuPct) +
       m("DISK FREE", mb(hst.disk_free_mb), diskPct);
   }
@@ -579,6 +610,7 @@
       toggle("oGpu", false, "Pass the GPU through",
         S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
       toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
+      idleField("oIdle", null) +
       (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
 
     /* -- dockerfile */
@@ -636,6 +668,21 @@
       (preferred === "fixed" ? "This desktop misdraws when the screen changes size under it, so it runs at a fixed size by default."
         : "Follow suits most desktops; on a 4K screen it's scaled up from a desktop about 1920 wide, so text stays readable. " +
           "Choose fixed if anything ever ends up off the edge.") + "</p>";
+  }
+
+  /* Stop when nobody's watching: the watchdog counts open tabs, and stops a
+     desktop that has had none for this long. Its files are kept. */
+  var IDLE_CHOICES = [["", "Forge default"], ["0", "Never"], ["30", "After 30 minutes"],
+    ["60", "After 1 hour"], ["120", "After 2 hours"], ["240", "After 4 hours"]];
+  function idleField(id, cur) {
+    var v = cur === null || cur === undefined ? "" : String(cur);
+    if (v && !IDLE_CHOICES.some(function (c) { return c[0] === v; })) IDLE_CHOICES.push([v, "After " + v + " minutes"]);
+    return '<label class="field" style="margin-top:12px"><span>Stop when nobody\u2019s watching</span><select id="' + id + '">' +
+      IDLE_CHOICES.map(function (c) {
+        return '<option value="' + c[0] + '"' + (c[0] === v ? " selected" : "") + ">" + h(c[1]) + "</option>";
+      }).join("") + "</select></label>" +
+      '<p class="sub" style="margin:2px 0 0;font-size:12px">Frees its memory when no browser tab has it open. ' +
+      "Files are kept; start it again any time. Needs the web UI running.</p>";
   }
 
   function slider(id, label, min, max, step, val, fmt, advice) {
@@ -697,6 +744,7 @@
       opts.display = $("#oDisplay").value;
       opts.resolution = $("#oRes").value;
     }
+    if ($("#oIdle") && $("#oIdle").value !== "") opts.idle_stop = parseInt($("#oIdle").value, 10);
     var nm = $("#oName") && $("#oName").value.trim();
     if (nm) opts.name = nm;
     if ($("#oAuth") && $("#oAuth").checked) {
@@ -890,7 +938,8 @@
       return [i.name, i.running ? 1 : 0, (i.tunnel && i.tunnel.url) || "",
         (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
         i.autostart ? 1 : 0, i.auth ? i.auth.user : "",
-        i.session ? [i.session.wm, i.session.mode, i.session.screen].join("/") : ""].join(":");
+        i.session ? [i.session.wm, i.session.mode, i.session.screen, i.session.viewers,
+          Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min].join(":");
     }).join("|");
   }
 
@@ -996,6 +1045,11 @@
           (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest forge layer; files are kept">' +
             I.restart + "Repair</button>") +
           '<button data-tune="' + h(i.name) + '">' + I.tune + "Edit limits</button>" +
+          '<button data-act="idle" title="Stop it when nobody has it open">' + I.stop + "Stop when idle\u2026</button>" +
+          "<hr>" +
+          '<button data-act="backup" title="Copy its files (home folder) to a backup">' + I.save + "Back up files</button>" +
+          '<button data-act="backups">' + I.logs + "Backups\u2026</button>" +
+          '<button data-act="clone" title="A second desktop with a copy of its files">' + I.plus + "Clone\u2026</button>" +
           "<hr>" +
           '<button class="danger" data-act="remove">' + I.trash + "Remove</button>" +
         "</div></div>" +
@@ -1013,11 +1067,26 @@
       return '<section class="mc-session bad">Session crashed on start; a rescue window shows why. ' +
         '<button class="btn sm" data-logs="' + h(i.name) + '">See what happened</button></section>';
     }
-    if (!s.wm) return "";
+    var watch = "";
+    if (typeof s.viewers === "number") {
+      watch = s.viewers ? " \u00b7 " + s.viewers + " watching"
+        : " \u00b7 unwatched" + (s.idle_s >= 120 ? " " + dur(s.idle_s) : "");
+      if (!s.viewers && i.idle_stop_min) {
+        var left = i.idle_stop_min * 60 - (s.idle_s || 0);
+        watch += left > 0 ? ", stops in " + dur(left) : ", stopping";
+      }
+    }
+    if (!s.wm) return watch ? '<section class="mc-session">' + h(watch.slice(3)) + "</section>" : "";
     var scr = s.screen && s.screen !== "wayland" ? s.screen.replace("x", "\u00d7") : s.screen;
     return '<section class="mc-session"><i class="ok"></i>' + h(s.wm) + " running" +
       (scr ? " \u00b7 " + h(scr) : "") + ((i.display || "").indexOf("fixed") === 0 ? " \u00b7 fixed size, scaled" : "") +
-      "</section>";
+      h(watch) + "</section>";
+  }
+  function dur(sec) {
+    sec = Math.max(0, Math.round(sec));
+    if (sec < 90) return sec + "s";
+    if (sec < 5400) return Math.round(sec / 60) + " min";
+    return (sec / 3600).toFixed(sec < 36000 ? 1 : 0) + " h";
   }
   function catEntry(id) {
     var c = (S.boot && S.boot.catalog) || [];
@@ -1108,8 +1177,92 @@
     }
   }
 
+  /* Long jobs started from the manager (backup, restore, clone) report back
+     through the job API; the Working strip shows them while they run. */
+  function watchJob(id, label, onDone) {
+    var tick = function () {
+      api("/api/job/" + id).then(function (j) {
+        if (j.status === "running") { setTimeout(tick, 1500); return; }
+        if (j.status === "done") toast(label + " done", (j.result && (j.result.file || j.result.name)) || "", "ok");
+        else toast(label + (j.status === "cancelled" ? " cancelled" : " failed"),
+          (j.error && j.error.message) || j.status, j.status === "cancelled" ? "" : "bad");
+        S.instKey = "";
+        refreshInstances();
+        refreshJobs();
+        if (onDone) onDone(j);
+      }).catch(function () { setTimeout(tick, 3000); });
+    };
+    setTimeout(tick, 800);
+    refreshJobs();
+  }
+
+  function startJob(url, body, label, onDone) {
+    toast(label + "\u2026", "");
+    return api(url, { body: body || {} }).then(function (r) { watchJob(r.job.id, label, onDone); })
+      .catch(function (e) { toast(label + " failed", e.message, "bad"); });
+  }
+
+  function showBackups(name) {
+    openModal("Backups \u00b7 " + name, '<div class="skel" style="height:120px"></div>');
+    api("/api/backups?name=" + encodeURIComponent(name)).then(function (r) {
+      var rows = r.backups || [];
+      $("#modalBody").innerHTML =
+        '<div class="row" style="margin-bottom:12px"><p class="sub" style="margin:0;flex:1">Copies of this desktop\u2019s ' +
+        "home folder (caches left out). Restoring takes a safety copy of the current files first.</p>" +
+        '<button class="btn sm primary" data-bk="new">Back up now</button></div>' +
+        (rows.length ? '<div class="evlist">' + rows.map(function (b) {
+          return '<div class="ev"><span class="t">' + h(new Date(b.created * 1000).toLocaleString()) + "</span>" +
+            "<b>" + h(mb(b.size / 1048576)) + (b.tag ? " \u00b7 " + h(b.tag) : "") + "</b>" +
+            '<span class="d">' + h(b.file) + "</span>" +
+            '<span class="row" style="gap:6px;margin-left:auto">' +
+            '<button class="btn sm" data-bk="restore" data-file="' + h(b.file) + '">Restore</button>' +
+            '<button class="btn sm ghost" data-bk="fork" data-file="' + h(b.file) + '">New desktop</button>' +
+            '<button class="btn sm ghost" data-bk="del" data-file="' + h(b.file) + '">Delete</button></span></div>';
+        }).join("") + "</div>" : '<div class="empty">No backups yet.</div>');
+      $$("#modalBody [data-bk]").forEach(function (b) {
+        b.onclick = function () {
+          var f = b.dataset.file, k = b.dataset.bk;
+          if (k === "new") { closeModal(); startJob("/api/instance/" + encodeURIComponent(name) + "/backup", {}, "Backup of " + name); }
+          if (k === "restore" && confirm("Replace " + name + "\u2019s files with this backup?\n\n" + f +
+              "\n\nA safety backup of the current files is taken first. A running desktop restarts.")) {
+            closeModal(); startJob("/api/backups/restore", { name: name, file: f }, "Restore of " + name);
+          }
+          if (k === "fork") {
+            var nn = prompt("Name for the new desktop (optional)", "");
+            if (nn === null) return;
+            closeModal(); startJob("/api/backups/clone", { file: f, name: nn.trim() }, "New desktop from backup");
+          }
+          if (k === "del" && confirm("Delete this backup for good?\n\n" + f)) {
+            api("/api/backups/delete", { body: { file: f } }).then(function () { showBackups(name); })
+              .catch(function (e) { toast("Delete failed", e.message, "bad"); });
+          }
+        };
+      });
+    }).catch(function (e) { $("#modalBody").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>"; });
+  }
+
   function instAction(name, act) {
     var body = {};
+    var enc = encodeURIComponent(name);
+    if (act === "backup") return startJob("/api/instance/" + enc + "/backup", {}, "Backup of " + name);
+    if (act === "backups") return showBackups(name);
+    if (act === "clone") {
+      var nn = prompt("Clone " + name + "\n\nA second desktop with a copy of all its files, the same limits " +
+        "and options. Name for the copy (optional):", "");
+      if (nn === null) return;
+      return startJob("/api/instance/" + enc + "/clone", { name: nn.trim() }, "Clone of " + name);
+    }
+    if (act === "idle") {
+      var cur = (S.instances.filter(function (x) { return x.name === name; })[0] || {}).idle_stop_min || 0;
+      var mins = prompt("Stop " + name + " after how many minutes with nobody watching?\n\n" +
+        "0 = never. Leave empty for the forge default. Files are always kept.", cur ? String(cur) : "");
+      if (mins === null) return;
+      return api("/api/instance/" + enc + "/idle", { body: { minutes: mins.trim() === "" ? null : parseInt(mins, 10) || 0 } })
+        .then(function (r) {
+          toast("Idle stop " + (r.idle_stop_min ? "after " + r.idle_stop_min + " min" : r.idle_stop_min === 0 ? "off" : "default"), name, "ok");
+          S.instKey = ""; refreshInstances();
+        }).catch(function (e) { toast("Could not set it", e.message, "bad"); });
+    }
     if (act === "repair" && !confirm("Repair " + name + "?\n\nIt is recreated on the newest forge layer " +
         "(first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.")) return;
     if (act === "remove") {
@@ -1152,10 +1305,13 @@
         "heal-skipped": "crashed too often, left stopped", "session-rescue": "session crashed, rescue shown",
         stop: "stopped", start: "started", restart: "restarted", repair: "repaired", retune: "limits changed",
         recreate: "recreated", "launch-failed": "launch failed", "launch-cancelled": "launch cancelled",
-        stopped: "stopped outside the forge" };
+        stopped: "stopped outside the forge", "session-frozen": "froze (no sign of life)",
+        "idle-stop": "stopped: nobody was watching", "pressure-stop": "stopped: the machine was out of memory",
+        "launch-interrupted": "launch interrupted", backup: "backed up", restored: "files restored",
+        cloned: "cloned", "idle-limit": "idle stop changed", "heal-failed": "restart after a crash failed" };
       var evHtml = evs.length ? '<h3 style="margin:0 0 8px">What happened</h3><div class="evlist">' +
         evs.map(function (x) {
-          var bad = /crash|fail|rescue|skipped/.test(x.event);
+          var bad = /crash|fail|rescue|skipped|frozen|interrupted|pressure/.test(x.event);
           return '<div class="ev' + (bad ? " bad" : "") + '"><span class="t">' +
             h(new Date(x.ts * 1000).toLocaleString()) + '</span><b>' + h(EV[x.event] || x.event) + "</b>" +
             (x.detail && x.detail !== "requested" ? '<span class="d">' + h(x.detail) + "</span>" : "") + "</div>";
@@ -1748,7 +1904,17 @@
         var menu = mbtn.parentNode.querySelector(".menu");
         var wasOpen = !menu.hidden;
         closeMenus();
-        if (!wasOpen) { menu.hidden = false; closeMenus(menu); }
+        if (!wasOpen) {
+          menu.hidden = false;
+          // The card clips its contents (rounded corners), so fit the menu in
+          // the room above the button and let it scroll if it is longer.
+          var card = mbtn.closest(".mc");
+          if (card) {
+            var room = mbtn.getBoundingClientRect().top - card.getBoundingClientRect().top - 14;
+            menu.style.maxHeight = Math.max(160, room) + "px";
+          }
+          closeMenus(menu);
+        }
         return;
       }
       if (!t.closest(".menu")) closeMenus();
@@ -1769,6 +1935,14 @@
           val.innerHTML = "<span>" + h(inst.auth.user) + '</span><span class="muted"> / ' +
             (shown ? h(inst.auth.password) : "••••••••") + "</span>";
         }
+        return;
+      }
+      if ((x = t.closest("[data-jobcancel]"))) {
+        x.disabled = true;
+        api("/api/job/" + x.dataset.jobcancel + "/cancel", { body: {} }).then(function (r) {
+          toast(r.cancelled ? "Cancelling\u2026" : "Could not cancel it", "", r.cancelled ? "" : "bad");
+          setTimeout(refreshJobs, 1500);
+        }).catch(function (e) { toast("Cancel failed", e.message, "bad"); });
         return;
       }
       if ((x = t.closest("[data-act]"))) {

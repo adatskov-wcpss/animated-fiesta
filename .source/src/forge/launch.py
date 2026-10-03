@@ -6,7 +6,7 @@ The launch pipeline: resolve, fetch, layer, start, verify, tunnel.
 
 import time
 
-from . import catalog
+from . import catalog, ledger
 from .health import LaunchProblem, mem_pressure, pick_fix, wait_http, wait_session
 from .host import docker_ok, host_info, image_present, manifest_probe
 from .images import ensure_layer, get_image
@@ -17,7 +17,8 @@ from .paths import VERSION
 from .ports import release_port_reservation
 from .recipes import build_image_tag
 from .registry import docker_instances
-from .runner import container_name_for, display_for, docker_run_resilient
+from .paths import CPREFIX
+from .runner import container_name_for, display_for, docker_run_args, docker_run_resilient
 from .scheduler import slot
 from .smart import plan_resources
 from .store import reg_delete, reg_update
@@ -37,16 +38,21 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
     a time by default), the job can be cancelled at any point (whatever is
     running is killed and a half-made desktop is removed), and everything that
     happens is written to the event journal.
+
+    opts["dry_run"] stops after the checks and reports what would happen: the
+    plan, the image, the download, and the exact `docker run`.
     """
     opts = dict(opts or {})
     entry = catalog.BY_ID.get(entry_id)
     if not entry:
         raise RuntimeError("unknown catalog id: %s" % entry_id)
     job = job or job_put(Job("launch", entry_id, entry["name"]))
+    opts["job_id"] = job.id
     host = host_info(fresh=True)
     plan = dict(plan or plan_resources(entry, host))
     reserved = []
     cname = None
+    vol_existed = False
 
     try:
         # ---- 1. check this machine can run it ---------------------------
@@ -86,6 +92,8 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                    ", ".join(alts) or "another desktop"))
         if real_dl:
             job.log("download : about %s for %s" % (human_mb(real_dl), host["arch"]))
+        if opts.get("dry_run"):
+            return _dry_run(entry, plan, opts, host, job, name, real_dl, res)
 
         if not host["quota_support"] and plan.get("disk_mb"):
             job.log("note     : %s on %s cannot enforce a hard disk cap, so the %s "
@@ -115,17 +123,26 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                           else "Starting it again (try %d)" % attempt, 0.84)
             if not cname:
                 cname = container_name_for(entry, name or opts.get("name"))
+                # A volume kept from a removed desktop of the same name is
+                # someone's files: never delete it when this launch fails.
+                vol_existed = run(["docker", "volume", "inspect", _volume_for(cname)],
+                                  timeout=20)[0] == 0 and not opts.get("prepared_volume")
+                job.note(container=cname, volume=_volume_for(cname),
+                         keep_volume=vol_existed or None)
             cname, reserved, vol, cid = docker_run_resilient(
                 entry, cname, plan, opts, run_image, host, job,
                 want_ports=reserved or opts.get("ports"))
             job.log("container: %s (%s)" % (cname, cid[:12]))
             events.record(cname, "create", "%s (try %d)" % (entry["name"], attempt),
                           entry=entry["id"], image=run_image)
-            reg_update(cname, {"entry_id": entry["id"], "created": time.time(),
-                               "plan": plan, "opts": {k: v for k, v in opts.items()
-                                                      if k != "password"},
-                               "volume": vol, "image": run_image,
-                               "ports": reserved, "tunnel": None})
+            note = {"entry_id": entry["id"], "created": time.time(),
+                    "plan": plan, "opts": {k: v for k, v in opts.items()
+                                           if k not in ("password", "job_id", "prepared_volume", "dry_run")},
+                    "volume": vol, "image": run_image,
+                    "ports": reserved, "tunnel": None}
+            if opts.get("idle_stop") is not None:
+                note["idle_stop_min"] = int(opts["idle_stop"])
+            reg_update(cname, note)
             try:
                 job.set_phase("health", "Waiting for the desktop to come up", 0.88)
                 heavy = entry.get("weight") in ("full", "heavy")
@@ -218,6 +235,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                   }
         events.record(cname, "ready", warning or (session.get("wm") or "up"),
                       fixes=sorted(tried) or None)
+        ledger.release(job.id)
         job.set_phase("ready", "Ready", 1.0)
         job.finish(result)
         return result
@@ -226,11 +244,13 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
         if "boot" in locals() and boot is not None:
             boot.__exit__(None, None, None)
         release_port_reservation(reserved)
+        ledger.release(job.id)
         if isinstance(ex, JobCancelled) or job.cancelled:
             # A desktop that never finished starting is of no use to anyone.
             if cname:
                 run(["docker", "rm", "-f", cname], timeout=120)
-                run(["docker", "volume", "rm", "-f", "forge-config-%s" % cname], timeout=60)
+                if not vol_existed:
+                    run(["docker", "volume", "rm", "-f", _volume_for(cname)], timeout=60)
                 reg_delete(cname)
                 events.record(cname, "launch-cancelled", "cancelled during %s" % job.phase)
             job.fail("cancelled during %s; nothing was left behind" % job.phase)
@@ -247,23 +267,84 @@ def admit_memory(entry, plan, host, job, opts):
     A limit is a cap, not a reservation, so the plan can exceed what is free
     (the desktop just runs tighter). But below the desktop's floor it would
     thrash or be OOM-killed; say so up front and name what is using memory.
+
+    Memory other launches have booked (see ledger.py) counts as used: two
+    desktops starting at once must both fit, not each fit on its own. Once
+    admitted, this launch books its own floor until it is up.
     """
     free = int(host.get("mem_avail_mb") or 0)
     floor = int(entry.get("ram_min") or 0)
     if not free or not floor:
         return
+    others, rows = ledger.booked(exclude=job.id)
+    usable = free - others
+    if others:
+        job.log("memory   : %s free, %s of it set aside for %d desktop%s still starting"
+                % (human_mb(free), human_mb(others), len(rows), "" if len(rows) == 1 else "s"))
     running = running_desktop_names()
-    if free < floor and not opts.get("force"):
+    if usable < floor and not opts.get("force"):
+        starting = ""
+        if others:
+            starting = ("%s is set aside for desktops that are still starting (%s). "
+                        % (human_mb(others), ", ".join(sorted(set(
+                            (catalog.BY_ID.get(r.get("entry")) or {}).get("name", r.get("entry") or "?")
+                            for r in rows)))))
         raise RuntimeError(
-            "only %s of memory is free and %s needs at least %s to start. %s"
-            "Stop a desktop, or pick a lighter one (or pass force to try anyway)."
-            % (human_mb(free), entry["name"], human_mb(floor),
-               ("Running now: %s. " % ", ".join(n.replace("forge-", "", 1) for n in running))
+            "only %s of memory is free and %s needs at least %s to start. %s%s"
+            "Stop a desktop, wait for the others to finish starting, or pick a lighter one "
+            "(or pass force to try anyway)."
+            % (human_mb(max(0, usable)), entry["name"], human_mb(floor), starting,
+               ("Running now: %s. " % ", ".join(n.replace(CPREFIX, "", 1) for n in running))
                if running else ""))
-    if free < plan.get("memory_mb", 0):
+    ledger.book(job.id, floor, entry["id"])
+    if usable < plan.get("memory_mb", 0):
         job.log("note     : the %s memory cap is more than the %s free right now; it will "
                 "work, but may get slow if it uses it all" % (human_mb(plan["memory_mb"]),
-                                                              human_mb(free)))
+                                                              human_mb(max(0, usable))))
+
+
+def _volume_for(cname):
+    return "%sconfig-%s" % (CPREFIX, cname)
+
+
+def _dry_run(entry, plan, opts, host, job, name, real_dl, res):
+    """Everything a launch would do, without doing it."""
+    ledger.release(job.id)
+    image = entry["image"] if entry["kind"] == "pull" else build_image_tag(entry)
+    have = image_present(image)
+    cname = container_name_for(entry, name or opts.get("name"))
+    run_image = image if entry.get("profile") == "kasm" else "%s + forge layer" % image
+    args, vol = docker_run_args(entry, cname, [0, 0] if entry["profile"] != "kasm" else [0],
+                                plan, dict(opts, job_id=None), run_image, host)
+    steps = []
+    if entry["kind"] == "pull":
+        steps.append("use %s (already here)" % image if have else
+                     "pull %s (%s)" % (image, human_mb(real_dl or entry["dl_mb"])))
+    else:
+        steps.append("reuse the built image %s" % image if have else
+                     "build %s on %s: %s" % (image, entry["recipe"]["image"],
+                                             entry["recipe"]["pkgs"]))
+    if entry.get("profile") != "kasm":
+        steps.append("add the forge layer (first-run fixes, screen agent, screen guard)")
+    steps.append("start %s with %s RAM, %s CPU, %s shm, volume %s"
+                 % (cname, human_mb(plan["memory_mb"]), plan["cpus"],
+                    human_mb(plan["shm_mb"]), vol))
+    steps.append("wait for the web page, then for a window manager that stays up")
+    if opts.get("tunnel", True):
+        steps.append("open a serveo tunnel")
+    job.log("dry run  : nothing will be downloaded, built or started")
+    for i, st in enumerate(steps, 1):
+        job.log("  %d. %s" % (i, st))
+    shown = " ".join(a if " " not in a else "'%s'" % a for a in args)
+    job.log("docker   : " + shown.replace("PASSWORD=%s" % opts.get("password"), "PASSWORD=***")
+            if opts.get("password") else "docker   : " + shown)
+    result = {"dry_run": True, "entry_id": entry["id"], "name": cname, "plan": plan,
+              "image": image, "image_present": have, "download_mb": real_dl or entry["dl_mb"],
+              "display": "fixed %dx%d" % res if res else "fit", "steps": steps,
+              "docker_run": args}
+    job.set_phase("ready", "Dry run complete", 1.0)
+    job.finish(result)
+    return result
 
 
 def _hints_for(msg):

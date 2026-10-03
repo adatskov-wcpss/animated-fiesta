@@ -11,7 +11,7 @@ from .info import public_entry
 from .paths import KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .store import reg_load
 from .tunnels import tunnel_status
-from .watchdog import session_health
+from .watchdog import idle_limit, session_health
 from .util import _int_or_none, run
 
 
@@ -84,6 +84,8 @@ def docker_instances():
             "display": labels.get("%s.display" % LABEL) or "",
             "heal": labels.get("%s.heal" % LABEL) != "off",
             "session": session_health(name) if state.get("Running") else None,
+            # minutes unwatched before the watchdog stops it (0: never)
+            "idle_stop_min": idle_limit(name, reg),
             "autostart": restart in ("always", "unless-stopped", "on-failure"),
             "restart_policy": restart,
             "auth": auth,

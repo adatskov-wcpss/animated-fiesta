@@ -13,7 +13,7 @@ from collections import deque
 
 from . import layer
 from .host import host_info, image_id, image_present
-from .jobs import stream_cmd, stream_cmd_pty
+from .jobs import CommandStalled, stream_cmd, stream_cmd_pty
 from .scheduler import slot
 from .paths import ANSI_RE, BUILDDIR, IPREFIX, LABEL
 from .recipes import build_image_tag, gen_dockerfile, gen_startwm
@@ -195,6 +195,21 @@ def get_image(entry, host, job, opts):
 
 
 BAR_LINE = re.compile(r"\[[=>\s]*\]")
+
+
+def _stall_limit(var, default):
+    """Seconds of silence before a pull or build counts as stuck."""
+    try:
+        return max(30, int(os.environ.get(var, default)))
+    except ValueError:
+        return default
+
+
+# A pull prints progress every second while bytes move; four silent minutes
+# means a dead connection. Package installs can sit quietly in a long
+# post-install script, so a build gets twenty.
+PULL_STALL = _stall_limit("FORGE_PULL_STALL", 240)
+BUILD_STALL = _stall_limit("FORGE_BUILD_STALL", 1200)
 NET_FLAKY = re.compile(r"tls handshake timeout|i/o timeout|connection reset|unexpected eof|"
                        r"context deadline exceeded|toomanyrequests|too many requests|"
                        r"\b50[234]\b|temporary failure|net/http|connection refused|"
@@ -235,7 +250,17 @@ def do_pull(image, arch, job, weight=(0.02, 0.78)):
                 job.set_progress(lo + (hi - lo) * f, prog.summary())
 
         cmd = ["docker", "pull", "--platform", "linux/%s" % arch, image]
-        rc = stream_cmd_pty(cmd, on_line, timeout=5400, job=job)
+        try:
+            rc = stream_cmd_pty(cmd, on_line, timeout=5400, job=job, stall=PULL_STALL)
+        except CommandStalled as st:
+            if attempt < 4:
+                job.log("pull stalled: no progress for %ds (a dead connection); restarting it, "
+                        "already downloaded layers are kept" % st.seconds, "err")
+                time.sleep(3)
+                continue
+            raise RuntimeError("docker pull of %s kept stalling (no progress for %ds, %d times); "
+                               "the network or registry is not delivering" % (image, st.seconds,
+                                                                              attempt))
         if rc == 0:
             job.set_progress(hi, prog.summary())
             return
@@ -294,7 +319,15 @@ def do_build(entry, tag, job, weight=(0.46, 0.78)):
         cmd = ["docker", "build", "--progress=plain", "--platform",
                "linux/%s" % host_info()["arch"], "-t", tag, "-f",
                os.path.join(ctx, "Dockerfile"), ctx]
-        rc = stream_cmd(cmd, on_line, env=env, timeout=10800, job=job)
+        try:
+            rc = stream_cmd(cmd, on_line, env=env, timeout=10800, job=job, stall=BUILD_STALL)
+        except CommandStalled as st:
+            if attempt < 3:
+                job.log("build stalled: no output for %ds; restarting it (finished steps are "
+                        "cached)" % st.seconds, "err")
+                continue
+            raise RuntimeError("docker build of %s kept stalling (no output for %ds)"
+                               % (entry["id"], st.seconds))
         if rc == 0:
             job.set_progress(hi)
             return

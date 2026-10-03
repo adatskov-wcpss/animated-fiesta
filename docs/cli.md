@@ -38,12 +38,18 @@ The menu works with ↑↓ and Enter. `q` goes back.
 | `selkies-cli stop` | Stop the web UI (your desktops keep running) |
 | `selkies-cli restart` | Restart the web UI on the same address |
 | `selkies-cli open` | Print the web UI's link, and open it if there's a browser. Offers to start it if it's down. |
-| `selkies-cli manager` | Manage desktops in the terminal: links, shell, tunnel, limits, auto-start, restart, stop, logs, **what happened**, **repair**, remove |
+| `selkies-cli manager` | Manage desktops in the terminal: links, shell, tunnel, limits, auto-start, restart, stop, logs, **what happened**, **back up**, **clone**, **stop when idle**, **repair**, remove |
 | `selkies-cli new` | The hand-picked list of desktops |
 | `selkies-cli list` | Every desktop with its ID, size and needs |
 | `selkies-cli doctor` | Check Docker, memory, disk, quota support, serveo |
 | `selkies-cli events` | The event journal: launches, crashes, heals, repairs, stops |
 | `selkies-cli clean` | What the forge uses on disk, and options to free it |
+| `selkies-cli jobs` | Launches, backups and clones, running or recent, from the web UI and the terminal |
+| `selkies-cli backup NAME` | Back up a desktop's files (its home folder, caches left out), with live progress |
+| `selkies-cli backups [NAME]` | List backups |
+| `selkies-cli restore-backup NAME FILE` | Put a backup's files back; a safety backup of the current files is taken first |
+| `selkies-cli clone NAME [NEW]` | A second desktop with a copy of NAME's files, limits and options |
+| `selkies-cli idle NAME MIN` | Stop it after MIN minutes with nobody watching; `0` never, `default` the forge default |
 | `selkies-cli boot on` / `boot off` / `boot` | Start the web UI by itself at boot, stop doing that, or show the setting |
 | `selkies-cli restore` | Start the desktops that were running before the last reboot or crash |
 | `selkies-cli update` | Get the latest version from GitHub now |
@@ -104,7 +110,11 @@ python3 ~/.selkies-forge/app/engine.py --help
 | Command | What it does |
 |---|---|
 | `serve [--port N] [--bind A] [--tunnel]` | Run the web UI |
-| `launch ID [--name N] [--memory MB] [--cpus N] [--shm MB] [--disk MB] [--user U --password P] [--display auto\|fit\|fixed] [--resolution WxH] [--no-tunnel] [--force] [--timeout S]` | Forge a desktop, streaming `P` (progress), `L` (log), `E` (error), `H` (hint) and `D` (result JSON) lines |
+| `launch ID [--name N] [--memory MB] [--cpus N] [--shm MB] [--disk MB] [--user U --password P] [--display auto\|fit\|fixed] [--resolution WxH] [--no-tunnel] [--force] [--timeout S] [--idle-stop MIN] [--dry-run]` | Forge a desktop, streaming `P` (progress), `L` (log), `E` (error), `H` (hint) and `D` (result JSON) lines. `--dry-run` checks everything and shows what would happen. |
+| `jobs [--json]`, `recover` | Every job on this machine; clean up after launches whose process died |
+| `backup NAME [--with-cache]`, `backups [--name N]`, `restore-backup NAME FILE`, `delete-backup FILE` | Backups, streamed like a launch |
+| `clone NAME [--as NEW] [--tunnel]`, `clone --from-backup FILE [--as NEW]` | A new desktop with a copy of another's files, or of a backup's |
+| `idle NAME MIN\|0\|default` | The idle limit |
 | `do NAME start\|stop\|restart\|remove\|tunnel\|untunnel\|repair [--purge]` | Act on a desktop |
 | `retune NAME [--memory] [--cpus] [--shm] [--disk] [--autostart on\|off]` | Change limits (live, or by recreating) |
 | `instances`, `stats`, `status` | The live view, as JSON |

@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.6.1"
+FORGE_VERSION="1.7.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,25 +528,27 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
+FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
-FORGE_SHA_FORGE_CLI_PY="86bbf75ad7e1cc815a55242364f852c92489031c96a2522d8d4c27b28977f483"
+FORGE_SHA_FORGE_CLI_PY="94174acf723a27bd28d655fe218387ed6137025b8b8be34df8135ac5f7901fc5"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
-FORGE_SHA_FORGE_EVENTS_PY="970425f0bfdad944f9f9ef90f9b04dfc956a88674f3af831b212c6eb7bb8ed03"
+FORGE_SHA_FORGE_EVENTS_PY="3580b5654e071cb6e59f44c90dcfec9f5ea5d53358190e12722bf6017c497712"
 FORGE_SHA_FORGE_HEALTH_PY="9bb19685643bd2737e17f8551aa7dc843abc4bcb455bfbba4a29720a58fb22a1"
 FORGE_SHA_FORGE_HOST_PY="d6722bb0fdffbf2bd578d1c2360b65d1adf5d832759bfe684c938c433c20e7c9"
-FORGE_SHA_FORGE_IMAGES_PY="5bd5c36b67b10b16dcf094594b5a9f5e13f6f3a2618f1b1a3aaa8ef7ad6563de"
+FORGE_SHA_FORGE_IMAGES_PY="dc8a0d7f70e43494b1d0e99101c233b92691da41e2c03163214021a64d4fb1a5"
 FORGE_SHA_FORGE_INFO_PY="2c7e4c6fb531f111288902458f75491629b546de65301c9613dda0fd5eb3564f"
-FORGE_SHA_FORGE_JOBS_PY="83f6b2cdb4fbeb40af0cd1333f9bfc2816680a3f5842bc404cf280415b481fb5"
-FORGE_SHA_FORGE_LAUNCH_PY="323def0ae563e279936e7983c87d8e80cdca274e9b3afdb9f872fff64a40a194"
+FORGE_SHA_FORGE_JOBS_PY="a78f564dadd53f11560bea39907245a2332f9c35402bc1ebe92dd364a1214c86"
+FORGE_SHA_FORGE_LAUNCH_PY="25731de601f0ea04c9e2962813507880f44222f1409ab296887d70450aeaa6ed"
 FORGE_SHA_FORGE_LAYER_PY="fe26fd935322c08e882dbca43d682ec32a5f08e1af560f3a0862c1e980a56408"
-FORGE_SHA_FORGE_LIFECYCLE_PY="f0ad588b063ec121f4c2619b8aa052e9969b3ff6d2967833130af18528866561"
-FORGE_SHA_FORGE_PATHS_PY="1bb66d697f8dbe03c95294edf0d9d20e5479dc8969108f68904902503ecd931b"
+FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
+FORGE_SHA_FORGE_LIFECYCLE_PY="42aaebadb06200b94e1f62c1fa3c3153f5a9a7e9b2c1c5dfa63aeb63806be9f5"
+FORGE_SHA_FORGE_PATHS_PY="79ef25719be23b6fc115a27d888219d06a0865f8e967ec804a998826072ac64d"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
-FORGE_SHA_FORGE_REGISTRY_PY="19999de5eedce473ab5aa0bf6609a732de59bd6a5e9e1032eac9e46870c77a96"
-FORGE_SHA_FORGE_RUNNER_PY="821253c630697dca9b21572bb1f375313686acfe5c22a7c4a21805fa252586d1"
+FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
+FORGE_SHA_FORGE_RUNNER_PY="cfc68a5a813c8b0b07747e07f60f73edb97bfadf9f110b771a65c312d2ed684b"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="69751515e61c98ca9278d96d0af6602b16465e8a95179fc828efc2ad583fa859"
+FORGE_SHA_FORGE_SERVER_PY="ea38a762c313c06f803a0e0fdfdf94c498c0441435b8fb5a6bdb93e359b70be6"
 FORGE_SHA_FORGE_SMART_PY="a63aac4e80450ecdcd6c77eb3304a86c3d9607e7a74b121ccbc61679c2a7afce"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -554,20 +556,20 @@ FORGE_SHA_FORGE_STORE_PY="ff80f149c72bcb9bae180695a7f45c124caeca4fb4e6d7e4fc0bcb
 FORGE_SHA_FORGE_TERMINAL_PY="befcf471ac7032b93bb187cc51159667ab9cf5531251938cc92b415a27f72556"
 FORGE_SHA_FORGE_TUNNELS_PY="e2758607ff12b385f51d78a8469eb21ccbaba7312afe5091c69fdbc0869f30db"
 FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2603212e511a5"
-FORGE_SHA_FORGE_UTIL_PY="f1e89d65da56dcf71612e4199a29008647b339ba8d2fea86005c4ad5f2b23127"
-FORGE_SHA_FORGE_WATCHDOG_PY="33ecc053e500c619dc0cf52fbbea566f74496d2424655409ed3e7bd14adaa3c5"
+FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
+FORGE_SHA_FORGE_WATCHDOG_PY="27dc5c8016adeb4ee1ead130bab53ad80a883f9bf8fd8b7cfb794c7fe3a43e1a"
 FORGE_SHA_FORGE_WEBUI_PY="d952965a3e59d3a66e0660d60db9950acfe8ea21f58407fcec354b4eff7040bc"
-FORGE_SHA_WEB_APP_CSS="070aaef77740e69b46108c0ffcf89c63d595651292bb3be4118d77929fb4f7a6"
-FORGE_SHA_WEB_APP_JS="5e244276b4bdff9f3ae57f021997f664e442f789c67e177da517f2ab54929e09"
+FORGE_SHA_WEB_APP_CSS="cde7b0533be9734bfd18d55989987ddb598754dd3bfbf4df0da985dcb3b3061d"
+FORGE_SHA_WEB_APP_JS="9913e0aa265faf1026996edda7074b622055ff50fbb33ae703d208c40cf4947c"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_WEB_INDEX_HTML="d41a2a17a4b893852af9e6b5ab48d9ac76c600d08e7e3129784805be532bc6d7"
+FORGE_SHA_WEB_INDEX_HTML="f830edb32b2fb69a6918064d08bc2cfe33949dba14c4960a789372e203e1e409"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="728bd66bec14f78b041e1cf7518f664c2a72e26517629b923aec02c61bb8b6b2"
-FORGE_PAYLOAD_SHA="0e55833a99a56e775bec86b0658ea15411ccaab22eeb4065e7c89adc563d4748"
-FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
+FORGE_SHA_SELKIES_CLI="5528d144fda19fd44158b68dca4c1256b558bce610697d8f0e3943c335afc189"
+FORGE_PAYLOAD_SHA="a6d59742bd3cec79bbc31969dd9d6bc03b62a6e96bb84a9969a6ebb76bb7c3a5"
+FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -617,6 +619,275 @@ from .paths import VERSION
 
 __all__ = ["VERSION"]
 __FORGE_FILE_FORGE___INIT___PY__
+  cat > "$FORGE_APP/forge/backups.py" <<'__FORGE_FILE_FORGE_BACKUPS_PY__'
+"""
+Selkies Forge engine - backups
+
+A desktop's files live in its /config volume. This module copies them out
+(backup), puts a copy back (restore), and starts a second desktop from a copy
+(clone).
+
+  backup   tar.gz of the volume in FORGE_HOME/backups/, plus a .json note:
+           which desktop, which catalog entry, its limits and options, so a
+           backup can become a desktop again even after the original is gone.
+           Caches (~/.cache) are left out unless asked for; they are large
+           and rebuild themselves.
+  restore  replaces a desktop's files with a backup's. A safety backup of the
+           current files is taken first, so a restore can itself be undone.
+           A running desktop is stopped for the swap and started again.
+  clone    copies a desktop's files into a new volume and launches the same
+           catalog entry on it, with the same limits and options: a second,
+           independent desktop with everything the first had.
+
+Every container used for this is the desktop's own image (already on this
+machine, so nothing is downloaded) with tar or cp as its entrypoint. The
+archive streams through this process, so it is owned by you, not root.
+"""
+
+import json
+import os
+import re
+import subprocess
+import time
+
+from . import catalog, events
+from .jobs import Job, job_put
+from .lifecycle import instance_action
+from .paths import BACKUPDIR, CPREFIX, LABEL
+from .runner import container_name_for
+from .store import reg_load
+from .util import ensure_dirs, human_mb, run, slug
+
+SAFE_FILE = re.compile(r"^[A-Za-z0-9_.-]+\.tar\.gz$")
+
+
+def _inspect(name):
+    if not re.match(r"^[A-Za-z0-9_.-]+$", name or ""):
+        raise RuntimeError("bad desktop name")
+    rc, out, err = run(["docker", "inspect", name], timeout=40)
+    if rc != 0:
+        raise RuntimeError("no such desktop: %s" % name)
+    c = json.loads(out)[0]
+    labels = (c.get("Config") or {}).get("Labels") or {}
+    vol = labels.get("%s.volume" % LABEL)
+    if not vol:
+        raise RuntimeError("%s has no forge volume to back up" % name)
+    return c, labels, vol
+
+
+def _helper(image, *docker_args):
+    """`docker run` of the desktop's own image as a one-shot file tool."""
+    return ["docker", "run", "--rm", "--network", "none"] + list(docker_args) + [image]
+
+
+def _meta_for(name, c, labels, vol):
+    hostcfg = c.get("HostConfig") or {}
+    note = reg_load().get(name) or {}
+    return {
+        "name": name, "entry_id": labels.get("%s.entry" % LABEL),
+        "title": labels.get("%s.title" % LABEL), "volume": vol,
+        "display": labels.get("%s.display" % LABEL), "forge_version": labels.get("%s.version" % LABEL),
+        "image": (c.get("Config") or {}).get("Image"),
+        "limits": {"memory_mb": int((hostcfg.get("Memory") or 0) / 1048576) or None,
+                   "cpus": round((hostcfg.get("NanoCpus") or 0) / 1e9, 2) or None,
+                   "shm_mb": int((hostcfg.get("ShmSize") or 0) / 1048576) or None,
+                   "disk_mb": note.get("plan", {}).get("disk_mb")},
+        "opts": {k: v for k, v in (note.get("opts") or {}).items()
+                 if k in ("display", "resolution", "gpu", "seccomp_unconfined", "heal", "locale")},
+    }
+
+
+def backup(name, include_cache=False, job=None, tag=None):
+    """Write a backup of a desktop's files. Returns the backup's note."""
+    job = job or job_put(Job("backup", name, "Back up %s" % name))
+    c, labels, vol = _inspect(name)
+    ensure_dirs()
+    os.makedirs(BACKUPDIR, exist_ok=True)
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    base = "%s-%s%s" % (slug(name), stamp, "-" + slug(tag) if tag else "")
+    path = os.path.join(BACKUPDIR, base + ".tar.gz")
+    image = (c.get("Config") or {}).get("Image")
+    job.set_phase("backup", "Backing up %s" % name, 0.05)
+    job.log("backup   : %s (volume %s) -> %s" % (name, vol, path))
+    if (c.get("State") or {}).get("Running"):
+        job.log("note     : it is running; files being written right now may be caught "
+                "half-way (stop it first for a perfectly still copy)")
+    excl = [] if include_cache else ["--exclude=./.cache"]
+    cmd = _helper(image, "-v", "%s:/v:ro" % vol, "--entrypoint", "tar") + \
+        ["-czf", "-", "-C", "/v"] + excl + ["."]
+    tmp = path + ".part"
+    t0 = time.time()
+    with open(tmp, "wb") as fh:
+        p = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.PIPE, start_new_session=True)
+        job.attach(p)
+        try:
+            while p.poll() is None:
+                time.sleep(1.0)
+                job.check()
+                job.set_progress(min(0.9, 0.05 + (time.time() - t0) / 600.0),
+                                 {"bytes": os.path.getsize(tmp)})
+        finally:
+            job.detach(p)
+        err = p.stderr.read().decode("utf-8", "replace")
+    # GNU tar exits 1 when a file changed while it was read: still a good backup.
+    if p.returncode not in (0, 1) or os.path.getsize(tmp) < 20:
+        os.remove(tmp)
+        raise RuntimeError("the backup failed (tar exit %s): %s" % (p.returncode, err.strip()[-300:]))
+    os.replace(tmp, path)
+    meta = _meta_for(name, c, labels, vol)
+    meta.update({"file": os.path.basename(path), "created": time.time(),
+                 "size": os.path.getsize(path), "include_cache": bool(include_cache),
+                 "tag": tag})
+    with open(path[:-len(".tar.gz")] + ".json", "w") as fh:
+        json.dump(meta, fh, indent=2)
+    events.record(name, "backup", "%s (%s)" % (meta["file"], human_mb(meta["size"] / 1048576.0)))
+    job.log("backup   : done, %s in %ds" % (human_mb(meta["size"] / 1048576.0), time.time() - t0))
+    job.finish({"backup": meta, "file": meta["file"], "size": meta["size"], "name": name})
+    return meta
+
+
+def list_backups(name=None):
+    try:
+        files = sorted(f for f in os.listdir(BACKUPDIR) if f.endswith(".json"))
+    except OSError:
+        return []
+    out = []
+    for f in files:
+        try:
+            with open(os.path.join(BACKUPDIR, f)) as fh:
+                meta = json.load(fh)
+        except (OSError, ValueError):
+            continue
+        if not os.path.exists(os.path.join(BACKUPDIR, meta.get("file") or "")):
+            continue
+        if name and meta.get("name") != name:
+            continue
+        out.append(meta)
+    out.sort(key=lambda m: m.get("created") or 0, reverse=True)
+    return out
+
+
+def _backup_path(file):
+    if not SAFE_FILE.match(file or ""):
+        raise RuntimeError("bad backup file name")
+    path = os.path.join(BACKUPDIR, file)
+    if not os.path.exists(path):
+        raise RuntimeError("no such backup: %s" % file)
+    return path
+
+
+def delete_backup(file):
+    path = _backup_path(file)
+    os.remove(path)
+    try:
+        os.remove(path[:-len(".tar.gz")] + ".json")
+    except OSError:
+        pass
+    return {"deleted": file}
+
+
+def restore(name, file, job=None):
+    """Replace a desktop's files with a backup's (after a safety backup)."""
+    job = job or job_put(Job("restore", name, "Restore %s" % name))
+    path = _backup_path(file)
+    c, labels, vol = _inspect(name)
+    image = (c.get("Config") or {}).get("Image")
+    was_running = bool((c.get("State") or {}).get("Running"))
+    job.set_phase("safety", "Saving the current files first", 0.05)
+    safety = backup(name, job=Job("backup", name, "Safety backup"), tag="before-restore")
+    job.log("safety   : current files saved as %s" % safety["file"])
+    job.check()
+    if was_running:
+        job.set_phase("stop", "Stopping %s for the swap" % name, 0.4)
+        events.record(name, "backup-restore", "restoring %s" % file)
+        instance_action(name, "stop")
+    job.set_phase("restore", "Restoring %s" % file, 0.5)
+    cmd = _helper(image, "-i", "-v", "%s:/v" % vol, "--entrypoint", "sh") + \
+        ["-c", "find /v -mindepth 1 -delete && tar -xzf - -C /v"]
+    with open(path, "rb") as fh:
+        p = subprocess.run(cmd, stdin=fh, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                           timeout=3600)
+    if p.returncode != 0:
+        raise RuntimeError("the restore failed: %s (your files before the restore are in %s)"
+                           % (p.stderr.decode("utf-8", "replace").strip()[-300:], safety["file"]))
+    events.record(name, "restored", "files replaced from %s (previous files: %s)"
+                  % (file, safety["file"]))
+    if was_running:
+        job.set_phase("start", "Starting %s again" % name, 0.9)
+        instance_action(name, "start")
+    job.log("restore  : done; the files from before are in %s" % safety["file"])
+    job.finish({"name": name, "file": file, "safety": safety["file"]})
+    return {"name": name, "file": file, "safety": safety["file"]}
+
+
+def clone(name, new_name=None, job=None, tunnel=False, from_backup=None):
+    """A second desktop with a copy of a desktop's files (or of a backup's).
+
+    `name` is the desktop to copy; with `from_backup` it may be gone, and the
+    backup's note says which catalog entry and limits to use.
+    """
+    from .launch import launch                      # launch imports lifecycle
+    from .host import host_info
+    from .smart import plan_resources
+    meta = None
+    if from_backup:
+        path = _backup_path(from_backup)
+        with open(path[:-len(".tar.gz")] + ".json") as fh:
+            meta = json.load(fh)
+        src_c = None
+        entry_id = meta.get("entry_id")
+        base_name = new_name or "%s-copy" % (meta.get("name") or "desktop").replace(CPREFIX, "", 1)
+    else:
+        src_c, labels, src_vol = _inspect(name)
+        meta = _meta_for(name, src_c, labels, src_vol)
+        entry_id = meta["entry_id"]
+        base_name = new_name or "%s-copy" % name.replace(CPREFIX, "", 1)
+    entry = catalog.BY_ID.get(entry_id)
+    if not entry:
+        raise RuntimeError("that desktop's catalog entry (%s) is not in this version" % entry_id)
+    job = job or job_put(Job("clone", entry_id, "Clone %s" % (name or from_backup)))
+    cname = container_name_for(entry, base_name)
+    vol = "%sconfig-%s" % (CPREFIX, slug(cname))
+    if run(["docker", "volume", "inspect", vol], timeout=20)[0] == 0:
+        raise RuntimeError("a volume named %s already exists (files of a removed desktop); "
+                           "pick another name" % vol)
+    job.note(container=cname, volume=vol)
+    job.set_phase("copy", "Copying the files", 0.02)
+    run(["docker", "volume", "create", "--label", "%s.clone-of=%s" % (LABEL, name or from_backup),
+         vol], timeout=30)
+    if from_backup:
+        image = meta.get("image")
+        if not image or run(["docker", "image", "inspect", image], timeout=20)[0] != 0:
+            image = entry["image"] if entry["kind"] == "pull" else None
+        if not image or run(["docker", "image", "inspect", image], timeout=20)[0] != 0:
+            image = "busybox"
+        cmd = _helper(image, "-i", "-v", "%s:/v" % vol, "--entrypoint", "tar") + \
+            ["-xzf", "-", "-C", "/v"]
+        with open(_backup_path(from_backup), "rb") as fh:
+            p = subprocess.run(cmd, stdin=fh, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               timeout=3600)
+    else:
+        image = (src_c.get("Config") or {}).get("Image")
+        cmd = _helper(image, "-v", "%s:/s:ro" % src_vol, "-v", "%s:/d" % vol,
+                      "--entrypoint", "cp") + ["-a", "/s/.", "/d/"]
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3600)
+    if p.returncode != 0:
+        run(["docker", "volume", "rm", "-f", vol], timeout=60)
+        raise RuntimeError("copying the files failed: %s"
+                           % p.stderr.decode("utf-8", "replace").strip()[-300:])
+    job.log("copy     : files copied into %s" % vol)
+    job.check()
+    host = host_info(fresh=True)
+    plan = plan_resources(entry, host)
+    for k in ("memory_mb", "cpus", "shm_mb", "disk_mb"):
+        if (meta.get("limits") or {}).get(k):
+            plan[k] = meta["limits"][k]
+    opts = dict(meta.get("opts") or {})
+    opts.update({"tunnel": bool(tunnel), "prepared_volume": True})
+    res = launch(entry_id, plan, opts, job=job, name=cname[len(CPREFIX):])
+    events.record(res["name"], "cloned", "from %s" % (name or from_backup))
+    return res
+__FORGE_FILE_FORGE_BACKUPS_PY__
   cat > "$FORGE_APP/forge/catalog.py" <<'__FORGE_FILE_FORGE_CATALOG_PY__'
 """
 Selkies Forge - distro catalog.
@@ -1340,15 +1611,15 @@ import sys
 import threading
 import time
 
-from . import catalog, events, scheduler, space
-from .watchdog import Watchdog, reconcile
+from . import backups, catalog, events, scheduler, space
+from .watchdog import Watchdog, reconcile, recover_interrupted
 from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
 from .info import public_entry
-from .jobs import Job, job_put
+from .jobs import Job, all_jobs, job_put
 from .launch import launch
-from .lifecycle import instance_action, reconfigure
+from .lifecycle import instance_action, reconfigure, set_idle
 from .paths import VERSION
 from .recipes import gen_dockerfile
 from .registry import docker_instances
@@ -1388,20 +1659,32 @@ def cli_launch_stream(args):
     opts = {"tunnel": not args.no_tunnel, "name": args.name, "autostart": args.autostart,
             "gpu": args.gpu, "seccomp_unconfined": args.seccomp,
             "display": args.display, "resolution": args.resolution,
-            "health_timeout": args.timeout, "force": args.force}
+            "health_timeout": args.timeout, "force": args.force,
+            "dry_run": args.dry_run}
+    if args.idle_stop is not None:
+        opts["idle_stop"] = args.idle_stop
     if args.user and args.password:
         opts["username"], opts["password"] = args.user, args.password
     if args.subdomain:
         opts["subdomain"] = args.subdomain
 
     job = job_put(Job("launch", args.id, entry["name"]))
+    return stream_job(job, lambda: launch(args.id, plan, opts, job=job, name=args.name))
+
+
+def stream_job(job, work_fn):
+    """Run work_fn in a thread and print the job's events as lines the shell
+    front end renders: P progress, L log, E error, H hint, D result JSON.
+    Ctrl-C (or SIGINT from the web UI's cancel) cancels the job properly."""
     done = {"result": None, "error": None}
 
     def work():
         try:
-            done["result"] = launch(args.id, plan, opts, job=job, name=args.name)
+            done["result"] = work_fn()
         except Exception as ex:
             done["error"] = str(ex)
+            if job.status == "running":
+                job.fail(str(ex))
 
     th = threading.Thread(target=work, daemon=True)
     th.start()
@@ -1436,6 +1719,8 @@ def cli_launch_stream(args):
                     note = " %s/%s" % (human(extra["bytes"]), human(extra["bytes_total"]))
                 elif extra.get("packages_total"):
                     note = " %s/%s pkgs" % (extra["packages"], extra["packages_total"])
+                elif extra.get("bytes"):
+                    note = " %s" % human(extra["bytes"])
                 print("P %d %s %s%s" % (int(data["progress"] * 100), data["phase"],
                                         data["phase"], note))
             elif typ == "error":
@@ -1526,6 +1811,35 @@ def main(argv=None):
                    help="fit: follow the browser window (4K screens are scaled "
                         "from a ~1920-wide desktop); fixed: one size, scaled")
     p.add_argument("--resolution", default="1920x1080", help="size for --display fixed")
+    p.add_argument("--dry-run", action="store_true",
+                   help="check everything and show what would happen, without doing it")
+    p.add_argument("--idle-stop", type=int, metavar="MIN",
+                   help="stop it after MIN minutes with nobody watching (0: never)")
+
+    p = sub.add_parser("jobs", help="every launch, backup and clone on this machine")
+    p.add_argument("--json", action="store_true")
+    sub.add_parser("recover", help="clean up after launches whose process died")
+
+    p = sub.add_parser("idle", help="stop a desktop after MIN minutes unwatched")
+    p.add_argument("name")
+    p.add_argument("minutes", help="minutes, 0 for never, or default")
+
+    p = sub.add_parser("backup", help="back up a desktop's files")
+    p.add_argument("name")
+    p.add_argument("--with-cache", action="store_true", help="include ~/.cache too")
+    p = sub.add_parser("backups", help="list backups")
+    p.add_argument("--name")
+    p.add_argument("--json", action="store_true")
+    p = sub.add_parser("restore-backup", help="replace a desktop's files with a backup's")
+    p.add_argument("name")
+    p.add_argument("file")
+    p = sub.add_parser("delete-backup")
+    p.add_argument("file")
+    p = sub.add_parser("clone", help="a new desktop with a copy of another's files")
+    p.add_argument("name", nargs="?")
+    p.add_argument("--as", dest="new_name", help="name for the new desktop")
+    p.add_argument("--from-backup", metavar="FILE", help="start it from a backup instead")
+    p.add_argument("--tunnel", action="store_true", help="also open a public link")
 
     p = sub.add_parser("do")
     p.add_argument("name")
@@ -1673,6 +1987,58 @@ def main(argv=None):
         return 0
     if a.cmd == "launch":
         return cli_launch_stream(a)
+    if a.cmd == "jobs":
+        rows = all_jobs()
+        if a.json:
+            print(json.dumps({"jobs": rows}))
+        else:
+            for j in rows:
+                print("%s  %-8s %-12s %-11s %3d%%  %s" % (
+                    time.strftime("%m-%d %H:%M", time.localtime(j.get("created") or 0)),
+                    j.get("kind", ""), j.get("status", ""), (j.get("phase") or "")[:11],
+                    int((j.get("progress") or 0) * 100), j.get("title") or ""))
+        return 0
+    if a.cmd == "recover":
+        print(json.dumps({"recovered": recover_interrupted()}))
+        return 0
+    if a.cmd == "idle":
+        mins = None if a.minutes == "default" else int(a.minutes)
+        try:
+            print(json.dumps(set_idle(a.name, mins)))
+            return 0
+        except Exception as ex:
+            print(json.dumps({"error": str(ex)}))
+            return 1
+    if a.cmd == "backup":
+        job = job_put(Job("backup", a.name, "Back up %s" % a.name))
+        return stream_job(job, lambda: backups.backup(a.name, include_cache=a.with_cache, job=job))
+    if a.cmd == "backups":
+        rows = backups.list_backups(a.name)
+        if a.json:
+            print(json.dumps({"backups": rows}))
+        else:
+            for b in rows:
+                print("%s  %-26s %9s  %s" % (
+                    time.strftime("%Y-%m-%d %H:%M", time.localtime(b.get("created") or 0)),
+                    (b.get("name") or "")[:26], human(b.get("size") or 0), b.get("file")))
+        return 0
+    if a.cmd == "restore-backup":
+        job = job_put(Job("restore", a.name, "Restore %s" % a.name))
+        return stream_job(job, lambda: backups.restore(a.name, a.file, job=job))
+    if a.cmd == "delete-backup":
+        try:
+            print(json.dumps(backups.delete_backup(a.file)))
+            return 0
+        except Exception as ex:
+            print(json.dumps({"error": str(ex)}))
+            return 1
+    if a.cmd == "clone":
+        if not a.name and not a.from_backup:
+            print("E name a desktop to clone, or --from-backup FILE")
+            return 2
+        job = job_put(Job("clone", a.name, "Clone %s" % (a.name or a.from_backup)))
+        return stream_job(job, lambda: backups.clone(a.name, new_name=a.new_name, job=job,
+                                                     tunnel=a.tunnel, from_backup=a.from_backup))
     if a.cmd == "do":
         try:
             print(json.dumps(instance_action(a.name, a.action,
@@ -1817,7 +2183,7 @@ KEEP_LINES = 4000
 # Events that mean a person (or the forge, on their behalf) stopped a desktop
 # on purpose. The watchdog never treats a stop after one of these as a crash.
 DELIBERATE = {"stop", "restart", "remove", "repair", "recreate", "retune", "launch-cancelled",
-              "launch-failed", "user-stop"}
+              "launch-failed", "user-stop", "idle-stop", "pressure-stop", "backup-restore"}
 
 
 def record(name, event, detail="", **extra):
@@ -2310,7 +2676,7 @@ from collections import deque
 
 from . import layer
 from .host import host_info, image_id, image_present
-from .jobs import stream_cmd, stream_cmd_pty
+from .jobs import CommandStalled, stream_cmd, stream_cmd_pty
 from .scheduler import slot
 from .paths import ANSI_RE, BUILDDIR, IPREFIX, LABEL
 from .recipes import build_image_tag, gen_dockerfile, gen_startwm
@@ -2492,6 +2858,21 @@ def get_image(entry, host, job, opts):
 
 
 BAR_LINE = re.compile(r"\[[=>\s]*\]")
+
+
+def _stall_limit(var, default):
+    """Seconds of silence before a pull or build counts as stuck."""
+    try:
+        return max(30, int(os.environ.get(var, default)))
+    except ValueError:
+        return default
+
+
+# A pull prints progress every second while bytes move; four silent minutes
+# means a dead connection. Package installs can sit quietly in a long
+# post-install script, so a build gets twenty.
+PULL_STALL = _stall_limit("FORGE_PULL_STALL", 240)
+BUILD_STALL = _stall_limit("FORGE_BUILD_STALL", 1200)
 NET_FLAKY = re.compile(r"tls handshake timeout|i/o timeout|connection reset|unexpected eof|"
                        r"context deadline exceeded|toomanyrequests|too many requests|"
                        r"\b50[234]\b|temporary failure|net/http|connection refused|"
@@ -2532,7 +2913,17 @@ def do_pull(image, arch, job, weight=(0.02, 0.78)):
                 job.set_progress(lo + (hi - lo) * f, prog.summary())
 
         cmd = ["docker", "pull", "--platform", "linux/%s" % arch, image]
-        rc = stream_cmd_pty(cmd, on_line, timeout=5400, job=job)
+        try:
+            rc = stream_cmd_pty(cmd, on_line, timeout=5400, job=job, stall=PULL_STALL)
+        except CommandStalled as st:
+            if attempt < 4:
+                job.log("pull stalled: no progress for %ds (a dead connection); restarting it, "
+                        "already downloaded layers are kept" % st.seconds, "err")
+                time.sleep(3)
+                continue
+            raise RuntimeError("docker pull of %s kept stalling (no progress for %ds, %d times); "
+                               "the network or registry is not delivering" % (image, st.seconds,
+                                                                              attempt))
         if rc == 0:
             job.set_progress(hi, prog.summary())
             return
@@ -2591,7 +2982,15 @@ def do_build(entry, tag, job, weight=(0.46, 0.78)):
         cmd = ["docker", "build", "--progress=plain", "--platform",
                "linux/%s" % host_info()["arch"], "-t", tag, "-f",
                os.path.join(ctx, "Dockerfile"), ctx]
-        rc = stream_cmd(cmd, on_line, env=env, timeout=10800, job=job)
+        try:
+            rc = stream_cmd(cmd, on_line, env=env, timeout=10800, job=job, stall=BUILD_STALL)
+        except CommandStalled as st:
+            if attempt < 3:
+                job.log("build stalled: no output for %ds; restarting it (finished steps are "
+                        "cached)" % st.seconds, "err")
+                continue
+            raise RuntimeError("docker build of %s kept stalling (no output for %ds)"
+                               % (entry["id"], st.seconds))
         if rc == 0:
             job.set_progress(hi)
             return
@@ -2751,8 +3150,24 @@ and the pipeline checks `job.check()` between stages so it stops cleanly.
 
 Every job also writes its log to logs/jobs/<id>.log, so a failure can still be
 read after the web UI restarts.
+
+Jobs are durable. Each one keeps a small state file, state/jobs/<id>.json
+(status, phase, progress, the process that owns it, the container it is
+making), so:
+
+  * any process can see every job: a launch started from `selkies-cli` shows
+    up in the web UI, with its progress, and can be cancelled from there;
+  * a job whose process died (the web UI restarted mid-launch, the machine
+    lost power, a terminal was closed) is noticed, marked "interrupted", and
+    the half-made desktop it left behind is removed. See recover_interrupted.
+
+Commands can also stall without failing: a `docker pull` stuck on a dead
+connection prints nothing and never exits. stream_cmd and stream_cmd_pty take
+a `stall` time; no output for that long kills the command and raises
+CommandStalled, which the callers treat like a network error and retry.
 """
 
+import json
 import os
 import pty
 import re
@@ -2765,14 +3180,30 @@ import uuid
 
 from collections import deque
 
-from .paths import ANSI_RE, JOBLOGDIR
-from .util import clamp, ensure_dirs
+from .paths import ANSI_RE, JOBLOGDIR, JOBSTATEDIR
+from .util import clamp, ensure_dirs, pid_alive
 
 KEEP_JOB_LOGS = 60
+KEEP_JOB_STATES = 80
+PERSIST_EVERY = 1.0      # seconds between progress writes to the state file
 
 
 class JobCancelled(Exception):
     """Raised inside a job's work when someone asked it to stop."""
+
+
+class CommandStalled(RuntimeError):
+    """A command printed nothing for too long and was killed."""
+
+    def __init__(self, cmd, seconds):
+        RuntimeError.__init__(self, "%s printed nothing for %ds and was stopped"
+                              % (os.path.basename(str(cmd[0])), seconds))
+        self.seconds = seconds
+
+
+def _owner():
+    """Who runs this process: the web UI ("server") or a terminal ("cli")."""
+    return os.environ.get("FORGE_JOB_OWNER", "cli")
 
 
 class Job(object):
@@ -2798,6 +3229,10 @@ class Job(object):
         self._plock = threading.Lock()
         self.log_path = None
         self._logfh = None
+        self.pid = os.getpid()
+        self.owner = _owner()
+        self.notes = {}               # e.g. {"container": "forge-x"} once one exists
+        self._persisted = 0.0
         try:
             ensure_dirs()
             self.log_path = os.path.join(JOBLOGDIR, "%s-%s.log" % (
@@ -2807,6 +3242,7 @@ class Job(object):
             _prune_job_logs()
         except OSError:
             self._logfh = None
+        self._persist(force=True)
 
     # -- producer ---------------------------------------------------------
     def _push(self, typ, data):
@@ -2833,15 +3269,18 @@ class Job(object):
         self.phase = phase
         if progress is not None:
             self.progress = clamp(float(progress), 0.0, 1.0)
+        self.label = label or phase
         self._push("phase", {"phase": phase, "label": label or phase,
                              "progress": round(self.progress, 4)})
         self._write("== %s: %s" % (phase, label or phase))
+        self._persist(force=True)
 
     def set_progress(self, value, extra=None):
         self.progress = clamp(float(value), 0.0, 1.0)
         self._push("progress", {"phase": self.phase,
                                 "progress": round(self.progress, 4),
                                 "extra": extra or {}})
+        self._persist()
 
     def finish(self, result):
         self.status = "done"
@@ -2850,6 +3289,7 @@ class Job(object):
         self._push("done", result)
         self._write("== done")
         self._close_log()
+        self._persist(force=True)
 
     def fail(self, message, hints=None):
         self.status = "cancelled" if self.cancelled else "error"
@@ -2858,6 +3298,31 @@ class Job(object):
         self._push("error", self.error)
         self._write("== %s: %s" % (self.status, message))
         self._close_log()
+        self._persist(force=True)
+
+    def note(self, **kv):
+        """Remember something about this job in its state file (e.g. container=...)."""
+        self.notes.update({k: v for k, v in kv.items() if v is not None})
+        self._persist(force=True)
+
+    def _persist(self, force=False):
+        now = time.time()
+        if not force and now - self._persisted < PERSIST_EVERY:
+            return
+        self._persisted = now
+        st = self.snapshot()
+        st["result"] = _small_result(self.result)
+        st.update({"pid": self.pid, "owner": self.owner, "notes": self.notes,
+                   "label": getattr(self, "label", self.phase), "updated": now})
+        try:
+            ensure_dirs()
+            path = os.path.join(JOBSTATEDIR, "%s.json" % self.id)
+            tmp = "%s.tmp.%d" % (path, os.getpid())
+            with open(tmp, "w") as fh:
+                json.dump(st, fh)
+            os.replace(tmp, path)
+        except (OSError, TypeError, ValueError):
+            pass
 
     def _close_log(self):
         if self._logfh:
@@ -2935,7 +3400,105 @@ class Job(object):
                 "progress": round(self.progress, 4), "result": self.result,
                 "error": self.error, "created": self.created,
                 "last_seq": self._seq, "cancelled": self.cancelled,
-                "log": self.log_path}
+                "log": self.log_path, "label": getattr(self, "label", self.phase),
+                "owner": self.owner, "pid": self.pid, "notes": dict(self.notes)}
+
+
+def _small_result(res):
+    """The parts of a result worth keeping on disk (not the whole catalog entry)."""
+    if not isinstance(res, dict):
+        return res
+    keep = ("name", "entry_id", "local_url", "warning", "fixes", "display", "dry_run",
+            "file", "size", "backup", "clone")
+    return {k: res[k] for k in keep if k in res}
+
+
+def read_job_states():
+    """Every job's state file, newest first. Dead "running" jobs are reported
+    as "interrupted" (recover_interrupted cleans up after them)."""
+    out = []
+    try:
+        names = [f for f in os.listdir(JOBSTATEDIR) if f.endswith(".json")]
+    except OSError:
+        return out
+    for f in names:
+        try:
+            with open(os.path.join(JOBSTATEDIR, f)) as fh:
+                st = json.load(fh)
+        except (OSError, ValueError):
+            continue
+        if st.get("status") == "running" and not _owner_alive(st):
+            st["status"] = "interrupted"
+        out.append(st)
+    out.sort(key=lambda s: s.get("created") or 0, reverse=True)
+    return out
+
+
+def _owner_alive(st):
+    pid = st.get("pid")
+    if not pid_alive(pid):
+        return False
+    try:                          # the pid was not reused by something else
+        with open("/proc/%d/cmdline" % int(pid), "rb") as fh:
+            cmd = fh.read()
+        return b"engine.py" in cmd or b"forge" in cmd or b"python" in cmd
+    except OSError:
+        return True
+
+
+def all_jobs():
+    """This process's jobs, plus every other process's (marked foreign)."""
+    with JOBS_LOCK:
+        mine = {j.id: j.snapshot() for j in JOBS.values()}
+    for st in read_job_states():
+        if st.get("id") in mine:
+            continue
+        st["foreign"] = True
+        mine[st["id"]] = st
+    return sorted(mine.values(), key=lambda s: s.get("created") or 0, reverse=True)[:40]
+
+
+def cancel_foreign(jid):
+    """Cancel a job another process runs. A `selkies-cli` launch treats SIGINT
+    exactly like Ctrl-C: it kills the pull or build and cleans up."""
+    for st in read_job_states():
+        if st.get("id") != jid:
+            continue
+        if st.get("status") != "running":
+            return False
+        if st.get("owner") != "cli":
+            return False          # never signal another web UI
+        try:
+            os.kill(int(st["pid"]), signal.SIGINT)
+            return True
+        except (OSError, KeyError, ValueError):
+            return False
+    return False
+
+
+def mark_job_state(jid, **patch):
+    path = os.path.join(JOBSTATEDIR, "%s.json" % jid)
+    try:
+        with open(path) as fh:
+            st = json.load(fh)
+        st.update(patch)
+        st["updated"] = time.time()
+        tmp = "%s.tmp.%d" % (path, os.getpid())
+        with open(tmp, "w") as fh:
+            json.dump(st, fh)
+        os.replace(tmp, path)
+    except (OSError, ValueError):
+        pass
+
+
+def _prune_job_states():
+    try:
+        files = sorted((os.path.getmtime(os.path.join(JOBSTATEDIR, f)), f)
+                       for f in os.listdir(JOBSTATEDIR) if f.endswith(".json"))
+        for _, f in files[:-KEEP_JOB_STATES]:
+            os.remove(os.path.join(JOBSTATEDIR, f))
+    except OSError:
+        pass
 
 
 def _prune_job_logs():
@@ -2952,6 +3515,7 @@ JOBS_LOCK = threading.Lock()
 
 
 def job_put(job):
+    _prune_job_states()
     with JOBS_LOCK:
         JOBS[job.id] = job
         if len(JOBS) > 40:
@@ -2972,8 +3536,12 @@ def jobs_running():
         return [j for j in JOBS.values() if j.status == "running"]
 
 
-def stream_cmd(cmd, on_line, env=None, timeout=7200, job=None):
-    """Run a command, hand every output line to on_line, return exit code."""
+def stream_cmd(cmd, on_line, env=None, timeout=7200, job=None, stall=None):
+    """Run a command, hand every output line to on_line, return exit code.
+
+    `timeout` bounds the whole run; `stall` (seconds) bounds the silence
+    between two lines. Either one kills the command and its children.
+    """
     # Its own process group, so a cancel can stop the command and its children.
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          env=env, bufsize=1, universal_newlines=True,
@@ -2981,13 +3549,28 @@ def stream_cmd(cmd, on_line, env=None, timeout=7200, job=None):
     if job:
         job.attach(p)
     start = time.time()
+    last = [start]
+    why = []
+    done = threading.Event()
+
+    def guard():
+        while not done.wait(1.0):
+            now = time.time()
+            if now - start > timeout:
+                why.append("timeout")
+            elif stall and now - last[0] > stall:
+                why.append("stall")
+            if why:
+                Job._kill(p)
+                return
+
+    threading.Thread(target=guard, name="forge-cmd-guard", daemon=True).start()
     try:
         for line in p.stdout:
+            last[0] = time.time()
             on_line(line.rstrip("\n"))
-            if time.time() - start > timeout:
-                p.kill()
-                raise RuntimeError("command exceeded %ss" % timeout)
     finally:
+        done.set()
         try:
             p.stdout.close()
         except Exception:
@@ -2997,10 +3580,14 @@ def stream_cmd(cmd, on_line, env=None, timeout=7200, job=None):
     rc = p.wait()
     if job:
         job.check()
+    if why == ["timeout"]:
+        raise RuntimeError("command exceeded %ss" % timeout)
+    if why == ["stall"]:
+        raise CommandStalled(cmd, stall)
     return rc
 
 
-def stream_cmd_pty(cmd, on_line, timeout=7200, job=None):
+def stream_cmd_pty(cmd, on_line, timeout=7200, job=None, stall=None):
     """Like stream_cmd, but behind a pty.
 
     `docker pull` only prints per-layer byte counts when stdout looks like a
@@ -3018,6 +3605,8 @@ def stream_cmd_pty(cmd, on_line, timeout=7200, job=None):
         job.attach(pid)
     buf = b""
     start = time.time()
+    last = start
+    stalled = False
     try:
         while True:
             try:
@@ -3031,6 +3620,7 @@ def stream_cmd_pty(cmd, on_line, timeout=7200, job=None):
                     break                      # child exited, pty closed
                 if not data:
                     break
+                last = time.time()
                 buf += data
                 parts = re.split(rb"[\r\n]", buf)
                 buf = parts.pop()
@@ -3044,6 +3634,10 @@ def stream_cmd_pty(cmd, on_line, timeout=7200, job=None):
                 except OSError:
                     pass
                 raise RuntimeError("command exceeded %ss" % timeout)
+            if stall and time.time() - last > stall:
+                stalled = True
+                Job._kill(pid)
+                break
     finally:
         if buf.strip():
             line = ANSI_RE.sub("", buf.decode("utf-8", "replace")).strip()
@@ -3063,6 +3657,8 @@ def stream_cmd_pty(cmd, on_line, timeout=7200, job=None):
         rc = 0
     if job:
         job.check()
+    if stalled:
+        raise CommandStalled(cmd, stall)
     return rc
 __FORGE_FILE_FORGE_JOBS_PY__
   cat > "$FORGE_APP/forge/launch.py" <<'__FORGE_FILE_FORGE_LAUNCH_PY__'
@@ -3074,7 +3670,7 @@ The launch pipeline: resolve, fetch, layer, start, verify, tunnel.
 
 import time
 
-from . import catalog
+from . import catalog, ledger
 from .health import LaunchProblem, mem_pressure, pick_fix, wait_http, wait_session
 from .host import docker_ok, host_info, image_present, manifest_probe
 from .images import ensure_layer, get_image
@@ -3085,7 +3681,8 @@ from .paths import VERSION
 from .ports import release_port_reservation
 from .recipes import build_image_tag
 from .registry import docker_instances
-from .runner import container_name_for, display_for, docker_run_resilient
+from .paths import CPREFIX
+from .runner import container_name_for, display_for, docker_run_args, docker_run_resilient
 from .scheduler import slot
 from .smart import plan_resources
 from .store import reg_delete, reg_update
@@ -3105,16 +3702,21 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
     a time by default), the job can be cancelled at any point (whatever is
     running is killed and a half-made desktop is removed), and everything that
     happens is written to the event journal.
+
+    opts["dry_run"] stops after the checks and reports what would happen: the
+    plan, the image, the download, and the exact `docker run`.
     """
     opts = dict(opts or {})
     entry = catalog.BY_ID.get(entry_id)
     if not entry:
         raise RuntimeError("unknown catalog id: %s" % entry_id)
     job = job or job_put(Job("launch", entry_id, entry["name"]))
+    opts["job_id"] = job.id
     host = host_info(fresh=True)
     plan = dict(plan or plan_resources(entry, host))
     reserved = []
     cname = None
+    vol_existed = False
 
     try:
         # ---- 1. check this machine can run it ---------------------------
@@ -3154,6 +3756,8 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                    ", ".join(alts) or "another desktop"))
         if real_dl:
             job.log("download : about %s for %s" % (human_mb(real_dl), host["arch"]))
+        if opts.get("dry_run"):
+            return _dry_run(entry, plan, opts, host, job, name, real_dl, res)
 
         if not host["quota_support"] and plan.get("disk_mb"):
             job.log("note     : %s on %s cannot enforce a hard disk cap, so the %s "
@@ -3183,17 +3787,26 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                           else "Starting it again (try %d)" % attempt, 0.84)
             if not cname:
                 cname = container_name_for(entry, name or opts.get("name"))
+                # A volume kept from a removed desktop of the same name is
+                # someone's files: never delete it when this launch fails.
+                vol_existed = run(["docker", "volume", "inspect", _volume_for(cname)],
+                                  timeout=20)[0] == 0 and not opts.get("prepared_volume")
+                job.note(container=cname, volume=_volume_for(cname),
+                         keep_volume=vol_existed or None)
             cname, reserved, vol, cid = docker_run_resilient(
                 entry, cname, plan, opts, run_image, host, job,
                 want_ports=reserved or opts.get("ports"))
             job.log("container: %s (%s)" % (cname, cid[:12]))
             events.record(cname, "create", "%s (try %d)" % (entry["name"], attempt),
                           entry=entry["id"], image=run_image)
-            reg_update(cname, {"entry_id": entry["id"], "created": time.time(),
-                               "plan": plan, "opts": {k: v for k, v in opts.items()
-                                                      if k != "password"},
-                               "volume": vol, "image": run_image,
-                               "ports": reserved, "tunnel": None})
+            note = {"entry_id": entry["id"], "created": time.time(),
+                    "plan": plan, "opts": {k: v for k, v in opts.items()
+                                           if k not in ("password", "job_id", "prepared_volume", "dry_run")},
+                    "volume": vol, "image": run_image,
+                    "ports": reserved, "tunnel": None}
+            if opts.get("idle_stop") is not None:
+                note["idle_stop_min"] = int(opts["idle_stop"])
+            reg_update(cname, note)
             try:
                 job.set_phase("health", "Waiting for the desktop to come up", 0.88)
                 heavy = entry.get("weight") in ("full", "heavy")
@@ -3286,6 +3899,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                   }
         events.record(cname, "ready", warning or (session.get("wm") or "up"),
                       fixes=sorted(tried) or None)
+        ledger.release(job.id)
         job.set_phase("ready", "Ready", 1.0)
         job.finish(result)
         return result
@@ -3294,11 +3908,13 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
         if "boot" in locals() and boot is not None:
             boot.__exit__(None, None, None)
         release_port_reservation(reserved)
+        ledger.release(job.id)
         if isinstance(ex, JobCancelled) or job.cancelled:
             # A desktop that never finished starting is of no use to anyone.
             if cname:
                 run(["docker", "rm", "-f", cname], timeout=120)
-                run(["docker", "volume", "rm", "-f", "forge-config-%s" % cname], timeout=60)
+                if not vol_existed:
+                    run(["docker", "volume", "rm", "-f", _volume_for(cname)], timeout=60)
                 reg_delete(cname)
                 events.record(cname, "launch-cancelled", "cancelled during %s" % job.phase)
             job.fail("cancelled during %s; nothing was left behind" % job.phase)
@@ -3315,23 +3931,84 @@ def admit_memory(entry, plan, host, job, opts):
     A limit is a cap, not a reservation, so the plan can exceed what is free
     (the desktop just runs tighter). But below the desktop's floor it would
     thrash or be OOM-killed; say so up front and name what is using memory.
+
+    Memory other launches have booked (see ledger.py) counts as used: two
+    desktops starting at once must both fit, not each fit on its own. Once
+    admitted, this launch books its own floor until it is up.
     """
     free = int(host.get("mem_avail_mb") or 0)
     floor = int(entry.get("ram_min") or 0)
     if not free or not floor:
         return
+    others, rows = ledger.booked(exclude=job.id)
+    usable = free - others
+    if others:
+        job.log("memory   : %s free, %s of it set aside for %d desktop%s still starting"
+                % (human_mb(free), human_mb(others), len(rows), "" if len(rows) == 1 else "s"))
     running = running_desktop_names()
-    if free < floor and not opts.get("force"):
+    if usable < floor and not opts.get("force"):
+        starting = ""
+        if others:
+            starting = ("%s is set aside for desktops that are still starting (%s). "
+                        % (human_mb(others), ", ".join(sorted(set(
+                            (catalog.BY_ID.get(r.get("entry")) or {}).get("name", r.get("entry") or "?")
+                            for r in rows)))))
         raise RuntimeError(
-            "only %s of memory is free and %s needs at least %s to start. %s"
-            "Stop a desktop, or pick a lighter one (or pass force to try anyway)."
-            % (human_mb(free), entry["name"], human_mb(floor),
-               ("Running now: %s. " % ", ".join(n.replace("forge-", "", 1) for n in running))
+            "only %s of memory is free and %s needs at least %s to start. %s%s"
+            "Stop a desktop, wait for the others to finish starting, or pick a lighter one "
+            "(or pass force to try anyway)."
+            % (human_mb(max(0, usable)), entry["name"], human_mb(floor), starting,
+               ("Running now: %s. " % ", ".join(n.replace(CPREFIX, "", 1) for n in running))
                if running else ""))
-    if free < plan.get("memory_mb", 0):
+    ledger.book(job.id, floor, entry["id"])
+    if usable < plan.get("memory_mb", 0):
         job.log("note     : the %s memory cap is more than the %s free right now; it will "
                 "work, but may get slow if it uses it all" % (human_mb(plan["memory_mb"]),
-                                                              human_mb(free)))
+                                                              human_mb(max(0, usable))))
+
+
+def _volume_for(cname):
+    return "%sconfig-%s" % (CPREFIX, cname)
+
+
+def _dry_run(entry, plan, opts, host, job, name, real_dl, res):
+    """Everything a launch would do, without doing it."""
+    ledger.release(job.id)
+    image = entry["image"] if entry["kind"] == "pull" else build_image_tag(entry)
+    have = image_present(image)
+    cname = container_name_for(entry, name or opts.get("name"))
+    run_image = image if entry.get("profile") == "kasm" else "%s + forge layer" % image
+    args, vol = docker_run_args(entry, cname, [0, 0] if entry["profile"] != "kasm" else [0],
+                                plan, dict(opts, job_id=None), run_image, host)
+    steps = []
+    if entry["kind"] == "pull":
+        steps.append("use %s (already here)" % image if have else
+                     "pull %s (%s)" % (image, human_mb(real_dl or entry["dl_mb"])))
+    else:
+        steps.append("reuse the built image %s" % image if have else
+                     "build %s on %s: %s" % (image, entry["recipe"]["image"],
+                                             entry["recipe"]["pkgs"]))
+    if entry.get("profile") != "kasm":
+        steps.append("add the forge layer (first-run fixes, screen agent, screen guard)")
+    steps.append("start %s with %s RAM, %s CPU, %s shm, volume %s"
+                 % (cname, human_mb(plan["memory_mb"]), plan["cpus"],
+                    human_mb(plan["shm_mb"]), vol))
+    steps.append("wait for the web page, then for a window manager that stays up")
+    if opts.get("tunnel", True):
+        steps.append("open a serveo tunnel")
+    job.log("dry run  : nothing will be downloaded, built or started")
+    for i, st in enumerate(steps, 1):
+        job.log("  %d. %s" % (i, st))
+    shown = " ".join(a if " " not in a else "'%s'" % a for a in args)
+    job.log("docker   : " + shown.replace("PASSWORD=%s" % opts.get("password"), "PASSWORD=***")
+            if opts.get("password") else "docker   : " + shown)
+    result = {"dry_run": True, "entry_id": entry["id"], "name": cname, "plan": plan,
+              "image": image, "image_present": have, "download_mb": real_dl or entry["dl_mb"],
+              "display": "fixed %dx%d" % res if res else "fit", "steps": steps,
+              "docker_run": args}
+    job.set_phase("ready", "Dry run complete", 1.0)
+    job.finish(result)
+    return result
 
 
 def _hints_for(msg):
@@ -4482,6 +5159,69 @@ def digest(base_image_id, startwm=None):
         h.update(str(mode).encode())
     return h.hexdigest()[:12]
 __FORGE_FILE_FORGE_LAYER_PY__
+  cat > "$FORGE_APP/forge/ledger.py" <<'__FORGE_FILE_FORGE_LEDGER_PY__'
+"""
+Selkies Forge engine - ledger
+
+Memory booked by desktops that are on their way up.
+
+Admission (launch.admit_memory) compares a desktop's floor with the memory
+that is free right now. On its own that is fooled by two launches at once:
+both see the same free memory, both are admitted, and the second one starts
+into memory the first is about to use. So every admitted launch books its
+floor here until it is up (or fails, or is cancelled), and admission
+subtracts what other launches have booked.
+
+The ledger is one JSON file under an fcntl lock, shared by every process.
+Bookings belong to a process: one whose process has died is ignored and
+dropped, so a crash can never leave memory booked forever.
+"""
+
+import os
+import time
+
+from .paths import LEDGER_JSON
+from .util import FileLock, jload, jsave, pid_alive
+
+MAX_AGE = 3 * 3600      # nothing takes this long to start; drop it if it claims to
+
+
+def _live(row, now):
+    return pid_alive(row.get("pid")) and now - float(row.get("ts") or 0) < MAX_AGE
+
+
+def _load_live():
+    now = time.time()
+    data = jload(LEDGER_JSON, {})
+    live = {k: v for k, v in data.items() if isinstance(v, dict) and _live(v, now)}
+    return data, live
+
+
+def book(job_id, mb, entry_id=None):
+    with FileLock("ledger"):
+        data, live = _load_live()
+        live[job_id] = {"mb": int(mb), "pid": os.getpid(), "ts": time.time(),
+                        "entry": entry_id}
+        jsave(LEDGER_JSON, live)
+
+
+def release(job_id):
+    try:
+        with FileLock("ledger"):
+            data, live = _load_live()
+            live.pop(job_id, None)
+            if live != data:
+                jsave(LEDGER_JSON, live)
+    except Exception:
+        pass
+
+
+def booked(exclude=None):
+    """(total MB booked by other live launches, [their bookings])."""
+    _, live = _load_live()
+    rows = [dict(v, job=k) for k, v in live.items() if k != exclude]
+    return sum(int(r.get("mb") or 0) for r in rows), rows
+__FORGE_FILE_FORGE_LEDGER_PY__
   cat > "$FORGE_APP/forge/lifecycle.py" <<'__FORGE_FILE_FORGE_LIFECYCLE_PY__'
 """
 Selkies Forge engine - lifecycle
@@ -4751,6 +5491,20 @@ def retune(name, memory_mb=None, cpus=None):
     if rc != 0:
         raise RuntimeError((err or out).strip())
     return {"ok": True}
+
+
+def set_idle(name, minutes):
+    """Stop this desktop after `minutes` with nobody watching (0: never; None:
+    follow FORGE_IDLE_STOP_MIN). Takes effect at once; nothing is recreated."""
+    if not re.match(r"^[A-Za-z0-9_.-]+$", name or ""):
+        raise RuntimeError("bad container name")
+    if run(["docker", "inspect", "-f", "{{.Name}}", name], timeout=20)[0] != 0:
+        raise RuntimeError("no such container: %s" % name)
+    value = None if minutes is None or minutes == "" else max(0, int(minutes))
+    reg_update(name, {"idle_stop_min": value})
+    events.record(name, "idle-limit", "stop after %d idle minutes" % value if value
+                  else ("never stopped for being idle" if value == 0 else "the forge default"))
+    return {"name": name, "idle_stop_min": value}
 __FORGE_FILE_FORGE_LIFECYCLE_PY__
   cat > "$FORGE_APP/forge/paths.py" <<'__FORGE_FILE_FORGE_PATHS_PY__'
 """
@@ -4764,13 +5518,14 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
     state/          JSON state: instances, ports, events, web UI lifecycle, updates
     logs/           launch jobs, tunnels, the web UI, updates
     builds/         Dockerfiles and forge-layer build contexts
+    backups/        desktop home-folder backups (tar.gz + a .json note each)
     repo/           a git clone of the project, used for updates
 """
 
 import os
 import re
 
-VERSION = "1.6.1"
+VERSION = "1.7.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -4782,6 +5537,9 @@ STATE = os.path.join(ROOT, "state")
 LOGDIR = os.path.join(ROOT, "logs")
 JOBLOGDIR = os.path.join(LOGDIR, "jobs")
 BUILDDIR = os.path.join(ROOT, "builds")
+BACKUPDIR = os.path.join(ROOT, "backups")
+JOBSTATEDIR = os.path.join(STATE, "jobs")
+LEDGER_JSON = os.path.join(STATE, "ledger.json")
 
 INSTANCES_JSON = os.path.join(STATE, "instances.json")
 PORTS_JSON = os.path.join(STATE, "ports.json")
@@ -4804,6 +5562,9 @@ IPREFIX = "selkies-forge/"
 # Host ports handed to desktops, and the ports inside the images.
 PORT_LO, PORT_HI = 31000, 44000
 SELKIES_HTTP, SELKIES_HTTPS, KASM_HTTPS = 3000, 3001, 6901
+# Selkies' streaming websocket inside the container (nginx proxies /api to it):
+# one established connection per open browser tab.
+SELKIES_WS = 8082
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]|\x1b\][^\x07]*\x07|\r")
 __FORGE_FILE_FORGE_PATHS_PY__
@@ -5126,7 +5887,7 @@ from .info import public_entry
 from .paths import KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .store import reg_load
 from .tunnels import tunnel_status
-from .watchdog import session_health
+from .watchdog import idle_limit, session_health
 from .util import _int_or_none, run
 
 
@@ -5199,6 +5960,8 @@ def docker_instances():
             "display": labels.get("%s.display" % LABEL) or "",
             "heal": labels.get("%s.heal" % LABEL) != "off",
             "session": session_health(name) if state.get("Running") else None,
+            # minutes unwatched before the watchdog stops it (0: never)
+            "idle_stop_min": idle_limit(name, reg),
             "autostart": restart in ("always", "unless-stopped", "on-failure"),
             "restart_policy": restart,
             "auth": auth,
@@ -5335,6 +6098,10 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
             # Restart after a crash while the forge is watching (see watchdog.py).
             "--label", "%s.heal=%s" % (LABEL, "off" if opts.get("heal") is False else "on"),
             ]
+    if opts.get("job_id"):
+        # Which launch made it: recovery after a crash removes a half-made
+        # desktop only if this matches the job that died.
+        args += ["--label", "%s.job=%s" % (LABEL, opts["job_id"])]
     if plan.get("memory_mb"):
         args += ["--memory", "%dm" % int(plan["memory_mb"])]
         # Pin swap to the same value so a limited desktop can't swap the host out.
@@ -5566,10 +6333,11 @@ from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
 from .info import entry_info, public_entry, shots_index
-from .jobs import JOBS, JOBS_LOCK, Job, job_get, job_put, jobs_running
-from .watchdog import WATCHDOG, reconcile
+from . import backups
+from .jobs import Job, all_jobs, cancel_foreign, job_get, job_put, jobs_running, read_job_states
+from .watchdog import PRESSURE, WATCHDOG, reconcile, recover_interrupted
 from .launch import launch
-from .lifecycle import instance_action, reconfigure
+from .lifecycle import instance_action, reconfigure, set_idle
 from .paths import (
     WEBDIR,
     KASM_HTTPS,
@@ -5823,7 +6591,9 @@ class Handler(BaseHTTPRequestHandler):
                                            if host["arch"] in e["arches"])},
             })
         if route == "/api/host":
-            return self._send(200, host_info(fresh=True))
+            out = dict(host_info(fresh=True))
+            out["pressure"] = dict(PRESSURE)
+            return self._send(200, out)
         if route == "/api/lifecycle":
             return self._send(200, {"last_stop": last_stop_report(), "boot": boot_report()})
         if route == "/api/update":
@@ -5835,12 +6605,17 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/stats":
             return self._send(200, {"stats": STATS.report(), "host": host_info()})
         if route == "/api/jobs":
-            with JOBS_LOCK:
-                return self._send(200, {"jobs": [j.snapshot() for j in JOBS.values()]})
+            # Every job on this machine: this web UI's, and selkies-cli's.
+            return self._send(200, {"jobs": all_jobs()})
         m = re.match(r"^/api/job/([0-9a-f]+)$", route)
         if m:
             job = job_get(m.group(1))
-            return self._send(200, job.snapshot()) if job else self._err(404, "no such job")
+            if job:
+                return self._send(200, job.snapshot())
+            st = next((j for j in read_job_states() if j.get("id") == m.group(1)), None)
+            return self._send(200, dict(st, foreign=True)) if st else self._err(404, "no such job")
+        if route == "/api/backups":
+            return self._send(200, {"backups": backups.list_backups(self._query().get("name") or None)})
         m = re.match(r"^/api/job/([0-9a-f]+)/events$", route)
         if m:
             return self._stream_job(m.group(1))
@@ -5887,8 +6662,35 @@ class Handler(BaseHTTPRequestHandler):
         if m:
             job = job_get(m.group(1))
             if not job:
-                return self._err(404, "no such job")
+                # A launch running in a terminal: it cancels on SIGINT like Ctrl-C.
+                return self._send(200, {"cancelled": cancel_foreign(m.group(1)), "foreign": True})
             return self._send(200, {"cancelled": job.cancel(), "job": job.snapshot()})
+        m = re.match(r"^/api/instance/([A-Za-z0-9_.-]+)/(backup|clone|idle)$", route)
+        if m:
+            name, what = m.group(1), m.group(2)
+            if what == "idle":
+                mins = body.get("minutes")
+                return self._send(200, set_idle(name, None if mins in (None, "") else int(mins)))
+            if what == "backup":
+                job = job_put(Job("backup", name, "Back up %s" % name))
+                return self._send(200, {"job": _run_job(job, backups.backup, name,
+                                                        include_cache=bool(body.get("include_cache")),
+                                                        job=job)})
+            job = job_put(Job("clone", name, "Clone %s" % name))
+            return self._send(200, {"job": _run_job(job, backups.clone, name,
+                                                    new_name=body.get("name") or None,
+                                                    tunnel=bool(body.get("tunnel")), job=job)})
+        if route == "/api/backups/restore":
+            name, file = body.get("name") or "", body.get("file") or ""
+            job = job_put(Job("restore", name, "Restore %s" % name))
+            return self._send(200, {"job": _run_job(job, backups.restore, name, file, job=job)})
+        if route == "/api/backups/clone":
+            job = job_put(Job("clone", None, "New desktop from %s" % body.get("file")))
+            return self._send(200, {"job": _run_job(job, backups.clone, None,
+                                                    new_name=body.get("name") or None,
+                                                    from_backup=body.get("file") or "", job=job)})
+        if route == "/api/backups/delete":
+            return self._send(200, backups.delete_backup(body.get("file") or ""))
         if route == "/api/space/clean":
             return self._send(200, space.clean(everything=bool(body.get("all")),
                                                volumes=bool(body.get("volumes")),
@@ -6047,8 +6849,22 @@ class Handler(BaseHTTPRequestHandler):
             return
 
 
+def _run_job(job, fn, *args, **kwargs):
+    """Run fn in a thread as `job`; failures land in the job, not the request."""
+    def work():
+        try:
+            fn(*args, **kwargs)
+        except Exception as ex:
+            if job.status == "running":
+                job.fail(str(ex))
+    job.thread = threading.Thread(target=work, daemon=True)
+    job.thread.start()
+    return job.snapshot()
+
+
 def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     ensure_dirs()
+    os.environ["FORGE_JOB_OWNER"] = "server"
     loopback = bind in ("127.0.0.1", "localhost", "::1")
     Handler.require_token = not loopback
     Handler.token = get_token(create=not loopback) if not loopback else None
@@ -6070,6 +6886,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     # Forget desktops that were removed behind our back, then keep watching.
     try:
         reconcile()
+        recover_interrupted()          # launches this web UI was running when it stopped
     except Exception:
         pass
     WATCHDOG.start()
@@ -7276,11 +8093,11 @@ import shutil
 import subprocess
 import time
 
-from .paths import BUILDDIR, CACHE_JSON, JOBLOGDIR, LOGDIR, ROOT, STATE
+from .paths import BUILDDIR, CACHE_JSON, JOBLOGDIR, JOBSTATEDIR, LOGDIR, ROOT, STATE
 
 
 def ensure_dirs():
-    for d in (ROOT, STATE, LOGDIR, JOBLOGDIR, BUILDDIR):
+    for d in (ROOT, STATE, LOGDIR, JOBLOGDIR, BUILDDIR, JOBSTATEDIR):
         try:
             os.makedirs(d, exist_ok=True)
         except OSError:
@@ -7470,12 +8287,27 @@ While the web UI is running, the watchdog looks after every desktop:
   * Session health. The forge agent inside each desktop reports its window
     manager and screen; the watchdog caches that for the manager, and records
     when a desktop drops into its rescue session.
+  * Frozen desktops. The agent writes a heartbeat every few seconds. A running
+    desktop whose heartbeat stops (the X server or the whole container hung)
+    is restarted, from the same healing budget as a crash.
+  * Viewers. Each open browser tab holds one websocket to Selkies (or Kasm);
+    counting them tells the manager who is watching, and how long a desktop
+    has gone unwatched.
+  * Idle stop. A desktop nobody has watched for its idle limit (per desktop,
+    or FORGE_IDLE_STOP_MIN for all; off by default) is stopped to give its
+    memory back. Its files are kept, and it starts again like any other.
+  * Host memory pressure. When the machine runs short of memory, that is
+    recorded with the biggest desktops named. With FORGE_PRESSURE_STOP=1 the
+    biggest desktop that nobody is watching is stopped before the kernel's
+    OOM killer picks something itself.
+  * Recovery. A launch whose process died (the web UI restarted, the power
+    went) is marked interrupted, and the half-made desktop it left is removed.
   * Housekeeping. Registry entries and port reservations for containers that
     no longer exist are dropped.
 
 Every pass is cheap: one `docker ps`, plus a `docker inspect` only for
-desktops that changed state, and one `docker exec cat` per running desktop at
-most once a minute.
+desktops that changed state, and one `docker exec` per running desktop at
+most once a minute (the heartbeat and the viewer count in one read).
 """
 
 import json
@@ -7483,23 +8315,76 @@ import os
 import threading
 import time
 
-from . import events
-from .health import container_logs, exec_read
-from .paths import LABEL, PORTS_JSON
+from . import events, ledger
+from .health import container_logs
+from .jobs import mark_job_state, read_job_states
+from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, SELKIES_WS
 from .store import reg_delete, reg_load
-from .util import FileLock, jload, jsave, run
+from .util import FileLock, human_mb, jload, jsave, run
 
 INTERVAL = 15.0
 HEALTH_EVERY = 60.0
 HEAL_MAX = 3            # per desktop per hour
 CLEAN_STOP_CODES = (0, 143)   # exited normally, or SIGTERM from docker stop
+FROZEN_AFTER = 180      # seconds without a heartbeat from a desktop that had one
+PRESSURE_TICKS = 2      # consecutive low-memory passes before it counts
+PRESSURE_EVERY = 600    # seconds between host-pressure events
 
-_session = {}           # name -> health dict (+ "read_at")
+_session = {}           # name -> health dict (+ "read_at", "viewers", "idle_s")
+_seen = {}              # name -> {"last_viewer": ts, "since": ts}
 _lock = threading.Lock()
+PRESSURE = {"active": False, "since": None, "avail_mb": None, "total_mb": None}
 
 
 def heal_enabled():
     return os.environ.get("FORGE_HEAL", "1") != "0"
+
+
+def _env_int(var, default=0):
+    try:
+        return int(os.environ.get(var, default))
+    except ValueError:
+        return default
+
+
+def idle_limit(name, reg=None):
+    """Minutes a desktop may go unwatched before it is stopped (0: never)."""
+    note = (reg if reg is not None else reg_load()).get(name) or {}
+    if note.get("idle_stop_min") is not None:
+        try:
+            return max(0, int(note["idle_stop_min"]))
+        except (TypeError, ValueError):
+            return 0
+    return max(0, _env_int("FORGE_IDLE_STOP_MIN", 0))
+
+
+def count_viewers(proc_net, ports):
+    """Established connections whose local port is one of `ports`, from the
+    text of /proc/net/tcp and /proc/net/tcp6 inside a container."""
+    n = 0
+    for line in proc_net.splitlines():
+        parts = line.split()
+        if len(parts) < 4 or ":" not in parts[1] or parts[0] == "sl":
+            continue
+        try:
+            port = int(parts[1].rsplit(":", 1)[1], 16)
+        except ValueError:
+            continue
+        if parts[3] == "01" and port in ports:
+            n += 1
+    return n
+
+
+def read_meminfo():
+    out = {}
+    try:
+        with open("/proc/meminfo") as fh:
+            for line in fh:
+                k, _, v = line.partition(":")
+                out[k] = int(v.split()[0]) // 1024
+    except (OSError, ValueError, IndexError):
+        pass
+    return out.get("MemTotal"), out.get("MemAvailable")
 
 
 def session_health(name):
@@ -7510,7 +8395,8 @@ def session_health(name):
 
 def _snapshot():
     rc, out, _ = run(["docker", "ps", "-a", "--filter", "label=%s.entry" % LABEL,
-                      "--format", "{{.Names}}\t{{.State}}\t{{.Label \"%s.heal\"}}" % LABEL],
+                      "--format", "{{.Names}}\t{{.State}}\t{{.Label \"%s.heal\"}}"
+                      "\t{{.Label \"%s.profile\"}}" % (LABEL, LABEL)],
                      timeout=30)
     if rc != 0:
         return None
@@ -7518,7 +8404,8 @@ def _snapshot():
     for line in out.splitlines():
         parts = line.split("\t")
         if len(parts) >= 2 and parts[0]:
-            state[parts[0]] = {"state": parts[1], "heal": (parts[2] if len(parts) > 2 else "")}
+            state[parts[0]] = {"state": parts[1], "heal": (parts[2] if len(parts) > 2 else ""),
+                               "profile": (parts[3] if len(parts) > 3 else "") or "selkies"}
     return state
 
 
@@ -7537,6 +8424,9 @@ class Watchdog(object):
         self._stop = threading.Event()
         self._thread = None
         self._last_clean = 0.0
+        self._last_recover = 0.0
+        self._pressure_ticks = 0
+        self._last_pressure = 0.0
 
     def start(self):
         if self._thread:
@@ -7561,20 +8451,28 @@ class Watchdog(object):
         cur = _snapshot()
         if cur is None:
             return {"docker": False}
-        report = {"crashed": [], "healed": [], "rescue": []}
+        report = {"crashed": [], "healed": [], "rescue": [], "frozen": [], "idle_stopped": [],
+                  "pressure": False, "recovered": []}
         if self.prev is not None:
             for name, info in cur.items():
                 was = self.prev.get(name)
                 if was and was["state"] == "running" and info["state"] in ("exited", "dead"):
                     self._on_stop(name, info, report)
+        reg = reg_load()
         for name, info in cur.items():
             if info["state"] == "running":
-                self._read_session(name, now, report)
+                was_running = bool(self.prev and (self.prev.get(name) or {}).get("state") == "running")
+                self._read_session(name, info, now, report, reg, was_running)
         with _lock:
             for name in list(_session):
                 if name not in cur or cur[name]["state"] != "running":
                     _session.pop(name, None)
+                    _seen.pop(name, None)
         self.prev = cur
+        self._check_pressure(cur, now, report)
+        if now - self._last_recover > 60:
+            self._last_recover = now
+            report["recovered"] = recover_interrupted()
         if now - self._last_clean > 600:
             self._last_clean = now
             reconcile(set(cur))
@@ -7607,16 +8505,35 @@ class Watchdog(object):
         else:
             events.record(name, "heal-failed", (err or out).strip()[:400])
 
-    def _read_session(self, name, now, report):
+    def _heal_budget_left(self, name):
+        recent = events.recent(name, limit=20, since=time.time() - 3600, kinds={"healed"})
+        return HEAL_MAX - len(recent)
+
+    def _read_session(self, name, info, now, report, reg, was_running):
         with _lock:
             h = _session.get(name)
+            seen = _seen.setdefault(name, {"last_viewer": now, "since": now})
+            if not was_running:
+                seen["since"] = now
         if h and now - h.get("read_at", 0) < HEALTH_EVERY:
             return
-        raw = exec_read(name, "/tmp/forge/health.json", timeout=10)
+        # One exec: the agent's heartbeat file, then the container's sockets.
+        rc, out, _ = run(["docker", "exec", name, "sh", "-c",
+                          "cat /tmp/forge/health.json 2>/dev/null; echo; echo @@NET@@; "
+                          "cat /proc/net/tcp /proc/net/tcp6 2>/dev/null"], timeout=10)
+        if rc != 0 and not out:
+            return
+        raw, _, net = out.partition("@@NET@@")
         try:
             data = json.loads(raw) if raw.strip() else {}
         except ValueError:
             data = {}
+        ports = {KASM_HTTPS} if info.get("profile") == "kasm" else {SELKIES_WS}
+        viewers = count_viewers(net, ports)
+        if viewers:
+            seen["last_viewer"] = now
+        data["viewers"] = viewers
+        data["idle_s"] = 0 if viewers else int(now - seen["last_viewer"])
         data["read_at"] = now
         prev_mode = (h or {}).get("mode")
         with _lock:
@@ -7625,6 +8542,151 @@ class Watchdog(object):
             events.record(name, "session-rescue",
                           "the desktop session kept crashing; a rescue session is showing its log")
             report["rescue"].append(name)
+        if self._check_frozen(name, info, h, data, now, report):
+            return
+        limit = idle_limit(name, reg)
+        if limit and not viewers and now - seen["last_viewer"] >= limit * 60 \
+                and now - seen["since"] >= limit * 60:
+            self._idle_stop(name, limit, report)
+
+    def _check_frozen(self, name, info, h, data, now, report):
+        """A heartbeat that was moving and has stopped: the desktop hung."""
+        ts, prev_ts = data.get("ts"), (h or {}).get("ts")
+        if not ts or not prev_ts or ts != prev_ts or now - float(ts) < FROZEN_AFTER:
+            return False
+        if (h or {}).get("frozen_reported"):
+            data["frozen_reported"] = True
+            return True
+        data["frozen_reported"] = True
+        stuck = int(now - float(ts))
+        events.record(name, "session-frozen", "no sign of life from the desktop for %ds" % stuck)
+        report["frozen"].append(name)
+        if info.get("heal") == "off" or not heal_enabled():
+            return True
+        if self._heal_budget_left(name) <= 0:
+            events.record(name, "heal-skipped", "froze again; healed %d times this hour already"
+                          % HEAL_MAX)
+            return True
+        events.record(name, "restart", "watchdog: restarting a frozen desktop")
+        rc, out, err = run(["docker", "restart", "-t", "10", name], timeout=120)
+        if rc == 0:
+            events.record(name, "healed", "restarted after it froze")
+            report["healed"].append(name)
+        else:
+            events.record(name, "heal-failed", (err or out).strip()[:400])
+        return True
+
+    def _idle_stop(self, name, limit, report):
+        from .lifecycle import instance_action        # lifecycle imports this module
+        events.record(name, "idle-stop", "nobody has watched it for %d minutes; stopping it "
+                      "to free its memory (files are kept)" % limit)
+        try:
+            instance_action(name, "stop")
+            report["idle_stopped"].append(name)
+        except Exception as ex:
+            events.record(name, "idle-stop-failed", str(ex)[:300])
+
+    def _check_pressure(self, cur, now, report):
+        total, avail = read_meminfo()
+        if not total or avail is None:
+            return
+        low = avail < max(256, total * 0.05)
+        self._pressure_ticks = self._pressure_ticks + 1 if low else 0
+        PRESSURE.update(total_mb=total, avail_mb=avail)
+        if self._pressure_ticks < PRESSURE_TICKS:
+            if not low:
+                PRESSURE.update(active=False, since=None)
+            return
+        if not PRESSURE["active"]:
+            PRESSURE.update(active=True, since=now)
+        report["pressure"] = True
+        if now - self._last_pressure < PRESSURE_EVERY:
+            return
+        self._last_pressure = now
+        running = [n for n, i in cur.items() if i["state"] == "running"]
+        usage = desktop_memory(running)
+        top = sorted(usage.items(), key=lambda kv: -kv[1])[:3]
+        events.record("host", "host-pressure",
+                      "only %s of %s memory left; biggest desktops: %s"
+                      % (human_mb(avail), human_mb(total),
+                         ", ".join("%s %s" % (n.replace(CPREFIX, "", 1), human_mb(mb))
+                                   for n, mb in top) or "none"))
+        if os.environ.get("FORGE_PRESSURE_STOP") != "1":
+            return
+        with _lock:
+            unwatched = [n for n, _ in sorted(usage.items(), key=lambda kv: -kv[1])
+                         if not (_session.get(n) or {}).get("viewers")]
+        if unwatched:
+            from .lifecycle import instance_action
+            victim = unwatched[0]
+            events.record(victim, "pressure-stop", "the machine was out of memory and nobody "
+                          "was watching this desktop; stopped it (files are kept)")
+            try:
+                instance_action(victim, "stop")
+                report["idle_stopped"].append(victim)
+            except Exception as ex:
+                events.record(victim, "idle-stop-failed", str(ex)[:300])
+
+
+def desktop_memory(names):
+    """{name: MB in use} for running desktops (one `docker stats` call)."""
+    if not names:
+        return {}
+    rc, out, _ = run(["docker", "stats", "--no-stream", "--format",
+                      "{{.Name}}\t{{.MemUsage}}"] + list(names), timeout=40)
+    from .util import parse_size
+    usage = {}
+    for line in out.splitlines():
+        n, _, mem = line.partition("\t")
+        try:
+            usage[n] = int(parse_size(mem.split("/")[0].strip()) / (1024 * 1024))
+        except (ValueError, TypeError):
+            continue
+    return usage
+
+
+def recover_interrupted():
+    """Clean up after launches whose process died part-way.
+
+    The job is marked interrupted. If it had already created its container,
+    and that container carries this job's label and never reported ready, the
+    container is removed, and its volume too unless the volume held files
+    from before (a kept volume of a removed desktop, which is never touched).
+    """
+    done = []
+    for st in read_job_states():
+        if st.get("status") != "interrupted" or st.get("recovered"):
+            continue
+        jid = st.get("id")
+        notes = st.get("notes") or {}
+        cname = notes.get("container")
+        removed = False
+        if st.get("kind") in ("launch", "clone") and cname:
+            rc, out, _ = run(["docker", "inspect", "-f",
+                              "{{index .Config.Labels \"%s.job\"}}" % LABEL, cname], timeout=20)
+            ready = any(e.get("event") == "ready" and e.get("ts", 0) >= (st.get("created") or 0)
+                        for e in events.recent(cname, limit=40))
+            if rc == 0 and out.strip() == jid and not ready:
+                run(["docker", "rm", "-f", cname], timeout=120)
+                if notes.get("volume") and not notes.get("keep_volume"):
+                    run(["docker", "volume", "rm", "-f", notes["volume"]], timeout=60)
+                reg_delete(cname)
+                removed = True
+            elif rc != 0 and notes.get("volume") and not notes.get("keep_volume") \
+                    and st.get("kind") == "clone":
+                run(["docker", "volume", "rm", "-f", notes["volume"]], timeout=60)
+        ledger.release(jid)
+        what = ("the half-made desktop %s was removed" % cname) if removed else "nothing was left behind"
+        mark_job_state(jid, status="interrupted", recovered=True,
+                       error={"message": "interrupted during %s (its process stopped); %s"
+                              % (st.get("phase") or "start", what), "hints": [],
+                              "cancelled": False, "log": st.get("log")})
+        if cname:
+            events.record(cname, "launch-interrupted",
+                          "the process running this launch stopped during %s; %s"
+                          % (st.get("phase") or "start", what))
+        done.append(jid)
+    return done
 
 
 def reconcile(existing=None):
@@ -8732,6 +9794,26 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 
 @media (max-width: 900px) { .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
+/* Jobs in progress on this machine (this UI's and selkies-cli's). */
+.jobstrip {
+  border: 1px solid var(--line);
+  border-radius: var(--r-m);
+  background: var(--glass-2);
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+.jobstrip[hidden] { display: none; }
+.jobstrip > b { color: var(--dim); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.jrow { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.jrow .jt { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+.jrow .jp { color: var(--dim); flex: 1; min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jrow .jbar { width: 120px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.jrow .jbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--acc), var(--acc-2)); }
+.jrow .jn { width: 3.2em; text-align: right; color: var(--dim); font-variant-numeric: tabular-nums; }
+
 .stat {
   border: 1px solid var(--line);
   border-radius: var(--r-m);
@@ -8953,6 +10035,10 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   z-index: 12;
   display: grid;
   gap: 2px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
 }
 
 .menu[hidden] { display: none; }
@@ -8962,7 +10048,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 9px 11px;
+  padding: 8px 11px;
   border: 0;
   border-radius: 9px;
   background: transparent;
@@ -9471,6 +10557,8 @@ __FORGE_FILE_WEB_APP_CSS__
     globe: '<svg ' + SVG + '><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>' +
            '<path d="M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21C9.5 18.4 8.2 15.4 8.2 12S9.5 5.6 12 3z"/></svg>',
     home: '<svg ' + SVG + '><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>',
+    plus: '<svg ' + SVG + '><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 0 1 2-2h10"/><path d="M14 11v6M11 14h6"/></svg>',
+    save: '<svg ' + SVG + '><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>',
     lock: '<svg ' + SVG + '><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
     copy: '<svg ' + SVG + '><rect x="9" y="9" width="11" height="11" rx="2"/>' +
           '<path d="M5 15V5h10"/></svg>',
@@ -9578,7 +10666,30 @@ __FORGE_FILE_WEB_APP_CSS__
     return api("/api/host").then(function (hh) { S.host = hh; renderMeters(); }).catch(function () {});
   }
 
+  /* Everything running on this machine: this UI's launches and selkies-cli's. */
+  function refreshJobs() {
+    return api("/api/jobs").then(function (r) {
+      S.jobs = (r.jobs || []).filter(function (j) { return j.status === "running"; });
+      renderJobStrip();
+    }).catch(function () {});
+  }
+  function renderJobStrip() {
+    var el = $("#jobStrip");
+    if (!el) return;
+    var jobs = S.jobs || [];
+    el.hidden = !jobs.length;
+    el.innerHTML = jobs.length ? "<b>Working</b>" + jobs.map(function (j) {
+      var pct = Math.round((j.progress || 0) * 100);
+      return '<div class="jrow"><span class="jt">' + h(j.title || j.kind) + "</span>" +
+        '<span class="jp">' + h(j.label || j.phase || "") + (j.foreign ? " \u00b7 from the terminal" : "") + "</span>" +
+        '<span class="jbar"><i style="width:' + pct + '%"></i></span><span class="jn">' + pct + "%</span>" +
+        ((!j.foreign || j.owner === "cli") ? '<button class="btn sm ghost" data-jobcancel="' + h(j.id) + '">Cancel</button>' : "") +
+        "</div>";
+    }).join("") : "";
+  }
+
   function refreshInstances() {
+    if (S.view === "manager") refreshJobs();
     return api("/api/instances").then(function (r) {
       S.instances = r.instances || [];
       renderRail();
@@ -9607,8 +10718,14 @@ __FORGE_FILE_WEB_APP_CSS__
       return '<div class="meter"><b>' + h(label) + '</b><div class="v">' + h(value) +
         '</div><div class="bar ' + cls + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
     }
+    var pr = hst.pressure || {};
+    if (pr.active && !S.pressureToast) {
+      S.pressureToast = true;
+      toast("The machine is low on memory", "Stop a desktop you are not using, or set one to stop when idle.", "bad");
+    }
+    if (!pr.active) S.pressureToast = false;
     $("#meters").innerHTML =
-      m("RAM FREE", mb(hst.mem_avail_mb) + " of " + mb(hst.mem_total_mb), memPct) +
+      m(pr.active ? "RAM LOW" : "RAM FREE", mb(hst.mem_avail_mb) + " of " + mb(hst.mem_total_mb), pr.active ? 100 : memPct) +
       m("CPU LOAD", (hst.load1 || 0).toFixed(2) + " of " + (hst.cpus || "?") + " cores", cpuPct) +
       m("DISK FREE", mb(hst.disk_free_mb), diskPct);
   }
@@ -9940,6 +11057,7 @@ __FORGE_FILE_WEB_APP_CSS__
       toggle("oGpu", false, "Pass the GPU through",
         S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
       toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
+      idleField("oIdle", null) +
       (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
 
     /* -- dockerfile */
@@ -9997,6 +11115,21 @@ __FORGE_FILE_WEB_APP_CSS__
       (preferred === "fixed" ? "This desktop misdraws when the screen changes size under it, so it runs at a fixed size by default."
         : "Follow suits most desktops; on a 4K screen it's scaled up from a desktop about 1920 wide, so text stays readable. " +
           "Choose fixed if anything ever ends up off the edge.") + "</p>";
+  }
+
+  /* Stop when nobody's watching: the watchdog counts open tabs, and stops a
+     desktop that has had none for this long. Its files are kept. */
+  var IDLE_CHOICES = [["", "Forge default"], ["0", "Never"], ["30", "After 30 minutes"],
+    ["60", "After 1 hour"], ["120", "After 2 hours"], ["240", "After 4 hours"]];
+  function idleField(id, cur) {
+    var v = cur === null || cur === undefined ? "" : String(cur);
+    if (v && !IDLE_CHOICES.some(function (c) { return c[0] === v; })) IDLE_CHOICES.push([v, "After " + v + " minutes"]);
+    return '<label class="field" style="margin-top:12px"><span>Stop when nobody\u2019s watching</span><select id="' + id + '">' +
+      IDLE_CHOICES.map(function (c) {
+        return '<option value="' + c[0] + '"' + (c[0] === v ? " selected" : "") + ">" + h(c[1]) + "</option>";
+      }).join("") + "</select></label>" +
+      '<p class="sub" style="margin:2px 0 0;font-size:12px">Frees its memory when no browser tab has it open. ' +
+      "Files are kept; start it again any time. Needs the web UI running.</p>";
   }
 
   function slider(id, label, min, max, step, val, fmt, advice) {
@@ -10058,6 +11191,7 @@ __FORGE_FILE_WEB_APP_CSS__
       opts.display = $("#oDisplay").value;
       opts.resolution = $("#oRes").value;
     }
+    if ($("#oIdle") && $("#oIdle").value !== "") opts.idle_stop = parseInt($("#oIdle").value, 10);
     var nm = $("#oName") && $("#oName").value.trim();
     if (nm) opts.name = nm;
     if ($("#oAuth") && $("#oAuth").checked) {
@@ -10251,7 +11385,8 @@ __FORGE_FILE_WEB_APP_CSS__
       return [i.name, i.running ? 1 : 0, (i.tunnel && i.tunnel.url) || "",
         (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
         i.autostart ? 1 : 0, i.auth ? i.auth.user : "",
-        i.session ? [i.session.wm, i.session.mode, i.session.screen].join("/") : ""].join(":");
+        i.session ? [i.session.wm, i.session.mode, i.session.screen, i.session.viewers,
+          Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min].join(":");
     }).join("|");
   }
 
@@ -10357,6 +11492,11 @@ __FORGE_FILE_WEB_APP_CSS__
           (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest forge layer; files are kept">' +
             I.restart + "Repair</button>") +
           '<button data-tune="' + h(i.name) + '">' + I.tune + "Edit limits</button>" +
+          '<button data-act="idle" title="Stop it when nobody has it open">' + I.stop + "Stop when idle\u2026</button>" +
+          "<hr>" +
+          '<button data-act="backup" title="Copy its files (home folder) to a backup">' + I.save + "Back up files</button>" +
+          '<button data-act="backups">' + I.logs + "Backups\u2026</button>" +
+          '<button data-act="clone" title="A second desktop with a copy of its files">' + I.plus + "Clone\u2026</button>" +
           "<hr>" +
           '<button class="danger" data-act="remove">' + I.trash + "Remove</button>" +
         "</div></div>" +
@@ -10374,11 +11514,26 @@ __FORGE_FILE_WEB_APP_CSS__
       return '<section class="mc-session bad">Session crashed on start; a rescue window shows why. ' +
         '<button class="btn sm" data-logs="' + h(i.name) + '">See what happened</button></section>';
     }
-    if (!s.wm) return "";
+    var watch = "";
+    if (typeof s.viewers === "number") {
+      watch = s.viewers ? " \u00b7 " + s.viewers + " watching"
+        : " \u00b7 unwatched" + (s.idle_s >= 120 ? " " + dur(s.idle_s) : "");
+      if (!s.viewers && i.idle_stop_min) {
+        var left = i.idle_stop_min * 60 - (s.idle_s || 0);
+        watch += left > 0 ? ", stops in " + dur(left) : ", stopping";
+      }
+    }
+    if (!s.wm) return watch ? '<section class="mc-session">' + h(watch.slice(3)) + "</section>" : "";
     var scr = s.screen && s.screen !== "wayland" ? s.screen.replace("x", "\u00d7") : s.screen;
     return '<section class="mc-session"><i class="ok"></i>' + h(s.wm) + " running" +
       (scr ? " \u00b7 " + h(scr) : "") + ((i.display || "").indexOf("fixed") === 0 ? " \u00b7 fixed size, scaled" : "") +
-      "</section>";
+      h(watch) + "</section>";
+  }
+  function dur(sec) {
+    sec = Math.max(0, Math.round(sec));
+    if (sec < 90) return sec + "s";
+    if (sec < 5400) return Math.round(sec / 60) + " min";
+    return (sec / 3600).toFixed(sec < 36000 ? 1 : 0) + " h";
   }
   function catEntry(id) {
     var c = (S.boot && S.boot.catalog) || [];
@@ -10469,8 +11624,92 @@ __FORGE_FILE_WEB_APP_CSS__
     }
   }
 
+  /* Long jobs started from the manager (backup, restore, clone) report back
+     through the job API; the Working strip shows them while they run. */
+  function watchJob(id, label, onDone) {
+    var tick = function () {
+      api("/api/job/" + id).then(function (j) {
+        if (j.status === "running") { setTimeout(tick, 1500); return; }
+        if (j.status === "done") toast(label + " done", (j.result && (j.result.file || j.result.name)) || "", "ok");
+        else toast(label + (j.status === "cancelled" ? " cancelled" : " failed"),
+          (j.error && j.error.message) || j.status, j.status === "cancelled" ? "" : "bad");
+        S.instKey = "";
+        refreshInstances();
+        refreshJobs();
+        if (onDone) onDone(j);
+      }).catch(function () { setTimeout(tick, 3000); });
+    };
+    setTimeout(tick, 800);
+    refreshJobs();
+  }
+
+  function startJob(url, body, label, onDone) {
+    toast(label + "\u2026", "");
+    return api(url, { body: body || {} }).then(function (r) { watchJob(r.job.id, label, onDone); })
+      .catch(function (e) { toast(label + " failed", e.message, "bad"); });
+  }
+
+  function showBackups(name) {
+    openModal("Backups \u00b7 " + name, '<div class="skel" style="height:120px"></div>');
+    api("/api/backups?name=" + encodeURIComponent(name)).then(function (r) {
+      var rows = r.backups || [];
+      $("#modalBody").innerHTML =
+        '<div class="row" style="margin-bottom:12px"><p class="sub" style="margin:0;flex:1">Copies of this desktop\u2019s ' +
+        "home folder (caches left out). Restoring takes a safety copy of the current files first.</p>" +
+        '<button class="btn sm primary" data-bk="new">Back up now</button></div>' +
+        (rows.length ? '<div class="evlist">' + rows.map(function (b) {
+          return '<div class="ev"><span class="t">' + h(new Date(b.created * 1000).toLocaleString()) + "</span>" +
+            "<b>" + h(mb(b.size / 1048576)) + (b.tag ? " \u00b7 " + h(b.tag) : "") + "</b>" +
+            '<span class="d">' + h(b.file) + "</span>" +
+            '<span class="row" style="gap:6px;margin-left:auto">' +
+            '<button class="btn sm" data-bk="restore" data-file="' + h(b.file) + '">Restore</button>' +
+            '<button class="btn sm ghost" data-bk="fork" data-file="' + h(b.file) + '">New desktop</button>' +
+            '<button class="btn sm ghost" data-bk="del" data-file="' + h(b.file) + '">Delete</button></span></div>';
+        }).join("") + "</div>" : '<div class="empty">No backups yet.</div>');
+      $$("#modalBody [data-bk]").forEach(function (b) {
+        b.onclick = function () {
+          var f = b.dataset.file, k = b.dataset.bk;
+          if (k === "new") { closeModal(); startJob("/api/instance/" + encodeURIComponent(name) + "/backup", {}, "Backup of " + name); }
+          if (k === "restore" && confirm("Replace " + name + "\u2019s files with this backup?\n\n" + f +
+              "\n\nA safety backup of the current files is taken first. A running desktop restarts.")) {
+            closeModal(); startJob("/api/backups/restore", { name: name, file: f }, "Restore of " + name);
+          }
+          if (k === "fork") {
+            var nn = prompt("Name for the new desktop (optional)", "");
+            if (nn === null) return;
+            closeModal(); startJob("/api/backups/clone", { file: f, name: nn.trim() }, "New desktop from backup");
+          }
+          if (k === "del" && confirm("Delete this backup for good?\n\n" + f)) {
+            api("/api/backups/delete", { body: { file: f } }).then(function () { showBackups(name); })
+              .catch(function (e) { toast("Delete failed", e.message, "bad"); });
+          }
+        };
+      });
+    }).catch(function (e) { $("#modalBody").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>"; });
+  }
+
   function instAction(name, act) {
     var body = {};
+    var enc = encodeURIComponent(name);
+    if (act === "backup") return startJob("/api/instance/" + enc + "/backup", {}, "Backup of " + name);
+    if (act === "backups") return showBackups(name);
+    if (act === "clone") {
+      var nn = prompt("Clone " + name + "\n\nA second desktop with a copy of all its files, the same limits " +
+        "and options. Name for the copy (optional):", "");
+      if (nn === null) return;
+      return startJob("/api/instance/" + enc + "/clone", { name: nn.trim() }, "Clone of " + name);
+    }
+    if (act === "idle") {
+      var cur = (S.instances.filter(function (x) { return x.name === name; })[0] || {}).idle_stop_min || 0;
+      var mins = prompt("Stop " + name + " after how many minutes with nobody watching?\n\n" +
+        "0 = never. Leave empty for the forge default. Files are always kept.", cur ? String(cur) : "");
+      if (mins === null) return;
+      return api("/api/instance/" + enc + "/idle", { body: { minutes: mins.trim() === "" ? null : parseInt(mins, 10) || 0 } })
+        .then(function (r) {
+          toast("Idle stop " + (r.idle_stop_min ? "after " + r.idle_stop_min + " min" : r.idle_stop_min === 0 ? "off" : "default"), name, "ok");
+          S.instKey = ""; refreshInstances();
+        }).catch(function (e) { toast("Could not set it", e.message, "bad"); });
+    }
     if (act === "repair" && !confirm("Repair " + name + "?\n\nIt is recreated on the newest forge layer " +
         "(first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.")) return;
     if (act === "remove") {
@@ -10513,10 +11752,13 @@ __FORGE_FILE_WEB_APP_CSS__
         "heal-skipped": "crashed too often, left stopped", "session-rescue": "session crashed, rescue shown",
         stop: "stopped", start: "started", restart: "restarted", repair: "repaired", retune: "limits changed",
         recreate: "recreated", "launch-failed": "launch failed", "launch-cancelled": "launch cancelled",
-        stopped: "stopped outside the forge" };
+        stopped: "stopped outside the forge", "session-frozen": "froze (no sign of life)",
+        "idle-stop": "stopped: nobody was watching", "pressure-stop": "stopped: the machine was out of memory",
+        "launch-interrupted": "launch interrupted", backup: "backed up", restored: "files restored",
+        cloned: "cloned", "idle-limit": "idle stop changed", "heal-failed": "restart after a crash failed" };
       var evHtml = evs.length ? '<h3 style="margin:0 0 8px">What happened</h3><div class="evlist">' +
         evs.map(function (x) {
-          var bad = /crash|fail|rescue|skipped/.test(x.event);
+          var bad = /crash|fail|rescue|skipped|frozen|interrupted|pressure/.test(x.event);
           return '<div class="ev' + (bad ? " bad" : "") + '"><span class="t">' +
             h(new Date(x.ts * 1000).toLocaleString()) + '</span><b>' + h(EV[x.event] || x.event) + "</b>" +
             (x.detail && x.detail !== "requested" ? '<span class="d">' + h(x.detail) + "</span>" : "") + "</div>";
@@ -11109,7 +12351,17 @@ __FORGE_FILE_WEB_APP_CSS__
         var menu = mbtn.parentNode.querySelector(".menu");
         var wasOpen = !menu.hidden;
         closeMenus();
-        if (!wasOpen) { menu.hidden = false; closeMenus(menu); }
+        if (!wasOpen) {
+          menu.hidden = false;
+          // The card clips its contents (rounded corners), so fit the menu in
+          // the room above the button and let it scroll if it is longer.
+          var card = mbtn.closest(".mc");
+          if (card) {
+            var room = mbtn.getBoundingClientRect().top - card.getBoundingClientRect().top - 14;
+            menu.style.maxHeight = Math.max(160, room) + "px";
+          }
+          closeMenus(menu);
+        }
         return;
       }
       if (!t.closest(".menu")) closeMenus();
@@ -11130,6 +12382,14 @@ __FORGE_FILE_WEB_APP_CSS__
           val.innerHTML = "<span>" + h(inst.auth.user) + '</span><span class="muted"> / ' +
             (shown ? h(inst.auth.password) : "••••••••") + "</span>";
         }
+        return;
+      }
+      if ((x = t.closest("[data-jobcancel]"))) {
+        x.disabled = true;
+        api("/api/job/" + x.dataset.jobcancel + "/cancel", { body: {} }).then(function (r) {
+          toast(r.cancelled ? "Cancelling\u2026" : "Could not cancel it", "", r.cancelled ? "" : "bad");
+          setTimeout(refreshJobs, 1500);
+        }).catch(function (e) { toast("Cancel failed", e.message, "bad"); });
         return;
       }
       if ((x = t.closest("[data-act]"))) {
@@ -11379,6 +12639,7 @@ __FORGE_FILE_WEB_BRANDS_JS__
       <h1 class="h1">Running desktops</h1>
       <p class="sub">Live CPU, memory and bandwidth. Open a shell without leaving the card.</p>
       <div class="stat-strip" id="instStats"></div>
+      <div class="jobstrip" id="jobStrip" hidden></div>
       <div class="inst-grid" id="instList"></div>
     </section>
 
@@ -13182,7 +14443,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.6.1"
+FORGE_VERSION="1.7.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -13776,11 +15037,19 @@ PYEOF
 
 stream_launch() {
   local id="$1"; shift
+  stream_job_view launch "Forging $id" launch "$id" "$@"
+}
+
+# Run an engine command that streams a job (launch, clone, backup, restore)
+# and draw it: a progress bar, the log scrolling above it, then the result.
+# Ctrl-C reaches the engine, which cancels the job and cleans up.
+stream_job_view() {
+  local kind="$1" heading="$2"; shift 2
   local -a eargs=("$@")
   local pct=0 phase="working" result="" failed=0
-  local log="$FORGE_LOGS/launch-$(date +%Y%m%d-%H%M%S).log"
+  local log="$FORGE_LOGS/$kind-$(date +%Y%m%d-%H%M%S).log"
 
-  title "Forging $id" "live output below, full log at $log"
+  title "$heading" "live output below, full log at $log"
   printf '%s' "$HIDE"
 
   while IFS= read -r line; do
@@ -13802,11 +15071,26 @@ stream_launch() {
       H\ *) printf '%s' "$CLRL"; info "try: ${line#H }" ;;
       *) : ;;
     esac
-  done < <(engine launch "$id" "${eargs[@]}" 2>&1)
+  done < <(engine "${eargs[@]}" 2>&1)
 
   printf '%s%s' "$CLRL" "$SHOW"
   if [ -n "$result" ]; then
-    FORGE_COLOR=$COLOR render_result "$result"
+    case "$kind" in
+      launch|clone) FORGE_COLOR=$COLOR render_result "$result" ;;
+      *) printf '%s' "$result" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+b = d.get("backup") or {}
+if b:
+    print("  \u2714 backed up %s: %s (%.1f MB)" % (d.get("name"), b.get("file"), (b.get("size") or 0) / 1048576.0))
+elif d.get("safety"):
+    print("  \u2714 restored %s from %s" % (d.get("name"), d.get("file")))
+    print("    the files from before are kept in %s" % d["safety"])
+else:
+    print("  \u2714 done")
+' ;;
+    esac
+    printf '\n'
     return 0
   fi
   [ "$failed" = 1 ] && printf '\n  %sthe full log is at %s%s\n\n' "$DIM" "$log" "$NC"
@@ -14100,6 +15384,9 @@ print()
           $'start\tStart it\t' \
           $'logs\tShow recent logs\tlast 120 lines' \
           $'events\tWhat happened to it\tlaunches, crashes, heals, repairs' \
+          $'backup\tBack up its files\ta copy of its home folder' \
+          $'clone\tClone it\ta second desktop with a copy of its files' \
+          $'idle\tStop it when idle\twhen nobody has had it open for a while' \
           $'repair\tRepair it\trecreate on the newest forge layer; files are kept' \
           $'remove\tRemove it\tasks about the data volume too' \
           $'back\tBack\t') || continue
@@ -14116,6 +15403,9 @@ print()
             ;;
           logs) engine logs "$pick" --tail 120 | sed 's/^/    /' ;;
           events) engine events --name "$pick" --limit 30 | sed 's/^/    /' ;;
+          backup) cmd_backup "$pick" ;;
+          clone) cmd_clone "$pick" "$(ask "name for the copy" "${pick#forge-}-copy")" ;;
+          idle) cmd_idle "$pick" "$(ask "minutes with nobody watching (0 = never)" "60")" ;;
           limits)
             local cur; cur=$(engine instances 2>/dev/null | "$PY" -c "
 import json,sys
@@ -14862,6 +16152,59 @@ for k, v in (d.get("failed") or {}).items():
 '
 }
 
+# A desktop by its short name or its container name (forge-...).
+resolve_desktop() {
+  local n="$1"
+  if docker inspect "$n" >/dev/null 2>&1; then printf '%s' "$n"
+  elif docker inspect "forge-$n" >/dev/null 2>&1; then printf 'forge-%s' "$n"
+  else printf '%s' "$n"; fi
+}
+
+cmd_backup() {
+  [ -n "${1:-}" ] || die "usage: selkies-cli backup NAME"
+  local n; n=$(resolve_desktop "$1")
+  stream_job_view backup "Backing up $n" backup "$n"
+}
+
+cmd_backups() {
+  title "Backups" "in $FORGE_HOME/backups; restore with: selkies-cli restore-backup NAME FILE"
+  local -a a=(backups)
+  [ -n "${1:-}" ] && a+=(--name "$(resolve_desktop "$1")")
+  engine "${a[@]}" | sed 's/^/  /'
+  printf '\n'
+}
+
+cmd_restore_backup() {
+  [ -n "${2:-}" ] || die "usage: selkies-cli restore-backup NAME FILE"
+  local n; n=$(resolve_desktop "$1")
+  confirm "Replace $n's files with $2? (a safety backup is taken first)" n || return 0
+  stream_job_view restore "Restoring $n" restore-backup "$n" "$2"
+}
+
+cmd_clone() {
+  [ -n "${1:-}" ] || die "usage: selkies-cli clone NAME [NEW-NAME]"
+  local n; n=$(resolve_desktop "$1")
+  local -a a=(clone "$n")
+  [ -n "${2:-}" ] && a+=(--as "$2")
+  stream_job_view clone "Cloning $n" "${a[@]}"
+}
+
+cmd_jobs() {
+  title "Jobs" "launches, backups and clones, from the web UI and the terminal"
+  engine jobs | sed 's/^/  /'
+  printf '\n'
+}
+
+cmd_idle() {
+  [ -n "${2:-}" ] || die "usage: selkies-cli idle NAME MINUTES|0|default"
+  local n; n=$(resolve_desktop "$1")
+  local r; r=$(engine idle "$n" "$2" 2>&1)
+  if printf '%s' "$r" | grep -q '"error"'; then bad "$r"
+  elif [ "$2" = 0 ]; then ok "$n is never stopped for being idle"
+  elif [ "$2" = default ]; then ok "$n follows the forge default (FORGE_IDLE_STOP_MIN)"
+  else ok "$n stops after $2 minutes with nobody watching (needs the web UI running)"; fi
+}
+
 cmd_events() {
   title "What happened" "launches, crashes, heals and repairs, newest last"
   engine events --limit "${1:-40}" | sed 's/^/  /'
@@ -15001,6 +16344,12 @@ After the first run:
    selkies-cli restore             start the desktops that were running before a reboot
    selkies-cli events              what happened: launches, crashes, heals, repairs
    selkies-cli clean               see and free the disk the forge uses
+   selkies-cli jobs                launches, backups and clones in progress or recent
+   selkies-cli backup NAME         back up a desktop's files (its home folder)
+   selkies-cli backups [NAME]      list backups
+   selkies-cli restore-backup NAME FILE   put a backup's files back (safety copy first)
+   selkies-cli clone NAME [NEW]    a second desktop with a copy of its files
+   selkies-cli idle NAME MIN       stop it after MIN minutes unwatched (0 = never)
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
@@ -15018,6 +16367,22 @@ USAGE
 main() {
   local MODE="menu" LAUNCH_ID="" BOOT_ACT="" EXTRACT_TO=""
   local -a ORIG_ARGS=("$@")
+  # Verbs that take desktop names: run them straight after the usual setup.
+  case "${1:-}" in
+    backup|backups|restore-backup|clone|jobs|idle)
+      local verb="$1"; shift
+      ensure_dirs; preflight; extract_payload
+      case "$verb" in
+        backup) cmd_backup "$@" ;;
+        backups) cmd_backups "$@" ;;
+        restore-backup) cmd_restore_backup "$@" ;;
+        clone) cmd_clone "$@" ;;
+        jobs) cmd_jobs ;;
+        idle) cmd_idle "$@" ;;
+      esac
+      exit $?
+      ;;
+  esac
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
     status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help|boot|restore|clean|events)
@@ -15271,11 +16636,19 @@ PYEOF
 
 stream_launch() {
   local id="$1"; shift
+  stream_job_view launch "Forging $id" launch "$id" "$@"
+}
+
+# Run an engine command that streams a job (launch, clone, backup, restore)
+# and draw it: a progress bar, the log scrolling above it, then the result.
+# Ctrl-C reaches the engine, which cancels the job and cleans up.
+stream_job_view() {
+  local kind="$1" heading="$2"; shift 2
   local -a eargs=("$@")
   local pct=0 phase="working" result="" failed=0
-  local log="$FORGE_LOGS/launch-$(date +%Y%m%d-%H%M%S).log"
+  local log="$FORGE_LOGS/$kind-$(date +%Y%m%d-%H%M%S).log"
 
-  title "Forging $id" "live output below, full log at $log"
+  title "$heading" "live output below, full log at $log"
   printf '%s' "$HIDE"
 
   while IFS= read -r line; do
@@ -15297,11 +16670,26 @@ stream_launch() {
       H\ *) printf '%s' "$CLRL"; info "try: ${line#H }" ;;
       *) : ;;
     esac
-  done < <(engine launch "$id" "${eargs[@]}" 2>&1)
+  done < <(engine "${eargs[@]}" 2>&1)
 
   printf '%s%s' "$CLRL" "$SHOW"
   if [ -n "$result" ]; then
-    FORGE_COLOR=$COLOR render_result "$result"
+    case "$kind" in
+      launch|clone) FORGE_COLOR=$COLOR render_result "$result" ;;
+      *) printf '%s' "$result" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+b = d.get("backup") or {}
+if b:
+    print("  \u2714 backed up %s: %s (%.1f MB)" % (d.get("name"), b.get("file"), (b.get("size") or 0) / 1048576.0))
+elif d.get("safety"):
+    print("  \u2714 restored %s from %s" % (d.get("name"), d.get("file")))
+    print("    the files from before are kept in %s" % d["safety"])
+else:
+    print("  \u2714 done")
+' ;;
+    esac
+    printf '\n'
     return 0
   fi
   [ "$failed" = 1 ] && printf '\n  %sthe full log is at %s%s\n\n' "$DIM" "$log" "$NC"
@@ -15595,6 +16983,9 @@ print()
           $'start\tStart it\t' \
           $'logs\tShow recent logs\tlast 120 lines' \
           $'events\tWhat happened to it\tlaunches, crashes, heals, repairs' \
+          $'backup\tBack up its files\ta copy of its home folder' \
+          $'clone\tClone it\ta second desktop with a copy of its files' \
+          $'idle\tStop it when idle\twhen nobody has had it open for a while' \
           $'repair\tRepair it\trecreate on the newest forge layer; files are kept' \
           $'remove\tRemove it\tasks about the data volume too' \
           $'back\tBack\t') || continue
@@ -15611,6 +17002,9 @@ print()
             ;;
           logs) engine logs "$pick" --tail 120 | sed 's/^/    /' ;;
           events) engine events --name "$pick" --limit 30 | sed 's/^/    /' ;;
+          backup) cmd_backup "$pick" ;;
+          clone) cmd_clone "$pick" "$(ask "name for the copy" "${pick#forge-}-copy")" ;;
+          idle) cmd_idle "$pick" "$(ask "minutes with nobody watching (0 = never)" "60")" ;;
           limits)
             local cur; cur=$(engine instances 2>/dev/null | "$PY" -c "
 import json,sys
@@ -16357,6 +17751,59 @@ for k, v in (d.get("failed") or {}).items():
 '
 }
 
+# A desktop by its short name or its container name (forge-...).
+resolve_desktop() {
+  local n="$1"
+  if docker inspect "$n" >/dev/null 2>&1; then printf '%s' "$n"
+  elif docker inspect "forge-$n" >/dev/null 2>&1; then printf 'forge-%s' "$n"
+  else printf '%s' "$n"; fi
+}
+
+cmd_backup() {
+  [ -n "${1:-}" ] || die "usage: selkies-cli backup NAME"
+  local n; n=$(resolve_desktop "$1")
+  stream_job_view backup "Backing up $n" backup "$n"
+}
+
+cmd_backups() {
+  title "Backups" "in $FORGE_HOME/backups; restore with: selkies-cli restore-backup NAME FILE"
+  local -a a=(backups)
+  [ -n "${1:-}" ] && a+=(--name "$(resolve_desktop "$1")")
+  engine "${a[@]}" | sed 's/^/  /'
+  printf '\n'
+}
+
+cmd_restore_backup() {
+  [ -n "${2:-}" ] || die "usage: selkies-cli restore-backup NAME FILE"
+  local n; n=$(resolve_desktop "$1")
+  confirm "Replace $n's files with $2? (a safety backup is taken first)" n || return 0
+  stream_job_view restore "Restoring $n" restore-backup "$n" "$2"
+}
+
+cmd_clone() {
+  [ -n "${1:-}" ] || die "usage: selkies-cli clone NAME [NEW-NAME]"
+  local n; n=$(resolve_desktop "$1")
+  local -a a=(clone "$n")
+  [ -n "${2:-}" ] && a+=(--as "$2")
+  stream_job_view clone "Cloning $n" "${a[@]}"
+}
+
+cmd_jobs() {
+  title "Jobs" "launches, backups and clones, from the web UI and the terminal"
+  engine jobs | sed 's/^/  /'
+  printf '\n'
+}
+
+cmd_idle() {
+  [ -n "${2:-}" ] || die "usage: selkies-cli idle NAME MINUTES|0|default"
+  local n; n=$(resolve_desktop "$1")
+  local r; r=$(engine idle "$n" "$2" 2>&1)
+  if printf '%s' "$r" | grep -q '"error"'; then bad "$r"
+  elif [ "$2" = 0 ]; then ok "$n is never stopped for being idle"
+  elif [ "$2" = default ]; then ok "$n follows the forge default (FORGE_IDLE_STOP_MIN)"
+  else ok "$n stops after $2 minutes with nobody watching (needs the web UI running)"; fi
+}
+
 cmd_events() {
   title "What happened" "launches, crashes, heals and repairs, newest last"
   engine events --limit "${1:-40}" | sed 's/^/  /'
@@ -16496,6 +17943,12 @@ After the first run:
    selkies-cli restore             start the desktops that were running before a reboot
    selkies-cli events              what happened: launches, crashes, heals, repairs
    selkies-cli clean               see and free the disk the forge uses
+   selkies-cli jobs                launches, backups and clones in progress or recent
+   selkies-cli backup NAME         back up a desktop's files (its home folder)
+   selkies-cli backups [NAME]      list backups
+   selkies-cli restore-backup NAME FILE   put a backup's files back (safety copy first)
+   selkies-cli clone NAME [NEW]    a second desktop with a copy of its files
+   selkies-cli idle NAME MIN       stop it after MIN minutes unwatched (0 = never)
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
@@ -16513,6 +17966,22 @@ USAGE
 main() {
   local MODE="menu" LAUNCH_ID="" BOOT_ACT="" EXTRACT_TO=""
   local -a ORIG_ARGS=("$@")
+  # Verbs that take desktop names: run them straight after the usual setup.
+  case "${1:-}" in
+    backup|backups|restore-backup|clone|jobs|idle)
+      local verb="$1"; shift
+      ensure_dirs; preflight; extract_payload
+      case "$verb" in
+        backup) cmd_backup "$@" ;;
+        backups) cmd_backups "$@" ;;
+        restore-backup) cmd_restore_backup "$@" ;;
+        clone) cmd_clone "$@" ;;
+        jobs) cmd_jobs ;;
+        idle) cmd_idle "$@" ;;
+      esac
+      exit $?
+      ;;
+  esac
   # Plain words for the common things: selkies-cli status, selkies-cli stop...
   case "${1:-}" in
     status|start|stop|restart|open|update|setup|manager|doctor|list|new|uninstall|help|boot|restore|clean|events)

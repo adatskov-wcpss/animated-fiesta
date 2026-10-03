@@ -66,6 +66,30 @@ selkies-cli events
 
 Turn healing off for everything with `FORGE_HEAL=0`, or for one desktop by launching it with `"heal": false` ([API](api.md)).
 
+A desktop that hangs without exiting (its heartbeat stops) is restarted the same way, and recorded as `session-frozen`. A launch whose process died part-way (the web UI restarted, the terminal closed) is marked interrupted, and its half-made desktop is removed within a minute.
+
+## Desktops nobody is using
+
+On a small machine, a forgotten desktop holds a gigabyte or more. Have the forge stop desktops nobody has had open for a while:
+
+```bash
+selkies-cli idle forge-noble-xfce 60      # this one, after an hour unwatched
+FORGE_IDLE_STOP_MIN=120 selkies-cli start # every desktop without its own setting, after two hours
+```
+
+Or use **Stop when idle…** in the manager's menu, or **Stop when nobody's watching** when you forge one. "Watching" means a browser tab has the desktop open. The files are kept, and you start it again like any other. The manager shows how long each desktop has gone unwatched.
+
+## Backups
+
+```bash
+selkies-cli backup forge-noble-xfce            # its home folder, caches left out
+selkies-cli backups                            # what you have
+selkies-cli restore-backup forge-noble-xfce forge-noble-xfce-20261003-120000.tar.gz
+selkies-cli clone forge-noble-xfce work-copy   # a second desktop with the same files
+```
+
+Backups live in `~/.selkies-forge/backups/`, each with a note of what it came from, so a backup can become a desktop again even after the original is removed (**Backups… → New desktop** in the manager). A restore always takes a safety backup of the current files first.
+
 ## Updates
 
 Selkies Forge keeps itself up to date from GitHub, like a `git pull` that only ever moves forward:

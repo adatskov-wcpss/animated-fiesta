@@ -22,7 +22,7 @@ KEEP_LINES = 4000
 # Events that mean a person (or the forge, on their behalf) stopped a desktop
 # on purpose. The watchdog never treats a stop after one of these as a crash.
 DELIBERATE = {"stop", "restart", "remove", "repair", "recreate", "retune", "launch-cancelled",
-              "launch-failed", "user-stop"}
+              "launch-failed", "user-stop", "idle-stop", "pressure-stop", "backup-restore"}
 
 
 def record(name, event, detail="", **extra):

@@ -266,3 +266,17 @@ def retune(name, memory_mb=None, cpus=None):
     if rc != 0:
         raise RuntimeError((err or out).strip())
     return {"ok": True}
+
+
+def set_idle(name, minutes):
+    """Stop this desktop after `minutes` with nobody watching (0: never; None:
+    follow FORGE_IDLE_STOP_MIN). Takes effect at once; nothing is recreated."""
+    if not re.match(r"^[A-Za-z0-9_.-]+$", name or ""):
+        raise RuntimeError("bad container name")
+    if run(["docker", "inspect", "-f", "{{.Name}}", name], timeout=20)[0] != 0:
+        raise RuntimeError("no such container: %s" % name)
+    value = None if minutes is None or minutes == "" else max(0, int(minutes))
+    reg_update(name, {"idle_stop_min": value})
+    events.record(name, "idle-limit", "stop after %d idle minutes" % value if value
+                  else ("never stopped for being idle" if value == 0 else "the forge default"))
+    return {"name": name, "idle_stop_min": value}

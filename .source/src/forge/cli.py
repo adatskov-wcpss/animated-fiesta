@@ -10,15 +10,15 @@ import sys
 import threading
 import time
 
-from . import catalog, events, scheduler, space
-from .watchdog import Watchdog, reconcile
+from . import backups, catalog, events, scheduler, space
+from .watchdog import Watchdog, reconcile, recover_interrupted
 from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
 from .info import public_entry
-from .jobs import Job, job_put
+from .jobs import Job, all_jobs, job_put
 from .launch import launch
-from .lifecycle import instance_action, reconfigure
+from .lifecycle import instance_action, reconfigure, set_idle
 from .paths import VERSION
 from .recipes import gen_dockerfile
 from .registry import docker_instances
@@ -58,20 +58,32 @@ def cli_launch_stream(args):
     opts = {"tunnel": not args.no_tunnel, "name": args.name, "autostart": args.autostart,
             "gpu": args.gpu, "seccomp_unconfined": args.seccomp,
             "display": args.display, "resolution": args.resolution,
-            "health_timeout": args.timeout, "force": args.force}
+            "health_timeout": args.timeout, "force": args.force,
+            "dry_run": args.dry_run}
+    if args.idle_stop is not None:
+        opts["idle_stop"] = args.idle_stop
     if args.user and args.password:
         opts["username"], opts["password"] = args.user, args.password
     if args.subdomain:
         opts["subdomain"] = args.subdomain
 
     job = job_put(Job("launch", args.id, entry["name"]))
+    return stream_job(job, lambda: launch(args.id, plan, opts, job=job, name=args.name))
+
+
+def stream_job(job, work_fn):
+    """Run work_fn in a thread and print the job's events as lines the shell
+    front end renders: P progress, L log, E error, H hint, D result JSON.
+    Ctrl-C (or SIGINT from the web UI's cancel) cancels the job properly."""
     done = {"result": None, "error": None}
 
     def work():
         try:
-            done["result"] = launch(args.id, plan, opts, job=job, name=args.name)
+            done["result"] = work_fn()
         except Exception as ex:
             done["error"] = str(ex)
+            if job.status == "running":
+                job.fail(str(ex))
 
     th = threading.Thread(target=work, daemon=True)
     th.start()
@@ -106,6 +118,8 @@ def cli_launch_stream(args):
                     note = " %s/%s" % (human(extra["bytes"]), human(extra["bytes_total"]))
                 elif extra.get("packages_total"):
                     note = " %s/%s pkgs" % (extra["packages"], extra["packages_total"])
+                elif extra.get("bytes"):
+                    note = " %s" % human(extra["bytes"])
                 print("P %d %s %s%s" % (int(data["progress"] * 100), data["phase"],
                                         data["phase"], note))
             elif typ == "error":
@@ -196,6 +210,35 @@ def main(argv=None):
                    help="fit: follow the browser window (4K screens are scaled "
                         "from a ~1920-wide desktop); fixed: one size, scaled")
     p.add_argument("--resolution", default="1920x1080", help="size for --display fixed")
+    p.add_argument("--dry-run", action="store_true",
+                   help="check everything and show what would happen, without doing it")
+    p.add_argument("--idle-stop", type=int, metavar="MIN",
+                   help="stop it after MIN minutes with nobody watching (0: never)")
+
+    p = sub.add_parser("jobs", help="every launch, backup and clone on this machine")
+    p.add_argument("--json", action="store_true")
+    sub.add_parser("recover", help="clean up after launches whose process died")
+
+    p = sub.add_parser("idle", help="stop a desktop after MIN minutes unwatched")
+    p.add_argument("name")
+    p.add_argument("minutes", help="minutes, 0 for never, or default")
+
+    p = sub.add_parser("backup", help="back up a desktop's files")
+    p.add_argument("name")
+    p.add_argument("--with-cache", action="store_true", help="include ~/.cache too")
+    p = sub.add_parser("backups", help="list backups")
+    p.add_argument("--name")
+    p.add_argument("--json", action="store_true")
+    p = sub.add_parser("restore-backup", help="replace a desktop's files with a backup's")
+    p.add_argument("name")
+    p.add_argument("file")
+    p = sub.add_parser("delete-backup")
+    p.add_argument("file")
+    p = sub.add_parser("clone", help="a new desktop with a copy of another's files")
+    p.add_argument("name", nargs="?")
+    p.add_argument("--as", dest="new_name", help="name for the new desktop")
+    p.add_argument("--from-backup", metavar="FILE", help="start it from a backup instead")
+    p.add_argument("--tunnel", action="store_true", help="also open a public link")
 
     p = sub.add_parser("do")
     p.add_argument("name")
@@ -343,6 +386,58 @@ def main(argv=None):
         return 0
     if a.cmd == "launch":
         return cli_launch_stream(a)
+    if a.cmd == "jobs":
+        rows = all_jobs()
+        if a.json:
+            print(json.dumps({"jobs": rows}))
+        else:
+            for j in rows:
+                print("%s  %-8s %-12s %-11s %3d%%  %s" % (
+                    time.strftime("%m-%d %H:%M", time.localtime(j.get("created") or 0)),
+                    j.get("kind", ""), j.get("status", ""), (j.get("phase") or "")[:11],
+                    int((j.get("progress") or 0) * 100), j.get("title") or ""))
+        return 0
+    if a.cmd == "recover":
+        print(json.dumps({"recovered": recover_interrupted()}))
+        return 0
+    if a.cmd == "idle":
+        mins = None if a.minutes == "default" else int(a.minutes)
+        try:
+            print(json.dumps(set_idle(a.name, mins)))
+            return 0
+        except Exception as ex:
+            print(json.dumps({"error": str(ex)}))
+            return 1
+    if a.cmd == "backup":
+        job = job_put(Job("backup", a.name, "Back up %s" % a.name))
+        return stream_job(job, lambda: backups.backup(a.name, include_cache=a.with_cache, job=job))
+    if a.cmd == "backups":
+        rows = backups.list_backups(a.name)
+        if a.json:
+            print(json.dumps({"backups": rows}))
+        else:
+            for b in rows:
+                print("%s  %-26s %9s  %s" % (
+                    time.strftime("%Y-%m-%d %H:%M", time.localtime(b.get("created") or 0)),
+                    (b.get("name") or "")[:26], human(b.get("size") or 0), b.get("file")))
+        return 0
+    if a.cmd == "restore-backup":
+        job = job_put(Job("restore", a.name, "Restore %s" % a.name))
+        return stream_job(job, lambda: backups.restore(a.name, a.file, job=job))
+    if a.cmd == "delete-backup":
+        try:
+            print(json.dumps(backups.delete_backup(a.file)))
+            return 0
+        except Exception as ex:
+            print(json.dumps({"error": str(ex)}))
+            return 1
+    if a.cmd == "clone":
+        if not a.name and not a.from_backup:
+            print("E name a desktop to clone, or --from-backup FILE")
+            return 2
+        job = job_put(Job("clone", a.name, "Clone %s" % (a.name or a.from_backup)))
+        return stream_job(job, lambda: backups.clone(a.name, new_name=a.new_name, job=job,
+                                                     tunnel=a.tunnel, from_backup=a.from_backup))
     if a.cmd == "do":
         try:
             print(json.dumps(instance_action(a.name, a.action,

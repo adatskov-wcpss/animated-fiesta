@@ -19,7 +19,7 @@
 │   │   ├── catalog.py    every desktop, distro base and package list
 │   │   ├── layer.py      the forge layer that goes inside every desktop
 │   │   ├── launch.py     the pipeline · health.py, runner.py, images.py, scheduler.py, jobs.py …
-│   │   └── …             29 modules in all
+│   │   └── …             31 modules in all
 │   ├── web/              the web UI: index.html, app.css, app.js, term.js, logos.js, brands.js
 │   └── data/             info.json (Wikipedia/Commons, curated), shots.json (real screenshots)
 ├── tests/                unit tests (stdlib unittest; no Docker, no desktops)
@@ -52,7 +52,7 @@ Press Enter for the repository's own `docker.sh`, or type any path (a directory 
 
 ```
    1  Python
-  ✔ 35 Python files compile; all 29 engine modules import
+  ✔ 35 Python files compile; all 31 engine modules import
   ✔ pyflakes: no undefined names
    2  Web UI
   ✔ 4 JavaScript files parse (node --check)
@@ -63,16 +63,16 @@ Press Enter for the repository's own `docker.sh`, or type any path (a directory 
    5  Forge layer and desktop scripts
   ✔ forge layer scripts (5) and startwm/install scripts for 114 built desktops pass
    6  Payload
-  ✔ 40 payload files, no heredoc collisions
+  ✔ 42 payload files, no heredoc collisions
    7  Assemble
   ✔ docker.sh assembles and passes bash -n (733 KB, 16488 lines)
    8  Unpack and run
   ✔ docker.sh unpacks all 40 files byte for byte
-  ✔ unpacked engine 1.6.1 lists 153 desktops; selkies-cli answers (selkies-forge 1.6.1)
+  ✔ unpacked engine 1.7.0 lists 153 desktops; selkies-cli answers (selkies-forge 1.7.0)
    9  Unit tests
-  ✔ 65 tests passed (3.8s)
+  ✔ 81 tests passed (3.8s)
 
-  ▰ BUILT  Selkies Forge 1.6.1
+  ▰ BUILT  Selkies Forge 1.7.0
 ```
 
 If any check fails, it shows why and **writes nothing**.
@@ -128,6 +128,7 @@ PYTHONPATH=src python3 -m unittest discover -s tests -t .
 | `test_catalog.py` | Every entry is complete; IDs unique; compositing desktops run fixed; known package traps stay fixed |
 | `test_recipes_layer.py` | startwm/install scripts parse and contain the supervisor; layer files, digest, Dockerfile wiring, seeds |
 | `test_runner.py` | Screen modes, resolution clamping, undoing 1.6.0's forced screen, `docker run` arguments (caps, labels, sign-in, quota, Kasm) |
+| `test_engine_v2.py` | Durable jobs and crash recovery (only its own half-made desktop is removed), stall detection, the memory ledger and admission, viewer counting, idle limits, frozen-desktop healing, backup names, dry runs |
 | `test_screen_guard.py` | The 4K screen guard, run in Node against 4K, 5K, 1440p and 1080p screens, and viewers who chose their own scaling |
 | `test_health.py` | Which auto-fix each problem gets, and that each is tried once |
 | `test_jobs_scheduler.py` | Job events and logs; cancelling kills commands (and their children) and health waits; scheduler slots and queueing |

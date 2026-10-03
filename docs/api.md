@@ -31,10 +31,10 @@ curl -s localhost:8787/api/instances | jq '.instances[] | {name, running, sessio
 | Method & path | Body / returns |
 |---|---|
 | `POST /api/launch` | `{id, plan?: {memory_mb, cpus, shm_mb, disk_mb}, opts?: {...}}` → `{job, plan}` |
-| `GET /api/job/<id>` | The job's snapshot: status (`running`, `done`, `error`, `cancelled`), phase, progress, result, error, log path |
+| `GET /api/job/<id>` | The job's snapshot: status (`running`, `done`, `error`, `cancelled`, `interrupted`), phase, label, progress, result, error, log path, `owner` (`server` or `cli`), `notes` (container, volume). Jobs from other processes come from their state files, with `foreign: true`. |
 | `GET /api/job/<id>/events` | SSE stream of `log`, `phase`, `progress`, `done`, `error` events (first a `snapshot`) |
-| `POST /api/job/<id>/cancel` | Cancel it: `{cancelled, job}` |
-| `GET /api/jobs` | Recent jobs |
+| `POST /api/job/<id>/cancel` | Cancel it: `{cancelled, job}`. A `selkies-cli` job is cancelled too (it gets SIGINT, like Ctrl-C): `{cancelled, foreign: true}` |
+| `GET /api/jobs` | Every recent job on this machine, this web UI's and `selkies-cli`'s, newest first |
 | `GET /api/scheduler` | `{slots: {build|pull|boot: {limit, busy}}, jobs: [running jobs]}` |
 
 Launch options (`opts`):
@@ -55,6 +55,8 @@ Launch options (`opts`):
 | `force` | Start even if free memory is below the desktop's floor |
 | `force_pull`, `force_build` | Fetch or build again even if the image is present |
 | `env` | Extra `KEY=value` environment variables |
+| `idle_stop` | Minutes with nobody watching before the watchdog stops it (`0`: never) |
+| `dry_run` | Check everything and report what would happen (the result has `steps` and `docker_run`); nothing is fetched or started |
 
 A job's `done` result has `name`, `local_url`, `https_url`, `tunnel`, `credentials`, `session` (window manager, screen, clients), `display`, `fixes` (the auto-fixes it applied), `warning` (if the session came up with a problem) and `instance`.
 
@@ -62,12 +64,24 @@ A job's `done` result has `name`, `local_url`, `https_url`, `tunnel`, `credentia
 
 | Method & path | Body / returns |
 |---|---|
-| `GET /api/instances` | Every forge desktop, with state, ports, limits, links, tunnel, sign-in, screen mode, `session` (from the watchdog), `heal` |
+| `GET /api/instances` | Every forge desktop, with state, ports, limits, links, tunnel, sign-in, screen mode, `session` (from the watchdog: window manager, screen, `viewers`, `idle_s`), `heal`, `idle_stop_min` |
 | `GET /api/stats` | CPU, memory and network per running desktop, with rates and sparklines |
 | `POST /api/instance/<name>/start` | Also `stop`, `restart`, `tunnel` (`{subdomain?}`), `untunnel`, `repair`, `remove` (`{purge: true}` also deletes its `/config` volume) |
 | `POST /api/instance/<name>/retune` | `{memory_mb?, cpus?, shm_mb?, disk_mb?, autostart?, display?, resolution?}` → `{ok, recreated}`. Memory, CPU and auto-start apply live; the rest recreate the desktop. |
 | `GET /api/logs/<name>?tail=N` | `{logs, events}`: the container log and the desktop's recent journal events |
 | `GET /api/events?name=&limit=` | The event journal, newest last |
+| `POST /api/instance/<name>/idle` | `{minutes}`: stop it after that many minutes unwatched (`0` never, `null` the forge default) |
+
+## Backups and clones
+
+| Method & path | Body / returns |
+|---|---|
+| `GET /api/backups?name=` | Backups, newest first: `file`, `name`, `entry_id`, `size`, `created`, `limits`, `opts`, `tag` |
+| `POST /api/instance/<name>/backup` | `{include_cache?}` → `{job}`. The job's result has `backup` and `file`. |
+| `POST /api/backups/restore` | `{name, file}` → `{job}`. A safety backup is taken first; the result names it (`safety`). |
+| `POST /api/instance/<name>/clone` | `{name?, tunnel?}` → `{job}`: a new desktop with a copy of its files. The result is a launch result. |
+| `POST /api/backups/clone` | `{file, name?}` → `{job}`: a new desktop from a backup |
+| `POST /api/backups/delete` | `{file}` |
 
 ## Disk
 

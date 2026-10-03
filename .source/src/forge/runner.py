@@ -103,6 +103,10 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
             # Restart after a crash while the forge is watching (see watchdog.py).
             "--label", "%s.heal=%s" % (LABEL, "off" if opts.get("heal") is False else "on"),
             ]
+    if opts.get("job_id"):
+        # Which launch made it: recovery after a crash removes a half-made
+        # desktop only if this matches the job that died.
+        args += ["--label", "%s.job=%s" % (LABEL, opts["job_id"])]
     if plan.get("memory_mb"):
         args += ["--memory", "%dm" % int(plan["memory_mb"])]
         # Pin swap to the same value so a limited desktop can't swap the host out.

@@ -12,11 +12,11 @@ import shutil
 import subprocess
 import time
 
-from .paths import BUILDDIR, CACHE_JSON, JOBLOGDIR, LOGDIR, ROOT, STATE
+from .paths import BUILDDIR, CACHE_JSON, JOBLOGDIR, JOBSTATEDIR, LOGDIR, ROOT, STATE
 
 
 def ensure_dirs():
-    for d in (ROOT, STATE, LOGDIR, JOBLOGDIR, BUILDDIR):
+    for d in (ROOT, STATE, LOGDIR, JOBLOGDIR, BUILDDIR, JOBSTATEDIR):
         try:
             os.makedirs(d, exist_ok=True)
         except OSError:

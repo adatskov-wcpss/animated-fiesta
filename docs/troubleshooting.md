@@ -27,7 +27,11 @@
 | No public link | serveo sometimes refuses or rate-limits. The local link still works; reopen the link from the manager. |
 | The web UI "stopped unexpectedly" | `selkies-cli` → *Show why it stopped*, then *Start the web UI again*. With start-on-boot via systemd, it restarts by itself. |
 | It doesn't start on boot | `selkies-cli boot`. With systemd, check linger: `loginctl show-user $USER -p Linger`. |
-| A desktop keeps restarting by itself | The watchdog heals crashes, up to three times an hour. See `selkies-cli events` for why it crashes, or launch it with healing off. |
+| A desktop keeps restarting by itself | The watchdog heals crashes and freezes, up to three times an hour. See `selkies-cli events` for why, or launch it with healing off. |
+| A desktop stopped by itself | `selkies-cli events` says why: `idle-stop` (nobody watched it for its idle limit; change it with `selkies-cli idle NAME 0`), `pressure-stop` (the machine ran out of memory and `FORGE_PRESSURE_STOP=1` is set), or `crashed`. |
+| A launch says **interrupted** | The process running it stopped (the web UI restarted, the terminal closed). The half-made desktop was removed; launch it again. |
+| "…is set aside for desktops that are still starting" | Another launch has booked that memory ([ledger](engine.md#1-resolve)). Wait for it to finish, or pass `force`. |
+| "pull stalled" in a launch log | The connection went quiet; the pull restarts by itself, keeping what it has. If it keeps stalling, the network or registry isn't delivering. |
 | The disk is filling up | `selkies-cli clean` |
 | `selkies-cli: command not found` | Open a new terminal (the `PATH` change only reaches new shells), or run `~/.local/bin/selkies-cli` |
 | "POST requests must send Content-Type: application/json" / "cross-site request refused" | You're scripting the API: send JSON with that header, and no foreign `Origin` ([API rules](api.md#rules)) |
