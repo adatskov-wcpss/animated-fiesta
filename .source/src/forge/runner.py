@@ -36,10 +36,13 @@ RES_RE = re.compile(r"^\s*(\d{3,5})\s*[xX\u00d7]\s*(\d{3,5})\s*$")
 def display_for(entry, opts):
     """('fit', None) or ('fixed', (w, h)) for this launch.
 
-    fit    the desktop follows your browser window (Selkies resizes the screen)
-    fixed  the screen stays one size and Selkies scales it into the window;
-           for window managers that cannot cope with the screen changing size
-           under them, so nothing can ever end up below the bottom edge
+    fixed  the default: the screen stays 1920x1080 and Selkies scales it into
+           the window. The browser cannot resize it or change its DPI, so a
+           4K or HiDPI monitor gets the same, readable desktop as any other,
+           and no window manager ever sees the screen change size under it
+    fit    opt-in only: the desktop follows your browser window. On a HiDPI
+           screen Selkies then asks for the window's device pixels (3840x2160
+           and 192 DPI on a 4K monitor), which most desktops draw badly
     """
     if entry.get("profile") == "kasm":
         return "fit", None
@@ -47,12 +50,35 @@ def display_for(entry, opts):
     if mode not in DISPLAY_MODES:
         mode = "auto"
     if mode == "auto":
-        mode = entry.get("display") or "fit"
+        mode = entry.get("display") or "fixed"
     if mode != "fixed":
         return "fit", None
     m = RES_RE.match(str(opts.get("resolution") or ""))
     w, h = (int(m.group(1)), int(m.group(2))) if m else (1920, 1080)
     return "fixed", (int(clamp(w, 800, 3840)), int(clamp(h, 600, 2160)))
+
+
+# Everything Selkies needs to hold a fixed screen, whatever the browser says.
+# The manual size alone is not enough on a 4K or HiDPI monitor: the client
+# still pushes its devicePixelRatio as a DPI change (192 DPI on 4K: giant
+# fonts, panels off the edge) and renders the canvas at device pixels. So:
+#   MANUAL_*         the server overrides any size the client asks for
+#   SCALING_DPI      a single value locks the DPI; client DPI syncs are ignored
+#   USE_CSS_SCALING  the stream is stretched to the window instead of being
+#                    drawn 1:1 in device pixels (a quarter-size desktop on 4K)
+# "|locked" stops the client's settings menu from switching any of it back.
+FIXED_SCREEN_KEYS = ("SELKIES_MANUAL_RESOLUTION", "SELKIES_MANUAL_WIDTH",
+                     "SELKIES_MANUAL_HEIGHT", "SELKIES_SCALING_DPI",
+                     "SELKIES_USE_CSS_SCALING")
+
+
+def fixed_screen_env(res):
+    w, h = res
+    return ["-e", "SELKIES_MANUAL_RESOLUTION=true|locked",
+            "-e", "SELKIES_MANUAL_WIDTH=%d" % w,
+            "-e", "SELKIES_MANUAL_HEIGHT=%d" % h,
+            "-e", "SELKIES_SCALING_DPI=96",
+            "-e", "SELKIES_USE_CSS_SCALING=true|locked"]
 
 
 def parse_display_label(txt):
@@ -115,13 +141,11 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
         mode, res = display_for(entry, opts)
         args += ["--label", "%s.display=%s" % (LABEL, "fixed:%dx%d" % res if res else "fit")]
         if res:
-            args += ["-e", "SELKIES_MANUAL_WIDTH=%d" % res[0],
-                     "-e", "SELKIES_MANUAL_HEIGHT=%d" % res[1]]
-        else:
-            # Xvfb's default virtual screen is 15360x8640: a full-screen
-            # wallpaper alone is half a gigabyte, enough to get a 1 GB desktop
-            # OOM-killed. 4K is the largest window anyone will stream.
-            args += ["-e", "MAX_RES=3840x2160"]
+            args += fixed_screen_env(res)
+        # Xvfb's default virtual screen is 15360x8640: a full-screen
+        # wallpaper alone is half a gigabyte, enough to get a 1 GB desktop
+        # OOM-killed. 4K is the largest screen anyone will stream.
+        args += ["-e", "MAX_RES=3840x2160"]
         if opts.get("username") and opts.get("password"):
             args += ["-e", "CUSTOM_USER=%s" % opts["username"],
                      "-e", "PASSWORD=%s" % opts["password"]]

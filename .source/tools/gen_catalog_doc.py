@@ -38,11 +38,11 @@ def main():
            "| Column | Meaning |", "|---|---|",
            "| **Kind** | *pull*: a prebuilt image, only downloaded. *build*: a Selkies base image plus "
            "the desktop's packages, built on your machine the first time. |",
-           "| **Screen** | *fit*: the desktop follows your browser window. *fixed*: it runs at "
-           "1920×1080 and Selkies scales it into your window (desktops that misdraw when the "
-           "screen changes size). Changeable per desktop. |",
            "| **RAM** | the floor it needs, then the comfortable amount the planner aims for |",
            "| **Download** | compressed download for a first launch |", "",
+           "Every Selkies desktop runs on a fixed 1920×1080 screen that Selkies scales into your "
+           "browser window, whatever the monitor (4K and HiDPI included). Kasm images manage "
+           "their own screen. See [screen modes](forge-layer.md#screen-modes).", "",
            "## Contents", ""]
     sections = [
         ("Ready to run: LinuxServer Webtop", lambda e: e["kind"] == "pull" and e.get("profile") != "kasm"),
@@ -62,21 +62,21 @@ def main():
         rows = sorted((e for e in C if pred(e)), key=lambda e: (e["family"], e["name"]))
         if not rows:
             continue
-        out += ["## " + title, "", "| Desktop | ID | Desktop env. | Kind | Screen | RAM | Download | Runs on |",
-                "|---|---|---|---|---|---|---|---|"]
+        out += ["## " + title, "", "| Desktop | ID | Desktop env. | Kind | RAM | Download | Runs on |",
+                "|---|---|---|---|---|---|---|"]
         for e in rows:
-            out.append("| %s | `%s` | %s | %s | %s | %s → %s | %s | %s |" % (
-                e["name"], e["id"], e["de_label"], e["kind"], e.get("display", "fit"),
+            out.append("| %s | `%s` | %s | %s | %s → %s | %s | %s |" % (
+                e["name"], e["id"], e["de_label"], e["kind"],
                 gb(e["ram_min"]), gb(e["ram_rec"]), gb(e["dl_mb"]), arches(e)))
         out.append("")
     out += ["## Desktop environments", "",
-            "| Desktop | Weight | Idle RAM | Screen | Available on |", "|---|---|---|---|---|"]
+            "| Desktop | Weight | Idle RAM | Available on |", "|---|---|---|---|"]
     for key, de in sorted(catalog.DESKTOPS.items(), key=lambda kv: kv[1]["label"].lower()):
         on = [b["distro"] for b in catalog.BASES.values() if key in b["des"] and de.get(b["pm"])]
         if not on:
             continue
-        out.append("| %s | %s | ~%d MB | %s | %s |" % (de["label"], de["klass"], de["idle"],
-                                                      de.get("display", "fit"), ", ".join(on)))
+        out.append("| %s | %s | ~%d MB | %s |" % (de["label"], de["klass"], de["idle"],
+                                                 ", ".join(on)))
     out.append("")
     with open(OUT, "w") as fh:
         fh.write("\n".join(out))

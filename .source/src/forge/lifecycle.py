@@ -19,7 +19,7 @@ from .images import ensure_layer
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .recipes import build_image_tag
 from .registry import docker_instances
-from .runner import docker_run_args, parse_display_label
+from .runner import FIXED_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
 from .store import reg_delete, reg_load, reg_update
 from .tunnels import tunnel_start, tunnel_stop
 from .util import FileLock, _int_or_none, run, slug
@@ -37,6 +37,34 @@ def _locked(name, kind, detail, fn):
     except Exception as ex:
         events.record(name, kind + "-failed", str(ex)[:500])
         raise
+
+
+def _screen_plan(labels, display, resolution):
+    """(display, resolution, changes) for a reconfigure of a container with
+    these labels. `changes` says whether the screen that would run differs
+    from the one running now, so only a real change recreates it."""
+    cur_display, cur_res = parse_display_label(labels.get("%s.display" % LABEL))
+    running = (cur_display, cur_res)
+    if cur_display == "fit" and _older_than(labels.get("%s.version" % LABEL), (1, 6)):
+        # Before 1.6 "automatic" meant following the browser for most desktops,
+        # and the label could not tell that apart from choosing it. Treat it as
+        # automatic, so the next recreate or repair moves to the fixed screen.
+        cur_display = "auto"
+    want_display = cur_display if display in (None, "") else str(display)
+    want_res = cur_res if resolution in (None, "") else str(resolution)
+    entry = catalog.BY_ID.get(labels.get("%s.entry" % LABEL))
+    if display in (None, "") or not entry or entry.get("profile") == "kasm":
+        return want_display, want_res, False
+    # Compare the screens that would actually run, not the words for them:
+    # "auto" on a 1.5 desktop that follows the window is a real change.
+    mode, res = display_for(entry, {"display": want_display, "resolution": want_res})
+    return want_display, want_res, (mode, "%dx%d" % res if res else None) != running
+
+
+def _older_than(version, want):
+    """True when a container's version label is older than `want`, or missing."""
+    nums = tuple(int(x) for x in re.findall(r"\d+", version or "")[:3])
+    return nums < want
 
 
 def instance_action(name, action, opts=None):
@@ -119,15 +147,10 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     labels = (c.get("Config") or {}).get("Labels") or {}
     cur_shm = int((hostcfg.get("ShmSize") or 0) / (1024 * 1024))
     cur_disk = _int_or_none(labels.get("%s.disk" % LABEL))
-    cur_display, cur_res = parse_display_label(labels.get("%s.display" % LABEL))
-    want_display = cur_display if display in (None, "") else str(display)
-    want_res = cur_res if resolution in (None, "") else str(resolution)
+    want_display, want_res, screen_changes = _screen_plan(labels, display, resolution)
     need_recreate = ((shm_mb and int(shm_mb) != cur_shm) or
                      (disk_mb and cur_disk and int(disk_mb) != cur_disk) or
-                     repair or
-                     (display not in (None, "") and
-                      (want_display != cur_display or
-                       (want_display == "fixed" and want_res != cur_res))))
+                     repair or screen_changes)
 
     if not need_recreate:
         args = ["docker", "update"]
@@ -189,7 +212,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     if env.get("LC_ALL"):
         opts["locale"] = env["LC_ALL"]
     ours = ("PUID", "PGID", "TZ", "TITLE", "CUSTOM_USER", "PASSWORD", "VNC_PW", "LC_ALL",
-            "SELKIES_MANUAL_WIDTH", "SELKIES_MANUAL_HEIGHT", "MAX_RES")
+            "MAX_RES") + FIXED_SCREEN_KEYS
     opts["env"] = ["%s=%s" % (k, v) for k, v in env.items()
                    if k not in ours and "%s=%s" % (k, v) not in image_env]
     opts["display"] = want_display if want_display in ("fit", "fixed") else "auto"

@@ -193,7 +193,8 @@ def main(argv=None):
     p.add_argument("--force", action="store_true",
                    help="start even if the machine looks short of memory")
     p.add_argument("--display", default="auto", choices=["auto", "fit", "fixed"],
-                   help="fit: follow the browser window; fixed: one size, scaled")
+                   help="auto/fixed: a locked size (default 1920x1080), scaled to the window; "
+                        "fit: follow the browser window (breaks on 4K/HiDPI)")
     p.add_argument("--resolution", default="1920x1080", help="size for --display fixed")
 
     p = sub.add_parser("do")

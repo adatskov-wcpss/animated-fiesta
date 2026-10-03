@@ -20,7 +20,7 @@
 | A launch says **queued** | Another build, pull or first boot is using the slot ([scheduler](engine.md#the-scheduler)). It starts by itself, or cancel it. |
 | The desktop never answers | Heavy desktops are slow on a first boot. The engine already waits longer once. Check the job log. |
 | **Started, with a problem** | The session crashed or never showed a window manager. The desktop is in a rescue session that shows its log. Read it there, or in the launch view. |
-| Part of the desktop is off the bottom of the window | Set **Screen** to *Fixed size, scaled to fit* under **Edit limits** |
+| Part of the desktop is off the bottom of the window, or huge fonts on a 4K / HiDPI screen | The desktop is following the window (set by hand, or made before 1.6). Set **Screen** to *Automatic* under **Edit limits**, or choose **Repair** |
 | A black desktop, a missing panel, a setup wizard | A desktop made by an older version: choose **Repair** in its menu (files are kept) |
 | A built desktop fails to build | The log names the package that broke (exit 97 means the desktop's session binary didn't install). Try the same desktop on another distro. |
 | No public link | serveo sometimes refuses or rate-limits. The local link still works; reopen the link from the manager. |

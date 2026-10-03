@@ -38,7 +38,7 @@ Selkies resizes the X screen to your browser window. Most window managers cope; 
 
 1. reads the screen size (`xdotool getdisplaygeometry`)
 2. on a resize, or when a window appears, fits every normal window into the **usable work area** (`_NET_WORKAREA`, so panels are respected), using its frame extents (`_NET_FRAME_EXTENTS`, so title bars count). It skips docks, desktops, menus, tooltips, maximized and fullscreen windows, and anything screen-sized at the origin. It then checks where the window actually landed and corrects once, because window managers disagree on whether a move positions the frame or the client.
-3. **unsticks the giant screen.** Xvfb starts at 15360×8640. If a session restart leaves the screen there, the agent puts it back to the last real size after three seconds (the forge also caps it with `MAX_RES` in fit mode).
+3. **unsticks the giant screen.** Xvfb starts at 15360×8640. If a session restart leaves the screen there, the agent puts it back to the last real size after three seconds (the forge also caps it with `MAX_RES`).
 4. every few seconds writes `/tmp/forge/health.json`: `{"wm": "Xfwm4", "screen": "1600x900", "clients": 3, "mode": "normal"}`. The engine's health check and the watchdog read it.
 
 On Wayland webtops (LinuxServer's KDE images default to Wayland) the agent only reports which compositor is running.
@@ -76,12 +76,26 @@ GTK's newest image loaders (glycin, on Arch) decode every icon inside `bwrap`. D
 
 ## Screen modes
 
+Every Selkies desktop runs on a **fixed 1920×1080 screen**, and Selkies scales it into your browser window. This is forced, because letting the browser size the desktop breaks on 4K and HiDPI monitors. There, the Selkies client asks for the window's *device* pixels and pushes its pixel ratio as a DPI change: a 3840×2160 desktop at 192 DPI, with giant fonts and panels off the edge.
+
 | Mode | What happens | Default for |
 |---|---|---|
-| **fit** | The desktop follows your browser window; Selkies resizes the X screen. Capped at 3840×2160. | Everything else |
-| **fixed** | The screen stays one size (1920×1080 by default; 1280×720 up to 2560×1440 to choose from) and Selkies scales it into your window. Nothing can ever end up off the bottom. | Enlightenment, Cinnamon, Budgie, GNOME Flashback, UKUI: compositing window managers that misdraw when the screen changes size under Xvfb |
+| **fixed** | The screen stays one size: 1920×1080 by default, or anywhere from 1280×720 to 2560×1440 if you choose. Selkies stretches it to your window. The browser can't resize it or change its DPI, and Selkies' own settings menu can't switch that off. Nothing can end up off the bottom. | **Every Selkies desktop** |
+| **fit** | Opt-in only. The desktop follows your browser window, and Selkies resizes the X screen, capped at 3840×2160. Fine on an ordinary monitor; expect trouble on 4K and HiDPI. | Nothing |
 
-Pick it per desktop under **Screen** when you forge it, or later under **Edit limits** (which recreates the desktop; files are kept). From the engine: `launch --display fixed --resolution 1600x900`.
+What *fixed* sets in the container:
+
+| Variable | Value | Why |
+|---|---|---|
+| `SELKIES_MANUAL_WIDTH` / `_HEIGHT` | `1920` / `1080` | The server overrides any size the client asks for |
+| `SELKIES_MANUAL_RESOLUTION` | `true\|locked` | The client can't turn manual mode off |
+| `SELKIES_SCALING_DPI` | `96` | A single value locks the DPI; the client's HiDPI DPI sync is ignored |
+| `SELKIES_USE_CSS_SCALING` | `true\|locked` | The stream is stretched to the window instead of drawn 1:1 in device pixels (a quarter-size desktop on 4K) |
+| `MAX_RES` | `3840x2160` | Keeps Xvfb's virtual screen from its 15360×8640 default |
+
+Pick a different size, or opt in to *fit*, under **Screen** when you forge a desktop, or later under **Edit limits**, which recreates it and keeps your files. From the engine: `launch --display fixed --resolution 1600x900`, or `launch --display fit`.
+
+Desktops made before 1.6 that followed the window move to the fixed screen the next time they're recreated: by **Repair**, or by **Edit limits** with Screen on *Automatic*.
 
 ## Repair
 

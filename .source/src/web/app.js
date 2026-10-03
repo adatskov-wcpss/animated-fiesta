@@ -579,7 +579,7 @@
       toggle("oGpu", false, "Pass the GPU through",
         S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
       toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
-      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
+      (kasm ? "" : screenField("o", e.display || "fixed", "auto", "1920x1080"));
 
     /* -- dockerfile */
     var dd = $("#dDocker");
@@ -618,22 +618,23 @@
         "Read on Wikipedia ↗</a>" : "");
   }
 
-  /* Screen: follow the browser window, or a fixed size scaled to fit. Desktops
-     that cannot cope with the screen changing size default to fixed. */
+  /* Screen: a fixed size scaled to fit (the default for every desktop: 4K and
+     HiDPI browsers break the follow-the-window mode), or opt in to following
+     the browser window. */
   function screenField(p, preferred, cur, res) {
-    var auto = "Automatic \u00b7 " + (preferred === "fixed" ? "fixed size, scaled" : "follows your window");
+    var auto = "Automatic \u00b7 " + (preferred === "fixed" ? "1920 \u00d7 1080, scaled to fit" : "follows your window");
     var opt = function (v, t) { return '<option value="' + v + '"' + (cur === v ? " selected" : "") + ">" + t + "</option>"; };
     var ropt = function (v) { return '<option value="' + v + '"' + (res === v ? " selected" : "") + ">" + v.replace("x", " \u00d7 ") + "</option>"; };
     return '<label class="field" style="margin-top:12px"><span>Screen</span><select id="' + p + 'Display" data-pref="' + preferred + '">' +
-      opt("auto", auto) + opt("fit", "Follow my browser window") + opt("fixed", "Fixed size, scaled to fit") +
+      opt("auto", auto) + opt("fixed", "Fixed size, scaled to fit") + opt("fit", "Follow my browser window (breaks on 4K / HiDPI)") +
       "</select></label>" +
       '<label class="field" id="' + p + 'ResWrap" style="display:' +
       ((cur === "fixed" || (cur === "auto" && preferred === "fixed")) ? "block" : "none") +
       '"><span>Fixed size</span><select id="' + p + 'Res">' +
       ["1280x720", "1366x768", "1600x900", "1920x1080", "2560x1440"].map(ropt).join("") + "</select></label>" +
       '<p class="sub" style="margin:2px 0 0;font-size:12px">' +
-      (preferred === "fixed" ? "This desktop misdraws when the screen changes size under it, so it runs at a fixed size by default."
-        : "Follow suits most desktops; choose fixed if anything ever ends up off the edge.") + "</p>";
+      "Desktops run at a fixed 1920 \u00d7 1080 that Selkies scales into your window, so a 4K or HiDPI screen can't " +
+      "blow up the fonts or push panels off the edge. Following the window resizes the desktop to your browser instead.</p>";
   }
 
   function slider(id, label, min, max, step, val, fmt, advice) {
@@ -1186,7 +1187,7 @@
       slider("tDisk", "Storage", 5120, maxDisk, 1024, cur.disk, mb,
         S.host.quota_support ? "restarts it" : "restarts it \u00b7 tracked budget") +
       toggle("tAuto", cur.auto, "Start with Docker", "on: comes back after a reboot. off: only when you start it") +
-      (i.profile === "kasm" ? "" : screenField("t", (catEntry(i.entry_id) || {}).display || "fit",
+      (i.profile === "kasm" ? "" : screenField("t", (catEntry(i.entry_id) || {}).display || "fixed",
         cur.display, cur.res || "1920x1080")) +
       '<div class="row" style="margin-top:16px"><span class="sub" id="tNote" style="margin:0;flex:1"></span>' +
       '<button class="btn ghost" id="tCancel" type="button">Cancel</button>' +
@@ -1799,7 +1800,7 @@
     document.addEventListener("change", function (ev) {
       if (ev.target.id === "oAuth") $("#authFields").style.display = ev.target.checked ? "block" : "none";
       if (ev.target.id === "oDisplay" || ev.target.id === "tDisplay") {
-        var p = ev.target.id.charAt(0), pref = ev.target.dataset.pref || (S.sel && S.sel.display) || "fit";
+        var p = ev.target.id.charAt(0), pref = ev.target.dataset.pref || (S.sel && S.sel.display) || "fixed";
         var v = ev.target.value;
         $("#" + p + "ResWrap").style.display = (v === "fixed" || (v === "auto" && pref === "fixed")) ? "block" : "none";
       }

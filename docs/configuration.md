@@ -48,7 +48,7 @@ These are set when you forge a desktop: in the web UI, the CLI prompts, or the [
 | CPUs | Planned | Live |
 | Shared memory (`/dev/shm`) | A quarter of memory, 256 MB to 2 GB | Recreates the desktop |
 | Storage budget | At least 10 GB; enforced only where the storage driver supports quotas | Recreates the desktop |
-| Screen | `auto`: fixed 1920×1080 for compositing desktops, else follows the window | Recreates the desktop |
+| Screen | `auto`: fixed 1920×1080 scaled to the window, locked against browser resizing and HiDPI scaling ([why](forge-layer.md#screen-modes)) | Recreates the desktop |
 | Auto-start with Docker | Off | Live |
 | Healing after a crash | On | At launch |
 | Sign-in | Off (Kasm always on) | Recreate |
