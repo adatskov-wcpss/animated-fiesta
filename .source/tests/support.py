@@ -13,8 +13,10 @@ if SRC not in sys.path:
 if not os.environ.get("FORGE_HOME"):
     os.environ["FORGE_HOME"] = tempfile.mkdtemp(prefix="forge-tests-")
 os.environ.setdefault("FORGE_AUTO_UPDATE", "0")
-# Never find (or publish through) a real Burrow on the machine running the tests.
+# Never find (or publish through) a real Burrow or Aegis on the machine
+# running the tests: an earlier version did, and published a test port.
 os.environ["BURROW_CONFIG_DIR"] = tempfile.mkdtemp(prefix="forge-tests-burrow-")
+os.environ["AEGIS_CONFIG_DIR"] = tempfile.mkdtemp(prefix="forge-tests-aegis-")   # Aegis carries Burrow too
 
 # A pretend machine, so plans and recommendations do not depend on this one.
 FAKE_HOST = {

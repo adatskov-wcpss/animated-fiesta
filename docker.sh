@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.6"
+FORGE_VERSION="1.10.7"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,7 +528,7 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_ADDONS_PY="16f10fb31ceebec1d02269a1eb88fc5edf880e534eab71cbee95c423c254e5fe"
+FORGE_SHA_FORGE_ADDONS_PY="9008c26c15fef3d2a7ad2c202d67e660a1351c3101217590039e8a12fde18d40"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_BURROW_PY="d7b3096ef3c5ef7ea9628f42ed0af2d93b2cc7e0073af013a340cce3fdf8bf80"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
@@ -545,7 +545,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="9584306be671e3d4f0786398d15a7a0a42e54b90f490713be8e4033a4aa749b9"
+FORGE_SHA_FORGE_PATHS_PY="3c607914d9748e869f9f07cfb3d18a1709ef90818395a41acf9d195a2c43afda"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="2f2a25e6dfd59b38316133361720c7cede368429f2093d4495e59fde3891e39e"
-FORGE_PAYLOAD_SHA="d4a35e1ef24dbacee183fb633c85c6375b1c842de8232e469c1d97a1de814248"
+FORGE_SHA_SELKIES_CLI="433d46074ea3336fe90e083d527e04c6a62edce680166d80aafeb13219b3fed4"
+FORGE_PAYLOAD_SHA="16cb18e7c561de99c8e73e05d3c0610cd5a62650e803a1606c40743ce9e434bf"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -1210,6 +1210,8 @@ def status(rec, max_age=8.0):
         st = {"state": str(info.get("state") or ("installed" if rc == 0 else "error"))[:20],
               "url": info.get("url") if re.match(r"^https?://\S+$", str(info.get("url") or "")) else rec.get("open_url"),
               "version": str(info.get("version") or "")[:30], "detail": str(info.get("detail") or "")[:200]}
+        if isinstance(info.get("name"), str) and info["name"].strip():
+            st["name"] = info["name"].strip()[:60]        # e.g. "Aegis × Burrow" while its module is on
         try:
             port = int(info.get("port") or 0)
         except (TypeError, ValueError):
@@ -1634,6 +1636,8 @@ def public(rec, with_status=False):
         out["status"] = st
         if st.get("url"):
             out["open_url"] = st["url"]
+        if st.get("name") and out["installed"]:
+            out["name"] = st["name"]
         if out["installed"]:
             try:
                 out["ways"] = links(rec, st)       # "links" is the manifest's doc links
@@ -7648,7 +7652,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.6"
+VERSION = "1.10.7"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -17807,7 +17811,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.6"
+FORGE_VERSION="1.10.7"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
