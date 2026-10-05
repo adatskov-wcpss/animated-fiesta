@@ -2,8 +2,8 @@
 Selkies Forge engine - burrow
 
 Burrow publishes ports on their own HTTPS addresses behind a login. It is the
-tunnel engine of Aegis × Burrow (github.com/alexd-aero/aegis-burrow), and also
-ran on its own (github.com/alexd-aero/burrow). When it is on this machine, the forge offers a
+tunnel engine of Aegis × Burrow (github.com/alexd-aero/aegis-burrow); it
+once ran on its own, and those installs are still found. When it is on this machine, the forge offers a
 Burrow address for every desktop and addon next to the local and serveo ones.
 
 The forge finds Burrow through ~/.config/burrow/burrow.json and talks to its

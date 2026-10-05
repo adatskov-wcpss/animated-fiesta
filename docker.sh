@@ -530,7 +530,7 @@ FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f307
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
 FORGE_SHA_FORGE_ADDONS_PY="3078904ce67a88e1322f8657f4e21d613d427a883c26dfbe4b91f335f0ef7a60"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
-FORGE_SHA_FORGE_BURROW_PY="5a4d6f3633981f6c5a8523b2540e40ed68391b759e188c08f712e0bedd82c65c"
+FORGE_SHA_FORGE_BURROW_PY="f052dd40b14e1ad6e62cf622826f5195481db41af5397f4ea84cfa7040e4f04c"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
 FORGE_SHA_FORGE_CLI_PY="78c8dd8258cee01bacfb22840ed7988d94470d3b0857881749cd39e7c3ca332b"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
@@ -572,7 +572,7 @@ FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
 FORGE_SHA_SELKIES_CLI="e3df85018306d7420d56e893319653810129edd939a7f1e788bc92bd1abd78b7"
-FORGE_PAYLOAD_SHA="92d6b8cd5990f6600fd739c5905b6a8f630c4490c68875e8139851cd9ca10d72"
+FORGE_PAYLOAD_SHA="aa3ae5e5510b27b906a0b1d175069a4bcceaa4c62868017d684b73b400ab178d"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -2249,8 +2249,8 @@ __FORGE_FILE_FORGE_BACKUPS_PY__
 Selkies Forge engine - burrow
 
 Burrow publishes ports on their own HTTPS addresses behind a login. It is the
-tunnel engine of Aegis × Burrow (github.com/alexd-aero/aegis-burrow), and also
-ran on its own (github.com/alexd-aero/burrow). When it is on this machine, the forge offers a
+tunnel engine of Aegis × Burrow (github.com/alexd-aero/aegis-burrow); it
+once ran on its own, and those installs are still found. When it is on this machine, the forge offers a
 Burrow address for every desktop and addon next to the local and serveo ones.
 
 The forge finds Burrow through ~/.config/burrow/burrow.json and talks to its
