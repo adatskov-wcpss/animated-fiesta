@@ -17,7 +17,7 @@ import urllib.parse
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import catalog, events, scheduler, space, updates
+from . import addons, catalog, events, scheduler, space, updates
 from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
@@ -182,7 +182,7 @@ class Handler(BaseHTTPRequestHandler):
         route = self._route()
         if route in ("/", "/index.html"):
             return self._static("index.html")
-        if route in ("/app.css", "/app.js", "/term.js", "/logos.js", "/brands.js",
+        if route in ("/app.css", "/app.js", "/addons.js", "/term.js", "/logos.js", "/brands.js",
                      "/favicon.ico"):
             return self._static(route.lstrip("/"))
         if not route.startswith("/api/"):
@@ -208,6 +208,22 @@ class Handler(BaseHTTPRequestHandler):
             return self._err(500, ex)
 
     static_cache = {}
+
+    def _image(self, data, ctype):
+        """An addon's logo or icon: never a page, and an SVG cannot run anything."""
+        extra = {"Cache-Control": "public, max-age=86400",
+                 "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox"}
+        self.send_response(200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("X-Content-Type-Options", "nosniff")
+        for k, v in extra.items():
+            self.send_header(k, v)
+        self.end_headers()
+        try:
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def _static(self, name):
         data = self.static_cache.get(name)
@@ -304,6 +320,21 @@ class Handler(BaseHTTPRequestHandler):
                                                             limit=min(500, _int_or_none(q.get("limit")) or 100))})
         if route == "/api/space":
             return self._send(200, space.report())
+        if route == "/api/addons":
+            return self._send(200, {"addons": addons.list_addons(), "spec": addons.SPEC})
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/image$", route)
+        if m:
+            try:
+                data, ctype = addons.image(m.group(1), self._query().get("path"))
+            except (addons.AddonError, OSError) as ex:
+                return self._err(404, ex)
+            return self._image(data, ctype)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})$", route)
+        if m:
+            try:
+                return self._send(200, addons.public(addons.get(m.group(1)), with_status=True))
+            except addons.AddonError as ex:
+                return self._err(404, ex)
         if route == "/api/scheduler":
             return self._send(200, {"slots": scheduler.status(),
                                     "jobs": [j.snapshot() for j in jobs_running()]})
@@ -347,6 +378,39 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, space.clean(everything=bool(body.get("all")),
                                                volumes=bool(body.get("volumes")),
                                                dry_run=bool(body.get("dry_run"))))
+        if route == "/api/addons/add":
+            try:
+                return self._send(200, {"addon": addons.add(body.get("source") or "")})
+            except addons.AddonError as ex:
+                return self._err(400, ex)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/(install|update|uninstall|remove|action)$", route)
+        if m:
+            aid, what = m.group(1), m.group(2)
+            try:
+                rec = addons.get(aid)
+            except addons.AddonError as ex:
+                return self._err(404, ex)
+            name = rec["manifest"]["name"]
+            if what == "remove":
+                try:
+                    return self._send(200, addons.remove(aid))
+                except addons.AddonError as ex:
+                    return self._err(400, ex)
+            if what == "install":
+                job = job_put(Job("addon", aid, "Install %s" % name))
+                return self._send(200, {"job": _run_job(job, addons.install, aid,
+                                                        settings=body.get("settings") or {}, job=job)})
+            if what == "update":
+                job = job_put(Job("addon", aid, "Update %s" % name))
+                return self._send(200, {"job": _run_job(job, addons.update, aid, job=job)})
+            if what == "uninstall":
+                job = job_put(Job("addon", aid, "Uninstall %s" % name))
+                return self._send(200, {"job": _run_job(job, addons.uninstall, aid,
+                                                        keep_data=body.get("keep_data", True) is not False,
+                                                        job=job)})
+            act = str(body.get("action") or "")
+            job = job_put(Job("addon", aid, "%s: %s" % (name, act)))
+            return self._send(200, {"job": _run_job(job, addons.action, aid, act, job=job)})
         if route == "/api/update/check":
             check_update(install=True)
             return self._send(200, update_report())
@@ -502,17 +566,21 @@ class Handler(BaseHTTPRequestHandler):
             return
 
 
-def _run_job(job, fn, *args, **kwargs):
-    """Run fn in a thread as `job`; failures land in the job, not the request."""
+def _run_job(the_job, fn, *args, **kwargs):
+    """Run fn in a thread as `the_job`; failures land in the job, not the request.
+
+    (The first parameter is not called `job`: the work functions take job=...
+    themselves, and a clash made every backup, clone and restore from the web
+    UI fail with "got multiple values for argument 'job'".)"""
     def work():
         try:
             fn(*args, **kwargs)
         except Exception as ex:
-            if job.status == "running":
-                job.fail(str(ex))
-    job.thread = threading.Thread(target=work, daemon=True)
-    job.thread.start()
-    return job.snapshot()
+            if the_job.status == "running":
+                the_job.fail(str(ex))
+    the_job.thread = threading.Thread(target=work, daemon=True)
+    the_job.thread.start()
+    return the_job.snapshot()
 
 
 def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
@@ -544,7 +612,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     WATCHDOG.start()
 
     updates.SERVE_PAYLOAD = installed_payload()
-    for name in ("index.html", "app.css", "app.js", "term.js", "logos.js", "brands.js"):
+    for name in ("index.html", "app.css", "app.js", "addons.js", "term.js", "logos.js", "brands.js"):
         try:
             with open(os.path.join(WEBDIR, name), "rb") as fh:
                 Handler.static_cache[name] = fh.read()
@@ -579,6 +647,10 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
                 life["heartbeat"] = time.time()
                 life["desktops_running"] = running_desktop_names()
                 jsave(LIFE_JSON, life)
+            except Exception:
+                pass
+            try:
+                addons.sync_integrations()   # apps like Burrow learn where this forge is
             except Exception:
                 pass
     threading.Thread(target=heartbeat, daemon=True).start()
@@ -618,6 +690,10 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     if not quiet:
         print(json.dumps(info))
         sys.stdout.flush()
+    try:
+        addons.sync_integrations()
+    except Exception:
+        pass
 
     watchdog = threading.Thread(target=_tunnel_watchdog, daemon=True)
     watchdog.start()

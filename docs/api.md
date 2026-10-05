@@ -85,6 +85,22 @@ A job's `done` result has `name`, `local_url`, `https_url`, `tunnel`, `credentia
 | `POST /api/backups/clone` | `{file, name?}` → `{job}`: a new desktop from a backup |
 | `POST /api/backups/delete` | `{file}` |
 
+## Addons
+
+See [Addons](addons.md) for the format. Long operations are jobs, streamed like launches.
+
+| Method & path | Returns |
+|---|---|
+| `GET /api/addons` | `{addons: [...], spec}`: each with name, version, description, source, logo URL, settings (passwords masked), actions, requirement problems, `detected`, `installed`, and a live `status` (`{state, url, version, detail}`) |
+| `GET /api/addons/<id>` | One addon, with its live status |
+| `GET /api/addons/<id>/image[?path=…]` | Its logo, or an icon its manifest names. SVGs carry a sandboxing CSP |
+| `POST /api/addons/add` | `{source}` → `{addon}`. Fetches, checks the manifest, runs `detect`. 400 with the exact problem otherwise |
+| `POST /api/addons/<id>/install` | `{settings?: {KEY: value}}` → `{job}`. Links it instead when `detect` finds it already here |
+| `POST /api/addons/<id>/update` | `{}` → `{job}` |
+| `POST /api/addons/<id>/uninstall` | `{keep_data?: true}` → `{job}` |
+| `POST /api/addons/<id>/action` | `{action}` → `{job}` |
+| `POST /api/addons/<id>/remove` | `{}` → `{ok}`, only once uninstalled |
+
 ## Disk
 
 | Method & path | Body / returns |

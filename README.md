@@ -15,6 +15,7 @@
   <b><a href="#-what-you-get">What you get</a></b> ·
   <b><a href="#-the-engine">The engine</a></b> ·
   <b><a href="#-the-catalog">The catalog</a></b> ·
+  <b><a href="#-addons-and-themes">Addons</a></b> ·
   <b><a href="#-documentation">Docs</a></b> ·
   <b><a href="#-build-it-yourself">Build it yourself</a></b> ·
   <b><a href="#-its-yours">It's yours</a></b>
@@ -68,6 +69,9 @@ selkies-cli events
 # back up a desktop, or clone it
 selkies-cli backup forge-noble-xfce
 selkies-cli clone forge-noble-xfce work
+
+# add an app beside the forge
+selkies-cli addon add https://github.com/alexd-aero/burrow
 ```
 
 </td>
@@ -176,6 +180,38 @@ flowchart LR
 
 Read the full tour: **[The engine](docs/engine.md)** · **[The forge layer](docs/forge-layer.md)** · **[HTTP API](docs/api.md)**
 
+## 🧩 Addons and themes
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### Addons
+Apps that install beside the forge. **Paste a repository link** under *Addons*: the forge fetches it, checks it, shows its logo, description and settings, and installs it when you say so. You get a live log, a status, an **Open** button, updates, actions and a clean uninstall. If the app is **already on the machine**, the forge offers to **link** it instead.
+
+An addon is one `forge-addon.json` and a few bash scripts, in any repository, in any language. **[The addon guide →](docs/addons.md)** · **[The example addon →](addons/hello-forge/)**
+
+**[Burrow](https://github.com/alexd-aero/burrow)** is one: publish any port, or any desktop, on your own domain behind a post-quantum login, with a Selkies Forge panel in its dashboard.
+
+</td>
+<td width="50%" valign="top">
+
+### Themes
+Four looks, picked in the left rail and remembered per browser:
+
+| | |
+|---|---|
+| **Forge** | blue glass, the default |
+| **Stealth** | black room, white light: the look of Burrow's dashboard |
+| **Daylight** | light, for bright rooms |
+| **Ember** | warm amber on charcoal |
+
+Every colour is a CSS variable, so a theme is a short block in `app.css`. [Make your own →](docs/web-ui.md#themes)
+
+</td>
+</tr>
+</table>
+
 ## 📚 The catalog
 
 | Kind | Count | How it starts |
@@ -197,6 +233,7 @@ Everything lives in **[`docs/`](docs/README.md)**:
 | [`selkies-cli`](docs/cli.md) | [The forge layer](docs/forge-layer.md) | [Contributing](CONTRIBUTING.md) |
 | [The web UI](docs/web-ui.md) | [HTTP API](docs/api.md) | [The catalog](docs/catalog.md) |
 | [Day to day](docs/operations.md): boot, updates, restore, disk | [Security](docs/security.md) | [Configuration](docs/configuration.md) |
+| [Addons](docs/addons.md): using them, writing one | [The example addon](addons/hello-forge/) | |
 | [Troubleshooting](docs/troubleshooting.md) · [FAQ](docs/faq.md) | | |
 
 ## 🔧 Build it yourself

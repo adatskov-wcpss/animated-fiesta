@@ -66,12 +66,37 @@ The top strip totals desktops, memory in use, and data downloaded and uploaded.
 - **Web UI:** the **start on boot** toggle, and how the web UI last stopped.
 - **Disk used by the forge:** layers, built and pulled desktop images (and how much of each is unused), base images, build cache, orphan volumes. **Tidy up** removes old layers. **Remove everything unused** also removes unused desktop images and the build cache. Nothing a desktop uses is ever removed.
 
+## Addons
+
+Apps that install beside the forge. Paste a repository link and press **Add**. The forge fetches it and shows a card: logo, name, version, author, source, description, and anything about this machine that rules it out. Nothing is installed until you press **Install** (or **Link it**, when the app is already on the machine). That opens its settings, if it has any, then a live log with a progress bar and **Cancel**. Installed cards show a live state, **Open**, and a **⋯** menu with the addon's actions, *Settings and reinstall*, *Update*, its links, and *Uninstall*. *Try the example addon* adds [Hello Forge](../addons/hello-forge/). Everything about addons, including writing one: [Addons](addons.md).
+
+## Themes
+
+The **Theme** picker in the left rail switches the whole UI; each browser remembers its choice.
+
+| Theme | Look |
+|---|---|
+| **Forge** | Blue glass, the default |
+| **Stealth** | Black room, a faint grid, graphite surfaces lit along their top edge, white as the only accent: the same look as [Burrow](https://github.com/alexd-aero/burrow)'s dashboard |
+| **Daylight** | Light surfaces, for bright rooms (terminals stay dark) |
+| **Ember** | Warm amber on charcoal |
+
+Every colour in `app.css` is a variable on `:root` (`--bg`, `--glass`, `--txt`, `--acc`, `--ink` for overlays, `--term-bg`…). A theme is a block like this at the end of `app.css`, plus an entry in `THEMES` in `app.js`:
+
+```css
+html[data-theme="mine"] {
+  --bg: #0b0f0c; --glass: rgba(20, 30, 24, 0.6); --txt: #e8f5ec;
+  --acc: #3ddc97; --acc-2: #2bb3a3; --acc-rgb: 61, 220, 151; --on-acc: #04140c;
+  --bg-paint: radial-gradient(900px 500px at 15% -10%, rgba(61, 220, 151, 0.15), transparent 60%), #0b0f0c;
+}
+```
+
 ## Keyboard
 
 | Key | Does |
 |---|---|
 | `/` | Search |
-| `1` / `2` / `3` | Browse / Manager / This machine |
+| `1` / `2` / `3` / `4` | Browse / Manager / This machine / Addons |
 | `Esc` | Close a dialog, menu or the lightbox |
 | `←` `→` | Previous/next picture in the lightbox |
 

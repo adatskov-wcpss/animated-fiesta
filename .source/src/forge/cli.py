@@ -162,6 +162,72 @@ def stream_job(job, work_fn):
     return 0 if done["result"] else (130 if job.cancelled else 1)
 
 
+def cli_addon(a):
+    from . import addons
+    need = {"add": "a repository link", "info": "an addon id", "install": "an addon id",
+            "update": "an addon id", "uninstall": "an addon id", "remove": "an addon id",
+            "action": "an addon id and an action", "status": "an addon id"}
+    if a.verb in need and not a.target or a.verb == "action" and not a.extra:
+        print("E selkies-cli addon %s needs %s" % (a.verb, need[a.verb]))
+        return 2
+    try:
+        if a.verb == "list":
+            rows = addons.list_addons(with_status=True)
+            if a.json:
+                print(json.dumps({"addons": rows}))
+            elif not rows:
+                print("no addons yet. Add one: selkies-cli addon add https://github.com/OWNER/REPO")
+            else:
+                for r in rows:
+                    st = (r.get("status") or {}).get("state") or ("installed" if r["installed"] else "available")
+                    print("%-14s %-22s %-9s %-13s %s" % (r["id"], r["name"][:22], r["version"][:9], st,
+                                                       r.get("open_url") or r["source"]))
+            return 0
+        if a.verb == "add":
+            r = addons.add(a.target)
+            if a.json:
+                print(json.dumps(r))
+            else:
+                print("added %s %s (%s)" % (r["name"], r["version"], r["id"]))
+                if r["detected"].get("found"):
+                    print("it is already on this machine; `install` links it")
+                for p_ in r["problems"]:
+                    print("! %s" % p_)
+                print("install it: selkies-cli addon install %s" % r["id"])
+            return 0
+        if a.verb in ("info", "status"):
+            r = addons.public(addons.get(a.target), with_status=True)
+            print(json.dumps(r if a.verb == "info" else r.get("status"), indent=2))
+            return 0
+        if a.verb == "remove":
+            print(json.dumps(addons.remove(a.target, force=a.force)))
+            return 0
+        if a.verb == "sync":
+            print(json.dumps({"written": addons.sync_integrations()}))
+            return 0
+    except addons.AddonError as ex:
+        print("E %s" % ex)
+        return 1
+    try:
+        rec = addons.get(a.target)
+    except addons.AddonError as ex:
+        print("E %s" % ex)
+        return 1
+    name = rec["manifest"]["name"]
+    if a.verb == "install":
+        settings = dict(kv.split("=", 1) for kv in a.set if "=" in kv)
+        job = job_put(Job("addon", a.target, "Install %s" % name))
+        return stream_job(job, lambda: addons.install(a.target, settings=settings, job=job))
+    if a.verb == "update":
+        job = job_put(Job("addon", a.target, "Update %s" % name))
+        return stream_job(job, lambda: addons.update(a.target, job=job))
+    if a.verb == "uninstall":
+        job = job_put(Job("addon", a.target, "Uninstall %s" % name))
+        return stream_job(job, lambda: addons.uninstall(a.target, keep_data=not a.purge, job=job))
+    job = job_put(Job("addon", a.target, "%s: %s" % (name, a.extra)))
+    return stream_job(job, lambda: addons.action(a.target, a.extra, job=job))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="forge-engine", description="Selkies Forge engine")
     ap.add_argument("--version", action="version", version=VERSION)
@@ -310,6 +376,17 @@ def main(argv=None):
     p = sub.add_parser("logs")
     p.add_argument("name")
     p.add_argument("--tail", type=int, default=200)
+
+    p = sub.add_parser("addon", help="addons: apps that install beside the forge (docs/addons.md)")
+    p.add_argument("verb", choices=["list", "add", "info", "install", "update", "uninstall",
+                                    "remove", "action", "status", "sync"])
+    p.add_argument("target", nargs="?", help="a repository link (add) or an addon id")
+    p.add_argument("extra", nargs="?", help="the action id (action)")
+    p.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
+                   help="a setting for install, e.g. --set PORT=4310")
+    p.add_argument("--purge", action="store_true", help="uninstall: also delete its data")
+    p.add_argument("--force", action="store_true", help="remove: even if it is installed")
+    p.add_argument("--json", action="store_true")
 
     a = ap.parse_args(argv)
     ensure_dirs()
@@ -534,4 +611,6 @@ def main(argv=None):
     if a.cmd == "logs":
         print(container_logs(a.name, a.tail))
         return 0
+    if a.cmd == "addon":
+        return cli_addon(a)
     return 1

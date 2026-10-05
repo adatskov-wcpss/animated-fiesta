@@ -12,7 +12,8 @@ Everything about Selkies Forge, from your first desktop to rebuilding `docker.sh
 |---|---|
 | [Getting started](getting-started.md) | Requirements, the one-line install, your first desktop, where things end up |
 | [The `selkies-cli` command](cli.md) | The home screen, every verb and flag, what each status line means |
-| [The web UI](web-ui.md) | Browsing, the desktop page, forging, the manager, the shell, *This machine* |
+| [The web UI](web-ui.md) | Browsing, the desktop page, forging, the manager, the shell, *This machine*, addons, themes |
+| [Addons](addons.md) | Apps that install beside the forge: using them, and writing your own (the full format, with an example) |
 | [The catalog](catalog.md) | All 153 desktops: ready-made, built, curated; RAM, download, screen mode, architectures |
 | [Running it day to day](operations.md) | Start on boot, how it last stopped, restoring desktops, updates, disk space, uninstalling |
 | [GPU Smart Passthrough](gpu.md) | How desktops get your GPU: detection, the in-image check, what is passed, fallbacks, NVIDIA |

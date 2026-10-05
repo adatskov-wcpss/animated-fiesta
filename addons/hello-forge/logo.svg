@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Hello Forge">
+  <defs>
+    <linearGradient id="hf-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5aa6ff"/>
+      <stop offset="1" stop-color="#8b7dff"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="30" fill="url(#hf-bg)"/>
+  <rect x="4.5" y="4.5" width="119" height="119" rx="29.5" fill="none" stroke="#ffffff" stroke-opacity=".25"/>
+  <!-- a speech bubble with a forge triangle in it: "hello" from the forge -->
+  <path d="M30 34h68a10 10 0 0 1 10 10v34a10 10 0 0 1-10 10H62l-18 15v-15H30a10 10 0 0 1-10-10V44a10 10 0 0 1 10-10z" fill="#061020"/>
+  <path d="M50 76 64 50l14 26z" fill="#ffffff"/>
+</svg>

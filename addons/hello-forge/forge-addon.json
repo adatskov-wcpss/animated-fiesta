@@ -1,0 +1,46 @@
+{
+  "spec": 1,
+  "id": "hello-forge",
+  "name": "Hello Forge",
+  "version": "1.0.0",
+  "description": "The example addon: a tiny web page that greets you and lists this machine's desktops through the Selkies Forge API. Read its folder to see every part of an addon at work.",
+  "author": "Selkies Forge",
+  "homepage": "https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge",
+  "license": "MIT",
+  "logo": "logo.svg",
+  "requires": {
+    "forge": ">=1.10.0",
+    "os": ["linux"],
+    "commands": ["python3", "curl"]
+  },
+  "scripts": {
+    "detect": "forge/detect.sh",
+    "install": "forge/install.sh",
+    "update": "forge/update.sh",
+    "uninstall": "forge/uninstall.sh",
+    "status": "forge/status.sh"
+  },
+  "actions": [
+    { "id": "restart", "label": "Restart", "script": "forge/restart.sh" },
+    { "id": "reset-visits", "label": "Reset visit count", "script": "forge/reset-visits.sh",
+      "confirm": "Set the page's visit counter back to zero?" }
+  ],
+  "settings": [
+    { "key": "PORT", "label": "Port", "type": "number", "default": 8790, "min": 1024, "max": 65535,
+      "help": "Where the page listens. It answers on the same address as Selkies Forge." },
+    { "key": "GREETING", "label": "Greeting", "type": "text", "default": "Hello from an addon",
+      "help": "The headline on the page." },
+    { "key": "ACCENT", "label": "Accent", "type": "select", "default": "blue",
+      "options": [
+        { "value": "blue", "label": "Forge blue" },
+        { "value": "green", "label": "Green" },
+        { "value": "amber", "label": "Amber" },
+        { "value": "mono", "label": "Black and white" }
+      ] },
+    { "key": "SHOW_DESKTOPS", "label": "List the desktops", "type": "bool", "default": true,
+      "help": "Read them from the forge's API (FORGE_API) and show them on the page." }
+  ],
+  "links": [
+    { "label": "How addons work", "url": "https://github.com/adatskov-wcpss/animated-fiesta/blob/main/docs/addons.md" }
+  ]
+}

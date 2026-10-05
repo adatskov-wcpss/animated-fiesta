@@ -210,6 +210,8 @@ Every job also keeps a state file, `state/jobs/<id>.json`: status, phase, progre
 
 ## Per-desktop locks
 
+Each desktop carries the `FORGE_HOME` that made it (`io.selkiesforge.home`). The watchdog only heals, idle-stops or rescues **its own** desktops: a second forge on the same machine (another `FORGE_HOME`, or a test copy) can't see the first one's deliberate stops, and would otherwise "heal" desktops you had just stopped. Older desktops without the label count as a forge's own when its registry knows them.
+
 Every lifecycle action (start, stop, restart, remove, repair, recreate, limit changes) holds `state/inst-<name>.lock`. A stop from the terminal and a repair from the browser therefore run one after the other, never over each other. The action is written to the journal **before** it runs. That's how the watchdog knows a container that just exited was stopped on purpose.
 
 ## The event journal

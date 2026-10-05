@@ -45,7 +45,7 @@ import time
 from . import events, ledger
 from .health import container_logs
 from .jobs import mark_job_state, read_job_states
-from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, SELKIES_WS
+from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, ROOT, SELKIES_WS
 from .store import reg_delete, reg_load
 from .util import FileLock, human_mb, jload, jsave, run
 
@@ -123,7 +123,7 @@ def session_health(name):
 def _snapshot():
     rc, out, _ = run(["docker", "ps", "-a", "--filter", "label=%s.entry" % LABEL,
                       "--format", "{{.Names}}\t{{.State}}\t{{.Label \"%s.heal\"}}"
-                      "\t{{.Label \"%s.profile\"}}" % (LABEL, LABEL)],
+                      "\t{{.Label \"%s.profile\"}}\t{{.Label \"%s.home\"}}" % (LABEL, LABEL, LABEL)],
                      timeout=30)
     if rc != 0:
         return None
@@ -132,8 +132,20 @@ def _snapshot():
         parts = line.split("\t")
         if len(parts) >= 2 and parts[0]:
             state[parts[0]] = {"state": parts[1], "heal": (parts[2] if len(parts) > 2 else ""),
-                               "profile": (parts[3] if len(parts) > 3 else "") or "selkies"}
+                               "profile": (parts[3] if len(parts) > 3 else "") or "selkies",
+                               "home": (parts[4] if len(parts) > 4 else "")}
     return state
+
+
+def is_mine(name, info, reg):
+    """Is this desktop this forge's? Desktops carry the FORGE_HOME that made
+    them; older ones without that label count when our registry knows them.
+    A second forge on the same machine (or a test copy) must leave the other's
+    desktops alone: it cannot see their deliberate stops, so to it every stop
+    looks like a crash, and "healing" it would start them again."""
+    if info.get("home"):
+        return os.path.realpath(info["home"]) == os.path.realpath(ROOT)
+    return name in reg
 
 
 def _inspect_state(name):
@@ -180,12 +192,14 @@ class Watchdog(object):
             return {"docker": False}
         report = {"crashed": [], "healed": [], "rescue": [], "frozen": [], "idle_stopped": [],
                   "pressure": False, "recovered": []}
+        everything = set(cur)
+        reg = reg_load()
+        cur = {n: i for n, i in cur.items() if is_mine(n, i, reg)}
         if self.prev is not None:
             for name, info in cur.items():
                 was = self.prev.get(name)
                 if was and was["state"] == "running" and info["state"] in ("exited", "dead"):
                     self._on_stop(name, info, report)
-        reg = reg_load()
         for name, info in cur.items():
             if info["state"] == "running":
                 was_running = bool(self.prev and (self.prev.get(name) or {}).get("state") == "running")
@@ -202,7 +216,7 @@ class Watchdog(object):
             report["recovered"] = recover_interrupted()
         if now - self._last_clean > 600:
             self._last_clean = now
-            reconcile(set(cur))
+            reconcile(everything)
         return report
 
     def _on_stop(self, name, info, report):

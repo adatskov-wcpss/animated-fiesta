@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
 <title>Selkies Forge</title>
+<script>try { var t = localStorage.getItem("forge_theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
 <link rel="stylesheet" href="/app.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235aa6ff'/%3E%3Cpath d='M9 22l7-13 7 13z' fill='%23061020'/%3E%3C/svg%3E">
 </head>
@@ -28,11 +29,15 @@
     <button data-view="browse" class="on"><span class="ico">◧</span>Browse<span class="tag" id="tagCat">-</span></button>
     <button data-view="manager"><span class="ico">▦</span>Manager<span class="tag" id="tagInst">0</span></button>
     <button data-view="host"><span class="ico">◉</span>This machine</button>
+    <button data-view="addons"><span class="ico">✚</span>Addons<span class="tag" id="tagAddons">0</span></button>
+    <hr>
+    <div class="sec-k rail-k">Theme</div>
+    <div class="themes" id="themes" role="radiogroup" aria-label="Theme"></div>
     <hr>
     <button id="liteBtn" class="ghost"><span class="ico">✦</span>Lite mode</button>
     <div class="note">Lite mode drops the blur and animation. It turns itself on for small devices.</div>
     <hr>
-    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine</div>
+    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine &middot; 4 addons</div>
   </nav>
 
   <main class="main">
@@ -175,6 +180,30 @@
       </div>
     </section>
 
+    <!-- ------------------------------------------------------- addons -->
+    <section class="view" id="v-addons">
+      <h1 class="h1">Addons</h1>
+      <p class="sub">Apps that install beside the forge. Paste a repository link: the forge fetches it, checks it,
+        and shows you what it is before anything is installed.</p>
+      <div class="panel addbar">
+        <form class="add-row" id="addonForm" autocomplete="off">
+          <span class="add-ico" aria-hidden="true">⎘</span>
+          <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
+                 placeholder="https://github.com/owner/repo   or a folder in one: …/tree/main/addons/my-addon" aria-label="Addon repository link">
+          <button class="btn primary" id="addonAdd" type="submit">Add</button>
+        </form>
+        <div class="add-hint">
+          <span>Addons run as you on this machine, like anything you install. Add the ones you trust.</span>
+          <span class="spacer"></span>
+          <button class="linkish" type="button" id="addonExample">Try the example addon</button>
+          <a class="linkish" href="https://github.com/adatskov-wcpss/animated-fiesta/blob/main/docs/addons.md" target="_blank" rel="noopener">Make your own &rarr;</a>
+        </div>
+        <div id="addonAddMsg"></div>
+      </div>
+      <div class="jobstrip" id="addonJobs" hidden></div>
+      <div class="addon-grid" id="addonList"><div class="skel" style="height:170px"></div><div class="skel" style="height:170px"></div></div>
+    </section>
+
   </main>
 </div>
 
@@ -207,5 +236,6 @@
 <script src="/logos.js"></script>
 <script src="/term.js"></script>
 <script src="/app.js"></script>
+<script src="/addons.js"></script>
 </body>
 </html>

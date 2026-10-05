@@ -12,7 +12,7 @@ import uuid
 
 from . import gpu
 from .host import tz_name
-from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS, VERSION
+from .paths import CPREFIX, KASM_HTTPS, LABEL, ROOT, SELKIES_HTTP, SELKIES_HTTPS, VERSION
 from .ports import alloc_ports, release_port_reservation
 from .util import clamp, run, slug
 
@@ -100,6 +100,9 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
             "--label", "%s.de=%s" % (LABEL, entry["de_label"]),
             "--label", "%s.profile=%s" % (LABEL, prof),
             "--label", "%s.version=%s" % (LABEL, VERSION),
+            # whose desktop it is: a second forge on this machine (another
+            # FORGE_HOME) must never heal, idle-stop or adopt it
+            "--label", "%s.home=%s" % (LABEL, ROOT),
             "--label", "%s.disk=%d" % (LABEL, int(plan["disk_mb"])),
             # Restart after a crash while the forge is watching (see watchdog.py).
             "--label", "%s.heal=%s" % (LABEL, "off" if opts.get("heal") is False else "on"),

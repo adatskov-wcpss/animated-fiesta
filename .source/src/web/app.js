@@ -182,9 +182,42 @@
     try { localStorage.setItem("forge_lite", S.lite ? "1" : "0"); } catch (e) {}
   }
 
+  /* -------------------------------------------------------------- themes */
+  // The look is a set of CSS variables (app.css); a theme swaps them through
+  // html[data-theme]. "stealth" is the tunnel manager's black-and-white look.
+  var THEMES = [
+    { id: "forge", label: "Forge", hint: "Blue glass, the default", sw: ["#5aa6ff", "#8b7dff", "#0a1120"] },
+    { id: "stealth", label: "Stealth", hint: "Black room, white light: the Burrow look", sw: ["#f1f2f3", "#101113", "#030304"] },
+    { id: "daylight", label: "Daylight", hint: "Light, for bright rooms", sw: ["#2f6fe4", "#ffffff", "#e9edf4"] },
+    { id: "ember", label: "Ember", hint: "Warm amber on charcoal", sw: ["#ffad42", "#ff6a3d", "#16110d"] }
+  ];
+
+  function applyTheme(id) {
+    var t = THEMES.filter(function (x) { return x.id === id; })[0] || THEMES[0];
+    if (t.id === "forge") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t.id);
+    try { localStorage.setItem("forge_theme", t.id); } catch (e) {}
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) { meta = document.createElement("meta"); meta.name = "theme-color"; document.head.appendChild(meta); }
+    meta.content = t.sw[2];
+    var box = $("#themes");
+    if (!box) return;
+    box.innerHTML = THEMES.map(function (x) {
+      return '<button type="button" role="radio" class="theme-sw' + (x.id === t.id ? " on" : "") + '" data-theme-id="' + x.id +
+        '" aria-checked="' + (x.id === t.id) + '" title="' + h(x.label + ": " + x.hint) + '">' +
+        '<i style="background:linear-gradient(135deg,' + x.sw[0] + " 0 50%," + x.sw[1] + " 50% 100%);box-shadow:0 0 0 3px " + x.sw[2] + ' inset"></i>' +
+        "<span>" + h(x.label) + "</span></button>";
+    }).join("");
+  }
+
+  function currentTheme() {
+    try { return localStorage.getItem("forge_theme") || "forge"; } catch (e) { return "forge"; }
+  }
+
   /* ---------------------------------------------------------------- boot */
   function boot() {
     applyLite(decideLite());
+    applyTheme(currentTheme());
     return api("/api/boot").then(function (b) {
       S.boot = b;
       S.host = b.host;
@@ -1805,6 +1838,7 @@
     closeMenus();
     if (view === "manager") { S.instKey = ""; refreshInstances(); }
     if (view === "host") renderHost();
+    if (view === "addons" && window.ForgeAddons) window.ForgeAddons.show();
     $(".main").scrollTop = 0;
   }
 
@@ -1815,6 +1849,10 @@
       if (b) show(b.dataset.view);
     });
     $("#liteBtn").addEventListener("click", function () { applyLite(!S.lite); });
+    $("#themes").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-theme-id]");
+      if (b) applyTheme(b.dataset.themeId);
+    });
 
     /* browse */
     var qTimer = null;
@@ -2025,8 +2063,16 @@
       if (ev.key === "1") show("browse");
       if (ev.key === "2") show("manager");
       if (ev.key === "3") show("host");
+      if (ev.key === "4") show("addons");
     });
   }
+
+  // addons.js builds the Addons view with the same helpers.
+  window.Forge = {
+    api: api, sse: sse, h: h, toast: toast, copy: copy, ago: ago, I: I,
+    openModal: openModal, closeModal: closeModal, show: show,
+    view: function () { return S.view; }
+  };
 
   document.addEventListener("DOMContentLoaded", function () { wire(); boot(); });
 })();

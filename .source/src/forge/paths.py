@@ -10,13 +10,14 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
     logs/           launch jobs, tunnels, the web UI, updates
     builds/         Dockerfiles and forge-layer build contexts
     backups/        desktop home-folder backups (tar.gz + a .json note each)
+    addons/         one folder per addon: repo/ (its checkout) and data/ (kept across updates)
     repo/           a git clone of the project, used for updates
 """
 
 import os
 import re
 
-VERSION = "1.9.0"
+VERSION = "1.10.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +30,7 @@ LOGDIR = os.path.join(ROOT, "logs")
 JOBLOGDIR = os.path.join(LOGDIR, "jobs")
 BUILDDIR = os.path.join(ROOT, "builds")
 BACKUPDIR = os.path.join(ROOT, "backups")
+ADDONDIR = os.path.join(ROOT, "addons")
 JOBSTATEDIR = os.path.join(STATE, "jobs")
 LEDGER_JSON = os.path.join(STATE, "ledger.json")
 
@@ -43,6 +45,7 @@ LAST_STOP_JSON = os.path.join(STATE, "last-stop.json")
 STOP_REQUEST_JSON = os.path.join(STATE, "stop-request.json")
 BOOT_JSON = os.path.join(STATE, "boot.json")
 UPDATE_JSON = os.path.join(STATE, "update.json")
+ADDONS_JSON = os.path.join(STATE, "addons.json")
 
 # Docker naming: every container, image and volume the forge makes is tagged.
 LABEL = "io.selkiesforge"

@@ -17,6 +17,14 @@ Selkies Forge controls Docker on your machine. Docker access is root-equivalent,
 - Desktops run with Docker's default seccomp profile and capabilities. *Relax seccomp* (or the engine's own auto-fix when a session is blocked) sets `seccomp=unconfined` for that desktop only. That's still a container, but it loosens one of its walls.
 - Memory and swap are capped together, so a desktop can't push the host into swap.
 
+## Addons
+
+- **An addon runs code as you.** Its scripts can do anything you can, Docker included. Adding one runs only its quick `detect` script. Its install runs when someone presses **Install**, and the dialog names the source.
+- Because the web UI has no login, **anyone who can reach it can install addons**, as they can already run containers. The same advice applies: keep it on localhost, or behind something that signs people in.
+- Addon logos and icons are served with a sandboxing Content-Security-Policy and shown as images, so an SVG can't run script in the page. Only files the manifest names are served, and manifest paths can't leave the addon's folder, symlinks included.
+- Password settings are stored in `state/addons.json` (your files only) and never sent back to the browser.
+- While Burrow (or an addon that declares an integration folder) is on the machine, the forge writes one file there describing its own address and API, so that app can show your desktops.
+
 ## What the forge connects to
 
 | Where | When |

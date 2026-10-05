@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.9.0"
+FORGE_VERSION="1.10.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,9 +528,10 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
+FORGE_SHA_FORGE_ADDONS_PY="d71c5a1b1e5c7a61ad3dafcdd598a6165c798da39a20e5c69c32ab930cce404b"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
-FORGE_SHA_FORGE_CLI_PY="889abad218bd5c1c005cbcf744ee77d40ded758da83ce497f6380b8c47a76d1a"
+FORGE_SHA_FORGE_CLI_PY="78c8dd8258cee01bacfb22840ed7988d94470d3b0857881749cd39e7c3ca332b"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
 FORGE_SHA_FORGE_EVENTS_PY="3580b5654e071cb6e59f44c90dcfec9f5ea5d53358190e12722bf6017c497712"
 FORGE_SHA_FORGE_GPU_PY="18d779546907e20d334ca27f331d926c33b480b16c560d4ba265b55e0aca4cb3"
@@ -543,13 +544,13 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="58e72798465e7b4f9a8b904dedf96edaa5b317f235fd33881e13b90be57344d9"
+FORGE_SHA_FORGE_PATHS_PY="348a8bfb2d96028bfca1ebdb8141b00186b7ad70482bc5c27b2e7596126bc0a5"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
-FORGE_SHA_FORGE_RUNNER_PY="65d10364866e5ebf7d409c2113e2e9708337b04ef8555a0bf92ab54ac14c267c"
+FORGE_SHA_FORGE_RUNNER_PY="49ed1180baa2441188c328fc3af12307a8f33c214b3e9e7d101b0a6d39633ec2"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="dad7198e18ae93366dda0ac12583bdacb6c108aba3c1c65d839cfc32467662cd"
+FORGE_SHA_FORGE_SERVER_PY="7315dc66e9397d8ba7c6dc69b36700f90e09440344f11fb494644c832f125792"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -558,19 +559,20 @@ FORGE_SHA_FORGE_TERMINAL_PY="befcf471ac7032b93bb187cc51159667ab9cf5531251938cc92
 FORGE_SHA_FORGE_TUNNELS_PY="e2758607ff12b385f51d78a8469eb21ccbaba7312afe5091c69fdbc0869f30db"
 FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2603212e511a5"
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
-FORGE_SHA_FORGE_WATCHDOG_PY="27dc5c8016adeb4ee1ead130bab53ad80a883f9bf8fd8b7cfb794c7fe3a43e1a"
+FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_APP_CSS="cde7b0533be9734bfd18d55989987ddb598754dd3bfbf4df0da985dcb3b3061d"
-FORGE_SHA_WEB_APP_JS="c701d32d3d84984a15afad0d3576ece1cc7717535c4dff7cf2c172376809d914"
+FORGE_SHA_WEB_ADDONS_JS="356887ea4117012773f8e8c54c0bcc18e5c3c2bedbeea8f744c8596816b167b5"
+FORGE_SHA_WEB_APP_CSS="58892c4ed124f59e622c4488660ef2aeec433a989b5f0236617694eae883ca69"
+FORGE_SHA_WEB_APP_JS="65b63e1f8d290eb843bbcd0a932fe3b23e150633a3eabd40edd1c2de4cd9ca58"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_WEB_INDEX_HTML="f830edb32b2fb69a6918064d08bc2cfe33949dba14c4960a789372e203e1e409"
+FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="5bbdf8a58e82de48bf804adf289d5845dd6ba780c310e610aa8da4f8c5020b7a"
-FORGE_PAYLOAD_SHA="c9a00e58c53e152e592187e4a3750b659bd9e3c5271a5af098d3ef5f6717558e"
-FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
+FORGE_SHA_SELKIES_CLI="304f58abc71274425de8e530fd5ed1a499fc4e467ff971e1717a2856f4a3552d"
+FORGE_PAYLOAD_SHA="c19e9a33eacb48428a34fb20e899a810f84757e0affe31f0d08e9c15cc222e4f"
+FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -620,6 +622,914 @@ from .paths import VERSION
 
 __all__ = ["VERSION"]
 __FORGE_FILE_FORGE___INIT___PY__
+  cat > "$FORGE_APP/forge/addons.py" <<'__FORGE_FILE_FORGE_ADDONS_PY__'
+"""
+Selkies Forge engine - addons
+
+An addon is an app that installs beside the forge: a git repository (or a
+folder inside one) with a forge-addon.json at its root. Paste its link in the
+web UI (Addons) or run `selkies-cli addon add LINK`; the forge clones it,
+checks the manifest, shows its logo and description, and runs its scripts:
+
+    detect      is it already on this machine?          (quick, read-only)
+    install     put it on this machine                  (a job, streamed live)
+    update      new code arrived; bring the install up to date
+    uninstall   take it off again
+    status      is it running, and where do I open it?  (one JSON line)
+
+Scripts are bash, run as you, from the addon's folder, with FORGE_* in the
+environment (where the forge is, where to keep data, the user's settings).
+Lines starting with "::" talk back: ::progress 40 Pulling, ::phase Linking,
+::open URL, ::warn text. Everything else is log.
+
+The full format, with a worked example, is docs/addons.md. The example addon
+lives in addons/hello-forge/ in this repository.
+
+Layout: FORGE_HOME/addons/<id>/repo (the checkout) and .../data (kept across
+updates, FORGE_ADDON_DATA). The registry is state/addons.json.
+
+Integrations: apps that keep a drop-in folder for other apps (Burrow reads
+~/.config/burrow/integrations/) get a small JSON file describing the forge,
+kept current while the web UI runs, so they can show its desktops.
+"""
+
+import json
+import os
+import platform
+import re
+import shutil
+import signal
+import subprocess
+import tempfile
+import threading
+import time
+
+from .paths import ADDONDIR, ADDONS_JSON, ROOT, SERVER_JSON, VERSION
+from .util import FileLock, ensure_dirs, have, jload, jsave
+
+SPEC = 1
+MANIFEST = "forge-addon.json"
+ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,39}$")
+SETTING_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,31}$")
+ACTION_RE = re.compile(r"^[a-z][a-z0-9-]{0,23}$")
+SCRIPTS = ("detect", "install", "update", "uninstall", "status")
+SETTING_TYPES = ("text", "number", "bool", "select", "password")
+IMAGE_TYPES = {".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp",
+               ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
+MAX_IMAGE = 512 * 1024
+MAX_MANIFEST = 64 * 1024
+TIMEOUT = {"detect": 20, "status": 15, "install": 3600, "update": 3600,
+           "uninstall": 900, "action": 900}
+ARCH_ALIASES = {"amd64": "x86_64", "x64": "x86_64", "arm64": "aarch64", "armhf": "armv7l"}
+
+# Burrow (github.com/alexd-aero/burrow) keeps its drop-in folder here; the
+# forge registers itself whenever Burrow is on this machine, however it got there.
+KNOWN_INTEGRATION_DIRS = ("~/.config/burrow/integrations",)
+
+FORGE_LOGO = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+              '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+              '<stop offset="0" stop-color="#5aa6ff"/><stop offset="1" stop-color="#8b7dff"/>'
+              '</linearGradient></defs>'
+              '<rect width="64" height="64" rx="16" fill="url(#g)"/>'
+              '<path d="M18 44 32 18l14 26z" fill="#061020"/>'
+              '<path d="M18 44 32 18l14 26z" fill="none" stroke="#061020" stroke-width="4" '
+              'stroke-linejoin="round"/></svg>')
+
+
+class AddonError(RuntimeError):
+    """Something the person can fix: a bad link, a broken manifest, a failed script."""
+
+
+# ------------------------------------------------------------------ sources
+_HOSTED_TREE = re.compile(
+    r"^(https://(?:github\.com|gitlab\.com|codeberg\.org)/[^/\s]+/[^/\s#]+?)(?:\.git)?"
+    r"/(?:-/)?tree/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+
+
+def parse_source(text):
+    """Turn what the person pasted into a fetchable source.
+
+    https://github.com/OWNER/REPO                       the repository's root
+    https://github.com/OWNER/REPO/tree/BRANCH/a/folder  a folder on a branch
+    https://example.com/repo.git#a/folder               any git URL, a folder in it
+    git@host:owner/repo.git                             ssh, if your keys allow it
+    /home/me/my-addon                                   a folder on this machine (development)
+    """
+    raw = (text or "").strip()
+    if not raw:
+        raise AddonError("Paste a repository link.")
+    if raw.startswith(("/", "~", "./", "../", "file://")):
+        p = os.path.abspath(os.path.expanduser(raw[7:] if raw.startswith("file://") else raw))
+        if not os.path.isdir(p):
+            raise AddonError("%s is not a folder on this machine." % p)
+        return {"kind": "local", "path": p, "subdir": "", "ref": None, "display": p}
+    url, sub = raw, ""
+    if "#" in url:
+        url, sub = url.split("#", 1)
+    ref = None
+    m = _HOSTED_TREE.match(url)
+    if m:
+        url, ref = m.group(1), m.group(2)
+        sub = sub or (m.group(3) or "")
+    url = url.rstrip("/")
+    if not re.match(r"^(https?://[^\s/]+/\S+|ssh://\S+|git@[^\s:]+:\S+)$", url):
+        raise AddonError("That does not look like a git repository link.")
+    sub = sub.strip("/")
+    if sub and (".." in sub.split("/") or not re.match(r"^[A-Za-z0-9._/-]+$", sub)):
+        raise AddonError("The folder part of the link is not valid.")
+    return {"kind": "git", "url": url, "ref": ref, "subdir": sub, "display": raw}
+
+
+def _git(args, cwd=None, timeout=240):
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0", GIT_ASKPASS="/bin/true")
+    p = subprocess.run(["git"] + args, cwd=cwd, env=env, stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE, timeout=timeout)
+    return p.returncode, p.stdout.decode("utf-8", "replace"), p.stderr.decode("utf-8", "replace")
+
+
+def fetch(source, dest):
+    """Put the source's files in dest (a new folder). Returns the commit, if any."""
+    if source["kind"] == "local":
+        shutil.copytree(source["path"], dest, symlinks=True,
+                        ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__"))
+        return None
+    if not have("git"):
+        raise AddonError("git is not installed on this machine; it is needed to fetch addons.")
+    base = ["clone", "--depth", "1", "--quiet"]
+    if source.get("ref"):
+        base += ["--branch", source["ref"]]
+    sub = source.get("subdir")
+    rc, err = 1, ""
+    if sub:
+        # Only the folder we need: a big repository (this one has screenshots) stays small.
+        rc, _, err = _git(base + ["--filter=blob:none", "--sparse", source["url"], dest])
+        if rc == 0:
+            rc, _, err = _git(["sparse-checkout", "set", "--no-cone", "/" + sub + "/"], cwd=dest)
+            if rc != 0:
+                shutil.rmtree(dest, ignore_errors=True)
+    if rc != 0:
+        rc, _, err = _git(base + [source["url"], dest])
+    if rc != 0:
+        msg = (err.strip().splitlines() or ["git clone failed"])[-1]
+        if "could not read Username" in err or "Authentication failed" in err or "not found" in err.lower():
+            msg = "the repository was not found, or it is private"
+        raise AddonError("Could not fetch %s: %s" % (source["display"], msg))
+    rc, out, _ = _git(["rev-parse", "HEAD"], cwd=dest, timeout=20)
+    return out.strip()[:40] if rc == 0 else None
+
+
+# ------------------------------------------------------------------ manifest
+def _inside(root, rel, what, must_exist=True):
+    """A path from the manifest, resolved inside the addon's folder (no escaping)."""
+    if not isinstance(rel, str) or not rel.strip():
+        raise AddonError("%s must be a path inside the addon" % what)
+    rel = rel.strip()
+    if rel.startswith("/") or ".." in rel.replace("\\", "/").split("/"):
+        raise AddonError("%s (%s) must be a relative path inside the addon" % (what, rel))
+    real_root = os.path.realpath(root)
+    p = os.path.realpath(os.path.join(root, rel))
+    if p != real_root and not p.startswith(real_root + os.sep):
+        raise AddonError("%s (%s) points outside the addon" % (what, rel))
+    if must_exist and not os.path.isfile(p):
+        raise AddonError("%s (%s) does not exist" % (what, rel))
+    return rel
+
+
+def _image(root, rel, what):
+    rel = _inside(root, rel, what)
+    ext = os.path.splitext(rel)[1].lower()
+    if ext not in IMAGE_TYPES:
+        raise AddonError("%s must be .svg, .png, .webp or .jpg" % what)
+    if os.path.getsize(os.path.join(root, rel)) > MAX_IMAGE:
+        raise AddonError("%s is larger than %d KB" % (what, MAX_IMAGE // 1024))
+    return rel
+
+
+def _text(d, key, limit, required=False):
+    v = d.get(key)
+    if v is None or v == "":
+        if required:
+            raise AddonError("forge-addon.json needs \"%s\"" % key)
+        return ""
+    if not isinstance(v, str):
+        raise AddonError("\"%s\" must be text" % key)
+    v = v.strip()
+    if len(v) > limit:
+        raise AddonError("\"%s\" is longer than %d characters" % (key, limit))
+    return v
+
+
+def _url(v, what):
+    if not isinstance(v, str) or not re.match(r"^https?://\S+$", v.strip()):
+        raise AddonError("%s must be an http(s) link" % what)
+    return v.strip()
+
+
+def version_tuple(v):
+    out = []
+    for part in re.split(r"[.+-]", str(v or "0")):
+        if not part.isdigit():
+            break
+        out.append(int(part))
+    return tuple(out + [0] * (3 - len(out)))
+
+
+def load_manifest(root):
+    """Read and check forge-addon.json. Returns a clean copy, or raises AddonError
+    with a message that says exactly what to fix."""
+    path = os.path.join(root, MANIFEST)
+    if not os.path.isfile(path):
+        raise AddonError("No %s here. An addon needs one at its root (see the Addons docs)." % MANIFEST)
+    if os.path.getsize(path) > MAX_MANIFEST:
+        raise AddonError("%s is larger than 64 KB" % MANIFEST)
+    try:
+        with open(path, encoding="utf-8") as fh:
+            d = json.load(fh)
+    except ValueError as ex:
+        raise AddonError("%s is not valid JSON: %s" % (MANIFEST, ex))
+    if not isinstance(d, dict):
+        raise AddonError("%s must be a JSON object" % MANIFEST)
+
+    spec = d.get("spec")
+    if spec != SPEC:
+        if isinstance(spec, int) and spec > SPEC:
+            raise AddonError("This addon needs a newer Selkies Forge (addon spec %d; this forge reads %d)."
+                             % (spec, SPEC))
+        raise AddonError("forge-addon.json needs \"spec\": %d" % SPEC)
+    m = {"spec": SPEC}
+    m["id"] = _text(d, "id", 40, True)
+    if not ID_RE.match(m["id"]):
+        raise AddonError("\"id\" must be 2-40 lowercase letters, digits or dashes, starting with a letter or digit")
+    m["name"] = _text(d, "name", 60, True)
+    m["version"] = _text(d, "version", 30, True)
+    m["description"] = _text(d, "description", 600)
+    m["author"] = _text(d, "author", 80)
+    m["license"] = _text(d, "license", 40)
+    m["homepage"] = _url(d["homepage"], "\"homepage\"") if d.get("homepage") else ""
+    m["logo"] = _image(root, d["logo"], "\"logo\"") if d.get("logo") else ""
+
+    scripts = d.get("scripts")
+    if not isinstance(scripts, dict) or not scripts.get("install"):
+        raise AddonError("forge-addon.json needs \"scripts\": {\"install\": \"...\"}")
+    m["scripts"] = {}
+    for k, v in scripts.items():
+        if k not in SCRIPTS:
+            raise AddonError("unknown script \"%s\" (known: %s)" % (k, ", ".join(SCRIPTS)))
+        m["scripts"][k] = _inside(root, v, "scripts.%s" % k)
+
+    m["actions"] = []
+    for a in d.get("actions") or []:
+        if not isinstance(a, dict) or not ACTION_RE.match(str(a.get("id") or "")):
+            raise AddonError("every action needs an \"id\" (lowercase letters, digits, dashes)")
+        if a["id"] in SCRIPTS:
+            raise AddonError("action \"%s\" has the name of a lifecycle script" % a["id"])
+        m["actions"].append({"id": a["id"], "label": _text(a, "label", 24, True),
+                             "script": _inside(root, a.get("script"), "actions.%s.script" % a["id"]),
+                             "confirm": _text(a, "confirm", 200)})
+    if len(m["actions"]) > 8:
+        raise AddonError("at most 8 actions")
+
+    m["settings"] = []
+    seen = set()
+    for s in d.get("settings") or []:
+        if not isinstance(s, dict) or not SETTING_RE.match(str(s.get("key") or "")):
+            raise AddonError("every setting needs a \"key\" in CAPITALS (A-Z, 0-9, _), e.g. PORT")
+        if s["key"] in seen:
+            raise AddonError("setting %s appears twice" % s["key"])
+        seen.add(s["key"])
+        typ = s.get("type") or "text"
+        if typ not in SETTING_TYPES:
+            raise AddonError("setting %s: type must be one of %s" % (s["key"], ", ".join(SETTING_TYPES)))
+        st = {"key": s["key"], "type": typ, "label": _text(s, "label", 60, True),
+              "help": _text(s, "help", 300), "default": s.get("default"),
+              "required": bool(s.get("required"))}
+        if typ == "number":
+            for k in ("min", "max"):
+                if s.get(k) is not None:
+                    st[k] = float(s[k])
+        if typ == "select":
+            opts = []
+            for o in s.get("options") or []:
+                o = o if isinstance(o, dict) else {"value": o, "label": o}
+                opts.append({"value": str(o.get("value")), "label": str(o.get("label") or o.get("value"))[:60]})
+            if not opts:
+                raise AddonError("setting %s: a select needs \"options\"" % s["key"])
+            st["options"] = opts
+        if s.get("icon"):
+            st["icon"] = _image(root, s["icon"], "setting %s icon" % s["key"])
+        st["default"] = _coerce(st, st["default"]) if st["default"] is not None else None
+        m["settings"].append(st)
+    if len(m["settings"]) > 16:
+        raise AddonError("at most 16 settings")
+
+    req = d.get("requires") or {}
+    if not isinstance(req, dict):
+        raise AddonError("\"requires\" must be an object")
+    m["requires"] = {
+        "forge": str(req.get("forge") or "").strip(),
+        "os": [str(x).lower() for x in req.get("os") or []],
+        "arch": [ARCH_ALIASES.get(str(x).lower(), str(x).lower()) for x in req.get("arch") or []],
+        "commands": [str(x) for x in req.get("commands") or [] if re.match(r"^[A-Za-z0-9._+-]+$", str(x))],
+    }
+    if m["requires"]["forge"] and not re.match(r"^(>=)?\s*\d+(\.\d+){0,2}$", m["requires"]["forge"]):
+        raise AddonError("requires.forge must look like \">=1.10.0\"")
+
+    integ = d.get("integration") or {}
+    m["integration"] = {}
+    if integ:
+        p = str(integ.get("dir") or "")
+        if not (p.startswith("~/") or p.startswith("$HOME/")) or ".." in p.split("/"):
+            raise AddonError("integration.dir must be a folder under ~/ (e.g. ~/.config/myapp/integrations)")
+        m["integration"] = {"dir": p}
+
+    m["links"] = []
+    for ln in (d.get("links") or [])[:6]:
+        if isinstance(ln, dict):
+            m["links"].append({"label": _text(ln, "label", 40, True), "url": _url(ln.get("url"), "link url")})
+    return m
+
+
+def _coerce(st, v):
+    """A setting's value as its type says; raises AddonError on nonsense."""
+    typ = st["type"]
+    if typ == "bool":
+        if isinstance(v, str):
+            return v.strip().lower() in ("1", "true", "yes", "on")
+        return bool(v)
+    if typ == "number":
+        try:
+            n = float(v)
+        except (TypeError, ValueError):
+            raise AddonError("%s must be a number" % st["label"])
+        if "min" in st and n < st["min"] or "max" in st and n > st["max"]:
+            raise AddonError("%s must be between %g and %g" % (st["label"], st.get("min", n), st.get("max", n)))
+        return int(n) if n == int(n) else n
+    v = "" if v is None else str(v)
+    if typ == "select" and v not in [o["value"] for o in st["options"]]:
+        raise AddonError("%s: pick one of the options" % st["label"])
+    if len(v) > 2000:
+        raise AddonError("%s is too long" % st["label"])
+    return v
+
+
+def check_requirements(m):
+    """What this machine lacks for the addon, as sentences (empty: all good)."""
+    out = []
+    r = m["requires"]
+    if r["forge"]:
+        want = version_tuple(r["forge"].lstrip(">= "))
+        if version_tuple(VERSION) < want:
+            out.append("needs Selkies Forge %s or newer (this is %s)" % (".".join(map(str, want)), VERSION))
+    sysname = platform.system().lower()
+    if r["os"] and sysname not in r["os"]:
+        out.append("runs on %s, not %s" % (", ".join(r["os"]), sysname))
+    mach = ARCH_ALIASES.get(platform.machine().lower(), platform.machine().lower())
+    if r["arch"] and mach not in r["arch"]:
+        out.append("has no build for %s (it supports %s)" % (mach, ", ".join(r["arch"])))
+    missing = [c for c in r["commands"] if not have(c)]
+    if missing:
+        out.append("needs %s installed" % ", ".join(missing))
+    return out
+
+
+# ------------------------------------------------------------------ registry
+def _load():
+    return (jload(ADDONS_JSON, {}) or {}).get("addons") or {}
+
+
+def _save(addons):
+    jsave(ADDONS_JSON, {"spec": SPEC, "addons": addons})
+
+
+def _update(aid, patch):
+    with FileLock("addons"):
+        addons = _load()
+        rec = addons.get(aid)
+        if rec is None:
+            raise AddonError("No addon called %s." % aid)
+        rec.update(patch)
+        addons[aid] = rec
+        _save(addons)
+        return rec
+
+
+def get(aid):
+    rec = _load().get(aid)
+    if not rec:
+        raise AddonError("No addon called %s." % aid)
+    return rec
+
+
+def addon_dir(aid):
+    return os.path.join(ADDONDIR, aid)
+
+
+def root_of(rec):
+    return os.path.join(addon_dir(rec["id"]), "repo", rec.get("subdir") or "")
+
+
+def data_dir(rec):
+    d = os.path.join(addon_dir(rec["id"]), "data")
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+# ------------------------------------------------------------------ running scripts
+def forge_url():
+    """The web UI's address as this machine reaches it, or None when it is not running."""
+    srv = jload(SERVER_JSON, None) or {}
+    if not srv.get("port"):
+        return None
+    host = srv.get("bind") or "127.0.0.1"
+    if host in ("0.0.0.0", "::", ""):
+        host = "127.0.0.1"
+    if ":" in host and not host.startswith("["):
+        host = "[%s]" % host
+    return "http://%s:%d/" % (host, int(srv["port"]))
+
+
+def script_env(rec, extra=None):
+    m = rec["manifest"]
+    url = forge_url()
+    srv = jload(SERVER_JSON, None) or {}
+    env = dict(os.environ)
+    env.update({
+        "FORGE_ADDON_SPEC": str(SPEC), "FORGE_ADDON_ID": rec["id"], "FORGE_ADDON_NAME": m["name"],
+        "FORGE_ADDON_VERSION": m["version"], "FORGE_ADDON_DIR": root_of(rec),
+        "FORGE_ADDON_DATA": data_dir(rec), "FORGE_HOME": ROOT, "FORGE_VERSION": VERSION,
+        "FORGE_URL": url or "", "FORGE_API": (url + "api/") if url else "",
+        "FORGE_BIND": srv.get("bind") or "127.0.0.1", "FORGE_PORT": str(srv.get("port") or ""),
+        "FORGE_ARCH": ARCH_ALIASES.get(platform.machine().lower(), platform.machine().lower()),
+        "FORGE_ADDON_ADOPT": "0", "FORGE_ADDON_UPDATE": "0",
+    })
+    for st in m["settings"]:
+        v = (rec.get("settings") or {}).get(st["key"], st.get("default"))
+        if v is None:
+            v = ""
+        elif st["type"] == "bool":
+            v = "1" if v else "0"
+        env["FORGE_ADDON_SETTING_" + st["key"]] = str(v)
+    env.update(extra or {})
+    return env
+
+
+def run_script(rec, rel, job=None, extra_env=None, timeout=600):
+    """Run one of the addon's scripts. Returns (exit code, output lines, directives).
+
+    With a job, output is streamed into it (the web UI shows it live) and the
+    job's cancel button kills the script and everything it started.
+    """
+    root = root_of(rec)
+    path = os.path.join(root, rel)
+    proc = subprocess.Popen(["bash", path], cwd=root, env=script_env(rec, extra_env),
+                            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT, start_new_session=True)
+    if job:
+        job.attach(proc)
+    killed = {"why": None}
+
+    def stop(why):
+        killed["why"] = why
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+        except OSError:
+            pass
+        t = threading.Timer(5.0, lambda: _kill9(proc.pid))
+        t.daemon = True
+        t.start()
+
+    timer = threading.Timer(timeout, stop, args=("timed out after %ds" % timeout,))
+    timer.daemon = True
+    timer.start()
+    lines, directives = [], {"open": None, "warn": []}
+    try:
+        for raw in iter(proc.stdout.readline, b""):
+            line = raw.decode("utf-8", "replace").rstrip("\r\n")
+            if line.startswith("::"):
+                _directive(line, job, directives)
+                continue
+            lines.append(line)
+            if len(lines) > 400:
+                del lines[:100]
+            if job:
+                job.log(line)
+        proc.wait()
+    finally:
+        timer.cancel()
+        proc.stdout.close()
+        if job:
+            job.detach(proc)
+    rc = proc.returncode
+    if killed["why"]:
+        lines.append(killed["why"])
+        if job:
+            job.log(killed["why"], "err")
+        rc = rc if rc else 124
+    return rc, lines, directives
+
+
+def _kill9(pid):
+    try:
+        os.killpg(pid, signal.SIGKILL)
+    except OSError:
+        pass
+
+
+def _directive(line, job, out):
+    word, _, rest = line[2:].partition(" ")
+    rest = rest.strip()
+    if word == "progress":
+        pct, _, label = rest.partition(" ")
+        try:
+            value = max(0.0, min(100.0, float(pct))) / 100.0
+        except ValueError:
+            return
+        if job:
+            job.set_phase("addon", label or getattr(job, "label", "working"), progress=value)
+    elif word == "phase" and job:
+        job.set_phase("addon", rest[:120] or "working")
+    elif word == "open" and re.match(r"^https?://\S+$", rest):
+        out["open"] = rest
+    elif word == "warn":
+        out["warn"].append(rest[:300])
+        if job:
+            job.log(rest, "err")
+
+
+def _last_json(lines):
+    for ln in reversed(lines):
+        ln = ln.strip()
+        if ln.startswith("{") and ln.endswith("}"):
+            try:
+                v = json.loads(ln)
+                if isinstance(v, dict):
+                    return v
+            except ValueError:
+                pass
+    return {}
+
+
+def detect(rec):
+    s = rec["manifest"]["scripts"].get("detect")
+    if not s:
+        return {"found": False}
+    try:
+        rc, lines, _ = run_script(rec, s, timeout=TIMEOUT["detect"])
+    except OSError:
+        return {"found": False}
+    if rc != 0:
+        return {"found": False}
+    info = _last_json(lines)
+    return {"found": True, "version": str(info.get("version") or "")[:30],
+            "url": info.get("url") if re.match(r"^https?://\S+$", str(info.get("url") or "")) else None,
+            "detail": str(info.get("detail") or "")[:200]}
+
+
+_STATUS = {}            # id -> (time, status)
+_STATUS_LOCK = threading.Lock()
+
+
+def status(rec, max_age=8.0):
+    """{"state": running|stopped|error|installed|not-installed, "url", "version", "detail"}"""
+    if not rec.get("installed"):
+        return {"state": "not-installed"}
+    s = rec["manifest"]["scripts"].get("status")
+    if not s:
+        return {"state": "installed", "url": rec.get("open_url")}
+    with _STATUS_LOCK:
+        hit = _STATUS.get(rec["id"])
+        if hit and time.time() - hit[0] < max_age:
+            return hit[1]
+    try:
+        rc, lines, _ = run_script(rec, s, timeout=TIMEOUT["status"])
+        info = _last_json(lines)
+        st = {"state": str(info.get("state") or ("installed" if rc == 0 else "error"))[:20],
+              "url": info.get("url") if re.match(r"^https?://\S+$", str(info.get("url") or "")) else rec.get("open_url"),
+              "version": str(info.get("version") or "")[:30], "detail": str(info.get("detail") or "")[:200]}
+    except Exception as ex:
+        st = {"state": "error", "detail": str(ex)[:200], "url": rec.get("open_url")}
+    with _STATUS_LOCK:
+        _STATUS[rec["id"]] = (time.time(), st)
+    return st
+
+
+def _forget_status(aid):
+    with _STATUS_LOCK:
+        _STATUS.pop(aid, None)
+
+
+# ------------------------------------------------------------------ the operations
+def add(text):
+    """Fetch an addon and register it (nothing is installed yet)."""
+    source = parse_source(text)
+    ensure_dirs()
+    os.makedirs(ADDONDIR, exist_ok=True)
+    tmp = tempfile.mkdtemp(prefix=".add-", dir=ADDONDIR)
+    try:
+        commit = fetch(source, os.path.join(tmp, "repo"))
+        root = os.path.join(tmp, "repo", source.get("subdir") or "")
+        if not os.path.isdir(root):
+            raise AddonError("The repository has no folder %s." % source["subdir"])
+        m = load_manifest(root)
+        with FileLock("addons", timeout=60):
+            addons = _load()
+            old = addons.get(m["id"])
+            if old and old["source"].get("display") != source["display"] and old.get("installed"):
+                raise AddonError("%s is already installed from %s. Uninstall it before adding another copy."
+                                 % (m["name"], old["source"]["display"]))
+            dest = addon_dir(m["id"])
+            os.makedirs(dest, exist_ok=True)
+            shutil.rmtree(os.path.join(dest, "repo"), ignore_errors=True)
+            os.rename(os.path.join(tmp, "repo"), os.path.join(dest, "repo"))
+            rec = dict(old or {}, id=m["id"], source=source, subdir=source.get("subdir") or "",
+                       commit=commit, manifest=m, updated=time.time())
+            rec.setdefault("added", time.time())
+            rec.setdefault("installed", False)
+            rec.setdefault("settings", {})
+            addons[m["id"]] = rec
+            _save(addons)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    rec["detected"] = detect(rec)
+    _update(rec["id"], {"detected": rec["detected"]})
+    _forget_status(rec["id"])
+    return public(rec)
+
+
+def _clean_settings(rec, given):
+    out = {}
+    given = given or {}
+    old = rec.get("settings") or {}
+    for st in rec["manifest"]["settings"]:
+        k = st["key"]
+        if k in given and not (st["type"] == "password" and given[k] in (None, "", "•" * 8)):
+            v = _coerce(st, given[k])
+        elif k in old:
+            v = old[k]
+        else:
+            v = st.get("default")
+        if st.get("required") and v in (None, ""):
+            raise AddonError("%s is required" % st["label"])
+        out[k] = v
+    return out
+
+
+def install(aid, settings=None, job=None):
+    rec = get(aid)
+    m = rec["manifest"]
+    problems = check_requirements(m)
+    if problems:
+        raise AddonError("%s %s." % (m["name"], "; ".join(problems)))
+    rec = _update(aid, {"settings": _clean_settings(rec, settings)})
+    found = detect(rec)
+    adopt = found.get("found") and not rec.get("installed")
+    if job:
+        job.set_phase("addon", ("Linking the %s already on this machine" if adopt else "Installing %s") % m["name"], 0.02)
+        if adopt:
+            job.log("%s is already on this machine%s; linking it."
+                    % (m["name"], " (%s)" % found["detail"] if found.get("detail") else ""))
+    rc, lines, d = run_script(rec, m["scripts"]["install"], job,
+                              {"FORGE_ADDON_ADOPT": "1" if adopt else "0"}, TIMEOUT["install"])
+    if job:
+        job.check()
+    if rc != 0:
+        tail = [l for l in lines if l.strip()][-1:] or ["no output"]
+        raise AddonError("the install script failed (exit %d): %s" % (rc, tail[0][:300]))
+    rec = _update(aid, {"installed": True, "installed_version": m["version"], "installed_at": time.time(),
+                        "adopted": bool(adopt), "open_url": d["open"] or found.get("url") or rec.get("open_url"),
+                        "detected": found})
+    _forget_status(aid)
+    sync_integrations()
+    res = {"id": aid, "name": m["name"], "open_url": rec.get("open_url"), "adopted": bool(adopt),
+           "warnings": d["warn"]}
+    if job:
+        job.finish(res)
+    return res
+
+
+def update(aid, job=None):
+    """Fetch the addon's code again; if it is installed, run its update (or install) script."""
+    rec = get(aid)
+    src = rec["source"]
+    if job:
+        job.set_phase("addon", "Fetching %s" % rec["manifest"]["name"], 0.05)
+    tmp = tempfile.mkdtemp(prefix=".upd-", dir=ADDONDIR)
+    try:
+        commit = fetch(src, os.path.join(tmp, "repo"))
+        m = load_manifest(os.path.join(tmp, "repo", src.get("subdir") or ""))
+        if m["id"] != aid:
+            raise AddonError("the repository now holds a different addon (%s)" % m["id"])
+        with FileLock("addons", timeout=60):
+            dest = addon_dir(aid)
+            shutil.rmtree(os.path.join(dest, "repo.old"), ignore_errors=True)
+            if os.path.isdir(os.path.join(dest, "repo")):
+                os.rename(os.path.join(dest, "repo"), os.path.join(dest, "repo.old"))
+            os.rename(os.path.join(tmp, "repo"), os.path.join(dest, "repo"))
+            shutil.rmtree(os.path.join(dest, "repo.old"), ignore_errors=True)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    old_version = rec["manifest"]["version"]
+    rec = _update(aid, {"manifest": m, "commit": commit, "updated": time.time()})
+    if job:
+        job.log("%s %s -> %s%s" % (m["name"], old_version, m["version"],
+                                   " (%s)" % commit[:10] if commit else ""))
+    res = {"id": aid, "name": m["name"], "version": m["version"], "ran": None}
+    if rec.get("installed"):
+        script = m["scripts"].get("update") or m["scripts"]["install"]
+        res["ran"] = "update" if m["scripts"].get("update") else "install"
+        if job:
+            job.set_phase("addon", "Updating %s" % m["name"], 0.2)
+        rc, lines, d = run_script(rec, script, job, {"FORGE_ADDON_UPDATE": "1", "FORGE_ADDON_ADOPT": "1"},
+                                  TIMEOUT["update"])
+        if rc != 0:
+            tail = [l for l in lines if l.strip()][-1:] or ["no output"]
+            raise AddonError("the update script failed (exit %d): %s" % (rc, tail[0][:300]))
+        rec = _update(aid, {"installed_version": m["version"], "open_url": d["open"] or rec.get("open_url")})
+        res["open_url"] = rec.get("open_url")
+    _forget_status(aid)
+    sync_integrations()
+    if job:
+        job.finish(res)
+    return res
+
+
+def uninstall(aid, keep_data=True, job=None):
+    rec = get(aid)
+    m = rec["manifest"]
+    s = m["scripts"].get("uninstall")
+    if job:
+        job.set_phase("addon", "Uninstalling %s" % m["name"], 0.05)
+    if s:
+        rc, lines, _ = run_script(rec, s, job, {"FORGE_ADDON_KEEP_DATA": "1" if keep_data else "0"},
+                                  TIMEOUT["uninstall"])
+        if rc != 0:
+            tail = [l for l in lines if l.strip()][-1:] or ["no output"]
+            raise AddonError("the uninstall script failed (exit %d): %s" % (rc, tail[0][:300]))
+    elif job:
+        job.log("%s has no uninstall script; the forge only forgets that it is installed." % m["name"])
+    if not keep_data:
+        shutil.rmtree(os.path.join(addon_dir(aid), "data"), ignore_errors=True)
+    _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False})
+    _forget_status(aid)
+    res = {"id": aid, "name": m["name"], "kept_data": bool(keep_data)}
+    if job:
+        job.finish(res)
+    return res
+
+
+def remove(aid, force=False):
+    """Forget an addon and delete its checkout (and data). It must be uninstalled first."""
+    rec = get(aid)
+    if rec.get("installed") and not force:
+        raise AddonError("Uninstall %s first." % rec["manifest"]["name"])
+    with FileLock("addons"):
+        addons = _load()
+        addons.pop(aid, None)
+        _save(addons)
+    shutil.rmtree(addon_dir(aid), ignore_errors=True)
+    _forget_status(aid)
+    return {"ok": True, "id": aid}
+
+
+def action(aid, action_id, job=None):
+    rec = get(aid)
+    a = next((x for x in rec["manifest"]["actions"] if x["id"] == action_id), None)
+    if not a:
+        raise AddonError("%s has no action %s." % (rec["manifest"]["name"], action_id))
+    if not rec.get("installed"):
+        raise AddonError("Install %s first." % rec["manifest"]["name"])
+    if job:
+        job.set_phase("addon", "%s: %s" % (rec["manifest"]["name"], a["label"]), 0.05)
+    rc, lines, d = run_script(rec, a["script"], job, None, TIMEOUT["action"])
+    if rc != 0:
+        tail = [l for l in lines if l.strip()][-1:] or ["no output"]
+        raise AddonError("%s failed (exit %d): %s" % (a["label"], rc, tail[0][:300]))
+    _forget_status(aid)
+    res = {"id": aid, "action": action_id, "open_url": d["open"]}
+    if job:
+        job.finish(res)
+    return res
+
+
+# ------------------------------------------------------------------ views
+def image(aid, rel=None):
+    """(bytes, content type) of the addon's logo, or of an icon its manifest names."""
+    rec = get(aid)
+    m = rec["manifest"]
+    allowed = {m.get("logo")} | {s.get("icon") for s in m["settings"]}
+    allowed.discard(None)
+    allowed.discard("")
+    rel = rel or m.get("logo")
+    if not rel or rel not in allowed:
+        raise AddonError("no such image")
+    with open(os.path.join(root_of(rec), rel), "rb") as fh:
+        data = fh.read(MAX_IMAGE + 1)
+    return data[:MAX_IMAGE], IMAGE_TYPES[os.path.splitext(rel)[1].lower()]
+
+
+def public(rec, with_status=False):
+    m = rec["manifest"]
+    v = rec.get("commit") or str(int(rec.get("updated") or 0))
+    settings = []
+    for st in m["settings"]:
+        cur = (rec.get("settings") or {}).get(st["key"], st.get("default"))
+        s2 = dict(st, value=("•" * 8 if cur else "") if st["type"] == "password" else cur)
+        if st.get("icon"):
+            s2["icon"] = "/api/addons/%s/image?path=%s&v=%s" % (rec["id"], st["icon"], v[:12])
+        settings.append(s2)
+    out = {
+        "id": rec["id"], "name": m["name"], "version": m["version"], "description": m["description"],
+        "author": m["author"], "license": m["license"], "homepage": m["homepage"], "links": m["links"],
+        "logo": "/api/addons/%s/image?v=%s" % (rec["id"], v[:12]) if m.get("logo") else None,
+        "source": rec["source"].get("display"), "commit": rec.get("commit"),
+        "added": rec.get("added"), "updated": rec.get("updated"),
+        "installed": bool(rec.get("installed")), "installed_version": rec.get("installed_version"),
+        "adopted": bool(rec.get("adopted")), "open_url": rec.get("open_url"),
+        "detected": rec.get("detected") or {"found": False},
+        "settings": settings, "actions": [{"id": a["id"], "label": a["label"], "confirm": a["confirm"]}
+                                          for a in m["actions"]],
+        "has": {k: k in m["scripts"] for k in SCRIPTS},
+        "problems": check_requirements(m),
+        "integration": bool(m["integration"]),
+    }
+    out["update_pending"] = bool(out["installed"] and out["installed_version"]
+                                 and out["installed_version"] != m["version"])
+    if with_status:
+        st = status(rec)
+        out["status"] = st
+        if st.get("url"):
+            out["open_url"] = st["url"]
+    return out
+
+
+def list_addons(with_status=True):
+    recs = sorted(_load().values(), key=lambda r: (not r.get("installed"), r["manifest"]["name"].lower()))
+    if not with_status:
+        return [public(r) for r in recs]
+    out = [None] * len(recs)
+
+    def one(i, r):
+        try:
+            out[i] = public(r, with_status=True)
+        except Exception as ex:
+            out[i] = dict(public(r), status={"state": "error", "detail": str(ex)[:200]})
+    threads = [threading.Thread(target=one, args=(i, r), daemon=True) for i, r in enumerate(recs)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(TIMEOUT["status"] + 5)
+    return [o for o in out if o]
+
+
+# ------------------------------------------------------------------ integrations
+def _integration_dirs():
+    dirs = []
+    for d in KNOWN_INTEGRATION_DIRS:
+        full = os.path.expanduser(d)
+        if os.path.isdir(os.path.dirname(full)):       # the app is on this machine
+            dirs.append(full)
+    for rec in _load().values():
+        d = (rec.get("manifest") or {}).get("integration", {}).get("dir")
+        if rec.get("installed") and d:
+            dirs.append(os.path.expanduser(d.replace("$HOME/", "~/", 1)))
+    return sorted(set(dirs))
+
+
+def forge_descriptor():
+    url = forge_url()
+    if not url:
+        return None
+    srv = jload(SERVER_JSON, None) or {}
+    return {"spec": 1, "id": "selkies-forge", "kind": "selkies-forge", "name": "Selkies Forge",
+            "version": VERSION, "url": url, "api": url + "api/", "port": int(srv.get("port") or 0),
+            "public_url": srv.get("tunnel") or None, "logo": FORGE_LOGO, "home": ROOT}
+
+
+def sync_integrations():
+    """Tell every app with a drop-in folder where this forge is. Cheap: only
+    writes when something changed (and touches the file once an hour)."""
+    desc = forge_descriptor()
+    if not desc:
+        return []
+    written = []
+    for d in _integration_dirs():
+        path = os.path.join(d, "selkies-forge.json")
+        try:
+            old = jload(path, None) or {}
+            fresh = dict(desc, updated=old.get("updated"))
+            if old == fresh and time.time() - float(old.get("updated") or 0) < 3600:
+                continue
+            os.makedirs(d, exist_ok=True)
+            fresh["updated"] = int(time.time())
+            tmp = "%s.tmp.%d" % (path, os.getpid())
+            with open(tmp, "w") as fh:
+                json.dump(fresh, fh, indent=2)
+            os.replace(tmp, path)
+            written.append(path)
+        except OSError:
+            pass
+    return written
+__FORGE_FILE_FORGE_ADDONS_PY__
   cat > "$FORGE_APP/forge/backups.py" <<'__FORGE_FILE_FORGE_BACKUPS_PY__'
 """
 Selkies Forge engine - backups
@@ -1764,6 +2674,72 @@ def stream_job(job, work_fn):
     return 0 if done["result"] else (130 if job.cancelled else 1)
 
 
+def cli_addon(a):
+    from . import addons
+    need = {"add": "a repository link", "info": "an addon id", "install": "an addon id",
+            "update": "an addon id", "uninstall": "an addon id", "remove": "an addon id",
+            "action": "an addon id and an action", "status": "an addon id"}
+    if a.verb in need and not a.target or a.verb == "action" and not a.extra:
+        print("E selkies-cli addon %s needs %s" % (a.verb, need[a.verb]))
+        return 2
+    try:
+        if a.verb == "list":
+            rows = addons.list_addons(with_status=True)
+            if a.json:
+                print(json.dumps({"addons": rows}))
+            elif not rows:
+                print("no addons yet. Add one: selkies-cli addon add https://github.com/OWNER/REPO")
+            else:
+                for r in rows:
+                    st = (r.get("status") or {}).get("state") or ("installed" if r["installed"] else "available")
+                    print("%-14s %-22s %-9s %-13s %s" % (r["id"], r["name"][:22], r["version"][:9], st,
+                                                       r.get("open_url") or r["source"]))
+            return 0
+        if a.verb == "add":
+            r = addons.add(a.target)
+            if a.json:
+                print(json.dumps(r))
+            else:
+                print("added %s %s (%s)" % (r["name"], r["version"], r["id"]))
+                if r["detected"].get("found"):
+                    print("it is already on this machine; `install` links it")
+                for p_ in r["problems"]:
+                    print("! %s" % p_)
+                print("install it: selkies-cli addon install %s" % r["id"])
+            return 0
+        if a.verb in ("info", "status"):
+            r = addons.public(addons.get(a.target), with_status=True)
+            print(json.dumps(r if a.verb == "info" else r.get("status"), indent=2))
+            return 0
+        if a.verb == "remove":
+            print(json.dumps(addons.remove(a.target, force=a.force)))
+            return 0
+        if a.verb == "sync":
+            print(json.dumps({"written": addons.sync_integrations()}))
+            return 0
+    except addons.AddonError as ex:
+        print("E %s" % ex)
+        return 1
+    try:
+        rec = addons.get(a.target)
+    except addons.AddonError as ex:
+        print("E %s" % ex)
+        return 1
+    name = rec["manifest"]["name"]
+    if a.verb == "install":
+        settings = dict(kv.split("=", 1) for kv in a.set if "=" in kv)
+        job = job_put(Job("addon", a.target, "Install %s" % name))
+        return stream_job(job, lambda: addons.install(a.target, settings=settings, job=job))
+    if a.verb == "update":
+        job = job_put(Job("addon", a.target, "Update %s" % name))
+        return stream_job(job, lambda: addons.update(a.target, job=job))
+    if a.verb == "uninstall":
+        job = job_put(Job("addon", a.target, "Uninstall %s" % name))
+        return stream_job(job, lambda: addons.uninstall(a.target, keep_data=not a.purge, job=job))
+    job = job_put(Job("addon", a.target, "%s: %s" % (name, a.extra)))
+    return stream_job(job, lambda: addons.action(a.target, a.extra, job=job))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="forge-engine", description="Selkies Forge engine")
     ap.add_argument("--version", action="version", version=VERSION)
@@ -1912,6 +2888,17 @@ def main(argv=None):
     p = sub.add_parser("logs")
     p.add_argument("name")
     p.add_argument("--tail", type=int, default=200)
+
+    p = sub.add_parser("addon", help="addons: apps that install beside the forge (docs/addons.md)")
+    p.add_argument("verb", choices=["list", "add", "info", "install", "update", "uninstall",
+                                    "remove", "action", "status", "sync"])
+    p.add_argument("target", nargs="?", help="a repository link (add) or an addon id")
+    p.add_argument("extra", nargs="?", help="the action id (action)")
+    p.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
+                   help="a setting for install, e.g. --set PORT=4310")
+    p.add_argument("--purge", action="store_true", help="uninstall: also delete its data")
+    p.add_argument("--force", action="store_true", help="remove: even if it is installed")
+    p.add_argument("--json", action="store_true")
 
     a = ap.parse_args(argv)
     ensure_dirs()
@@ -2136,6 +3123,8 @@ def main(argv=None):
     if a.cmd == "logs":
         print(container_logs(a.name, a.tail))
         return 0
+    if a.cmd == "addon":
+        return cli_addon(a)
     return 1
 __FORGE_FILE_FORGE_CLI_PY__
   cat > "$FORGE_APP/forge/doctor.py" <<'__FORGE_FILE_FORGE_DOCTOR_PY__'
@@ -6318,13 +7307,14 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
     logs/           launch jobs, tunnels, the web UI, updates
     builds/         Dockerfiles and forge-layer build contexts
     backups/        desktop home-folder backups (tar.gz + a .json note each)
+    addons/         one folder per addon: repo/ (its checkout) and data/ (kept across updates)
     repo/           a git clone of the project, used for updates
 """
 
 import os
 import re
 
-VERSION = "1.9.0"
+VERSION = "1.10.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -6337,6 +7327,7 @@ LOGDIR = os.path.join(ROOT, "logs")
 JOBLOGDIR = os.path.join(LOGDIR, "jobs")
 BUILDDIR = os.path.join(ROOT, "builds")
 BACKUPDIR = os.path.join(ROOT, "backups")
+ADDONDIR = os.path.join(ROOT, "addons")
 JOBSTATEDIR = os.path.join(STATE, "jobs")
 LEDGER_JSON = os.path.join(STATE, "ledger.json")
 
@@ -6351,6 +7342,7 @@ LAST_STOP_JSON = os.path.join(STATE, "last-stop.json")
 STOP_REQUEST_JSON = os.path.join(STATE, "stop-request.json")
 BOOT_JSON = os.path.join(STATE, "boot.json")
 UPDATE_JSON = os.path.join(STATE, "update.json")
+ADDONS_JSON = os.path.join(STATE, "addons.json")
 
 # Docker naming: every container, image and volume the forge makes is tagged.
 LABEL = "io.selkiesforge"
@@ -6805,7 +7797,7 @@ import uuid
 
 from . import gpu
 from .host import tz_name
-from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS, VERSION
+from .paths import CPREFIX, KASM_HTTPS, LABEL, ROOT, SELKIES_HTTP, SELKIES_HTTPS, VERSION
 from .ports import alloc_ports, release_port_reservation
 from .util import clamp, run, slug
 
@@ -6893,6 +7885,9 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
             "--label", "%s.de=%s" % (LABEL, entry["de_label"]),
             "--label", "%s.profile=%s" % (LABEL, prof),
             "--label", "%s.version=%s" % (LABEL, VERSION),
+            # whose desktop it is: a second forge on this machine (another
+            # FORGE_HOME) must never heal, idle-stop or adopt it
+            "--label", "%s.home=%s" % (LABEL, ROOT),
             "--label", "%s.disk=%d" % (LABEL, int(plan["disk_mb"])),
             # Restart after a crash while the forge is watching (see watchdog.py).
             "--label", "%s.heal=%s" % (LABEL, "off" if opts.get("heal") is False else "on"),
@@ -7131,7 +8126,7 @@ import urllib.parse
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import catalog, events, scheduler, space, updates
+from . import addons, catalog, events, scheduler, space, updates
 from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
@@ -7296,7 +8291,7 @@ class Handler(BaseHTTPRequestHandler):
         route = self._route()
         if route in ("/", "/index.html"):
             return self._static("index.html")
-        if route in ("/app.css", "/app.js", "/term.js", "/logos.js", "/brands.js",
+        if route in ("/app.css", "/app.js", "/addons.js", "/term.js", "/logos.js", "/brands.js",
                      "/favicon.ico"):
             return self._static(route.lstrip("/"))
         if not route.startswith("/api/"):
@@ -7322,6 +8317,22 @@ class Handler(BaseHTTPRequestHandler):
             return self._err(500, ex)
 
     static_cache = {}
+
+    def _image(self, data, ctype):
+        """An addon's logo or icon: never a page, and an SVG cannot run anything."""
+        extra = {"Cache-Control": "public, max-age=86400",
+                 "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox"}
+        self.send_response(200)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("X-Content-Type-Options", "nosniff")
+        for k, v in extra.items():
+            self.send_header(k, v)
+        self.end_headers()
+        try:
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def _static(self, name):
         data = self.static_cache.get(name)
@@ -7418,6 +8429,21 @@ class Handler(BaseHTTPRequestHandler):
                                                             limit=min(500, _int_or_none(q.get("limit")) or 100))})
         if route == "/api/space":
             return self._send(200, space.report())
+        if route == "/api/addons":
+            return self._send(200, {"addons": addons.list_addons(), "spec": addons.SPEC})
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/image$", route)
+        if m:
+            try:
+                data, ctype = addons.image(m.group(1), self._query().get("path"))
+            except (addons.AddonError, OSError) as ex:
+                return self._err(404, ex)
+            return self._image(data, ctype)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})$", route)
+        if m:
+            try:
+                return self._send(200, addons.public(addons.get(m.group(1)), with_status=True))
+            except addons.AddonError as ex:
+                return self._err(404, ex)
         if route == "/api/scheduler":
             return self._send(200, {"slots": scheduler.status(),
                                     "jobs": [j.snapshot() for j in jobs_running()]})
@@ -7461,6 +8487,39 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, space.clean(everything=bool(body.get("all")),
                                                volumes=bool(body.get("volumes")),
                                                dry_run=bool(body.get("dry_run"))))
+        if route == "/api/addons/add":
+            try:
+                return self._send(200, {"addon": addons.add(body.get("source") or "")})
+            except addons.AddonError as ex:
+                return self._err(400, ex)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/(install|update|uninstall|remove|action)$", route)
+        if m:
+            aid, what = m.group(1), m.group(2)
+            try:
+                rec = addons.get(aid)
+            except addons.AddonError as ex:
+                return self._err(404, ex)
+            name = rec["manifest"]["name"]
+            if what == "remove":
+                try:
+                    return self._send(200, addons.remove(aid))
+                except addons.AddonError as ex:
+                    return self._err(400, ex)
+            if what == "install":
+                job = job_put(Job("addon", aid, "Install %s" % name))
+                return self._send(200, {"job": _run_job(job, addons.install, aid,
+                                                        settings=body.get("settings") or {}, job=job)})
+            if what == "update":
+                job = job_put(Job("addon", aid, "Update %s" % name))
+                return self._send(200, {"job": _run_job(job, addons.update, aid, job=job)})
+            if what == "uninstall":
+                job = job_put(Job("addon", aid, "Uninstall %s" % name))
+                return self._send(200, {"job": _run_job(job, addons.uninstall, aid,
+                                                        keep_data=body.get("keep_data", True) is not False,
+                                                        job=job)})
+            act = str(body.get("action") or "")
+            job = job_put(Job("addon", aid, "%s: %s" % (name, act)))
+            return self._send(200, {"job": _run_job(job, addons.action, aid, act, job=job)})
         if route == "/api/update/check":
             check_update(install=True)
             return self._send(200, update_report())
@@ -7616,17 +8675,21 @@ class Handler(BaseHTTPRequestHandler):
             return
 
 
-def _run_job(job, fn, *args, **kwargs):
-    """Run fn in a thread as `job`; failures land in the job, not the request."""
+def _run_job(the_job, fn, *args, **kwargs):
+    """Run fn in a thread as `the_job`; failures land in the job, not the request.
+
+    (The first parameter is not called `job`: the work functions take job=...
+    themselves, and a clash made every backup, clone and restore from the web
+    UI fail with "got multiple values for argument 'job'".)"""
     def work():
         try:
             fn(*args, **kwargs)
         except Exception as ex:
-            if job.status == "running":
-                job.fail(str(ex))
-    job.thread = threading.Thread(target=work, daemon=True)
-    job.thread.start()
-    return job.snapshot()
+            if the_job.status == "running":
+                the_job.fail(str(ex))
+    the_job.thread = threading.Thread(target=work, daemon=True)
+    the_job.thread.start()
+    return the_job.snapshot()
 
 
 def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
@@ -7658,7 +8721,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     WATCHDOG.start()
 
     updates.SERVE_PAYLOAD = installed_payload()
-    for name in ("index.html", "app.css", "app.js", "term.js", "logos.js", "brands.js"):
+    for name in ("index.html", "app.css", "app.js", "addons.js", "term.js", "logos.js", "brands.js"):
         try:
             with open(os.path.join(WEBDIR, name), "rb") as fh:
                 Handler.static_cache[name] = fh.read()
@@ -7693,6 +8756,10 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
                 life["heartbeat"] = time.time()
                 life["desktops_running"] = running_desktop_names()
                 jsave(LIFE_JSON, life)
+            except Exception:
+                pass
+            try:
+                addons.sync_integrations()   # apps like Burrow learn where this forge is
             except Exception:
                 pass
     threading.Thread(target=heartbeat, daemon=True).start()
@@ -7732,6 +8799,10 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     if not quiet:
         print(json.dumps(info))
         sys.stdout.flush()
+    try:
+        addons.sync_integrations()
+    except Exception:
+        pass
 
     watchdog = threading.Thread(target=_tunnel_watchdog, daemon=True)
     watchdog.start()
@@ -9089,7 +10160,7 @@ import time
 from . import events, ledger
 from .health import container_logs
 from .jobs import mark_job_state, read_job_states
-from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, SELKIES_WS
+from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, ROOT, SELKIES_WS
 from .store import reg_delete, reg_load
 from .util import FileLock, human_mb, jload, jsave, run
 
@@ -9167,7 +10238,7 @@ def session_health(name):
 def _snapshot():
     rc, out, _ = run(["docker", "ps", "-a", "--filter", "label=%s.entry" % LABEL,
                       "--format", "{{.Names}}\t{{.State}}\t{{.Label \"%s.heal\"}}"
-                      "\t{{.Label \"%s.profile\"}}" % (LABEL, LABEL)],
+                      "\t{{.Label \"%s.profile\"}}\t{{.Label \"%s.home\"}}" % (LABEL, LABEL, LABEL)],
                      timeout=30)
     if rc != 0:
         return None
@@ -9176,8 +10247,20 @@ def _snapshot():
         parts = line.split("\t")
         if len(parts) >= 2 and parts[0]:
             state[parts[0]] = {"state": parts[1], "heal": (parts[2] if len(parts) > 2 else ""),
-                               "profile": (parts[3] if len(parts) > 3 else "") or "selkies"}
+                               "profile": (parts[3] if len(parts) > 3 else "") or "selkies",
+                               "home": (parts[4] if len(parts) > 4 else "")}
     return state
+
+
+def is_mine(name, info, reg):
+    """Is this desktop this forge's? Desktops carry the FORGE_HOME that made
+    them; older ones without that label count when our registry knows them.
+    A second forge on the same machine (or a test copy) must leave the other's
+    desktops alone: it cannot see their deliberate stops, so to it every stop
+    looks like a crash, and "healing" it would start them again."""
+    if info.get("home"):
+        return os.path.realpath(info["home"]) == os.path.realpath(ROOT)
+    return name in reg
 
 
 def _inspect_state(name):
@@ -9224,12 +10307,14 @@ class Watchdog(object):
             return {"docker": False}
         report = {"crashed": [], "healed": [], "rescue": [], "frozen": [], "idle_stopped": [],
                   "pressure": False, "recovered": []}
+        everything = set(cur)
+        reg = reg_load()
+        cur = {n: i for n, i in cur.items() if is_mine(n, i, reg)}
         if self.prev is not None:
             for name, info in cur.items():
                 was = self.prev.get(name)
                 if was and was["state"] == "running" and info["state"] in ("exited", "dead"):
                     self._on_stop(name, info, report)
-        reg = reg_load()
         for name, info in cur.items():
             if info["state"] == "running":
                 was_running = bool(self.prev and (self.prev.get(name) or {}).get("state") == "running")
@@ -9246,7 +10331,7 @@ class Watchdog(object):
             report["recovered"] = recover_interrupted()
         if now - self._last_clean > 600:
             self._last_clean = now
-            reconcile(set(cur))
+            reconcile(everything)
         return report
 
     def _on_stop(self, name, info, report):
@@ -9885,8 +10970,296 @@ def forge_status():
             "running": sum(1 for i in items if i["running"]),
             "stopped": sum(1 for i in items if not i["running"])}
 __FORGE_FILE_FORGE_WEBUI_PY__
+  cat > "$FORGE_APP/web/addons.js" <<'__FORGE_FILE_WEB_ADDONS_JS__'
+/* Selkies Forge - the Addons view. Uses app.js's helpers (window.Forge).
+   An addon is a repository with a forge-addon.json; see docs/addons.md. */
+(function () {
+  "use strict";
+  var F = window.Forge;
+  if (!F) return;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var h = F.h;
+  var EXAMPLE = "https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge";
+  var A = { list: null, timer: null, jobs: {}, busy: {}, es: null };
+
+  /* -------------------------------------------------------------- data */
+  function load() {
+    return F.api("/api/addons").then(function (r) {
+      A.list = r.addons || [];
+      $("#tagAddons").textContent = A.list.length ? A.list.filter(function (a) { return a.installed; }).length + "/" + A.list.length : "0";
+      if (F.view() === "addons") render();
+    }).catch(function (e) {
+      if (F.view() === "addons" && !A.list) $("#addonList").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
+    });
+  }
+
+  function schedule() {
+    clearTimeout(A.timer);
+    A.timer = setTimeout(function () { load().then(schedule); }, F.view() === "addons" ? 10000 : 60000);
+  }
+
+  /* -------------------------------------------------------------- render */
+  function statePill(a) {
+    var st = a.status || {};
+    if (A.busy[a.id]) return '<span class="pill busy"><i></i>' + h(A.busy[a.id]) + "</span>";
+    if (!a.installed) return a.detected && a.detected.found
+      ? '<span class="pill found"><i></i>on this machine</span>' : '<span class="pill"><i></i>not installed</span>';
+    if (st.state === "running") return '<span class="pill up"><i></i>running</span>';
+    if (st.state === "stopped") return '<span class="pill bad"><i></i>stopped</span>';
+    if (st.state === "error") return '<span class="pill bad" title="' + h(st.detail || "") + '"><i></i>error</span>';
+    return '<span class="pill up"><i></i>installed</span>';
+  }
+
+  function card(a) {
+    var st = a.status || {};
+    var busy = !!A.busy[a.id];
+    var found = !a.installed && a.detected && a.detected.found;
+    var main = "";
+    if (!a.installed) {
+      main = '<button class="btn primary" data-ad="install" data-id="' + h(a.id) + '"' + (busy || a.problems.length ? " disabled" : "") + ">" +
+        (found ? F.I.plug + " Link it" : F.I.save + " Install") + "</button>";
+    } else if (a.open_url) {
+      main = '<a class="btn primary" href="' + h(a.open_url) + '" target="_blank" rel="noopener">' + F.I.open + " Open</a>";
+    }
+    var menu = [];
+    if (a.installed) {
+      a.actions.forEach(function (x) {
+        menu.push('<button data-ad="action" data-id="' + h(a.id) + '" data-action="' + h(x.id) + '" data-confirm="' + h(x.confirm || "") + '">' + F.I.restart + h(x.label) + "</button>");
+      });
+      if (a.settings.length) menu.push('<button data-ad="install" data-id="' + h(a.id) + '">' + F.I.tune + "Settings and reinstall</button>");
+    }
+    menu.push('<button data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + (a.installed ? "Update" : "Fetch again") + "</button>");
+    (a.links || []).forEach(function (l) {
+      menu.push('<a href="' + h(l.url) + '" target="_blank" rel="noopener">' + F.I.open + h(l.label) + "</a>");
+    });
+    if (a.homepage) menu.push('<a href="' + h(a.homepage) + '" target="_blank" rel="noopener">' + F.I.globe + "Homepage</a>");
+    menu.push("<hr>");
+    if (a.installed) menu.push('<button class="danger" data-ad="uninstall" data-id="' + h(a.id) + '">' + F.I.unplug + "Uninstall</button>");
+    else menu.push('<button class="danger" data-ad="remove" data-id="' + h(a.id) + '">' + F.I.trash + "Remove from the list</button>");
+
+    return '<article class="ad' + (a.installed ? " on" : "") + (busy ? " busy" : "") + '" data-id="' + h(a.id) + '">' +
+      '<div class="ad-head">' +
+        '<div class="ad-logo">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="" loading="lazy">' : "<span>" + h(a.name.charAt(0)) + "</span>") + "</div>" +
+        '<div class="ad-t"><div class="ad-name">' + h(a.name) + ' <span class="ad-ver">v' + h(a.installed && a.installed_version ? a.installed_version : a.version) + "</span></div>" +
+          '<div class="ad-by">' + (a.author ? "by " + h(a.author) + " · " : "") + '<span class="mono" title="' + h(a.source) + '">' + h(shortSource(a.source)) + "</span></div></div>" +
+        statePill(a) +
+      "</div>" +
+      '<p class="ad-desc">' + h(a.description || "No description.") + "</p>" +
+      (a.problems.length ? '<div class="warnbox bad ad-note">This machine ' + h(a.problems.join("; ")) + ".</div>" : "") +
+      (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
+        ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
+      (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +
+      (a.installed && st.detail && st.state !== "error" ? '<div class="ad-status mono">' + h(st.detail) + "</div>" : "") +
+      '<div class="ad-foot">' + main +
+        (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
+        '<span class="spacer"></span>' +
+        '<div class="menu-wrap"><button class="iconbtn" data-menu title="More" aria-label="More">' + F.I.more + "</button>" +
+        '<div class="menu" hidden>' + menu.join("") + "</div></div>" +
+      "</div></article>";
+  }
+
+  function shortSource(s) {
+    return String(s || "").replace(/^https?:\/\/(www\.)?/, "").replace(/^github\.com\//, "").replace(/\/tree\/[^/]+\//, " / ");
+  }
+
+  function render() {
+    var box = $("#addonList");
+    if (!A.list) return;
+    if (!A.list.length) {
+      box.innerHTML = '<div class="panel empty ad-empty"><div class="big">✚</div><h3>No addons yet</h3>' +
+        '<p class="sub">Paste a repository link above. Not sure where to start? The example addon is a tiny web app that shows your desktops; ' +
+        'it installs in a second and uninstalls cleanly.</p>' +
+        '<button class="btn primary" type="button" data-ad="example">Add the example addon</button></div>';
+      return;
+    }
+    // keep an open menu open across the refresh
+    var open = document.querySelector("#addonList .menu:not([hidden])");
+    if (open) return;
+    box.innerHTML = A.list.map(card).join("");
+  }
+
+  /* -------------------------------------------------------------- add */
+  function addSource(src) {
+    var btn = $("#addonAdd"), msg = $("#addonAddMsg");
+    src = (src || "").trim();
+    if (!src) { $("#addonSrc").focus(); return; }
+    btn.disabled = true;
+    btn.textContent = "Fetching…";
+    msg.innerHTML = "";
+    return F.api("/api/addons/add", { body: { source: src } }).then(function (r) {
+      var a = r.addon;
+      $("#addonSrc").value = "";
+      F.toast("Added " + a.name, a.detected.found ? "It is already on this machine: Link it to bring it under the forge." : "Nothing is installed until you press Install.", "ok");
+      return load();
+    }).catch(function (e) {
+      msg.innerHTML = '<div class="warnbox bad add-err">' + h(e.message) + "</div>";
+    }).then(function () { btn.disabled = false; btn.textContent = "Add"; });
+  }
+
+  /* -------------------------------------------------------------- install */
+  function settingField(s) {
+    var id = "as_" + s.key, v = s.value == null ? "" : s.value;
+    var icon = s.icon ? '<img class="set-ico" src="' + h(s.icon) + '" alt="">' : "";
+    var help = s.help ? "<small>" + h(s.help) + "</small>" : "";
+    if (s.type === "bool") {
+      return '<label class="toggle ad-set">' + '<input type="checkbox" id="' + id + '" data-key="' + h(s.key) + '"' + (v ? " checked" : "") + "><i></i>" +
+        icon + "<span>" + h(s.label) + help + "</span></label>";
+    }
+    var input;
+    if (s.type === "select") {
+      input = '<select id="' + id + '" data-key="' + h(s.key) + '">' + s.options.map(function (o) {
+        return '<option value="' + h(o.value) + '"' + (String(v) === o.value ? " selected" : "") + ">" + h(o.label) + "</option>";
+      }).join("") + "</select>";
+    } else {
+      input = '<input id="' + id + '" data-key="' + h(s.key) + '" type="' + (s.type === "password" ? "password" : s.type === "number" ? "number" : "text") + '"' +
+        (s.min != null ? ' min="' + s.min + '"' : "") + (s.max != null ? ' max="' + s.max + '"' : "") +
+        ' value="' + h(v) + '"' + (s.type === "password" && v ? ' placeholder="unchanged"' : "") + ">";
+    }
+    return '<label class="field ad-set">' + "<span>" + icon + h(s.label) + (s.required ? " *" : "") + "</span>" + input + help + "</label>";
+  }
+
+  function installForm(a) {
+    var found = !a.installed && a.detected && a.detected.found;
+    var verb = a.installed ? "Reinstall" : found ? "Link" : "Install";
+    var html = '<div class="ad-modal-head"><div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>" +
+      "<div><b>" + h(a.name) + '</b> <span class="ad-ver">v' + h(a.version) + "</span><p>" + h(a.description) + "</p></div></div>" +
+      (found ? '<div class="ad-note found">' + F.I.eye + "<span>" + h(a.name) + " is already on this machine. Linking keeps its data and settings and updates its code to this version.</span></div>" : "") +
+      (a.settings.length ? '<div class="ad-sets">' + a.settings.map(settingField).join("") + "</div>" : "") +
+      '<div class="warnbox ad-trust">It runs <span class="mono">' + h(shortSource(a.source)) + "</span>'s install script as you on this machine.</div>" +
+      '<div class="row end"><button class="btn ghost" type="button" id="adCancel">Cancel</button>' +
+      '<button class="btn primary" type="button" id="adGo">' + h(verb) + "</button></div>";
+    F.openModal(verb + " " + a.name, html);
+    $("#adCancel").onclick = F.closeModal;
+    $("#adGo").onclick = function () {
+      var settings = {};
+      Array.prototype.forEach.call(document.querySelectorAll("#modalBody [data-key]"), function (el) {
+        settings[el.dataset.key] = el.type === "checkbox" ? el.checked : el.value;
+      });
+      runJob(a, "install", { settings: settings }, verb === "Link" ? "Linking " + a.name : "Installing " + a.name);
+    };
+  }
+
+  /* -------------------------------------------------------------- jobs */
+  function runJob(a, what, body, title) {
+    A.busy[a.id] = title;
+    render();
+    F.api("/api/addons/" + encodeURIComponent(a.id) + "/" + what, { body: body || {} }).then(function (r) {
+      watchJob(a, r.job, title);
+    }).catch(function (e) {
+      delete A.busy[a.id];
+      F.toast(title + " failed", e.message, "bad");
+      F.closeModal();
+      load();
+    });
+  }
+
+  function watchJob(a, job, title) {
+    F.openModal(title, '<div class="ad-run">' +
+      '<div class="progress-wrap"><span class="what" id="adWhat">starting</span><div class="progress"><i id="adBar"></i></div>' +
+      '<span class="pct" id="adPct">0%</span><button class="btn sm ghost" id="adStop" type="button">Cancel</button></div>' +
+      '<div class="term-wrap"><div class="term-head"><span class="lights"><i></i><i></i><i></i></span><span>' + h(a.name) + ' · live output</span></div>' +
+      '<pre class="term" id="adTerm"></pre></div><div id="adResult"></div></div>');
+    var term = $("#adTerm");
+    function line(text, cls) {
+      if (!term) return;
+      var atEnd = term.scrollTop + term.clientHeight >= term.scrollHeight - 8;
+      var span = document.createElement("span");
+      if (cls) span.className = cls;
+      span.textContent = text + "\n";
+      term.appendChild(span);
+      while (term.childNodes.length > 1500) term.removeChild(term.firstChild);
+      if (atEnd) term.scrollTop = term.scrollHeight;
+    }
+    function prog(p, label) {
+      var pct = Math.round((p || 0) * 100);
+      if ($("#adBar")) $("#adBar").style.width = pct + "%";
+      if ($("#adPct")) $("#adPct").textContent = pct + "%";
+      if (label && $("#adWhat")) $("#adWhat").textContent = label;
+    }
+    $("#adStop").onclick = function () {
+      F.api("/api/job/" + job.id + "/cancel", { body: {} }).then(function () { line("cancelling…", "e"); });
+    };
+    function finish(ok, data) {
+      delete A.busy[a.id];
+      if (A.es) { A.es.close(); A.es = null; }
+      var stop = $("#adStop");
+      if (stop) stop.remove();
+      var res = $("#adResult");
+      if (!res) return load();
+      if (ok) {
+        prog(1, "done");
+        res.innerHTML = '<div class="ad-done">' + F.I.plug + "<div><b>" + h(a.name) + (data && data.adopted ? " is linked." : " is ready.") + "</b>" +
+          ((data && data.warnings && data.warnings.length) ? "<small>" + h(data.warnings.join(" · ")) + "</small>" : "") + "</div>" +
+          '<span class="spacer"></span>' + (data && data.open_url ? '<a class="btn primary" href="' + h(data.open_url) + '" target="_blank" rel="noopener">' + F.I.open + " Open " + h(a.name) + "</a>" : "") + "</div>";
+      } else {
+        res.innerHTML = '<div class="warnbox bad">' + h((data && data.message) || "It did not finish.") + "</div>";
+      }
+      load();
+    }
+    A.es = F.sse("/api/job/" + job.id + "/events", {
+      snapshot: function (s) { prog(s.progress, s.label); },
+      log: function (d) { line(d.line, d.stream === "err" ? "e" : ""); },
+      phase: function (d) { prog(d.progress, d.label); line("▸ " + d.label, "i"); },
+      progress: function (d) { prog(d.progress); },
+      done: function (d) { finish(true, d); },
+      error: function (d) { if (d && d.message) { line(d.message, "e"); finish(false, d); } },
+      final: function (s) { if (s.status === "done") finish(true, s.result); else if (s.status !== "running") finish(false, s.error); }
+    });
+  }
+
+  function confirmBox(title, text, okLabel, extra, cb) {
+    F.openModal(title, "<p class=\"sub\" style=\"margin:0 0 14px\">" + text + "</p>" + (extra || "") +
+      '<div class="row end"><button class="btn ghost" type="button" id="cfNo">Cancel</button><button class="btn danger" type="button" id="cfYes">' + h(okLabel) + "</button></div>");
+    $("#cfNo").onclick = F.closeModal;
+    $("#cfYes").onclick = cb;
+  }
+
+  /* -------------------------------------------------------------- events */
+  function byId(id) { return (A.list || []).filter(function (a) { return a.id === id; })[0]; }
+
+  document.addEventListener("click", function (ev) {
+    var t = ev.target.closest && ev.target.closest("[data-ad]");
+    if (!t) return;
+    var what = t.dataset.ad;
+    if (what === "example") { addSource(EXAMPLE); return; }
+    var a = byId(t.dataset.id);
+    if (!a) return;
+    var menu = t.closest(".menu");
+    if (menu) menu.hidden = true;
+    if (what === "install") installForm(a);
+    else if (what === "update") runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name);
+    else if (what === "action") {
+      var go = function () { runJob(a, "action", { action: t.dataset.action }, a.name + ": " + t.textContent.trim()); };
+      if (t.dataset.confirm) confirmBox(a.name, h(t.dataset.confirm), t.textContent.trim(), "", go); else go();
+    } else if (what === "uninstall") {
+      confirmBox("Uninstall " + a.name + "?", "Its uninstall script runs and it stops. It stays in the list, so you can install it again.", "Uninstall",
+        '<label class="toggle" style="margin-bottom:14px"><input type="checkbox" id="cfPurge"><i></i><span>Also delete its data<small>Logins, settings and anything else it kept. Cannot be undone.</small></span></label>',
+        function () { runJob(a, "uninstall", { keep_data: !$("#cfPurge").checked }, "Uninstalling " + a.name); });
+    } else if (what === "remove") {
+      F.api("/api/addons/" + encodeURIComponent(a.id) + "/remove", { body: {} }).then(function () {
+        F.toast("Removed " + a.name, "", "ok"); load();
+      }).catch(function (e) { F.toast("Could not remove it", e.message, "bad"); });
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    $("#addonForm").addEventListener("submit", function (ev) { ev.preventDefault(); addSource($("#addonSrc").value); });
+    $("#addonExample").addEventListener("click", function () { $("#addonSrc").value = EXAMPLE; addSource(EXAMPLE); });
+    load().then(schedule);
+  });
+
+  window.ForgeAddons = {
+    show: function () { render(); load(); schedule(); }
+  };
+})();
+__FORGE_FILE_WEB_ADDONS_JS__
   cat > "$FORGE_APP/web/app.css" <<'__FORGE_FILE_WEB_APP_CSS__'
-/* Selkies Forge - dark glass, blue tint, cheap to paint. */
+/* Selkies Forge - dark glass, blue tint, cheap to paint.
+
+   Every colour is a variable on :root. Themes (html[data-theme=...], at the
+   end of this file) redefine the variables, plus a few touches of their own.
+   --ink is the colour of overlays (hover tints, hairlines on dark glass):
+   white on dark themes, near-black on light ones. */
 
 :root {
   --bg: #060a12;
@@ -9913,6 +11286,31 @@ __FORGE_FILE_FORGE_WEBUI_PY__
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ink: 255, 255, 255;
+  --acc-rgb: 90, 166, 255;
+  --acc2-rgb: 139, 125, 255;
+  --on-acc: #061020;
+  --txt-hi: #ffffff;
+  --ok-txt: #9bf0cd;
+  --bad-txt: #ffb0bb;
+  --warn-txt: #ffe0ab;
+  --acc-txt: var(--acc-txt);
+  --soft-txt: var(--soft-txt);
+  --field: var(--field);
+  --field-2: var(--field-2);
+  --surface: var(--surface);
+  --term-bg: var(--term-bg);
+  --term-head: var(--term-head);
+  --term-txt: var(--term-txt);
+  --scrim: var(--scrim);
+  --lite-solid: #0b1220;
+  --primary: linear-gradient(135deg, var(--acc), var(--acc-2));
+  --primary-sh: 0 8px 26px rgba(90, 166, 255, 0.3);
+  --bg-paint:
+    radial-gradient(1100px 620px at 12% -8%, rgba(60, 120, 255, 0.20), transparent 60%),
+    radial-gradient(900px 560px at 88% 4%, rgba(130, 110, 255, 0.16), transparent 62%),
+    radial-gradient(1200px 800px at 50% 110%, rgba(40, 90, 190, 0.14), transparent 60%),
+    linear-gradient(180deg, #070c16 0%, #060a12 60%, #05080f 100%);
 }
 
 * { box-sizing: border-box; }
@@ -9936,11 +11334,7 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(1100px 620px at 12% -8%, rgba(60, 120, 255, 0.20), transparent 60%),
-    radial-gradient(900px 560px at 88% 4%, rgba(130, 110, 255, 0.16), transparent 62%),
-    radial-gradient(1200px 800px at 50% 110%, rgba(40, 90, 190, 0.14), transparent 60%),
-    linear-gradient(180deg, #070c16 0%, #060a12 60%, #05080f 100%);
+  background: var(--bg-paint);
 }
 
 /* ------------------------------------------------------------------ shell */
@@ -9982,7 +11376,7 @@ body {
   background: linear-gradient(135deg, var(--acc), var(--acc-2));
   display: grid;
   place-items: center;
-  box-shadow: 0 0 18px rgba(90, 166, 255, 0.4);
+  box-shadow: 0 0 18px rgba(var(--acc-rgb), 0.4);
   font-size: 15px;
 }
 
@@ -10000,7 +11394,7 @@ body {
   padding: 0 12px 0 38px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(10, 18, 34, 0.7);
+  background: var(--field);
   color: var(--txt);
   font: inherit;
   outline: none;
@@ -10040,7 +11434,7 @@ body {
 .bar {
   height: 4px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--ink), 0.08);
   overflow: hidden;
 }
 
@@ -10085,12 +11479,12 @@ body {
   transition: background 0.16s var(--ease), color 0.16s var(--ease);
 }
 
-.rail button:hover { background: rgba(255, 255, 255, 0.045); color: var(--txt); }
+.rail button:hover { background: rgba(var(--ink), 0.045); color: var(--txt); }
 
 .rail button.on {
-  color: #fff;
-  background: linear-gradient(135deg, rgba(90, 166, 255, 0.22), rgba(139, 125, 255, 0.14));
-  border-color: rgba(90, 166, 255, 0.34);
+  color: var(--txt-hi);
+  background: linear-gradient(135deg, rgba(var(--acc-rgb), 0.22), rgba(var(--acc2-rgb), 0.14));
+  border-color: rgba(var(--acc-rgb), 0.34);
 }
 
 .rail .ico { width: 18px; text-align: center; font-size: 15px; }
@@ -10099,7 +11493,7 @@ body {
   font-size: 11px;
   padding: 1px 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--ink), 0.08);
   color: var(--dim);
   font-variant-numeric: tabular-nums;
 }
@@ -10145,7 +11539,7 @@ body {
   padding: 5px 11px;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(var(--ink), 0.035);
   color: var(--dim);
   font-size: 12px;
   font-weight: 550;
@@ -10155,7 +11549,7 @@ body {
 }
 
 .chip:hover { color: var(--txt); border-color: var(--line-2); }
-.chip.on { background: var(--acc-soft); border-color: rgba(90, 166, 255, 0.45); color: #dbeaff; }
+.chip.on { background: var(--acc-soft); border-color: rgba(var(--acc-rgb), 0.45); color: var(--acc-txt); }
 .chip .n { color: var(--dim-2); font-variant-numeric: tabular-nums; font-size: 11px; }
 .chip.static { cursor: default; }
 
@@ -10187,7 +11581,7 @@ body {
 
 .card:hover {
   transform: translateY(-3px);
-  border-color: rgba(90, 166, 255, 0.42);
+  border-color: rgba(var(--acc-rgb), 0.42);
   box-shadow: 0 14px 38px rgba(2, 8, 22, 0.55);
 }
 
@@ -10200,7 +11594,7 @@ body {
   height: 44px;
   flex: 0 0 44px;
   border-radius: 13px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--ink), 0.05);
   border: 1px solid var(--line);
   display: grid;
   place-items: center;
@@ -10231,7 +11625,7 @@ body {
   border-radius: 6px;
   border: 1px solid var(--line);
   color: var(--dim);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--ink), 0.03);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -10240,10 +11634,10 @@ body {
 .badge svg { width: 14px; height: 11px; }
 .badge.feather { color: #8ef0c6; border-color: rgba(61, 220, 151, 0.4); background: rgba(61, 220, 151, 0.1); }
 .badge.light { color: #b9ecc9; border-color: rgba(120, 220, 160, 0.3); background: rgba(120, 220, 160, 0.08); }
-.badge.balanced { color: #a9ccff; border-color: rgba(90, 166, 255, 0.34); background: rgba(90, 166, 255, 0.1); }
+.badge.balanced { color: #a9ccff; border-color: rgba(var(--acc-rgb), 0.34); background: rgba(var(--acc-rgb), 0.1); }
 .badge.full { color: #ffd79a; border-color: rgba(255, 194, 77, 0.34); background: rgba(255, 194, 77, 0.1); }
-.badge.heavy { color: #ffb0bb; border-color: rgba(255, 107, 126, 0.34); background: rgba(255, 107, 126, 0.1); }
-.badge.ready { color: #cbb8ff; border-color: rgba(139, 125, 255, 0.4); background: rgba(139, 125, 255, 0.12); }
+.badge.heavy { color: var(--bad-txt); border-color: rgba(255, 107, 126, 0.34); background: rgba(255, 107, 126, 0.1); }
+.badge.ready { color: #cbb8ff; border-color: rgba(var(--acc2-rgb), 0.4); background: rgba(var(--acc2-rgb), 0.12); }
 .badge.off { color: var(--dim-2); opacity: 0.75; }
 
 .specs {
@@ -10272,7 +11666,7 @@ body {
   padding: 9px 16px;
   border-radius: var(--r-m);
   border: 1px solid var(--line-2);
-  background: rgba(255, 255, 255, 0.045);
+  background: rgba(var(--ink), 0.045);
   color: var(--txt);
   font: inherit;
   font-weight: 600;
@@ -10282,20 +11676,20 @@ body {
               border-color 0.16s var(--ease);
 }
 
-.btn:hover { background: rgba(255, 255, 255, 0.085); border-color: var(--acc); }
+.btn:hover { background: rgba(var(--ink), 0.085); border-color: var(--acc); }
 .btn:active { transform: translateY(1px); }
 .btn[disabled] { opacity: 0.45; cursor: not-allowed; transform: none; }
 
 .btn.primary {
-  background: linear-gradient(135deg, var(--acc), var(--acc-2));
+  background: var(--primary);
   border-color: transparent;
-  color: #061020;
-  box-shadow: 0 8px 26px rgba(90, 166, 255, 0.3);
+  color: var(--on-acc);
+  box-shadow: var(--primary-sh);
 }
 
 .btn.primary:hover { filter: brightness(1.08); }
 .btn.ghost { background: transparent; }
-.btn.danger { color: #ffd4da; border-color: rgba(255, 107, 126, 0.42); }
+.btn.danger { color: var(--bad-txt); border-color: rgba(255, 107, 126, 0.42); }
 .btn.danger:hover { background: rgba(255, 107, 126, 0.14); border-color: var(--bad); }
 .btn.sm { padding: 6px 11px; font-size: 12px; border-radius: 9px; }
 .btn svg { width: 14px; height: 14px; flex: 0 0 14px; }
@@ -10336,7 +11730,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-runnable-track {
   height: 5px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--acc) var(--pct, 50%), rgba(255, 255, 255, 0.1) var(--pct, 50%));
+  background: linear-gradient(90deg, var(--acc) var(--pct, 50%), rgba(var(--ink), 0.1) var(--pct, 50%));
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -10350,7 +11744,7 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-input[type="range"]::-moz-range-track { height: 5px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); }
+input[type="range"]::-moz-range-track { height: 5px; border-radius: 999px; background: rgba(var(--ink), 0.1); }
 input[type="range"]::-moz-range-progress { height: 5px; border-radius: 999px; background: var(--acc); }
 input[type="range"]::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%; background: #fff; border: 3px solid var(--acc); }
 
@@ -10360,7 +11754,7 @@ input[type="text"], input[type="password"], select {
   padding: 0 11px;
   border-radius: var(--r-s);
   border: 1px solid var(--line);
-  background: rgba(10, 18, 34, 0.7);
+  background: var(--field);
   color: var(--txt);
   font: inherit;
   font-size: 13px;
@@ -10379,7 +11773,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   width: 36px;
   height: 20px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(var(--ink), 0.12);
   position: relative;
   flex: 0 0 36px;
   transition: background 0.18s var(--ease);
@@ -10414,7 +11808,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   border: 1px solid var(--line);
   font-size: 12px;
   color: var(--dim-2);
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(var(--ink), 0.025);
 }
 
 .step .dot {
@@ -10425,17 +11819,17 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   flex: 0 0 7px;
 }
 
-.step.on { color: #dbeaff; border-color: rgba(90, 166, 255, 0.5); background: var(--acc-soft); }
+.step.on { color: var(--acc-txt); border-color: rgba(var(--acc-rgb), 0.5); background: var(--acc-soft); }
 .step.on .dot { background: var(--acc); box-shadow: 0 0 10px var(--acc); animation: pulse 1.3s ease-in-out infinite; }
-.step.done { color: #a6e9c8; border-color: rgba(61, 220, 151, 0.34); }
+.step.done { color: var(--ok-txt); border-color: rgba(61, 220, 151, 0.34); }
 .step.done .dot { background: var(--ok); }
-.step.bad { color: #ffb0bb; border-color: rgba(255, 107, 126, 0.4); }
+.step.bad { color: var(--bad-txt); border-color: rgba(255, 107, 126, 0.4); }
 .step.bad .dot { background: var(--bad); }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
 .progress-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.progress { flex: 1; height: 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.progress { flex: 1; height: 8px; border-radius: 999px; background: rgba(var(--ink), 0.08); overflow: hidden; }
 
 .progress > i {
   display: block;
@@ -10453,7 +11847,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 .term-wrap {
   border: 1px solid var(--line);
   border-radius: var(--r-m);
-  background: #04070e;
+  background: var(--term-bg);
   overflow: hidden;
   box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
 }
@@ -10464,7 +11858,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   gap: 8px;
   padding: 7px 12px;
   border-bottom: 1px solid var(--line);
-  background: rgba(14, 22, 40, 0.8);
+  background: var(--term-head);
   font-size: 11.5px;
   color: var(--dim-2);
 }
@@ -10481,7 +11875,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   font-family: var(--mono);
   font-size: 12.3px;
   line-height: 1.42;
-  color: #cfe0f5;
+  color: var(--term-txt);
   height: 420px;
   overflow-y: auto;
   overflow-x: auto;
@@ -10502,14 +11896,14 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 .term .i { color: #7fd3ff; }
 .term .g { color: #7ae2b0; }
 .term .d { color: #6a80a8; }
-.term .cur { background: rgba(207, 224, 245, 0.75); color: #04070e; }
+.term .cur { background: rgba(207, 224, 245, 0.75); color: var(--term-bg); }
 
 .term-input {
   display: flex;
   align-items: center;
   gap: 8px;
   border-top: 1px solid var(--line);
-  background: rgba(10, 17, 32, 0.8);
+  background: var(--field-2);
   padding: 7px 11px;
 }
 
@@ -10537,7 +11931,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   padding: 11px 13px;
   border-radius: var(--r-m);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(var(--ink), 0.035);
 }
 
 .link-row .ico { font-size: 16px; }
@@ -10552,7 +11946,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 }
 
 .link-row a:hover { text-decoration: underline; }
-.link-row.hero-link { border-color: rgba(90, 166, 255, 0.4); background: var(--acc-soft); }
+.link-row.hero-link { border-color: rgba(var(--acc-rgb), 0.4); background: var(--acc-soft); }
 
 /* ------------------------------------------------------------- instances */
 .stat-strip {
@@ -10627,7 +12021,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 }
 
 .mc.up { border-color: rgba(61, 220, 151, 0.24); }
-.mc.busy { border-color: rgba(90, 166, 255, 0.45); }
+.mc.busy { border-color: rgba(var(--acc-rgb), 0.45); }
 .mc.busy .mc-actions { opacity: 0.55; pointer-events: none; }
 .mc > section { padding: 16px 18px; }
 .mc > section + section { border-top: 1px solid var(--line); }
@@ -10638,7 +12032,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   width: 52px;
   height: 52px;
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--ink), 0.05);
   border: 1px solid var(--line);
   display: grid;
   place-items: center;
@@ -10665,15 +12059,15 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
   font-size: 12px;
   font-weight: 620;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--ink), 0.04);
   color: var(--dim);
   white-space: nowrap;
 }
 
 .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--dim-2); flex: 0 0 7px; }
-.pill.up { color: #9bf0cd; border-color: rgba(61, 220, 151, 0.34); background: rgba(61, 220, 151, 0.1); }
+.pill.up { color: var(--ok-txt); border-color: rgba(61, 220, 151, 0.34); background: rgba(61, 220, 151, 0.1); }
 .pill.up i { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
-.pill.bad { color: #ffb0bb; border-color: rgba(255, 107, 126, 0.34); background: rgba(255, 107, 126, 0.1); }
+.pill.bad { color: var(--bad-txt); border-color: rgba(255, 107, 126, 0.34); background: rgba(255, 107, 126, 0.1); }
 .pill.bad i { background: var(--bad); }
 
 .mc-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
@@ -10686,7 +12080,7 @@ label.field > span { display: block; font-size: 12px; color: var(--dim); margin-
 
 svg.spark { display: block; width: 100%; height: 22px; overflow: visible; }
 svg.spark path { fill: none; stroke: var(--acc); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
-svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
+svg.spark path.fill { fill: rgba(var(--acc-rgb), 0.16); stroke: none; }
 
 .mc-access { display: grid; gap: 8px; }
 
@@ -10699,10 +12093,10 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   padding: 6px 8px 6px 10px;
   border-radius: var(--r-m);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(var(--ink), 0.025);
 }
 
-.arow.pub { border-color: rgba(90, 166, 255, 0.3); background: rgba(90, 166, 255, 0.07); }
+.arow.pub { border-color: rgba(var(--acc-rgb), 0.3); background: rgba(var(--acc-rgb), 0.07); }
 .arow.down { opacity: 0.62; }
 .arow .ic { display: grid; place-items: center; color: var(--dim); }
 .arow .ic svg { width: 17px; height: 17px; }
@@ -10736,7 +12130,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   transition: background 0.14s var(--ease), color 0.14s var(--ease), border-color 0.14s var(--ease);
 }
 
-.iconbtn:hover { background: rgba(255, 255, 255, 0.08); color: var(--txt); border-color: var(--line); }
+.iconbtn:hover { background: rgba(var(--ink), 0.08); color: var(--txt); border-color: var(--line); }
 .iconbtn svg { width: 16px; height: 16px; }
 .iconbtn.on { color: var(--acc); background: var(--acc-soft); }
 
@@ -10756,7 +12150,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   display: grid;
   gap: 2px;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(var(--ink), 0.025);
   font-size: 13px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -10768,7 +12162,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
 
 .lchip + .lchip { border-left: 1px solid var(--line); }
 .lchip span { font-size: 10px; font-weight: 650; color: var(--dim-2); text-transform: uppercase; letter-spacing: 0.45px; }
-.lchip.on { color: #9bf0cd; }
+.lchip.on { color: var(--ok-txt); }
 
 .mc-actions {
   margin-top: auto;
@@ -10800,7 +12194,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   padding: 6px;
   border-radius: var(--r-m);
   border: 1px solid var(--line-2);
-  background: rgba(12, 20, 36, 0.98);
+  background: var(--surface);
   box-shadow: 0 16px 44px rgba(2, 6, 16, 0.72);
   z-index: 12;
   display: grid;
@@ -10829,13 +12223,13 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   cursor: pointer;
 }
 
-.menu button:hover { background: rgba(255, 255, 255, 0.07); color: var(--txt); }
+.menu button:hover { background: rgba(var(--ink), 0.07); color: var(--txt); }
 .menu button svg { width: 15px; height: 15px; flex: 0 0 15px; }
-.menu button.danger { color: #ffb0bb; }
+.menu button.danger { color: var(--bad-txt); }
 .menu button.danger:hover { background: rgba(255, 107, 126, 0.14); }
 .menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; }
 
-.drawer { border-top: 1px solid var(--line); background: #04070e; }
+.drawer { border-top: 1px solid var(--line); background: var(--term-bg); }
 .drawer .term { height: 320px; }
 
 .drawer-head {
@@ -10844,7 +12238,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   gap: 8px;
   padding: 6px 10px 6px 14px;
   border-bottom: 1px solid var(--line);
-  background: rgba(14, 22, 40, 0.85);
+  background: var(--term-head);
   font-size: 11.5px;
   color: var(--dim-2);
   font-family: var(--mono);
@@ -10884,8 +12278,8 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
 }
 
 .seg button + button { border-left: 1px solid var(--line); }
-.seg button:hover { color: var(--txt); background: rgba(255, 255, 255, 0.04); }
-.seg button.on { background: var(--acc-soft); color: #dbeaff; }
+.seg button:hover { color: var(--txt); background: rgba(var(--ink), 0.04); }
+.seg button.on { background: var(--acc-soft); color: var(--acc-txt); }
 
 .smart-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .smart-row .grp { display: grid; gap: 6px; }
@@ -10898,7 +12292,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   width: 76px;
   height: 76px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--ink), 0.05);
   border: 1px solid var(--line);
   display: grid;
   place-items: center;
@@ -10932,13 +12326,13 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   border: 1px solid var(--line);
   border-radius: var(--r-m);
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--ink), 0.03);
   cursor: zoom-in;
   display: flex;
   flex-direction: column;
 }
 
-.shot .ph { aspect-ratio: 16 / 10; background: #0a1120; overflow: hidden; }
+.shot .ph { aspect-ratio: 16 / 10; background: var(--bg-2); overflow: hidden; }
 
 .shot img {
   width: 100%;
@@ -10979,7 +12373,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   margin-right: 8px;
   border-radius: 7px;
   background: var(--acc-soft);
-  color: #cfe3ff;
+  color: var(--soft-txt);
   font-size: 12px;
   font-weight: 700;
 }
@@ -10995,7 +12389,7 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   align-items: center;
   gap: 14px;
   border-top: 1px solid var(--line);
-  background: rgba(8, 13, 24, 0.9);
+  background: var(--surface);
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
   z-index: 6;
@@ -11031,14 +12425,14 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   margin-bottom: 16px;
   padding: 12px 16px;
   border-radius: var(--r-l);
-  border: 1px solid rgba(90, 166, 255, 0.42);
-  background: linear-gradient(135deg, rgba(90, 166, 255, 0.16), rgba(139, 125, 255, 0.12));
+  border: 1px solid rgba(var(--acc-rgb), 0.42);
+  background: linear-gradient(135deg, rgba(var(--acc-rgb), 0.16), rgba(var(--acc2-rgb), 0.12));
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
 }
 
 .updbar[hidden] { display: none; }
-.updbar .ic { color: #cfe3ff; display: grid; place-items: center; }
+.updbar .ic { color: var(--soft-txt); display: grid; place-items: center; }
 .updbar .ic svg { width: 20px; height: 20px; }
 .updbar .msg { flex: 1; min-width: 0; font-size: 13.5px; }
 .updbar .msg b { display: block; font-size: 14px; }
@@ -11084,12 +12478,12 @@ svg.spark path.fill { fill: rgba(90, 166, 255, 0.16); stroke: none; }
   border: 1px solid var(--line);
   border-radius: var(--r-m);
   padding: 13px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--ink), 0.03);
   display: grid;
   gap: 8px;
 }
 
-.pick.best { border-color: rgba(90, 166, 255, 0.45); background: var(--acc-soft); }
+.pick.best { border-color: rgba(var(--acc-rgb), 0.45); background: var(--acc-soft); }
 .pick .hd { display: flex; align-items: center; gap: 10px; }
 .pick .score { margin-left: auto; font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; }
 
@@ -11097,12 +12491,12 @@ pre.code {
   margin: 0;
   padding: 12px;
   border-radius: var(--r-m);
-  background: #04070e;
+  background: var(--term-bg);
   border: 1px solid var(--line);
   font-family: var(--mono);
   font-size: 11.6px;
   line-height: 1.5;
-  color: #b8cce6;
+  color: var(--dim);
   overflow: auto;
   max-height: 290px;
   white-space: pre;
@@ -11114,14 +12508,14 @@ pre.code {
   border-radius: var(--r-m);
   padding: 11px 13px;
   font-size: 12.6px;
-  color: #ffe0ab;
+  color: var(--warn-txt);
   margin-bottom: 12px;
 }
 
-.warnbox.bad { border-color: rgba(255, 107, 126, 0.4); background: rgba(255, 107, 126, 0.08); color: #ffcdd4; }
+.warnbox.bad { border-color: rgba(255, 107, 126, 0.4); background: rgba(255, 107, 126, 0.08); color: var(--bad-txt); }
 .warnbox code { font-family: var(--mono); font-size: 11.6px; }
 
-.skel { background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.1), rgba(255,255,255,.04)); background-size: 200% 100%; animation: sweep 1.3s linear infinite; border-radius: 8px; }
+.skel { background: linear-gradient(90deg, rgba(var(--ink), .04), rgba(var(--ink), .1), rgba(var(--ink), .04)); background-size: 200% 100%; animation: sweep 1.3s linear infinite; border-radius: 8px; }
 @keyframes sweep { to { background-position: -200% 0; } }
 
 /* -------------------------------------------------- lite mode: no blur */
@@ -11131,9 +12525,9 @@ html.lite .mc, html.lite .stat, html.lite .menu, html.lite .toast, html.lite .to
 html.lite .gobar {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  background: #0b1220;
+  background: var(--lite-solid);
 }
-html.lite .bg { background: #070c16; }
+html.lite .bg { background: var(--bg); }
 html.lite .card:hover { transform: none; }
 html.lite .view.on { animation: none; }
 html.lite * { transition-duration: 0.08s !important; }
@@ -11161,7 +12555,7 @@ html.lite .skel { animation: none; }
   position: fixed;
   inset: 0;
   z-index: 70;
-  background: rgba(3, 7, 14, 0.72);
+  background: var(--scrim);
   padding: 24px;
   overflow: auto;
   overscroll-behavior: contain;
@@ -11186,7 +12580,7 @@ html.lite .skel { animation: none; }
   margin: 0 -2px 10px;
   padding: 16px 2px 10px;
   background: inherit;
-  background: rgba(12, 20, 36, 0.97);
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 @media (max-width: 560px) {
@@ -11204,7 +12598,7 @@ html.lite .skel { animation: none; }
 .mc > section.mc-session { padding: 8px 18px; font-size: 12.5px; color: var(--dim); display: flex;
   align-items: center; gap: 8px; }
 .mc-session i.ok { width: 7px; height: 7px; border-radius: 50%; background: #3ddc97; display: inline-block; }
-.mc-session.bad { color: #ffb4be; background: rgba(255, 107, 126, 0.07); justify-content: space-between; }
+.mc-session.bad { color: var(--bad-txt); background: rgba(255, 107, 126, 0.07); justify-content: space-between; }
 .evlist { display: grid; gap: 6px; max-height: 26vh; overflow: auto; }
 .ev { display: grid; grid-template-columns: 160px 1fr; gap: 2px 12px; font-size: 12.5px;
   padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--r-s, 8px); }
@@ -11213,6 +12607,328 @@ html.lite .skel { animation: none; }
 .ev.bad { border-color: rgba(255, 107, 126, 0.4); }
 .muted { color: var(--dim-2); font-size: 12px; }
 #lCancel { margin-left: 10px; }
+
+/* ================================================================ addons */
+.addbar { padding: 14px; }
+.add-row { display: flex; align-items: center; gap: 10px; }
+.add-row .add-ico { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: var(--r-s);
+                    background: var(--acc-soft); color: var(--acc); font-size: 18px; }
+.add-row input[type="text"] { height: 40px; font-family: var(--mono); font-size: 12.5px; flex: 1; }
+.add-row .btn { height: 40px; padding: 0 20px; }
+.add-hint { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--dim-2); }
+.linkish { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--acc); cursor: pointer; text-decoration: none; }
+.linkish:hover { text-decoration: underline; text-underline-offset: 3px; }
+.add-err { margin: 10px 0 0; }
+.addon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 16px; }
+.addon-grid > * { min-width: 0; }
+.addon-grid > .skel { border-radius: var(--r-l); }
+.ad { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 18px; border: 1px solid var(--line);
+      border-radius: var(--r-l); background: var(--glass); backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
+      box-shadow: var(--sh); transition: border-color 0.18s var(--ease); }
+.ad:hover { border-color: var(--line-2); }
+.ad.on { border-color: rgba(61, 220, 151, 0.22); }
+.ad.busy { border-color: rgba(var(--acc-rgb), 0.45); }
+.ad-head { display: flex; align-items: flex-start; gap: 13px; }
+.ad-logo { width: 54px; height: 54px; flex: none; border-radius: 15px; display: grid; place-items: center; overflow: hidden;
+           background: rgba(var(--ink), 0.05); border: 1px solid var(--line); font-weight: 700; font-size: 20px; color: var(--dim); }
+.ad-logo img { width: 100%; height: 100%; object-fit: contain; }
+.ad-logo.lg { width: 64px; height: 64px; border-radius: 17px; }
+.ad-t { flex: 1; min-width: 0; }
+.ad-name { font-weight: 680; font-size: 16px; letter-spacing: -0.15px; display: flex; align-items: baseline; gap: 7px; flex-wrap: wrap; }
+.ad-ver { font: 600 11px var(--mono); color: var(--dim-2); }
+.ad-by { margin-top: 2px; font-size: 12px; color: var(--dim-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-by .mono { font-size: 11.5px; }
+.ad-desc { margin: 0; font-size: 13px; color: var(--dim); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ad-note { display: flex; gap: 9px; align-items: flex-start; margin: 0; padding: 10px 12px; border-radius: var(--r-m); font-size: 12.5px;
+           border: 1px solid var(--line); background: rgba(var(--ink), 0.03); color: var(--dim); }
+.ad-note svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.ad-note b { color: var(--txt); }
+.ad-note.found { border-color: rgba(var(--acc-rgb), 0.4); background: var(--acc-soft); color: var(--acc-txt); }
+.ad-note.found svg { color: var(--acc); }
+.ad-status { font-size: 11.5px; color: var(--dim-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-foot { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 4px; }
+.ad-foot .btn svg { width: 15px; height: 15px; }
+.ad .menu { bottom: auto; top: calc(100% + 6px); min-width: 230px; }
+.ad .menu a { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; color: var(--dim); text-decoration: none; font-size: 13px; font-weight: 550; }
+.ad .menu a:hover { background: rgba(var(--ink), 0.07); color: var(--txt); }
+.ad .menu a svg { width: 15px; height: 15px; }
+.pill.found { color: var(--acc-txt); border-color: rgba(var(--acc-rgb), 0.4); background: var(--acc-soft); }
+.pill.found i { background: var(--acc); }
+.pill.busy { color: var(--acc-txt); border-color: rgba(var(--acc-rgb), 0.45); }
+.pill.busy i { background: var(--acc); animation: pulse 1.1s ease-in-out infinite; }
+.ad-empty { grid-column: 1 / -1; padding: 46px 24px; }
+.ad-empty .big { width: 58px; height: 58px; margin: 0 auto 12px; display: grid; place-items: center; border-radius: 17px;
+                 background: var(--acc-soft); color: var(--acc); font-size: 26px; }
+.ad-empty h3 { margin: 0 0 6px; color: var(--txt); font-size: 17px; }
+.ad-empty .sub { max-width: 460px; margin: 0 auto 18px; }
+.ad-modal-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.ad-modal-head b { font-size: 16px; }
+.ad-modal-head p { margin: 4px 0 0; color: var(--dim); font-size: 13px; }
+.ad-sets { display: grid; gap: 12px; margin: 14px 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--r-m); background: rgba(var(--ink), 0.02); }
+.ad-set > span { display: flex; align-items: center; gap: 8px; }
+.ad-set input[type="number"] { width: 100%; height: 36px; padding: 0 11px; border-radius: var(--r-s); border: 1px solid var(--line);
+                               background: var(--field); color: var(--txt); font: inherit; font-size: 13px; outline: none; }
+.ad-set small { display: block; margin-top: 3px; font-size: 11.5px; color: var(--dim-2); font-weight: 400; }
+.ad-set .set-ico { width: 22px; height: 22px; border-radius: 6px; flex: none; }
+.toggle.ad-set { align-items: center; gap: 12px; }
+.toggle.ad-set > span { flex: 1; align-items: flex-start; font-weight: 600; }
+.toggle.ad-set .set-ico { width: 36px; height: 36px; border-radius: 9px; flex: none; }
+.ad-trust { margin: 0 0 14px; }
+.ad-run .term { height: 300px; }
+.ad-run .progress-wrap { margin-bottom: 12px; }
+.ad-done { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 14px 16px; border-radius: var(--r-m);
+           border: 1px solid rgba(61, 220, 151, 0.35); background: rgba(61, 220, 151, 0.08); }
+.ad-done > svg { width: 22px; height: 22px; color: var(--ok); flex: none; }
+.ad-done small { display: block; color: var(--dim); font-size: 12px; }
+@media (max-width: 720px) {
+  .addon-grid { grid-template-columns: 1fr; }
+  .add-row { flex-wrap: wrap; }
+  .add-row .add-ico { display: none; }
+  .add-row input[type="text"] { flex-basis: 100%; }
+  .add-row .btn { flex: 1; }
+}
+
+/* ================================================================ theme picker */
+.rail-k { padding: 2px 12px 4px; }
+.themes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 4px; }
+.rail .themes .theme-sw { display: flex; align-items: center; gap: 7px; width: auto; min-width: 0; padding: 7px 8px; border-radius: 10px;
+            border: 1px solid var(--line); background: transparent; color: var(--dim); font: inherit; font-size: 12px; font-weight: 600;
+            cursor: pointer; text-align: left; box-shadow: none; }
+.rail .themes .theme-sw span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.theme-sw i { width: 18px; height: 18px; border-radius: 6px; flex: none; border: 1px solid rgba(var(--ink), 0.18); }
+.rail .themes .theme-sw:hover { color: var(--txt); border-color: var(--line-2); background: transparent; }
+.rail .themes .theme-sw.on { color: var(--txt); border-color: var(--acc); background: var(--acc-soft); }
+.theme-sw:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+/* ================================================================ themes
+   Each theme swaps the variables on :root; a few add touches of their own. */
+
+/* -- Stealth: the Burrow tunnel manager's look. A black room with a faint
+      grid, raised graphite surfaces lit along their top edge, white as the
+      only accent, mono labels. Same values as Burrow's ui.css. */
+html[data-theme="stealth"] {
+  color-scheme: dark;
+  --bg: #030304;
+  --bg-2: #0c0d0f;
+  --glass: #101113;
+  --glass-2: #0c0d0f;
+  --glass-3: rgba(3, 3, 4, 0.72);
+  --line: rgba(255, 255, 255, 0.07);
+  --line-2: rgba(255, 255, 255, 0.11);
+  --txt: #eceef0;
+  --txt-hi: #ffffff;
+  --dim: #8a8f97;
+  --dim-2: #555a62;
+  --acc: #f1f2f3;
+  --acc-2: #c9ccd1;
+  --acc-soft: rgba(255, 255, 255, 0.07);
+  --acc-rgb: 241, 242, 243;
+  --acc2-rgb: 201, 204, 209;
+  --on-acc: #000000;
+  --acc-txt: #ffffff;
+  --soft-txt: #e8eaed;
+  --ok: #3ddc97;
+  --warn: #f2c14e;
+  --bad: #ff5a52;
+  --ok-txt: #3ddc97;
+  --bad-txt: #ff8a84;
+  --warn-txt: #f2c14e;
+  --field: #08090a;
+  --field-2: #08090a;
+  --surface: #121316;
+  --term-bg: #050506;
+  --term-head: #0c0d0f;
+  --term-txt: #c9ccd1;
+  --scrim: rgba(0, 0, 0, 0.66);
+  --lite-solid: #0e0f11;
+  --r-s: 9px;
+  --r-m: 10px;
+  --r-l: 16px;
+  --blur: 14px;
+  --sh: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 0 0 1px rgba(0, 0, 0, 0.55), 0 24px 60px -24px rgba(0, 0, 0, 0.9);
+  --primary: #f1f2f3;
+  --primary-sh: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 8px 22px -10px rgba(255, 255, 255, 0.35);
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg-paint: #030304;
+}
+html[data-theme="stealth"] body { font-size: 14px; }
+html[data-theme="stealth"] ::selection { background: #3a3d42; color: #fff; }
+/* the faint grid, brightest under the top bar, and a soft light above it */
+html[data-theme="stealth"] .bg::before {
+  content: ""; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 44px 44px; background-position: center top;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 0, transparent 75%);
+}
+html[data-theme="stealth"] .bg::after {
+  content: ""; position: absolute; left: 50%; top: -260px; width: 1100px; height: 640px; transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.05), transparent);
+}
+/* raised surfaces: one gradient, a hairline border, a lit top edge */
+html[data-theme="stealth"] .panel,
+html[data-theme="stealth"] .card,
+html[data-theme="stealth"] .mc,
+html[data-theme="stealth"] .ad,
+html[data-theme="stealth"] .stat,
+html[data-theme="stealth"] .meter,
+html[data-theme="stealth"] .gobar,
+html[data-theme="stealth"] .toast {
+  background: linear-gradient(180deg, #101113, #0c0d0f);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: var(--sh);
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+html[data-theme="stealth"] .stat, html[data-theme="stealth"] .meter { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset; }
+html[data-theme="stealth"] .panel, html[data-theme="stealth"] .ad, html[data-theme="stealth"] .mc { position: relative; }
+html[data-theme="stealth"] .panel::before,
+html[data-theme="stealth"] .ad::before,
+html[data-theme="stealth"] .mc::before {
+  content: ""; position: absolute; left: 22px; right: 22px; top: -1px; height: 1px; pointer-events: none; z-index: 1;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+html[data-theme="stealth"] .card:hover, html[data-theme="stealth"] .ad:hover { border-color: rgba(255, 255, 255, 0.17); }
+html[data-theme="stealth"] .card:hover { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 0 0 1px rgba(0, 0, 0, 0.55), 0 30px 70px -24px rgba(0, 0, 0, 0.95), 0 0 80px -30px rgba(255, 255, 255, 0.14); }
+html[data-theme="stealth"] .mc.up, html[data-theme="stealth"] .ad.on { border-color: rgba(61, 220, 151, 0.24); }
+html[data-theme="stealth"] .topbar { background: rgba(3, 3, 4, 0.72); border-bottom-color: rgba(255, 255, 255, 0.07); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+html[data-theme="stealth"] .rail { background: rgba(3, 3, 4, 0.6); border-right-color: rgba(255, 255, 255, 0.07); }
+html[data-theme="stealth"] .brand .spark { background: #17181b; color: #e8eaed; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset; border: 1px solid rgba(255, 255, 255, 0.11); border-radius: 9px; width: 30px; height: 30px; }
+html[data-theme="stealth"] .rail button:hover { background: rgba(255, 255, 255, 0.05); color: var(--txt); }
+html[data-theme="stealth"] .rail button.on { background: rgba(255, 255, 255, 0.07); border-color: transparent; color: var(--txt); }
+html[data-theme="stealth"] .rail .tag, html[data-theme="stealth"] .ad-ver, html[data-theme="stealth"] .sec-k { font-family: var(--mono); }
+html[data-theme="stealth"] .btn { background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.11); font-weight: 500; }
+html[data-theme="stealth"] .btn:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.18); }
+html[data-theme="stealth"] .btn.primary { background: #f1f2f3; color: #000; font-weight: 600; border-color: transparent; }
+html[data-theme="stealth"] .btn.primary:hover { background: #ffffff; }
+html[data-theme="stealth"] .btn.ghost { background: transparent; border-color: transparent; color: var(--dim); }
+html[data-theme="stealth"] .btn.ghost:hover { background: rgba(255, 255, 255, 0.05); color: var(--txt); }
+html[data-theme="stealth"] .btn.danger:hover { color: #fff; background: rgba(255, 90, 82, 0.16); border-color: rgba(255, 90, 82, 0.45); }
+html[data-theme="stealth"] .btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+html[data-theme="stealth"] input[type="text"], html[data-theme="stealth"] input[type="password"],
+html[data-theme="stealth"] input[type="number"], html[data-theme="stealth"] select,
+html[data-theme="stealth"] .topbar .search input {
+  background: #08090a; border-color: rgba(255, 255, 255, 0.11); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset;
+}
+html[data-theme="stealth"] input:focus, html[data-theme="stealth"] select:focus, html[data-theme="stealth"] .topbar .search input:focus {
+  border-color: rgba(255, 255, 255, 0.26); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset, 0 0 0 3px rgba(255, 255, 255, 0.06);
+}
+html[data-theme="stealth"] .seg { background: #08090a; border-color: rgba(255, 255, 255, 0.11); padding: 3px; gap: 3px; border-radius: 10px; }
+html[data-theme="stealth"] .seg button { border-radius: 7px; }
+html[data-theme="stealth"] .seg button + button { border-left: 0; }
+html[data-theme="stealth"] .seg button.on { background: #1d1f23; color: var(--txt); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset; }
+html[data-theme="stealth"] .chip.on { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.26); color: #fff; }
+html[data-theme="stealth"] .pill, html[data-theme="stealth"] .badge { font-family: var(--mono); font-weight: 500; }
+html[data-theme="stealth"] .badge.balanced { color: #c9ccd1; border-color: rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.04); }
+html[data-theme="stealth"] .badge.ready { color: #e8eaed; border-color: rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.06); }
+html[data-theme="stealth"] .bar > i, html[data-theme="stealth"] .progress > i, html[data-theme="stealth"] .jrow .jbar i { background: #e8eaed; }
+html[data-theme="stealth"] svg.spark path { stroke: #e8eaed; }
+html[data-theme="stealth"] svg.spark path.fill { fill: rgba(255, 255, 255, 0.08); }
+html[data-theme="stealth"] .toggle input:checked + i { background: rgba(61, 220, 151, 0.22); }
+html[data-theme="stealth"] .toggle input:checked + i::after { background: var(--ok); }
+html[data-theme="stealth"] .menu { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); }
+html[data-theme="stealth"] .updbar { background: linear-gradient(180deg, #101113, #0c0d0f); border-color: rgba(255, 255, 255, 0.16); }
+html[data-theme="stealth"] .h1 { font-size: 26px; font-weight: 650; letter-spacing: -0.025em; }
+html[data-theme="stealth"] .panel h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.01em; }
+html[data-theme="stealth"] .add-row .add-ico, html[data-theme="stealth"] .ad-empty .big { background: #17181b; border: 1px solid rgba(255, 255, 255, 0.11); color: #e3e5e8; }
+html[data-theme="stealth"] .ad-logo { background: #0b0c0e; border-color: rgba(255, 255, 255, 0.11); }
+html[data-theme="stealth"] #modal { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+html[data-theme="stealth"] .term-head .lights i { background: #34373c !important; }
+
+/* -- Daylight: light surfaces, the same layout. Terminals stay dark. */
+html[data-theme="daylight"] {
+  color-scheme: light;
+  --bg: #eef1f6;
+  --bg-2: #e2e7ef;
+  --glass: rgba(255, 255, 255, 0.78);
+  --glass-2: rgba(255, 255, 255, 0.62);
+  --glass-3: rgba(248, 250, 253, 0.86);
+  --line: rgba(22, 40, 80, 0.10);
+  --line-2: rgba(22, 40, 80, 0.20);
+  --txt: #101828;
+  --txt-hi: #0b1220;
+  --dim: #475569;
+  --dim-2: #6b7a90;
+  --acc: #2f6fe4;
+  --acc-2: #6a4ee8;
+  --acc-soft: rgba(47, 111, 228, 0.10);
+  --acc-rgb: 47, 111, 228;
+  --acc2-rgb: 106, 78, 232;
+  --on-acc: #ffffff;
+  --acc-txt: #1d4fb3;
+  --soft-txt: #1d4fb3;
+  --ok: #109a62;
+  --warn: #b7791f;
+  --bad: #d6334a;
+  --ok-txt: #0b7a4d;
+  --bad-txt: #b42339;
+  --warn-txt: #7a4b00;
+  --ink: 15, 23, 42;
+  --field: #ffffff;
+  --field-2: #ffffff;
+  --surface: #ffffff;
+  --term-bg: #0d1320;
+  --term-head: #172033;
+  --term-txt: #d5e1f2;
+  --scrim: rgba(15, 23, 42, 0.38);
+  --lite-solid: #ffffff;
+  --sh: 0 1px 2px rgba(15, 23, 42, 0.06), 0 10px 30px rgba(15, 23, 42, 0.08);
+  --primary-sh: 0 8px 22px rgba(47, 111, 228, 0.28);
+  --bg-paint:
+    radial-gradient(1100px 620px at 12% -8%, rgba(80, 140, 255, 0.16), transparent 60%),
+    radial-gradient(900px 560px at 88% 4%, rgba(140, 110, 255, 0.12), transparent 62%),
+    linear-gradient(180deg, #f4f6fa 0%, #eef1f6 60%, #e9edf3 100%);
+}
+html[data-theme="daylight"] .term-head { color: #9db2d8; }
+html[data-theme="daylight"] .term-head .btn { color: #d5e1f2; border-color: rgba(255, 255, 255, 0.18); background: rgba(255, 255, 255, 0.06); }
+html[data-theme="daylight"] .badge.feather { color: #0b7a4d; border-color: rgba(16, 154, 98, 0.35); background: rgba(16, 154, 98, 0.08); }
+html[data-theme="daylight"] .badge.light { color: #2f7a52; border-color: rgba(47, 122, 82, 0.3); background: rgba(47, 122, 82, 0.07); }
+html[data-theme="daylight"] .badge.balanced { color: #1d4fb3; }
+html[data-theme="daylight"] .badge.full { color: #8a5a00; border-color: rgba(183, 121, 31, 0.35); background: rgba(183, 121, 31, 0.08); }
+html[data-theme="daylight"] .badge.ready { color: #4b32c3; }
+html[data-theme="daylight"] .warnbox { border-color: rgba(183, 121, 31, 0.4); background: rgba(255, 194, 77, 0.16); }
+html[data-theme="daylight"] .updbar.warn { background: rgba(255, 194, 77, 0.18); }
+html[data-theme="daylight"] .brand .spark { color: #fff; }
+html[data-theme="daylight"] .lightbox { background: rgba(10, 14, 24, 0.92); }
+html[data-theme="daylight"] .menu { box-shadow: 0 16px 44px rgba(15, 23, 42, 0.18); }
+html[data-theme="daylight"] input[type="range"]::-webkit-slider-thumb { box-shadow: 0 1px 4px rgba(15, 23, 42, 0.35); }
+
+/* -- Ember: warm amber on charcoal. */
+html[data-theme="ember"] {
+  --bg: #0e0b09;
+  --bg-2: #16110d;
+  --glass: rgba(34, 26, 20, 0.62);
+  --glass-2: rgba(44, 33, 25, 0.5);
+  --glass-3: rgba(20, 15, 11, 0.78);
+  --line: rgba(255, 196, 140, 0.12);
+  --line-2: rgba(255, 196, 140, 0.26);
+  --txt: #f6ece2;
+  --dim: #c7ad95;
+  --dim-2: #8f7864;
+  --acc: #ffad42;
+  --acc-2: #ff6a3d;
+  --acc-soft: rgba(255, 173, 66, 0.13);
+  --acc-rgb: 255, 173, 66;
+  --acc2-rgb: 255, 106, 61;
+  --on-acc: #1d0f04;
+  --acc-txt: #ffe1bb;
+  --soft-txt: #ffe1bb;
+  --field: rgba(24, 18, 13, 0.75);
+  --field-2: rgba(24, 18, 13, 0.82);
+  --surface: rgba(30, 22, 16, 0.98);
+  --term-bg: #0b0806;
+  --term-head: rgba(36, 27, 20, 0.85);
+  --term-txt: #f0e1d2;
+  --scrim: rgba(8, 5, 3, 0.72);
+  --lite-solid: #1a140f;
+  --sh: 0 10px 34px rgba(8, 4, 1, 0.5);
+  --primary-sh: 0 8px 26px rgba(255, 140, 60, 0.3);
+  --bg-paint:
+    radial-gradient(1100px 620px at 12% -8%, rgba(255, 140, 50, 0.16), transparent 60%),
+    radial-gradient(900px 560px at 88% 4%, rgba(255, 90, 60, 0.12), transparent 62%),
+    radial-gradient(1200px 800px at 50% 110%, rgba(200, 110, 40, 0.10), transparent 60%),
+    linear-gradient(180deg, #120d0a 0%, #0e0b09 60%, #0b0907 100%);
+}
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -11399,9 +13115,42 @@ __FORGE_FILE_WEB_APP_CSS__
     try { localStorage.setItem("forge_lite", S.lite ? "1" : "0"); } catch (e) {}
   }
 
+  /* -------------------------------------------------------------- themes */
+  // The look is a set of CSS variables (app.css); a theme swaps them through
+  // html[data-theme]. "stealth" is the tunnel manager's black-and-white look.
+  var THEMES = [
+    { id: "forge", label: "Forge", hint: "Blue glass, the default", sw: ["#5aa6ff", "#8b7dff", "#0a1120"] },
+    { id: "stealth", label: "Stealth", hint: "Black room, white light: the Burrow look", sw: ["#f1f2f3", "#101113", "#030304"] },
+    { id: "daylight", label: "Daylight", hint: "Light, for bright rooms", sw: ["#2f6fe4", "#ffffff", "#e9edf4"] },
+    { id: "ember", label: "Ember", hint: "Warm amber on charcoal", sw: ["#ffad42", "#ff6a3d", "#16110d"] }
+  ];
+
+  function applyTheme(id) {
+    var t = THEMES.filter(function (x) { return x.id === id; })[0] || THEMES[0];
+    if (t.id === "forge") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t.id);
+    try { localStorage.setItem("forge_theme", t.id); } catch (e) {}
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) { meta = document.createElement("meta"); meta.name = "theme-color"; document.head.appendChild(meta); }
+    meta.content = t.sw[2];
+    var box = $("#themes");
+    if (!box) return;
+    box.innerHTML = THEMES.map(function (x) {
+      return '<button type="button" role="radio" class="theme-sw' + (x.id === t.id ? " on" : "") + '" data-theme-id="' + x.id +
+        '" aria-checked="' + (x.id === t.id) + '" title="' + h(x.label + ": " + x.hint) + '">' +
+        '<i style="background:linear-gradient(135deg,' + x.sw[0] + " 0 50%," + x.sw[1] + " 50% 100%);box-shadow:0 0 0 3px " + x.sw[2] + ' inset"></i>' +
+        "<span>" + h(x.label) + "</span></button>";
+    }).join("");
+  }
+
+  function currentTheme() {
+    try { return localStorage.getItem("forge_theme") || "forge"; } catch (e) { return "forge"; }
+  }
+
   /* ---------------------------------------------------------------- boot */
   function boot() {
     applyLite(decideLite());
+    applyTheme(currentTheme());
     return api("/api/boot").then(function (b) {
       S.boot = b;
       S.host = b.host;
@@ -13022,6 +14771,7 @@ __FORGE_FILE_WEB_APP_CSS__
     closeMenus();
     if (view === "manager") { S.instKey = ""; refreshInstances(); }
     if (view === "host") renderHost();
+    if (view === "addons" && window.ForgeAddons) window.ForgeAddons.show();
     $(".main").scrollTop = 0;
   }
 
@@ -13032,6 +14782,10 @@ __FORGE_FILE_WEB_APP_CSS__
       if (b) show(b.dataset.view);
     });
     $("#liteBtn").addEventListener("click", function () { applyLite(!S.lite); });
+    $("#themes").addEventListener("click", function (ev) {
+      var b = ev.target.closest("[data-theme-id]");
+      if (b) applyTheme(b.dataset.themeId);
+    });
 
     /* browse */
     var qTimer = null;
@@ -13242,8 +14996,16 @@ __FORGE_FILE_WEB_APP_CSS__
       if (ev.key === "1") show("browse");
       if (ev.key === "2") show("manager");
       if (ev.key === "3") show("host");
+      if (ev.key === "4") show("addons");
     });
   }
+
+  // addons.js builds the Addons view with the same helpers.
+  window.Forge = {
+    api: api, sse: sse, h: h, toast: toast, copy: copy, ago: ago, I: I,
+    openModal: openModal, closeModal: closeModal, show: show,
+    view: function () { return S.view; }
+  };
 
   document.addEventListener("DOMContentLoaded", function () { wire(); boot(); });
 })();
@@ -13277,8 +15039,9 @@ __FORGE_FILE_WEB_BRANDS_JS__
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark light">
 <title>Selkies Forge</title>
+<script>try { var t = localStorage.getItem("forge_theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
 <link rel="stylesheet" href="/app.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235aa6ff'/%3E%3Cpath d='M9 22l7-13 7 13z' fill='%23061020'/%3E%3C/svg%3E">
 </head>
@@ -13302,11 +15065,15 @@ __FORGE_FILE_WEB_BRANDS_JS__
     <button data-view="browse" class="on"><span class="ico">◧</span>Browse<span class="tag" id="tagCat">-</span></button>
     <button data-view="manager"><span class="ico">▦</span>Manager<span class="tag" id="tagInst">0</span></button>
     <button data-view="host"><span class="ico">◉</span>This machine</button>
+    <button data-view="addons"><span class="ico">✚</span>Addons<span class="tag" id="tagAddons">0</span></button>
+    <hr>
+    <div class="sec-k rail-k">Theme</div>
+    <div class="themes" id="themes" role="radiogroup" aria-label="Theme"></div>
     <hr>
     <button id="liteBtn" class="ghost"><span class="ico">✦</span>Lite mode</button>
     <div class="note">Lite mode drops the blur and animation. It turns itself on for small devices.</div>
     <hr>
-    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine</div>
+    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine &middot; 4 addons</div>
   </nav>
 
   <main class="main">
@@ -13449,6 +15216,30 @@ __FORGE_FILE_WEB_BRANDS_JS__
       </div>
     </section>
 
+    <!-- ------------------------------------------------------- addons -->
+    <section class="view" id="v-addons">
+      <h1 class="h1">Addons</h1>
+      <p class="sub">Apps that install beside the forge. Paste a repository link: the forge fetches it, checks it,
+        and shows you what it is before anything is installed.</p>
+      <div class="panel addbar">
+        <form class="add-row" id="addonForm" autocomplete="off">
+          <span class="add-ico" aria-hidden="true">⎘</span>
+          <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
+                 placeholder="https://github.com/owner/repo   or a folder in one: …/tree/main/addons/my-addon" aria-label="Addon repository link">
+          <button class="btn primary" id="addonAdd" type="submit">Add</button>
+        </form>
+        <div class="add-hint">
+          <span>Addons run as you on this machine, like anything you install. Add the ones you trust.</span>
+          <span class="spacer"></span>
+          <button class="linkish" type="button" id="addonExample">Try the example addon</button>
+          <a class="linkish" href="https://github.com/adatskov-wcpss/animated-fiesta/blob/main/docs/addons.md" target="_blank" rel="noopener">Make your own &rarr;</a>
+        </div>
+        <div id="addonAddMsg"></div>
+      </div>
+      <div class="jobstrip" id="addonJobs" hidden></div>
+      <div class="addon-grid" id="addonList"><div class="skel" style="height:170px"></div><div class="skel" style="height:170px"></div></div>
+    </section>
+
   </main>
 </div>
 
@@ -13481,6 +15272,7 @@ __FORGE_FILE_WEB_BRANDS_JS__
 <script src="/logos.js"></script>
 <script src="/term.js"></script>
 <script src="/app.js"></script>
+<script src="/addons.js"></script>
 </body>
 </html>
 __FORGE_FILE_WEB_INDEX_HTML__
@@ -15221,7 +17013,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.9.0"
+FORGE_VERSION="1.10.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -15855,6 +17647,16 @@ stream_job_view() {
   if [ -n "$result" ]; then
     case "$kind" in
       launch|clone) FORGE_COLOR=$COLOR render_result "$result" ;;
+      addon) printf '%s' "$result" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+what = "linked" if d.get("adopted") else "done"
+print("  \u2714 %s: %s" % (d.get("name") or d.get("id") or "addon", what))
+for w in d.get("warnings") or []:
+    print("  ! %s" % w)
+if d.get("open_url"):
+    print("    open it: %s" % d["open_url"])
+' ;;
       *) printf '%s' "$result" | "$PY" -c '
 import json, sys
 d = json.loads(sys.stdin.read() or "{}")
@@ -16967,6 +18769,27 @@ cmd_clone() {
   stream_job_view clone "Cloning $n" "${a[@]}"
 }
 
+# Addons: apps that install beside the forge (docs/addons.md).
+cmd_addon() {
+  local verb="${1:-list}"; [ $# -gt 0 ] && shift
+  case "$verb" in
+    install|update|uninstall|action)
+      [ -n "${1:-}" ] || die "usage: selkies-cli addon $verb ID"
+      stream_job_view addon "Addon: $verb $1" addon "$verb" "$@"
+      ;;
+    list|ls)
+      title "Addons" "add one: selkies-cli addon add https://github.com/OWNER/REPO"
+      engine addon list | sed 's/^/  /'
+      printf '\n'
+      ;;
+    add|info|status|remove|sync) engine addon "$verb" "$@" | sed 's/^E /  ✘ /; s/^/  /' ;;
+    help|-h|--help)
+      printf '  selkies-cli addon list | add LINK | info ID | install ID [--set K=V] | update ID\n'
+      printf '                    | uninstall ID [--purge] | remove ID | action ID ACTION | status ID\n' ;;
+    *) die "unknown addon command: $verb (try: selkies-cli addon help)" ;;
+  esac
+}
+
 cmd_jobs() {
   title "Jobs" "launches, backups and clones, from the web UI and the terminal"
   engine jobs | sed 's/^/  /'
@@ -17147,10 +18970,11 @@ main() {
   local -a ORIG_ARGS=("$@")
   # Verbs that take desktop names: run them straight after the usual setup.
   case "${1:-}" in
-    backup|backups|restore-backup|clone|jobs|idle)
+    backup|backups|restore-backup|clone|jobs|idle|addon|addons)
       local verb="$1"; shift
       ensure_dirs; preflight; extract_payload
       case "$verb" in
+        addon|addons) cmd_addon "$@" ;;
         backup) cmd_backup "$@" ;;
         backups) cmd_backups "$@" ;;
         restore-backup) cmd_restore_backup "$@" ;;
@@ -17454,6 +19278,16 @@ stream_job_view() {
   if [ -n "$result" ]; then
     case "$kind" in
       launch|clone) FORGE_COLOR=$COLOR render_result "$result" ;;
+      addon) printf '%s' "$result" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+what = "linked" if d.get("adopted") else "done"
+print("  \u2714 %s: %s" % (d.get("name") or d.get("id") or "addon", what))
+for w in d.get("warnings") or []:
+    print("  ! %s" % w)
+if d.get("open_url"):
+    print("    open it: %s" % d["open_url"])
+' ;;
       *) printf '%s' "$result" | "$PY" -c '
 import json, sys
 d = json.loads(sys.stdin.read() or "{}")
@@ -18566,6 +20400,27 @@ cmd_clone() {
   stream_job_view clone "Cloning $n" "${a[@]}"
 }
 
+# Addons: apps that install beside the forge (docs/addons.md).
+cmd_addon() {
+  local verb="${1:-list}"; [ $# -gt 0 ] && shift
+  case "$verb" in
+    install|update|uninstall|action)
+      [ -n "${1:-}" ] || die "usage: selkies-cli addon $verb ID"
+      stream_job_view addon "Addon: $verb $1" addon "$verb" "$@"
+      ;;
+    list|ls)
+      title "Addons" "add one: selkies-cli addon add https://github.com/OWNER/REPO"
+      engine addon list | sed 's/^/  /'
+      printf '\n'
+      ;;
+    add|info|status|remove|sync) engine addon "$verb" "$@" | sed 's/^E /  ✘ /; s/^/  /' ;;
+    help|-h|--help)
+      printf '  selkies-cli addon list | add LINK | info ID | install ID [--set K=V] | update ID\n'
+      printf '                    | uninstall ID [--purge] | remove ID | action ID ACTION | status ID\n' ;;
+    *) die "unknown addon command: $verb (try: selkies-cli addon help)" ;;
+  esac
+}
+
 cmd_jobs() {
   title "Jobs" "launches, backups and clones, from the web UI and the terminal"
   engine jobs | sed 's/^/  /'
@@ -18746,10 +20601,11 @@ main() {
   local -a ORIG_ARGS=("$@")
   # Verbs that take desktop names: run them straight after the usual setup.
   case "${1:-}" in
-    backup|backups|restore-backup|clone|jobs|idle)
+    backup|backups|restore-backup|clone|jobs|idle|addon|addons)
       local verb="$1"; shift
       ensure_dirs; preflight; extract_payload
       case "$verb" in
+        addon|addons) cmd_addon "$@" ;;
         backup) cmd_backup "$@" ;;
         backups) cmd_backups "$@" ;;
         restore-backup) cmd_restore_backup "$@" ;;

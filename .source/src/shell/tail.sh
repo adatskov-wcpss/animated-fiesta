@@ -141,6 +141,16 @@ stream_job_view() {
   if [ -n "$result" ]; then
     case "$kind" in
       launch|clone) FORGE_COLOR=$COLOR render_result "$result" ;;
+      addon) printf '%s' "$result" | "$PY" -c '
+import json, sys
+d = json.loads(sys.stdin.read() or "{}")
+what = "linked" if d.get("adopted") else "done"
+print("  \u2714 %s: %s" % (d.get("name") or d.get("id") or "addon", what))
+for w in d.get("warnings") or []:
+    print("  ! %s" % w)
+if d.get("open_url"):
+    print("    open it: %s" % d["open_url"])
+' ;;
       *) printf '%s' "$result" | "$PY" -c '
 import json, sys
 d = json.loads(sys.stdin.read() or "{}")
@@ -1253,6 +1263,27 @@ cmd_clone() {
   stream_job_view clone "Cloning $n" "${a[@]}"
 }
 
+# Addons: apps that install beside the forge (docs/addons.md).
+cmd_addon() {
+  local verb="${1:-list}"; [ $# -gt 0 ] && shift
+  case "$verb" in
+    install|update|uninstall|action)
+      [ -n "${1:-}" ] || die "usage: selkies-cli addon $verb ID"
+      stream_job_view addon "Addon: $verb $1" addon "$verb" "$@"
+      ;;
+    list|ls)
+      title "Addons" "add one: selkies-cli addon add https://github.com/OWNER/REPO"
+      engine addon list | sed 's/^/  /'
+      printf '\n'
+      ;;
+    add|info|status|remove|sync) engine addon "$verb" "$@" | sed 's/^E /  ✘ /; s/^/  /' ;;
+    help|-h|--help)
+      printf '  selkies-cli addon list | add LINK | info ID | install ID [--set K=V] | update ID\n'
+      printf '                    | uninstall ID [--purge] | remove ID | action ID ACTION | status ID\n' ;;
+    *) die "unknown addon command: $verb (try: selkies-cli addon help)" ;;
+  esac
+}
+
 cmd_jobs() {
   title "Jobs" "launches, backups and clones, from the web UI and the terminal"
   engine jobs | sed 's/^/  /'
@@ -1433,10 +1464,11 @@ main() {
   local -a ORIG_ARGS=("$@")
   # Verbs that take desktop names: run them straight after the usual setup.
   case "${1:-}" in
-    backup|backups|restore-backup|clone|jobs|idle)
+    backup|backups|restore-backup|clone|jobs|idle|addon|addons)
       local verb="$1"; shift
       ensure_dirs; preflight; extract_payload
       case "$verb" in
+        addon|addons) cmd_addon "$@" ;;
         backup) cmd_backup "$@" ;;
         backups) cmd_backups "$@" ;;
         restore-backup) cmd_restore_backup "$@" ;;

@@ -53,6 +53,11 @@ The menu works with ↑↓ and Enter. `q` goes back.
 | `selkies-cli boot on` / `boot off` / `boot` | Start the web UI by itself at boot, stop doing that, or show the setting |
 | `selkies-cli restore` | Start the desktops that were running before the last reboot or crash |
 | `selkies-cli update` | Get the latest version from GitHub now |
+| `selkies-cli addon list` | Addons, with their state and where to open them |
+| `selkies-cli addon add LINK` | Fetch an addon and check it (nothing is installed yet). A GitHub link, a `…/tree/BRANCH/folder` link, any git URL with `#folder`, or a local folder |
+| `selkies-cli addon install ID [--set KEY=VALUE]` | Install it (or link it, when it's already on the machine), with live progress |
+| `selkies-cli addon update ID` · `uninstall ID [--purge]` · `remove ID` | Fetch new code and update; take it off (keeping its data unless `--purge`); forget it |
+| `selkies-cli addon action ID ACTION` · `status ID` · `info ID` | Run one of its actions; ask it whether it's running; everything the forge knows, as JSON. See [Addons](addons.md) |
 | `selkies-cli uninstall` | Remove everything the forge created, including the command |
 | `selkies-cli help` | Usage |
 
