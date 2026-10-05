@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.4"
+FORGE_VERSION="1.10.5"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -545,7 +545,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="95bc35166ccf7dc969533499b03fd4ae0866c5cb34bb9aec8e862fddf0be35cf"
+FORGE_SHA_FORGE_PATHS_PY="362aeb9fef0a4fc1e09a0879c1b41d93a3e5a163712b77b3564254192de507e0"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -562,8 +562,8 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="c3f52e6c2963f969e3daffbeee49b8ebdee80c02fe23148efc84eb1dad53a7dd"
-FORGE_SHA_WEB_APP_CSS="0ece7db4466fca90ce3fe2cbc5e39a0c6685792fa69cb3a13a1243a27adf4a69"
+FORGE_SHA_WEB_ADDONS_JS="b9e6e9a63ac595c56dd97ab69a9ab356c2de9dcaaf889881630d4a90d8812cd8"
+FORGE_SHA_WEB_APP_CSS="dc8b6c720ce2811c9d93eb68b1688c1e57deb8fd4a8b3adf82a3d46222433a2d"
 FORGE_SHA_WEB_APP_JS="5ad2b3fee6a67b51c8d3067de9bbe6a30ff871d76febe31301848e9ae5b6cb57"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="1bdaf4236273c29431c47e903799fc37c0b4e9f5b1bff0604b25dc815717963b"
-FORGE_PAYLOAD_SHA="32ad21a9a30acca406b3daa318f80c7632d5e1da914d181cb36873a0afc980bd"
+FORGE_SHA_SELKIES_CLI="1b95c3f8b6896491de89189b9803edd7b9f07071bfcbb1c5c594d4f0d0452377"
+FORGE_PAYLOAD_SHA="c1bda77969fc6cf06397869cf48362f3cd16ff89556c83a1dede3f9bbc2c45bc"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -7642,7 +7642,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.4"
+VERSION = "1.10.5"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11609,61 +11609,81 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     m = String(source || "").match(/^(https:\/\/gitlab\.com\/[^/]+\/[^/#]+?)(?:\.git)?(?:\/-\/tree\/.*)?(?:#.*)?$/);
     return m ? m[1] + "/-/commit/" + sha : null;
   }
-  function commitLine(c, source) {
+  var UI = {
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+    folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+  };
+
+  // One commit on the timeline: a node, the short hash (linked to the forge
+  // host when we know it), the message, who and when.
+  function commitItem(c, source, kind) {
     var url = commitUrl(source, c.commit);
-    var sha = '<span class="up-sha">' + h(c.short || String(c.commit || "").slice(0, 7)) + "</span>";
-    return '<div class="up-commit">' + (url ? '<a href="' + h(url) + '" target="_blank" rel="noopener">' + sha + "</a>" : sha) +
-      '<div class="up-msg"><b>' + h(c.subject || "(no message)") + "</b><span>" + h([c.author, ago(c.date)].filter(Boolean).join(" \u00b7 ")) + "</span></div></div>";
+    var sha = '<span class="uc-sha">' + h(c.short || String(c.commit || "").slice(0, 7)) + "</span>";
+    return '<div class="uc-item ' + kind + '"><span class="uc-node"></span>' +
+      (url ? '<a href="' + h(url) + '" target="_blank" rel="noopener" title="See the commit">' + sha + "</a>" : sha) +
+      '<div class="uc-msg"><b>' + h(c.subject || "(no message)") + "</b><span>" + h([c.author, ago(c.date)].filter(Boolean).join(" · ")) + "</span></div>" +
+      (kind === "cur" ? '<span class="uc-tag">installed</span>' : kind === "new" ? '<span class="uc-tag new">new</span>' : "") + "</div>";
+  }
+
+  function hero(kind, icon, title, sub, extra) {
+    return '<div class="uc-hero ' + kind + '"><div class="uc-orb">' + icon + "</div>" +
+      '<div class="uc-txt"><div class="uc-title">' + title + '</div><div class="uc-sub">' + sub + "</div></div>" + (extra || "") + "</div>";
   }
 
   function checkUpdates(a) {
-    var logo = '<div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>";
-    F.openModal("Updates \u00b7 " + a.name, '<div class="upcheck">' +
-      '<div class="up-head">' + logo + '<div><b>' + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
-      '<div class="up-state checking"><span class="spin-sm"></span><div><b>Checking for new commits\u2026</b>' +
-      "<span>Asking " + h(String(a.source).replace(/^https?:\/\//, "").split("/")[0] || "the repository") + " what is newest.</span></div></div></div>");
+    var host = String(a.source || "").replace(/^https?:\/\//, "").split("/")[0] || "the repository";
+    F.openModal("Updates · " + a.name, '<div class="upcheck">' +
+      '<div class="uc-app"><div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>" +
+      "<div><b>" + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
+      '<div class="uc-body">' + hero("checking", '<span class="uc-spin"></span>', "Checking for updates…",
+        "Asking " + h(host) + " for its newest commit.") + "</div></div>");
     F.api("/api/addons/" + encodeURIComponent(a.id) + "/check").then(function (r) {
-      var body = $("#modalBody .upcheck");
+      var body = $("#modalBody .uc-body");
       if (!body) return;
-      var st = body.querySelector(".up-state");
       var html, local = r.local || {};
+      var checked = '<span class="uc-when">Checked ' + ago(r.checked) + "</span>";
       if (r.kind !== "git") {
-        html = '<div class="up-state info">' + F.I.upd + "<div><b>Added from a folder</b><span>" + h(r.note) + "</span></div></div>" +
-          '<div class="row end"><button class="btn primary" id="upGo">' + F.I.upd + " Copy it again</button></div>";
+        html = hero("info", UI.folder, "Added from a folder", h(r.note)) +
+          '<div class="uc-foot"><span class="spacer"></span><button class="uc-go" id="upGo">' + UI.down + "<span>Copy it again</span></button></div>";
       } else if (r.up_to_date) {
-        html = '<div class="up-state ok">' + I_CHECK + "<div><b>Up to date</b><span>" +
-          (r.note ? h(r.note) : "No new commits since this addon was fetched.") + "</span></div></div>" +
-          '<div class="up-k">Installed</div>' + commitLine(local, r.source) +
-          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
-          '<button class="btn ghost" id="upAgain">Check again</button><button class="btn" id="upClose">Close</button></div>';
+        html = hero("ok", UI.check, "You're up to date",
+          r.note ? h(r.note) : "Nothing new since <span class=\"uc-pill\">" + h(local.short || "") + "</span>.") +
+          '<div class="uc-tl single">' + commitItem(local, r.source, "cur") + "</div>" +
+          '<div class="uc-foot">' + checked + '<span class="spacer"></span><button class="uc-btn" id="upAgain">Check again</button>' +
+          '<button class="uc-btn" id="upClose">Done</button></div>';
       } else {
         var rem = r.remote || {}, commits = r.commits || [];
-        var ver = rem.version && rem.version !== (local.installed_version || local.version)
-          ? '<span class="up-ver"><span>v' + h(local.installed_version || local.version) + '</span>\u2192<b>v' + h(rem.version) + "</b></span>" : "";
-        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available <span class=\"new-chip\">NEW</span></b><span>Commit <span class=\"mono\">" + h(rem.short) +
-          "</span> is available to update to" + (commits.length > 1 ? ", " + commits.length + (r.more ? "+" : "") + " new commits" : "") + ".</span></div>" + ver + "</div>" +
-          '<div class="up-k">New</div>' + commits.slice(0, 8).map(function (c) { return commitLine(c, r.source); }).join("") +
-          (commits.length > 8 ? '<div class="faint up-more">and ' + (commits.length - 8) + " more</div>" : "") +
-          '<div class="up-k">Installed now</div>' + commitLine(local, r.source) +
-          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
-          '<button class="btn ghost" id="upClose">Later</button><button class="btn upd" id="upGo">' + F.I.upd +
-          " Update to " + h(rem.short) + "</button></div>";
+        var from = local.installed_version || local.version;
+        var ver = rem.version && rem.version !== from
+          ? '<div class="uc-ver"><span>v' + h(from) + "</span>" + UI.arrow + "<b>v" + h(rem.version) + "</b></div>" : "";
+        var n = commits.length + (r.more ? "+" : "");
+        html = hero("new", UI.down, 'Update available <span class="new-chip">NEW</span>',
+          'Commit <span class="uc-pill">' + h(rem.short) + "</span> is ready to install" +
+          (commits.length > 1 ? " · " + n + " new commits" : ""), ver) +
+          '<div class="uc-k">What’s new</div>' +
+          '<div class="uc-tl">' + commits.slice(0, 8).map(function (c) { return commitItem(c, r.source, "new"); }).join("") +
+          (commits.length > 8 ? '<div class="uc-more">and ' + (commits.length - 8) + " more</div>" : "") +
+          commitItem(local, r.source, "cur") + "</div>" +
+          '<div class="uc-foot">' + checked + '<span class="spacer"></span><button class="uc-btn" id="upClose">Later</button>' +
+          '<button class="uc-go" id="upGo">' + UI.down + "<span>Update to " + h(rem.short) + "</span></button></div>";
       }
-      st.outerHTML = html;
+      body.innerHTML = html;
       var go = $("#upGo"), again = $("#upAgain"), close = $("#upClose");
       if (go) go.onclick = function () { runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name); };
       if (again) again.onclick = function () { checkUpdates(a); };
       if (close) close.onclick = F.closeModal;
       load();
     }).catch(function (e) {
-      var st = $("#modalBody .up-state");
-      if (st) st.outerHTML = '<div class="up-state bad">' + F.I.close + "<div><b>Could not check</b><span>" + h(e.message) + "</span></div></div>" +
-        '<div class="row end"><button class="btn" id="upAgain">Try again</button></div>';
-      var again = $("#upAgain");
-      if (again) again.onclick = function () { checkUpdates(a); };
+      var body = $("#modalBody .uc-body");
+      if (!body) return;
+      body.innerHTML = hero("bad", UI.x, "Couldn’t check", h(e.message)) +
+        '<div class="uc-foot"><span class="spacer"></span><button class="uc-btn" id="upAgain">Try again</button></div>';
+      $("#upAgain").onclick = function () { checkUpdates(a); };
     });
   }
-  var I_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 10"/></svg>';
 
   /* -------------------------------------------------------------- open */
   // The same chooser as a desktop's: this machine, this network, a serveo
@@ -13451,56 +13471,149 @@ html[data-theme="ember"] {
   .lk-acts { width: 100%; justify-content: flex-end; }
 }
 
-/* ================================================================ addon update check */
-.upcheck { display: grid; gap: 10px; }
-.up-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
-.up-head b { display: block; font-size: 16px; }
-.up-head .mono { font-size: 12px; color: var(--dim-2); }
-.up-state { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: var(--r-m); border: 1px solid var(--line); background: rgba(var(--ink), 0.03); }
-.up-state > svg, .up-state > .spin-sm { width: 26px; height: 26px; flex: none; }
-.up-state > .spin-sm { width: 20px; height: 20px; margin: 3px; }
-.up-state > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.up-state b { font-size: 15px; }
-.up-state span { font-size: 13px; color: var(--dim); }
-.up-state.ok { border-color: rgba(61, 220, 151, 0.4); background: rgba(61, 220, 151, 0.07); }
-.up-state.ok > svg { color: var(--ok); }
-.up-state.new { border-color: rgba(var(--acc-rgb), 0.45); background: var(--acc-soft); }
-.up-state.new > svg { color: var(--acc); }
-.up-state.bad { border-color: rgba(255, 107, 126, 0.45); }
-.up-state.bad > svg { color: var(--bad); }
-.up-ver { display: flex; align-items: center; gap: 8px; flex: none; font: 12.5px var(--mono); color: var(--dim); }
-.up-ver b { color: var(--txt); }
-.up-k { margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim-2); }
-.up-commit { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-s); min-width: 0; }
-.up-sha { display: inline-block; padding: 3px 8px; border-radius: 7px; font: 600 12px var(--mono); background: rgba(var(--ink), 0.06);
-          border: 1px solid var(--line); color: var(--txt); flex: none; }
-.up-commit a { text-decoration: none; }
-.up-commit a:hover .up-sha { border-color: var(--acc); color: var(--acc); }
-.up-msg { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.up-msg b { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.up-msg span { font-size: 12px; color: var(--dim-2); }
-.up-more { font-size: 12px; padding-left: 4px; }
-.up-foot { align-items: center; gap: 8px; margin-top: 8px; }
-.up-foot .faint { font-size: 12px; color: var(--dim-2); }
-@media (max-width: 620px) { .up-state { flex-wrap: wrap; } .up-ver { width: 100%; } }
-
 /* ================================================================ addon cards: status pill, updates */
 .ad-head .pill { flex: none; white-space: nowrap; align-self: flex-start; }
-/* an update waiting: green, hard to miss, in every theme */
-.ad.has-update { border-color: rgba(61, 220, 151, 0.5); box-shadow: var(--sh), 0 0 0 1px rgba(61, 220, 151, 0.12), 0 0 46px -14px rgba(61, 220, 151, 0.45); }
-html body .ad.has-update:hover { border-color: rgba(61, 220, 151, 0.7); }
-.ad-note.update { align-items: center; border-color: rgba(61, 220, 151, 0.5); background: rgba(61, 220, 151, 0.1); color: var(--ok-txt); }
-.ad-note.update b { color: var(--ok-txt); }
-.new-chip { display: inline-flex; align-items: center; flex: none; padding: 2px 7px; border-radius: 999px; background: var(--ok); color: #03140b;
-            font: 800 10px/1.4 var(--mono); letter-spacing: 0.12em; box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: newglow 2.2s ease-out infinite; }
-@keyframes newglow { 0% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.55); } 70% { box-shadow: 0 0 0 7px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
-html.lite .new-chip { animation: none; }
-html body .btn.upd { background: #3ddc97; border-color: transparent; color: #03140b; font-weight: 700;
-                     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 8px 22px -10px rgba(61, 220, 151, 0.8); }
-html body .btn.upd:hover { background: #5ae8ab; border-color: transparent; }
-.up-state.new { border-color: rgba(61, 220, 151, 0.5); background: rgba(61, 220, 151, 0.09); }
-.up-state.new > svg { color: var(--ok); }
-.up-state.new b { display: flex; align-items: center; gap: 8px; }
+
+/* The update green, the same in every theme. */
+:root { --upd: #3ddc97; --upd-hi: #7af5c0; --upd-deep: #16a868; --upd-ink: #03140b; --upd-rgb: 61, 220, 151; }
+
+/* an addon with an update waiting: it glows */
+.ad.has-update { border-color: rgba(var(--upd-rgb), 0.55);
+                 box-shadow: var(--sh), 0 0 0 1px rgba(var(--upd-rgb), 0.14), 0 0 60px -18px rgba(var(--upd-rgb), 0.55); }
+html body .ad.has-update:hover { border-color: rgba(var(--upd-rgb), 0.75); }
+.ad-note.update { position: relative; overflow: hidden; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 14px;
+                  border-color: rgba(var(--upd-rgb), 0.55); color: var(--txt);
+                  background: radial-gradient(120% 180% at 0% 0%, rgba(var(--upd-rgb), 0.24), transparent 60%), rgba(var(--upd-rgb), 0.08);
+                  box-shadow: 0 0 0 1px rgba(var(--upd-rgb), 0.1), 0 0 26px -8px rgba(var(--upd-rgb), 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.07); }
+.ad-note.update b { color: var(--upd-hi); }
+html[data-theme="daylight"] .ad-note.update b { color: var(--upd-deep); }
+.ad-note.update::after, .uc-hero.new::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.10) 45%, transparent 60%);
+  transform: translateX(-120%); animation: ucsheen 3.6s ease-in-out infinite; }
+@keyframes ucsheen { 0%, 35% { transform: translateX(-120%); } 75%, 100% { transform: translateX(120%); } }
+
+html body .new-chip { display: inline-flex; align-items: center; flex: none; padding: 3px 8px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--upd-hi), var(--upd)); color: var(--upd-ink);
+  font: 800 10px/1.3 var(--mono); letter-spacing: 0.14em; animation: newglow 2.2s ease-out infinite; }
+@keyframes newglow { 0% { box-shadow: 0 0 0 0 rgba(var(--upd-rgb), 0.6), 0 0 14px rgba(var(--upd-rgb), 0.5); }
+                     70% { box-shadow: 0 0 0 8px rgba(var(--upd-rgb), 0), 0 0 14px rgba(var(--upd-rgb), 0.5); }
+                     100% { box-shadow: 0 0 0 0 rgba(var(--upd-rgb), 0), 0 0 14px rgba(var(--upd-rgb), 0.5); } }
+
+/* the pill-shaped green button: on cards and in the update view */
+html body .btn.upd, .uc-go { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 999px; background: linear-gradient(135deg, var(--upd-hi), var(--upd) 55%, var(--upd-deep));
+  color: var(--upd-ink); font: inherit; font-weight: 750; cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 10px 28px -10px rgba(var(--upd-rgb), 0.9), 0 0 0 1px rgba(var(--upd-rgb), 0.35);
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), filter 0.15s; }
+html body .btn.upd:hover, .uc-go:hover { transform: translateY(-1px); filter: brightness(1.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 16px 36px -10px rgba(var(--upd-rgb), 1), 0 0 0 1px rgba(var(--upd-rgb), 0.5); }
+html body .btn.upd:active, .uc-go:active { transform: translateY(0); }
+html body .btn.upd svg, .uc-go svg { width: 16px; height: 16px; }
+.uc-go { height: 46px; padding: 0 24px; font-size: 14.5px; }
+.uc-go::after, html body .btn.upd::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.45) 46%, transparent 62%);
+  transform: translateX(-130%); animation: ucsheen 3.2s ease-in-out infinite 0.8s; }
+
+/* ================================================================ the update view */
+.upcheck { display: grid; gap: 14px; }
+.uc-app { display: flex; align-items: center; gap: 14px; }
+.uc-app b { display: block; font-size: 17px; letter-spacing: -0.01em; }
+.uc-app .mono { font-size: 12px; color: var(--dim-2); }
+.uc-body { display: grid; gap: 14px; }
+
+.uc-hero { position: relative; overflow: hidden; display: flex; align-items: center; gap: 18px; padding: 22px 24px; border-radius: 24px;
+           border: 1px solid var(--line-2); background: rgba(var(--ink), 0.03); }
+.uc-orb { position: relative; width: 56px; height: 56px; flex: none; border-radius: 50%; display: grid; place-items: center;
+          background: rgba(var(--ink), 0.08); color: var(--txt); }
+.uc-orb svg { width: 26px; height: 26px; position: relative; z-index: 1; }
+.uc-txt { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.uc-title { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 750; letter-spacing: -0.02em; color: var(--txt); }
+.uc-sub { font-size: 13.5px; color: var(--dim); }
+.uc-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font: 700 12px var(--mono); vertical-align: 1px;
+           background: rgba(var(--ink), 0.08); color: var(--txt); border: 1px solid var(--line-2); }
+
+.uc-hero.new { border-color: rgba(var(--upd-rgb), 0.6);
+  background: radial-gradient(130% 160% at 0% 0%, rgba(var(--upd-rgb), 0.28), transparent 55%),
+              radial-gradient(100% 140% at 100% 100%, rgba(var(--upd-rgb), 0.12), transparent 60%), rgba(var(--upd-rgb), 0.06);
+  box-shadow: 0 0 0 1px rgba(var(--upd-rgb), 0.14), 0 22px 60px -22px rgba(var(--upd-rgb), 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+.uc-hero.new .uc-orb, .uc-hero.ok .uc-orb { color: var(--upd-ink);
+  background: radial-gradient(circle at 32% 28%, var(--upd-hi), var(--upd) 55%, var(--upd-deep));
+  box-shadow: 0 0 0 6px rgba(var(--upd-rgb), 0.14), 0 0 30px rgba(var(--upd-rgb), 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+.uc-hero.new .uc-orb::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(var(--upd-rgb), 0.7);
+  animation: ucring 2.2s ease-out infinite; }
+@keyframes ucring { 0% { transform: scale(0.9); opacity: 0.9; } 100% { transform: scale(1.45); opacity: 0; } }
+.uc-hero.new .uc-pill { background: rgba(var(--upd-rgb), 0.18); border-color: rgba(var(--upd-rgb), 0.5); color: var(--upd-hi); }
+html[data-theme="daylight"] .uc-hero.new .uc-pill { color: var(--upd-deep); }
+
+.uc-hero.ok { border-color: rgba(var(--upd-rgb), 0.4);
+  background: radial-gradient(130% 160% at 0% 0%, rgba(var(--upd-rgb), 0.16), transparent 55%), rgba(var(--upd-rgb), 0.04); }
+.uc-hero.ok .uc-orb { box-shadow: 0 0 0 6px rgba(var(--upd-rgb), 0.1), 0 0 22px rgba(var(--upd-rgb), 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+.uc-hero.checking .uc-orb { background: rgba(var(--ink), 0.05); }
+.uc-spin { width: 34px; height: 34px; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 20%, var(--acc) 70%, transparent 71%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: spinlk 0.9s linear infinite; }
+.uc-hero.bad { border-color: rgba(255, 107, 126, 0.5); background: radial-gradient(130% 160% at 0% 0%, rgba(255, 107, 126, 0.16), transparent 55%); }
+.uc-hero.bad .uc-orb { background: radial-gradient(circle at 32% 28%, #ff9aa8, #ff5a6e); color: #2a0509; box-shadow: 0 0 24px rgba(255, 107, 126, 0.5); }
+.uc-hero.info .uc-orb { background: var(--acc-soft); color: var(--acc); }
+
+.uc-ver { display: flex; align-items: center; gap: 8px; flex: none; padding: 7px 12px; border-radius: 999px;
+          font: 600 12.5px var(--mono); color: var(--dim); background: rgba(var(--ink), 0.05); border: 1px solid var(--line-2); }
+.uc-ver svg { width: 14px; height: 14px; color: var(--upd); }
+.uc-ver b { color: var(--txt); }
+
+.uc-k { margin: 4px 0 -4px 2px; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--upd); }
+/* the timeline: new commits glow on a line that runs down to what's installed */
+.uc-tl { position: relative; display: grid; gap: 10px; padding-left: 30px; }
+.uc-tl::before { content: ""; position: absolute; left: 10px; top: 22px; bottom: 22px; width: 2px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--upd), rgba(var(--upd-rgb), 0.35) 70%, var(--line-2)); box-shadow: 0 0 10px rgba(var(--upd-rgb), 0.5); }
+.uc-item { position: relative; display: flex; align-items: center; gap: 12px; padding: 13px 15px; border-radius: 16px;
+           border: 1px solid var(--line); background: rgba(var(--ink), 0.025); min-width: 0; }
+.uc-node { position: absolute; left: -26px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%;
+           background: var(--dim-2); box-shadow: 0 0 0 4px var(--bg-2); }
+.uc-item.new { border-color: rgba(var(--upd-rgb), 0.45);
+  background: linear-gradient(90deg, rgba(var(--upd-rgb), 0.14), rgba(var(--upd-rgb), 0.04) 60%, transparent);
+  box-shadow: 0 0 0 1px rgba(var(--upd-rgb), 0.08), 0 0 30px -10px rgba(var(--upd-rgb), 0.6); }
+.uc-item.new .uc-node { background: var(--upd); box-shadow: 0 0 0 4px rgba(var(--upd-rgb), 0.2), 0 0 14px var(--upd); }
+.uc-item.cur { opacity: 0.85; }
+.uc-sha { display: inline-block; padding: 4px 9px; border-radius: 999px; font: 700 12px var(--mono); flex: none;
+          background: rgba(var(--ink), 0.07); border: 1px solid var(--line-2); color: var(--txt); transition: border-color 0.15s, color 0.15s; }
+.uc-item.new .uc-sha { background: rgba(var(--upd-rgb), 0.16); border-color: rgba(var(--upd-rgb), 0.55); color: var(--upd-hi); }
+html[data-theme="daylight"] .uc-item.new .uc-sha { color: var(--upd-deep); }
+.uc-item a { text-decoration: none; }
+.uc-item a:hover .uc-sha { border-color: var(--upd); }
+.uc-msg { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.uc-msg b { font-size: 13.5px; font-weight: 650; color: var(--txt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uc-msg span { font-size: 12px; color: var(--dim-2); }
+.uc-tag { flex: none; padding: 2px 9px; border-radius: 999px; font: 700 10.5px var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+          color: var(--dim); border: 1px solid var(--line-2); }
+.uc-tag.new { color: var(--upd); border-color: rgba(var(--upd-rgb), 0.5); background: rgba(var(--upd-rgb), 0.1); }
+.uc-more { font-size: 12px; color: var(--dim-2); padding-left: 4px; }
+
+.uc-foot { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.uc-when { font-size: 12px; color: var(--dim-2); }
+.uc-tl.single { padding-left: 0; }
+.uc-tl.single::before, .uc-tl.single .uc-node { display: none; }
+.uc-go, .uc-btn { white-space: nowrap; }
+.uc-btn { height: 42px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(var(--ink), 0.04);
+          color: var(--txt); font: inherit; font-weight: 650; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+.uc-btn:hover { background: rgba(var(--ink), 0.08); border-color: var(--dim-2); }
+html.lite .uc-hero.new::after, html.lite .ad-note.update::after, html.lite .uc-go::after, html.lite .btn.upd::after,
+html.lite .uc-hero.new .uc-orb::before, html.lite .new-chip { animation: none; }
+@media (prefers-reduced-motion: reduce) { .uc-hero.new::after, .ad-note.update::after, .uc-go::after, .btn.upd::after, .uc-orb::before { display: none; } }
+@media (max-width: 620px) {
+  .uc-hero { flex-wrap: wrap; padding: 18px; border-radius: 20px; }
+  .uc-ver { width: 100%; justify-content: center; }
+  .uc-tag { display: none; }
+  .uc-foot { flex-wrap: wrap; }
+  .uc-foot .uc-when { width: 100%; text-align: center; order: 9; }
+  .uc-foot .spacer { display: none; }
+  .uc-go { flex: 1; padding: 0 16px; }
+}
+/* dialogs sit on a solid surface: nothing behind them shows through */
+#modalPanel { background: var(--surface); }
+html[data-theme="stealth"] #modalPanel { background: linear-gradient(180deg, #121316, #0c0d0f); }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -17686,7 +17799,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.4"
+FORGE_VERSION="1.10.5"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

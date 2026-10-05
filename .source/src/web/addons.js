@@ -258,61 +258,81 @@
     m = String(source || "").match(/^(https:\/\/gitlab\.com\/[^/]+\/[^/#]+?)(?:\.git)?(?:\/-\/tree\/.*)?(?:#.*)?$/);
     return m ? m[1] + "/-/commit/" + sha : null;
   }
-  function commitLine(c, source) {
+  var UI = {
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+    folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+  };
+
+  // One commit on the timeline: a node, the short hash (linked to the forge
+  // host when we know it), the message, who and when.
+  function commitItem(c, source, kind) {
     var url = commitUrl(source, c.commit);
-    var sha = '<span class="up-sha">' + h(c.short || String(c.commit || "").slice(0, 7)) + "</span>";
-    return '<div class="up-commit">' + (url ? '<a href="' + h(url) + '" target="_blank" rel="noopener">' + sha + "</a>" : sha) +
-      '<div class="up-msg"><b>' + h(c.subject || "(no message)") + "</b><span>" + h([c.author, ago(c.date)].filter(Boolean).join(" \u00b7 ")) + "</span></div></div>";
+    var sha = '<span class="uc-sha">' + h(c.short || String(c.commit || "").slice(0, 7)) + "</span>";
+    return '<div class="uc-item ' + kind + '"><span class="uc-node"></span>' +
+      (url ? '<a href="' + h(url) + '" target="_blank" rel="noopener" title="See the commit">' + sha + "</a>" : sha) +
+      '<div class="uc-msg"><b>' + h(c.subject || "(no message)") + "</b><span>" + h([c.author, ago(c.date)].filter(Boolean).join(" · ")) + "</span></div>" +
+      (kind === "cur" ? '<span class="uc-tag">installed</span>' : kind === "new" ? '<span class="uc-tag new">new</span>' : "") + "</div>";
+  }
+
+  function hero(kind, icon, title, sub, extra) {
+    return '<div class="uc-hero ' + kind + '"><div class="uc-orb">' + icon + "</div>" +
+      '<div class="uc-txt"><div class="uc-title">' + title + '</div><div class="uc-sub">' + sub + "</div></div>" + (extra || "") + "</div>";
   }
 
   function checkUpdates(a) {
-    var logo = '<div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>";
-    F.openModal("Updates \u00b7 " + a.name, '<div class="upcheck">' +
-      '<div class="up-head">' + logo + '<div><b>' + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
-      '<div class="up-state checking"><span class="spin-sm"></span><div><b>Checking for new commits\u2026</b>' +
-      "<span>Asking " + h(String(a.source).replace(/^https?:\/\//, "").split("/")[0] || "the repository") + " what is newest.</span></div></div></div>");
+    var host = String(a.source || "").replace(/^https?:\/\//, "").split("/")[0] || "the repository";
+    F.openModal("Updates · " + a.name, '<div class="upcheck">' +
+      '<div class="uc-app"><div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>" +
+      "<div><b>" + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
+      '<div class="uc-body">' + hero("checking", '<span class="uc-spin"></span>', "Checking for updates…",
+        "Asking " + h(host) + " for its newest commit.") + "</div></div>");
     F.api("/api/addons/" + encodeURIComponent(a.id) + "/check").then(function (r) {
-      var body = $("#modalBody .upcheck");
+      var body = $("#modalBody .uc-body");
       if (!body) return;
-      var st = body.querySelector(".up-state");
       var html, local = r.local || {};
+      var checked = '<span class="uc-when">Checked ' + ago(r.checked) + "</span>";
       if (r.kind !== "git") {
-        html = '<div class="up-state info">' + F.I.upd + "<div><b>Added from a folder</b><span>" + h(r.note) + "</span></div></div>" +
-          '<div class="row end"><button class="btn primary" id="upGo">' + F.I.upd + " Copy it again</button></div>";
+        html = hero("info", UI.folder, "Added from a folder", h(r.note)) +
+          '<div class="uc-foot"><span class="spacer"></span><button class="uc-go" id="upGo">' + UI.down + "<span>Copy it again</span></button></div>";
       } else if (r.up_to_date) {
-        html = '<div class="up-state ok">' + I_CHECK + "<div><b>Up to date</b><span>" +
-          (r.note ? h(r.note) : "No new commits since this addon was fetched.") + "</span></div></div>" +
-          '<div class="up-k">Installed</div>' + commitLine(local, r.source) +
-          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
-          '<button class="btn ghost" id="upAgain">Check again</button><button class="btn" id="upClose">Close</button></div>';
+        html = hero("ok", UI.check, "You're up to date",
+          r.note ? h(r.note) : "Nothing new since <span class=\"uc-pill\">" + h(local.short || "") + "</span>.") +
+          '<div class="uc-tl single">' + commitItem(local, r.source, "cur") + "</div>" +
+          '<div class="uc-foot">' + checked + '<span class="spacer"></span><button class="uc-btn" id="upAgain">Check again</button>' +
+          '<button class="uc-btn" id="upClose">Done</button></div>';
       } else {
         var rem = r.remote || {}, commits = r.commits || [];
-        var ver = rem.version && rem.version !== (local.installed_version || local.version)
-          ? '<span class="up-ver"><span>v' + h(local.installed_version || local.version) + '</span>\u2192<b>v' + h(rem.version) + "</b></span>" : "";
-        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available <span class=\"new-chip\">NEW</span></b><span>Commit <span class=\"mono\">" + h(rem.short) +
-          "</span> is available to update to" + (commits.length > 1 ? ", " + commits.length + (r.more ? "+" : "") + " new commits" : "") + ".</span></div>" + ver + "</div>" +
-          '<div class="up-k">New</div>' + commits.slice(0, 8).map(function (c) { return commitLine(c, r.source); }).join("") +
-          (commits.length > 8 ? '<div class="faint up-more">and ' + (commits.length - 8) + " more</div>" : "") +
-          '<div class="up-k">Installed now</div>' + commitLine(local, r.source) +
-          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
-          '<button class="btn ghost" id="upClose">Later</button><button class="btn upd" id="upGo">' + F.I.upd +
-          " Update to " + h(rem.short) + "</button></div>";
+        var from = local.installed_version || local.version;
+        var ver = rem.version && rem.version !== from
+          ? '<div class="uc-ver"><span>v' + h(from) + "</span>" + UI.arrow + "<b>v" + h(rem.version) + "</b></div>" : "";
+        var n = commits.length + (r.more ? "+" : "");
+        html = hero("new", UI.down, 'Update available <span class="new-chip">NEW</span>',
+          'Commit <span class="uc-pill">' + h(rem.short) + "</span> is ready to install" +
+          (commits.length > 1 ? " · " + n + " new commits" : ""), ver) +
+          '<div class="uc-k">What’s new</div>' +
+          '<div class="uc-tl">' + commits.slice(0, 8).map(function (c) { return commitItem(c, r.source, "new"); }).join("") +
+          (commits.length > 8 ? '<div class="uc-more">and ' + (commits.length - 8) + " more</div>" : "") +
+          commitItem(local, r.source, "cur") + "</div>" +
+          '<div class="uc-foot">' + checked + '<span class="spacer"></span><button class="uc-btn" id="upClose">Later</button>' +
+          '<button class="uc-go" id="upGo">' + UI.down + "<span>Update to " + h(rem.short) + "</span></button></div>";
       }
-      st.outerHTML = html;
+      body.innerHTML = html;
       var go = $("#upGo"), again = $("#upAgain"), close = $("#upClose");
       if (go) go.onclick = function () { runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name); };
       if (again) again.onclick = function () { checkUpdates(a); };
       if (close) close.onclick = F.closeModal;
       load();
     }).catch(function (e) {
-      var st = $("#modalBody .up-state");
-      if (st) st.outerHTML = '<div class="up-state bad">' + F.I.close + "<div><b>Could not check</b><span>" + h(e.message) + "</span></div></div>" +
-        '<div class="row end"><button class="btn" id="upAgain">Try again</button></div>';
-      var again = $("#upAgain");
-      if (again) again.onclick = function () { checkUpdates(a); };
+      var body = $("#modalBody .uc-body");
+      if (!body) return;
+      body.innerHTML = hero("bad", UI.x, "Couldn’t check", h(e.message)) +
+        '<div class="uc-foot"><span class="spacer"></span><button class="uc-btn" id="upAgain">Try again</button></div>';
+      $("#upAgain").onclick = function () { checkUpdates(a); };
     });
   }
-  var I_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 10"/></svg>';
 
   /* -------------------------------------------------------------- open */
   // The same chooser as a desktop's: this machine, this network, a serveo
