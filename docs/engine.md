@@ -138,6 +138,10 @@ sequenceDiagram
 
 A few kilobytes on top of the desktop image, rebuilt in seconds whenever the forge changes. It's what makes desktops behave. See [The forge layer](forge-layer.md).
 
+### 3½. The GPU check
+
+`gpu.py` picks the GPU this desktop gets and, once per image, proves inside the image (as the desktop's own user, with exactly its devices, no network) that it draws (Xvfb glamor, DRI3 up) and which codecs it can encode (pixelflux's probe). The plan pins every GPU guess the base image would make. A desktop that fails with the GPU is retried with hardware encoding off, then without the GPU. See [GPU Smart Passthrough](gpu.md).
+
 ### 4. Start
 
 `docker run` with:
@@ -146,6 +150,7 @@ A few kilobytes on top of the desktop image, rebuilt in seconds whenever the for
 - labels describing everything (`io.selkiesforge.*`)
 - the screen mode (`SELKIES_MANUAL_*` and a locked 96 DPI for fixed; [details](forge-layer.md#screen-modes)) and `MAX_RES=3840x2160` (Xvfb's default 15360×8640 screen is half a gigabyte of framebuffer)
 - sign-in, timezone, PUID/PGID
+- the GPU plan: one render node, its group, and pinned `DRINODE` / `DRI_NODE` / `SELKIES_GPU_ID` ([details](gpu.md))
 
 The run fixes its own refusals: a port someone grabbed (new ports), a name in use (new name), a quota the storage driver refuses (tracked instead of enforced), a CPU count above the machine's (capped). Transient daemon errors are retried.
 

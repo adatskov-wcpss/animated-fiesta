@@ -10,6 +10,7 @@ import shlex
 import time
 import uuid
 
+from . import gpu
 from .host import tz_name
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS, VERSION
 from .ports import alloc_ports, release_port_reservation
@@ -120,8 +121,14 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
         args += ["--storage-opt", "size=%dM" % int(plan["disk_mb"])]
     args += ["-v", "%s:/config" % vol]
 
-    if opts.get("gpu") and os.path.exists("/dev/dri"):
-        args += ["--device", "/dev/dri"]
+    # GPU Smart Passthrough (gpu.py). The launch hands over a checked plan;
+    # a recreate asks for one here. No "gpu" option at all means off.
+    gp = opts.get("gpu_plan")
+    if gp is None and gpu.normalize_mode(opts.get("gpu", False)) != "off":
+        gp = gpu.plan(opts.get("gpu"), image, host, profile=prof,
+                      tried=opts.get("gpu_tried") or (), want=opts.get("gpu_device"))
+    args += ["--label", "%s.gpu=%s" % (LABEL, (gp or {}).get("label", "off"))]
+    args += gpu.docker_bits(gp)
     if opts.get("seccomp_unconfined"):
         args += ["--security-opt", "seccomp=unconfined"]
 

@@ -58,7 +58,8 @@ These are set when you forge a desktop: in the web UI, the CLI prompts, or the [
 | Stop when nobody's watching | The forge default (`FORGE_IDLE_STOP_MIN`, off) | Live, from the menu or `selkies-cli idle` |
 | Sign-in | Off (Kasm always on) | Recreate |
 | Public link | On | Any time, from the menu |
-| GPU (`/dev/dri`), seccomp unconfined | Off | Recreate |
+| GPU ([Smart Passthrough](gpu.md): auto / on / off) | auto | Recreate |
+| Seccomp unconfined | Off | Recreate |
 
 ## Docker labels
 

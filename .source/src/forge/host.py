@@ -130,6 +130,16 @@ def host_info(fresh=False):
     except Exception:
         pass
 
+    try:
+        from .gpu import host_gpus
+        g = host_gpus()
+        prim = next((x for x in g["gpus"] if x["node"] == g.get("primary")), None)
+        info["gpu"] = {"summary": g["summary"], "primary": g.get("primary"),
+                       "vendor": prim and prim["vendor"], "driver": prim and prim.get("driver"),
+                       "count": len(g["gpus"])}
+    except Exception as ex:          # never let GPU detection break the host report
+        info["gpu"] = {"summary": "GPU detection failed: %s" % ex, "primary": None}
+
     cache_put("host", info)
     return info
 

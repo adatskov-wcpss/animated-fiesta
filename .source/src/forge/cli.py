@@ -56,7 +56,7 @@ def cli_launch_stream(args):
     if args.disk:
         plan["disk_mb"] = int(args.disk)
     opts = {"tunnel": not args.no_tunnel, "name": args.name, "autostart": args.autostart,
-            "gpu": args.gpu, "seccomp_unconfined": args.seccomp,
+            "gpu": args.gpu, "gpu_device": args.gpu_device, "seccomp_unconfined": args.seccomp,
             "display": args.display, "resolution": args.resolution,
             "health_timeout": args.timeout, "force": args.force,
             "dry_run": args.dry_run}
@@ -69,6 +69,33 @@ def cli_launch_stream(args):
 
     job = job_put(Job("launch", args.id, entry["name"]))
     return stream_job(job, lambda: launch(args.id, plan, opts, job=job, name=args.name))
+
+
+def cli_gpu(a):
+    """`engine.py gpu [--image IMG]`: the detection report, and optionally the
+    plan a launch of IMG would get (running the in-image check)."""
+    from . import gpu
+    rep = gpu.report(fresh=True)
+    out = {"host": rep["host"]}
+    if a.image:
+        g = gpu.pick(rep["host"])
+        if g and a.fresh:
+            gpu.verify(a.image, g, rep["host"], fresh=True)
+        out["plan"] = gpu.plan("auto", a.image, rep=rep["host"])
+    if a.json:
+        print(json.dumps(out, indent=2, default=str))
+        return 0
+    print(rep["text"])
+    if a.image:
+        p = out["plan"]
+        print("")
+        print("  %s  ->  %s" % (a.image, p["label"]))
+        for n in p["notes"]:
+            print("    - %s" % n)
+        bits = gpu.docker_bits(p)
+        if bits:
+            print("    docker run ... %s" % gpu.shell_quote_args(bits))
+    return 0
 
 
 def stream_job(job, work_fn):
@@ -147,6 +174,11 @@ def main(argv=None):
     p.add_argument("--quiet", action="store_true")
 
     sub.add_parser("host")
+    p = sub.add_parser("gpu", help="GPU Smart Passthrough: what this machine has, and what a "
+                                   "desktop image would get")
+    p.add_argument("--image", help="also check this image (as a launch would)")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--fresh", action="store_true", help="re-run the image check")
     sub.add_parser("status")
     p = sub.add_parser("boot")
     p.add_argument("action", choices=["status", "enable", "disable", "asked"])
@@ -199,7 +231,11 @@ def main(argv=None):
     p.add_argument("--subdomain")
     p.add_argument("--user")
     p.add_argument("--password")
-    p.add_argument("--gpu", action="store_true")
+    p.add_argument("--gpu", nargs="?", const="auto", default="auto", choices=["auto", "on", "off"],
+                   help="GPU Smart Passthrough: auto (default) uses what is checked to work, "
+                        "on forces the GPU in, off keeps it out")
+    p.add_argument("--no-gpu", dest="gpu", action="store_const", const="off")
+    p.add_argument("--gpu-device", help="which GPU: a render node, its index, a driver or a vendor")
     p.add_argument("--seccomp", action="store_true")
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--autostart", action="store_true",
@@ -325,6 +361,8 @@ def main(argv=None):
     if a.cmd == "host":
         print(json.dumps(host_info(fresh=True), indent=2))
         return 0
+    if a.cmd == "gpu":
+        return cli_gpu(a)
     if a.cmd == "doctor":
         print(json.dumps(cli_doctor(), indent=2))
         return 0

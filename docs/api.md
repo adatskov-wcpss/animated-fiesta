@@ -20,7 +20,8 @@ curl -s localhost:8787/api/instances | jq '.instances[] | {name, running, sessio
 | Method & path | Returns |
 |---|---|
 | `GET /api/boot` | Everything the page needs at start: version, host, the public catalog, family labels, tastes, quick picks, real-screenshot index, instances, counts |
-| `GET /api/host` | This machine: arch, cores, memory, disk, Docker version, storage driver, quota support, `/dev/dri` |
+| `GET /api/host` | This machine: arch, cores, memory, disk, Docker version, storage driver, quota support, `/dev/dri`, and a `gpu` summary |
+| `GET /api/gpu` | GPU Smart Passthrough report: every render node, its driver and vendor, NVIDIA toolkit status, V4L2 encoders, and which GPU desktops get |
 | `GET /api/doctor` | The checks shown under *This machine*: `{checks: [{name, ok, detail, fix, severity}], host}` |
 | `GET /api/info/<id>` | Wikipedia text and filtered pictures for a catalog entry |
 | `GET /api/entry/<id>` | One entry, with its plan for this machine (plus Dockerfile and startwm.sh for built entries) |
@@ -49,7 +50,8 @@ Launch options (`opts`):
 | `heal` | `false` to stop the watchdog restarting it after a crash |
 | `display` | `auto` (default), `fit` or `fixed` |
 | `resolution` | For `fixed`, e.g. `"1600x900"` (800×600 to 3840×2160) |
-| `gpu` | Pass `/dev/dri` through |
+| `gpu` | `auto` (default), `on` or `off`: [GPU Smart Passthrough](gpu.md). `true`/`false` from older clients mean `auto`/`off` |
+| `gpu_device` | Which GPU: a render node, index, driver or vendor (optional) |
 | `seccomp_unconfined` | Start with `seccomp=unconfined` (the engine tries this on its own when a session is blocked) |
 | `health_timeout` | Seconds to wait for the web port |
 | `force` | Start even if free memory is below the desktop's floor |

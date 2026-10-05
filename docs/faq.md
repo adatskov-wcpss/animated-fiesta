@@ -28,7 +28,7 @@ Only if you let it. Set **Stop when nobody's watching** when you forge it, or `F
 Browsers and host operating systems usually catch the Super (Windows) key before it reaches the desktop.
 
 **Can I use my GPU?**
-*Pass the GPU through* gives the desktop `/dev/dri`, so Intel and AMD GPUs can be used for rendering. Without it, rendering is in software (llvmpipe), which is fine for desktop work.
+Yes, and by default. [GPU Smart Passthrough](gpu.md) finds your GPU (Intel, AMD, NVIDIA, Raspberry Pi, Arm Mali, Qualcomm, virtual GPUs and more), checks inside the desktop's image that it really draws (and encodes, where the GPU can), gives the desktop just that render node, and falls back to software by itself if anything goes wrong. Set the GPU option to *Off* to keep it out.
 
 **Why do Kasm desktops get a different kind of link?**
 Kasm images serve HTTPS with their own login, so they're tunnelled over TCP rather than HTTP. Anonymous serveo TCP tunnels are short-lived. The local link has no limits.

@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.7.2"
+FORGE_VERSION="1.8.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -530,25 +530,26 @@ FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f307
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
-FORGE_SHA_FORGE_CLI_PY="94174acf723a27bd28d655fe218387ed6137025b8b8be34df8135ac5f7901fc5"
+FORGE_SHA_FORGE_CLI_PY="889abad218bd5c1c005cbcf744ee77d40ded758da83ce497f6380b8c47a76d1a"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
 FORGE_SHA_FORGE_EVENTS_PY="3580b5654e071cb6e59f44c90dcfec9f5ea5d53358190e12722bf6017c497712"
-FORGE_SHA_FORGE_HEALTH_PY="9bb19685643bd2737e17f8551aa7dc843abc4bcb455bfbba4a29720a58fb22a1"
-FORGE_SHA_FORGE_HOST_PY="d6722bb0fdffbf2bd578d1c2360b65d1adf5d832759bfe684c938c433c20e7c9"
+FORGE_SHA_FORGE_GPU_PY="18d779546907e20d334ca27f331d926c33b480b16c560d4ba265b55e0aca4cb3"
+FORGE_SHA_FORGE_HEALTH_PY="ee292cbf761b40ae09b5a7689ff4b5dd6699d5ba6147a7d0dabdbda0ca94788f"
+FORGE_SHA_FORGE_HOST_PY="3cc811b6ed8e8bf76402250d320dd8e0f91315b8ba8f1a1aaeb75184c1382116"
 FORGE_SHA_FORGE_IMAGES_PY="dc8a0d7f70e43494b1d0e99101c233b92691da41e2c03163214021a64d4fb1a5"
 FORGE_SHA_FORGE_INFO_PY="2c7e4c6fb531f111288902458f75491629b546de65301c9613dda0fd5eb3564f"
 FORGE_SHA_FORGE_JOBS_PY="a78f564dadd53f11560bea39907245a2332f9c35402bc1ebe92dd364a1214c86"
-FORGE_SHA_FORGE_LAUNCH_PY="25731de601f0ea04c9e2962813507880f44222f1409ab296887d70450aeaa6ed"
+FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83b0031e53c5a"
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
-FORGE_SHA_FORGE_LIFECYCLE_PY="42aaebadb06200b94e1f62c1fa3c3153f5a9a7e9b2c1c5dfa63aeb63806be9f5"
-FORGE_SHA_FORGE_PATHS_PY="125af92593fd2afa3e1d90d2961cd7be7616f9576fd547c029ecd7bd17deb95e"
+FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
+FORGE_SHA_FORGE_PATHS_PY="e0a9300dbc05cea47ea1df15760c28f884e90d30d4a78223074a2c3e0d4e41da"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
-FORGE_SHA_FORGE_RUNNER_PY="8fa4cfc1c7db1050ac55df3fa8556d50def6c6d01a06891a90560d2465a90236"
+FORGE_SHA_FORGE_RUNNER_PY="65d10364866e5ebf7d409c2113e2e9708337b04ef8555a0bf92ab54ac14c267c"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="ea38a762c313c06f803a0e0fdfdf94c498c0441435b8fb5a6bdb93e359b70be6"
+FORGE_SHA_FORGE_SERVER_PY="6f3e15f6d4c3ac689120ba3c36ea28f84ed84ce16c6fe2ac81e68b2a2b633c67"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -560,16 +561,16 @@ FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768
 FORGE_SHA_FORGE_WATCHDOG_PY="27dc5c8016adeb4ee1ead130bab53ad80a883f9bf8fd8b7cfb794c7fe3a43e1a"
 FORGE_SHA_FORGE_WEBUI_PY="d952965a3e59d3a66e0660d60db9950acfe8ea21f58407fcec354b4eff7040bc"
 FORGE_SHA_WEB_APP_CSS="cde7b0533be9734bfd18d55989987ddb598754dd3bfbf4df0da985dcb3b3061d"
-FORGE_SHA_WEB_APP_JS="9913e0aa265faf1026996edda7074b622055ff50fbb33ae703d208c40cf4947c"
+FORGE_SHA_WEB_APP_JS="e6300bbe378cee9416883e37c3ea78b142d37ffc9efbc635e5e3fc04bf2013fa"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="f830edb32b2fb69a6918064d08bc2cfe33949dba14c4960a789372e203e1e409"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="4737d68a31fdb9efeef3ad44bca17ef8233514c73a5f65b2e1a4d492bc9f2380"
-FORGE_PAYLOAD_SHA="f2ae0f77c30b03ce99d6289ae87117c339afc552e8e04f8cf8f43a59f93aa656"
-FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
+FORGE_SHA_SELKIES_CLI="181c326b07c4177a7c0dc459cd6bba1d4aace6c685627628e335b693a476218e"
+FORGE_PAYLOAD_SHA="7d0184687937a8d3d5c24895bb83a61af7157e8090bd4e92c43b07a83f4e00b2"
+FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -1657,7 +1658,7 @@ def cli_launch_stream(args):
     if args.disk:
         plan["disk_mb"] = int(args.disk)
     opts = {"tunnel": not args.no_tunnel, "name": args.name, "autostart": args.autostart,
-            "gpu": args.gpu, "seccomp_unconfined": args.seccomp,
+            "gpu": args.gpu, "gpu_device": args.gpu_device, "seccomp_unconfined": args.seccomp,
             "display": args.display, "resolution": args.resolution,
             "health_timeout": args.timeout, "force": args.force,
             "dry_run": args.dry_run}
@@ -1670,6 +1671,33 @@ def cli_launch_stream(args):
 
     job = job_put(Job("launch", args.id, entry["name"]))
     return stream_job(job, lambda: launch(args.id, plan, opts, job=job, name=args.name))
+
+
+def cli_gpu(a):
+    """`engine.py gpu [--image IMG]`: the detection report, and optionally the
+    plan a launch of IMG would get (running the in-image check)."""
+    from . import gpu
+    rep = gpu.report(fresh=True)
+    out = {"host": rep["host"]}
+    if a.image:
+        g = gpu.pick(rep["host"])
+        if g and a.fresh:
+            gpu.verify(a.image, g, rep["host"], fresh=True)
+        out["plan"] = gpu.plan("auto", a.image, rep=rep["host"])
+    if a.json:
+        print(json.dumps(out, indent=2, default=str))
+        return 0
+    print(rep["text"])
+    if a.image:
+        p = out["plan"]
+        print("")
+        print("  %s  ->  %s" % (a.image, p["label"]))
+        for n in p["notes"]:
+            print("    - %s" % n)
+        bits = gpu.docker_bits(p)
+        if bits:
+            print("    docker run ... %s" % gpu.shell_quote_args(bits))
+    return 0
 
 
 def stream_job(job, work_fn):
@@ -1748,6 +1776,11 @@ def main(argv=None):
     p.add_argument("--quiet", action="store_true")
 
     sub.add_parser("host")
+    p = sub.add_parser("gpu", help="GPU Smart Passthrough: what this machine has, and what a "
+                                   "desktop image would get")
+    p.add_argument("--image", help="also check this image (as a launch would)")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--fresh", action="store_true", help="re-run the image check")
     sub.add_parser("status")
     p = sub.add_parser("boot")
     p.add_argument("action", choices=["status", "enable", "disable", "asked"])
@@ -1800,7 +1833,11 @@ def main(argv=None):
     p.add_argument("--subdomain")
     p.add_argument("--user")
     p.add_argument("--password")
-    p.add_argument("--gpu", action="store_true")
+    p.add_argument("--gpu", nargs="?", const="auto", default="auto", choices=["auto", "on", "off"],
+                   help="GPU Smart Passthrough: auto (default) uses what is checked to work, "
+                        "on forces the GPU in, off keeps it out")
+    p.add_argument("--no-gpu", dest="gpu", action="store_const", const="off")
+    p.add_argument("--gpu-device", help="which GPU: a render node, its index, a driver or a vendor")
     p.add_argument("--seccomp", action="store_true")
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--autostart", action="store_true",
@@ -1926,6 +1963,8 @@ def main(argv=None):
     if a.cmd == "host":
         print(json.dumps(host_info(fresh=True), indent=2))
         return 0
+    if a.cmd == "gpu":
+        return cli_gpu(a)
     if a.cmd == "doctor":
         print(json.dumps(cli_doctor(), indent=2))
         return 0
@@ -2240,6 +2279,689 @@ def last_deliberate(name, within=180.0):
     rows = recent(name, limit=50, since=time.time() - within, kinds=DELIBERATE)
     return rows[-1] if rows else None
 __FORGE_FILE_FORGE_EVENTS_PY__
+  cat > "$FORGE_APP/forge/gpu.py" <<'__FORGE_FILE_FORGE_GPU_PY__'
+"""
+Selkies Forge engine - gpu
+
+GPU Smart Passthrough: find every GPU on this machine, work out what each one
+can really do inside a desktop, hand Docker exactly that and nothing more, and
+step back to software the moment something does not hold.
+
+Four stages, each one safe on its own:
+
+  detect   read-only: sysfs render nodes, kernel drivers, PCI / devicetree
+           vendors, the NVIDIA driver and container toolkit, V4L2 encoders.
+           Nothing is opened or loaded on the host.
+  verify   inside the desktop's own image, as the same unprivileged user the
+           desktop runs as, with exactly the devices it will get: start Xvfb
+           with glamor on the render node and check DRI3 came up (GPU drawing),
+           and ask pixelflux which codecs the node can encode (what Selkies
+           itself asks). Cached per image + GPU + kernel, so it runs once.
+  plan     the docker arguments: one render node (not all of /dev/dri), its
+           group, and settings that pin the base image's guesses ("none",
+           never empty: s6-overlay drops empty variables). The base
+           image switches VA-API encoding on for any renderD128 it sees and
+           glamor on for any render node; on a GPU that cannot do one of them
+           (a Raspberry Pi has no VA-API, many VMs have no 3D) that guess is
+           what breaks the stream. The plan sets each one to what verify saw.
+  fall back
+           if a desktop still fails with the GPU on, the launch retries with
+           hardware encoding off, then with the GPU off (health.pick_fix).
+
+Modes (opts["gpu"]): "auto" (default) uses what verify proves works; "on"
+passes the best GPU through even if verify fails, and never falls back; "off"
+passes nothing. True / False from older forges mean "auto" / "off".
+"""
+
+import json
+import os
+import re
+import shlex
+import uuid
+
+from .util import cache_get, cache_put, have, run
+
+
+MODES = ("auto", "on", "off")
+
+# kernel driver -> (vendor key, vendor name, can draw 3D)
+DRIVERS = {
+    "i915": ("intel", "Intel", True),
+    "xe": ("intel", "Intel", True),
+    "amdgpu": ("amd", "AMD", True),
+    "radeon": ("amd", "AMD (radeon)", True),
+    "nvidia": ("nvidia", "NVIDIA", True),
+    "nvidia-drm": ("nvidia", "NVIDIA", True),
+    "nouveau": ("nouveau", "NVIDIA (nouveau)", True),
+    "v3d": ("broadcom", "Broadcom VideoCore", True),
+    "vc4": ("broadcom", "Broadcom VideoCore", True),
+    "panfrost": ("arm", "Arm Mali", True),
+    "panthor": ("arm", "Arm Mali", True),
+    "lima": ("arm", "Arm Mali (Utgard)", True),
+    "mali": ("arm", "Arm Mali (vendor driver)", False),
+    "mali_kbase": ("arm", "Arm Mali (vendor driver)", False),
+    "msm": ("qualcomm", "Qualcomm Adreno", True),
+    "msm_drm": ("qualcomm", "Qualcomm Adreno", True),
+    "virtio_gpu": ("virtio", "virtio-gpu (virtual machine)", True),
+    "virtio-pci": ("virtio", "virtio-gpu (virtual machine)", True),
+    "vmwgfx": ("vmware", "VMware SVGA", True),
+    "etnaviv": ("vivante", "Vivante", True),
+    "asahi": ("apple", "Apple AGX", True),
+    "powervr": ("imagination", "Imagination PowerVR", True),
+    "pvrsrvkm": ("imagination", "Imagination PowerVR (vendor driver)", False),
+    "tegra": ("tegra", "NVIDIA Tegra", True),
+    "nvgpu": ("tegra", "NVIDIA Tegra", True),
+    "host1x": ("tegra", "NVIDIA Tegra", True),
+    "rockchip-drm": ("rockchip", "Rockchip display", False),
+    "mediatek-drm": ("mediatek", "MediaTek display", False),
+    "simple-framebuffer": ("simple", "firmware framebuffer", False),
+    "simpledrm": ("simple", "firmware framebuffer", False),
+    "bochs-drm": ("bochs", "QEMU standard VGA", False),
+    "bochs": ("bochs", "QEMU standard VGA", False),
+    "cirrus": ("cirrus", "Cirrus VGA", False),
+    "cirrus-qemu": ("cirrus", "Cirrus VGA", False),
+    "ast": ("aspeed", "ASPEED BMC", False),
+    "mgag200": ("matrox", "Matrox G200", False),
+    "hyperv_drm": ("hyperv", "Hyper-V display", False),
+}
+
+PCI_VENDORS = {
+    "0x8086": ("intel", "Intel", True),
+    "0x1002": ("amd", "AMD", True),
+    "0x10de": ("nvidia", "NVIDIA", True),
+    "0x1af4": ("virtio", "virtio-gpu (virtual machine)", True),
+    "0x15ad": ("vmware", "VMware SVGA", True),
+    "0x1234": ("bochs", "QEMU standard VGA", False),
+    "0x1013": ("cirrus", "Cirrus VGA", False),
+    "0x1a03": ("aspeed", "ASPEED BMC", False),
+    "0x102b": ("matrox", "Matrox G200", False),
+    "0x1414": ("hyperv", "Hyper-V display", False),
+}
+
+# devicetree vendor prefix -> vendor key, for SoC GPUs with no PCI ids
+DT_VENDORS = {"brcm": "broadcom", "arm": "arm", "qcom": "qualcomm", "rockchip": "rockchip",
+              "amlogic": "arm", "allwinner": "arm", "mediatek": "mediatek", "apple": "apple",
+              "nvidia": "tegra", "vivante": "vivante", "img": "imagination", "samsung": "arm"}
+
+# Which GPU to hand a desktop when there are several: the one most likely to
+# both draw and encode well.
+RANK = {"nvidia": 100, "amd": 80, "intel": 70, "apple": 60, "qualcomm": 55, "arm": 50,
+        "broadcom": 45, "tegra": 40, "imagination": 35, "vivante": 32, "virtio": 30,
+        "vmware": 25, "nouveau": 20}
+
+# The hardware encoder a vendor's GPU usually has. verify decides for real.
+ENCODE_BACKEND = {"nvidia": "nvenc", "intel": "vaapi", "amd": "vaapi", "tegra": "tegra"}
+
+# A stateful V4L2 memory-to-memory encoder (Raspberry Pi 4, Rockchip, Qualcomm,
+# MediaTek, Allwinner). Decoders, ISPs and cameras are left alone.
+V4L2_ENCODER = re.compile(r"enc(ode)?r?\b|-enc\b|_enc\b|vepu|venus-enc|h264.*enc", re.I)
+V4L2_NOT = re.compile(r"(?:^|[-_\s])(?:dec|decode|decoder|isp)(?:$|[-_\s])|"
+                      r"image_fx|camera|unicam|\bcsi|pispbe", re.I)
+
+# Lines in a desktop's log that point at the GPU when it fails to come up.
+GPU_HINTS = re.compile(
+    r"glamor|dri3|\bdrm\b|drmOpen|render ?node|/dev/dri|\begl\b|EGL_|libEGL|libGL\b|"
+    r"\bmesa\b|MESA-LOADER|failed to load driver|gbm|vaapi|va-api|libva|vainfo|"
+    r"nvenc|nvidia|cuda|libcuda|NVML|amdgpu|i915|\bv3d\b|panfrost|zink|"
+    r"GPU process|gpu_init|Exiting GPU process", re.I)
+ENCODE_HINTS = re.compile(r"vaapi|va-api|libva|nvenc|cuda|v4l2.*enc|encoder.*(fail|error)|"
+                          r"hardware encod", re.I)
+
+# Every environment key the plan may set; a recreate drops the old values.
+ENV_KEYS = ("DRINODE", "DRI_NODE", "DISABLE_DRI3", "LIBVA_DRIVER_NAME", "SELKIES_GPU_ID",
+            "SELKIES_ENCODE_DRI", "NVIDIA_VISIBLE_DEVICES", "NVIDIA_DRIVER_CAPABILITIES",
+            "AUTO_GPU")
+
+VERIFY_TTL = 30 * 86400
+HOST_TTL = 600
+
+
+def normalize_mode(value):
+    """'auto' / 'on' / 'off' from whatever an older forge, the CLI or the UI sent."""
+    if value is True:
+        return "auto"
+    if value is False or value is None:
+        return "off" if value is False else "auto"
+    v = str(value).strip().lower()
+    if v in ("1", "yes", "true", "smart", ""):
+        return "auto"
+    if v in ("0", "no", "false", "none", "disable", "disabled"):
+        return "off"
+    if v in ("force", "always"):
+        return "on"
+    return v if v in MODES else "auto"
+
+
+# ------------------------------------------------------------------ detect --
+
+def _read(path):
+    try:
+        with open(path, "rb") as fh:
+            return fh.read().decode("utf-8", "replace").strip("\x00\n ")
+    except OSError:
+        return ""
+
+
+def _real(path):
+    try:
+        return os.path.realpath(path)
+    except OSError:
+        return ""
+
+
+def _classify(driver, pci_vendor, compatible):
+    if driver in DRIVERS:
+        return DRIVERS[driver]
+    if pci_vendor in PCI_VENDORS:
+        return PCI_VENDORS[pci_vendor]
+    for comp in compatible:
+        prefix = comp.split(",", 1)[0]
+        if prefix in DT_VENDORS:
+            key = DT_VENDORS[prefix]
+            return key, prefix.capitalize() + " GPU", True
+    return "unknown", driver or "unknown GPU", True
+
+
+def detect_gpus(sysfs="/sys", dev="/dev"):
+    """Every DRM render node, with what drives it. Read-only."""
+    drm = os.path.join(sysfs, "class", "drm")
+    try:
+        names = sorted(os.listdir(drm))
+    except OSError:
+        return []
+    cards = {}
+    for n in names:
+        if re.match(r"^card\d+$", n):
+            cards[_real(os.path.join(drm, n, "device"))] = n
+    out = []
+    for n in names:
+        m = re.match(r"^renderD(\d+)$", n)
+        if not m:
+            continue
+        devdir = os.path.join(drm, n, "device")
+        real = _real(devdir)
+        driver = os.path.basename(_real(os.path.join(devdir, "driver"))) if \
+            os.path.exists(os.path.join(devdir, "driver")) else ""
+        pci_vendor = _read(os.path.join(devdir, "vendor")).lower()
+        pci_device = _read(os.path.join(devdir, "device")).lower()
+        compatible = [c for c in _read(os.path.join(devdir, "of_node", "compatible")).split("\x00") if c]
+        vendor, vname, can_3d = _classify(driver, pci_vendor, compatible)
+        node = os.path.join(dev, "dri", n)
+        try:
+            st = os.stat(node)
+            gid, mode = st.st_gid, st.st_mode
+        except OSError:
+            gid, mode = None, 0
+        card = cards.get(real)
+        out.append({
+            "node": node,
+            "index": int(m.group(1)) - 128,
+            "card": os.path.join(dev, "dri", card) if card else None,
+            "driver": driver or None,
+            "vendor": vendor,
+            "vendor_name": vname,
+            "can_3d": bool(can_3d),
+            "pci": ("%s:%s" % (pci_vendor, pci_device)) if pci_vendor.startswith("0x") else None,
+            "compatible": compatible[:3],
+            "gid": gid,
+            "group_rw": bool(mode & 0o060 == 0o060),
+            "boot_vga": _read(os.path.join(devdir, "boot_vga")) == "1",
+            "exists": gid is not None,
+        })
+    return out
+
+
+def detect_v4l2_encoders(sysfs="/sys", dev="/dev"):
+    """V4L2 hardware video encoders (a Pi 4's bcm2835-codec, Rockchip, ...)."""
+    base = os.path.join(sysfs, "class", "video4linux")
+    try:
+        names = sorted(os.listdir(base))
+    except OSError:
+        return []
+    out = []
+    for n in names:
+        label = _read(os.path.join(base, n, "name"))
+        if label and V4L2_ENCODER.search(label) and not V4L2_NOT.search(label):
+            path = os.path.join(dev, n)
+            try:
+                gid = os.stat(path).st_gid
+            except OSError:
+                continue
+            out.append({"node": path, "name": label, "gid": gid})
+    return out
+
+
+def detect_nvidia(proc="/proc", docker_info=None):
+    """The NVIDIA kernel driver, and whether Docker can hand it to a container."""
+    ver = _read(os.path.join(proc, "driver", "nvidia", "version"))
+    out = {"driver": None, "toolkit": False, "runtime": False, "cdi": False, "how": None}
+    if not ver:
+        return out
+    m = re.search(r"Kernel Module(?: for [\w.]+)?\s+([\d.]+)", ver)
+    out["driver"] = m.group(1) if m else "present"
+    out["toolkit"] = any(have(p) for p in ("nvidia-container-runtime-hook", "nvidia-container-cli",
+                                            "nvidia-ctk", "nvidia-container-runtime"))
+    if docker_info is None:
+        rc, txt, _ = run(["docker", "info", "--format", "{{json .Runtimes}}|{{json .CDISpecDirs}}"],
+                         timeout=25)
+        docker_info = txt if rc == 0 else ""
+    out["runtime"] = '"nvidia"' in (docker_info or "")
+    for d in ("/etc/cdi", "/var/run/cdi"):
+        try:
+            if any("nvidia" in f for f in os.listdir(d)):
+                out["cdi"] = True
+        except OSError:
+            pass
+    if out["toolkit"] or out["runtime"]:
+        out["how"] = "gpus"
+    elif out["cdi"]:
+        out["how"] = "cdi"
+    return out
+
+
+def host_gpus(fresh=False):
+    """Everything detect knows about this machine, cached for a few minutes."""
+    cached = None if fresh else cache_get("gpu-host", HOST_TTL)
+    if cached:
+        return cached
+    gpus = detect_gpus()
+    nv = detect_nvidia() if any(g["vendor"] == "nvidia" for g in gpus) or \
+        os.path.exists("/proc/driver/nvidia/version") else {"driver": None}
+    rep = {"gpus": gpus, "nvidia": nv, "v4l2": detect_v4l2_encoders(),
+           "kernel": os.uname().release}
+    best = pick(rep)
+    rep["primary"] = best["node"] if best else None
+    rep["summary"] = describe(rep)
+    cache_put("gpu-host", rep)
+    return rep
+
+
+def usable(g, rep):
+    """Can this GPU be handed to a container at all?"""
+    if not g.get("exists") or not g.get("can_3d"):
+        return False
+    if g["vendor"] == "nvidia" and g.get("driver") in ("nvidia", "nvidia-drm"):
+        return bool((rep.get("nvidia") or {}).get("how"))
+    return True
+
+
+def pick(rep, want=None):
+    """The GPU a desktop gets: the one named in `want` (a node, an index, a
+    driver or a vendor), else the best ranked usable one."""
+    gpus = [g for g in rep.get("gpus") or [] if usable(g, rep)]
+    if want:
+        w = str(want).lower()
+        for g in rep.get("gpus") or []:
+            if w in (g["node"].lower(), os.path.basename(g["node"]).lower(), str(g["index"]),
+                     (g.get("driver") or "").lower(), g["vendor"]):
+                return g
+    if not gpus:
+        return None
+    return sorted(gpus, key=lambda g: (-RANK.get(g["vendor"], 10), not g.get("boot_vga"),
+                                       g["index"]))[0]
+
+
+def describe(rep):
+    g = next((x for x in rep.get("gpus") or [] if x["node"] == rep.get("primary")), None)
+    if g:
+        return "%s (%s) on %s" % (g["vendor_name"], g.get("driver") or "?",
+                                  os.path.basename(g["node"]))
+    gs = rep.get("gpus") or []
+    nv = rep.get("nvidia") or {}
+    if nv.get("driver") and not nv.get("how"):
+        return "NVIDIA %s found, but Docker cannot use it yet (install nvidia-container-toolkit)" \
+            % nv["driver"]
+    if gs:
+        return "no GPU that can draw in a container (%s)" % ", ".join(
+            "%s on %s" % (x["vendor_name"], os.path.basename(x["node"])) for x in gs)
+    return "no GPU found; desktops draw and encode in software"
+
+
+# ------------------------------------------------------------------ verify --
+
+PROBE_SCRIPT = r'''
+N="$1"; IDX="$2"
+say() { echo "$1=$2"; }
+[ -c "$N" ] || { say dev missing; exit 0; }
+say dev ok
+( exec 3<>"$N" ) 2>/dev/null && say open ok || say open denied
+if command -v nvidia-smi >/dev/null 2>&1; then
+  nvidia-smi -L >/tmp/nv.txt 2>&1 && say nvsmi "$(head -1 /tmp/nv.txt | cut -c1-80)" || say nvsmi fail
+fi
+mkdir -p /tmp/gp
+if command -v Xvfb >/dev/null 2>&1; then
+  if Xvfb -help 2>&1 | grep -q -- '-glamor'; then
+    say glamor_flag yes
+    D=":$(( 87 + $$ % 7 ))"
+    Xvfb "$D" -glamor -dri "$N" -nolisten tcp +extension GLX >/tmp/gp/x.log 2>&1 &
+    P=$!
+    i=0; up=no
+    while [ $i -lt 24 ]; do
+      sleep 0.5; i=$((i + 1))
+      kill -0 $P 2>/dev/null || break
+      if command -v xdpyinfo >/dev/null 2>&1; then
+        DISPLAY="$D" xdpyinfo >/tmp/gp/d.txt 2>/dev/null && { up=yes; break; }
+      elif [ $i -ge 8 ]; then up=yes; break; fi
+    done
+    if kill -0 $P 2>/dev/null; then
+      if command -v xdpyinfo >/dev/null 2>&1; then
+        if [ "$up" = yes ] && grep -q DRI3 /tmp/gp/d.txt; then say dri3 yes; else say dri3 no; fi
+      else say dri3 unknown; fi
+    else say dri3 crashed; fi
+    kill $P 2>/dev/null; wait $P 2>/dev/null
+    say xlog "$(grep -iE 'glamor|egl|dri|drm|fail|error|fatal' /tmp/gp/x.log | grep -v 'removed in XLibre' | tail -4 | tr '\n' '|' | cut -c1-400)"
+  else say glamor_flag no; fi
+else say xvfb none; fi
+PY=""
+for p in /lsiopy/bin/python3 python3; do command -v "$p" >/dev/null 2>&1 && { PY="$p"; break; }; done
+if [ -n "$PY" ]; then
+  "$PY" - "$IDX" <<'PYEOF' 2>/dev/null || say encoders unknown
+import json, sys
+try:
+    import pixelflux
+except ImportError:
+    print("encoders=unknown"); sys.exit(0)
+f = getattr(pixelflux, "hardware_encoders", None)
+if f is None:
+    print("encoders=unknown"); sys.exit(0)
+try:
+    print("encoders=" + json.dumps(dict(f(int(sys.argv[1]), "true"))))
+except Exception as e:
+    print("encoders=error:%s" % str(e)[:120])
+PYEOF
+else say encoders unknown; fi
+'''
+
+
+def parse_probe(text):
+    out = {}
+    for line in (text or "").splitlines():
+        k, sep, v = line.partition("=")
+        if sep and re.match(r"^[a-z_0-9]+$", k):
+            out[k] = v.strip()
+    return out
+
+
+def judge(raw, g):
+    """What a probe's raw key=value output means for this GPU."""
+    res = {"render": False, "encoders": {}, "why": [], "raw": raw}
+    if raw.get("dev") != "ok":
+        res["why"].append("the device did not show up inside the container")
+        return res
+    if raw.get("open") == "denied":
+        res["why"].append("the desktop user cannot open %s (group permissions)" % g["node"])
+        return res
+    if g["vendor"] == "nvidia" and raw.get("nvsmi", "fail") == "fail":
+        res["why"].append("nvidia-smi does not work inside the container")
+    dri3 = raw.get("dri3")
+    if raw.get("glamor_flag") == "no":
+        res["why"].append("this image's X server has no GPU drawing (no glamor); "
+                          "a newer build of the image may")
+    elif raw.get("xvfb") == "none":
+        res["why"].append("this image has no Xvfb to draw with")
+    elif dri3 == "yes":
+        res["render"] = True
+    elif dri3 == "unknown":
+        bad = re.search(r"fail|error|fatal|cannot", raw.get("xlog", ""), re.I)
+        res["render"] = not bad
+        if bad:
+            res["why"].append("the X server could not draw on the GPU: %s" % raw.get("xlog"))
+    elif dri3 == "crashed":
+        res["why"].append("the X server crashed when drawing on the GPU: %s" % raw.get("xlog", ""))
+    else:
+        res["why"].append("the X server started but GPU drawing (DRI3) did not come up: %s"
+                          % (raw.get("xlog") or "no detail"))
+    enc = raw.get("encoders", "unknown")
+    if enc.startswith("{"):
+        try:
+            res["encoders"] = {str(k): str(v) for k, v in json.loads(enc).items()}
+        except ValueError:
+            pass
+        if not res["encoders"]:
+            res["why"].append("no hardware video encoder on this GPU; video is encoded "
+                              "in software")
+    elif enc == "unknown":
+        res["encoders"] = None
+    return res
+
+
+def probe_args(image, g, rep, uid=None, gid=None):
+    """The `docker run` for a verify probe: the desktop's image, its devices,
+    its user, no network, a small memory cap."""
+    uid = os.getuid() if uid is None else uid
+    gid = os.getgid() if gid is None else gid
+    name = "forge-gpuprobe-%s" % uuid.uuid4().hex[:8]
+    args = ["docker", "run", "--rm", "--name", name, "--network", "none",
+            "--memory", "512m", "--user", "%d:%d" % (uid, gid), "-e", "HOME=/tmp"]
+    args += device_args(g, rep)
+    args += ["--entrypoint", "sh", image, "-c", PROBE_SCRIPT, "probe", g["node"],
+             str(max(0, g["index"]))]
+    return name, args
+
+
+def device_args(g, rep, encode_v4l2=False):
+    """Exactly the devices and groups one GPU needs."""
+    args = ["--device", "%s:%s" % (g["node"], g["node"])]
+    gids = set()
+    if g.get("gid") is not None:
+        gids.add(g["gid"])
+    if g["vendor"] == "nvidia" and g.get("driver") in ("nvidia", "nvidia-drm"):
+        how = (rep.get("nvidia") or {}).get("how")
+        if how == "cdi":
+            args += ["--device", "nvidia.com/gpu=all"]
+        else:
+            args += ["--gpus", "all"]
+        args += ["-e", "NVIDIA_VISIBLE_DEVICES=all", "-e", "NVIDIA_DRIVER_CAPABILITIES=all"]
+    if encode_v4l2:
+        for v in rep.get("v4l2") or []:
+            args += ["--device", "%s:%s" % (v["node"], v["node"])]
+            gids.add(v["gid"])
+    for x in sorted(gids):
+        if x:
+            args += ["--group-add", str(x)]
+    return args
+
+
+def image_id(image):
+    rc, out, _ = run(["docker", "image", "inspect", "--format", "{{.Id}}", image], timeout=20)
+    return out.strip() if rc == 0 else None
+
+
+def verify(image, g, rep, job=None, fresh=False):
+    """Run (or recall) the probe for this image on this GPU."""
+    iid = image_id(image) or image
+    key = "gpu-verify:%s:%s:%s:%s" % (iid[-24:], g["node"], g.get("driver"), rep.get("kernel"))
+    if not fresh:
+        hit = cache_get(key, VERIFY_TTL)
+        if hit:
+            hit["cached"] = True
+            return hit
+    name, args = probe_args(image, g, rep)
+    if job:
+        job.log("gpu      : checking %s inside the image (one time, a few seconds)"
+                % os.path.basename(g["node"]))
+    rc, out, err = run(["timeout", "75"] + args, timeout=90)
+    if rc != 0 and not out.strip():
+        run(["docker", "rm", "-f", name], timeout=30)
+        res = {"render": False, "encoders": {}, "probe_failed": True,
+               "why": ["the GPU check could not run: %s" % ((err or "").strip().splitlines() or
+                                                             ["exit %d" % rc])[-1][:200]]}
+    else:
+        res = judge(parse_probe(out), g)
+    res["cached"] = False
+    if not res.get("probe_failed"):
+        cache_put(key, res)
+    return res
+
+
+# -------------------------------------------------------------------- plan --
+
+def plan(mode, image, host=None, profile="selkies", job=None, tried=(), want=None,
+         probe=True, rep=None):
+    """Decide what one desktop gets. Returns a dict with `args` (devices,
+    groups), `env`, a short `label`, and `notes` for the launch log."""
+    mode = normalize_mode(mode)
+    tried = set(tried or ())
+    out = {"mode": mode, "gpu": None, "render": False, "encode": None, "args": [], "env": [],
+           "label": "off", "notes": []}
+    if mode == "off" or "gpu" in tried:
+        if "gpu" in tried and mode != "off":
+            out["notes"].append("GPU off for this desktop: it did not start cleanly with it")
+        out["label"] = "off" if mode == "off" else "auto:fallback-off"
+        return out
+    rep = rep or host_gpus()
+    g = pick(rep, want)
+    if not g:
+        out["notes"].append(rep.get("summary") or "no usable GPU")
+        out["label"] = "%s:none" % mode
+        return out
+    out["gpu"] = {k: g.get(k) for k in ("node", "driver", "vendor", "vendor_name", "index")}
+    v4l2 = bool(rep.get("v4l2"))
+
+    if profile == "kasm":
+        # KasmVNC images find a render node on their own; give them the one.
+        out["args"] = device_args(g, rep)
+        out["render"] = True
+        out["label"] = "%s:%s:kasm" % (mode, g.get("driver") or g["vendor"])
+        out["notes"].append("%s passed to the image; KasmVNC uses it if it can"
+                            % g["vendor_name"])
+        return out
+
+    res = None
+    if probe and image:
+        res = verify(image, g, rep, job=job)
+    if res is None:
+        # Not verified (a dry run): say what detection expects.
+        render = bool(g.get("can_3d"))
+        encoders = None
+        encode_ok = g["vendor"] in ENCODE_BACKEND and "gpu-encode" not in tried
+        out["notes"].append("not verified yet; the real launch checks it inside the image")
+    else:
+        render = bool(res.get("render")) or (mode == "on")
+        encoders = res.get("encoders")
+        encode_ok = bool(encoders) and "gpu-encode" not in tried
+        if mode == "on" and encoders is None and "gpu-encode" not in tried:
+            encode_ok = g["vendor"] in ENCODE_BACKEND
+
+    if mode == "auto" and res is not None and not render and not encode_ok:
+        out["notes"] += (res.get("why") or [])
+        out["notes"].append("nothing on %s helps this image, so it is left out"
+                            % os.path.basename(g["node"]))
+        out["label"] = "auto:unused"
+        out["verify"] = res
+        return out
+
+    # "none", never an empty value: s6-overlay drops empty variables, and the
+    # base image reads a missing one as "guess" (it then picks renderD128).
+    # Selkies reads a value that is not a /dev/dri path as "no device".
+    env = []
+    if render:
+        env += ["DRINODE=%s" % g["node"], "DISABLE_DRI3=false"]
+    else:
+        env += ["DRINODE=none", "DISABLE_DRI3=true", "AUTO_GPU=false"]
+    if encode_ok:
+        backend = sorted(set((encoders or {}).values())) or [ENCODE_BACKEND.get(g["vendor"], "?")]
+        env += ["DRI_NODE=%s" % g["node"], "SELKIES_GPU_ID=%d" % max(0, g["index"])]
+        out["encode"] = ",".join(backend)
+    else:
+        # Pin it: the base image would otherwise switch VA-API on for this
+        # node by itself, and Selkies would probe it at every start.
+        env += ["DRI_NODE=none", "SELKIES_GPU_ID=-1"]
+    out["args"] = device_args(g, rep, encode_v4l2=encode_ok and v4l2 and
+                              "v4l2" in set((encoders or {}).values()))
+    out["env"] = env
+    out["render"] = render
+    out["verify"] = res
+    parts = [g.get("driver") or g["vendor"]]
+    parts.append("render" if render else "no-render")
+    parts.append("enc-" + out["encode"] if out["encode"] else "sw-enc")
+    out["label"] = "%s:%s" % (mode, ":".join(parts))
+    what = []
+    if render:
+        what.append("draws on the GPU (DRI3)")
+    if out["encode"]:
+        what.append("encodes video on it (%s)" % out["encode"])
+    out["notes"].append("%s: %s" % (rep.get("summary"), ", ".join(what) or
+                                    "passed through as asked (mode on)"))
+    if res:
+        out["notes"] += [w for w in res.get("why") or [] if render or encode_ok]
+        if res.get("cached"):
+            out["notes"].append("(checked before for this image; not re-run)")
+    return out
+
+
+def docker_bits(gp):
+    """Flatten a plan into docker run arguments."""
+    if not gp:
+        return []
+    args = list(gp.get("args") or [])
+    for kv in gp.get("env") or []:
+        args += ["-e", kv]
+    return args
+
+
+def mode_from_container(labels, hostcfg, label_key):
+    """The mode an existing container was made with (for a recreate)."""
+    lab = (labels or {}).get(label_key)
+    if lab:
+        return normalize_mode(lab.split(":", 1)[0])
+    devs = [d.get("PathOnHost", "") for d in (hostcfg.get("Devices") or [])]
+    return "auto" if any(p.startswith("/dev/dri") for p in devs) else "off"
+
+
+# ------------------------------------------------------------ fall back --
+
+def fallback(problem_text, gp, tried):
+    """The next GPU step back after a failed start, or None.
+
+    Returns (description, key) with key "gpu-encode" (keep drawing on the
+    GPU, encode in software) or "gpu" (no GPU at all)."""
+    if not gp or gp.get("mode") == "on" or gp.get("label", "").endswith((":none", ":unused")):
+        return None
+    if gp.get("mode") == "off" or not (gp.get("render") or gp.get("encode")):
+        return None
+    text = problem_text or ""
+    if gp.get("encode") and "gpu-encode" not in tried and ENCODE_HINTS.search(text):
+        return ("hardware video encoding failed; keeping the GPU for drawing and "
+                "encoding in software", "gpu-encode")
+    if "gpu" not in tried:
+        return ("the desktop did not start cleanly with the GPU; retrying without it", "gpu")
+    return None
+
+
+def report(fresh=True):
+    """A human report for `engine.py gpu` and the web UI."""
+    rep = host_gpus(fresh=fresh)
+    lines = ["GPU Smart Passthrough", ""]
+    if not rep["gpus"]:
+        lines.append("  no DRM render nodes on this machine: desktops draw and encode in software")
+    for g in rep["gpus"]:
+        star = "*" if g["node"] == rep.get("primary") else " "
+        lines.append("  %s %-20s %-30s driver %-12s %s" % (
+            star, g["node"], g["vendor_name"], g.get("driver") or "?",
+            ("usable" if usable(g, rep) else "not usable in a container")))
+        if g.get("pci"):
+            lines.append("      pci %s" % g["pci"])
+        elif g.get("compatible"):
+            lines.append("      %s" % ", ".join(g["compatible"]))
+        if not g.get("group_rw"):
+            lines.append("      note: %s is not group read/write on the host" % g["node"])
+    nv = rep.get("nvidia") or {}
+    if nv.get("driver"):
+        lines.append("")
+        lines.append("  NVIDIA driver %s, container access: %s" % (
+            nv["driver"], {"gpus": "--gpus (nvidia-container-toolkit)",
+                           "cdi": "CDI (nvidia.com/gpu=all)"}.get(nv.get("how"),
+                                                                    "none - install nvidia-container-toolkit")))
+    for v in rep.get("v4l2") or []:
+        lines.append("  V4L2 encoder %s (%s)" % (v["node"], v["name"]))
+    lines += ["", "  " + rep["summary"]]
+    return {"text": "\n".join(lines), "host": rep}
+
+
+def shell_quote_args(args):
+    return " ".join(shlex.quote(a) for a in args)
+__FORGE_FILE_FORGE_GPU_PY__
   cat > "$FORGE_APP/forge/health.py" <<'__FORGE_FILE_FORGE_HEALTH_PY__'
 """
 Selkies Forge engine - health
@@ -2255,6 +2977,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from .gpu import GPU_HINTS, fallback as gpu_fallback
 from .util import clamp, human_mb, run
 
 
@@ -2423,6 +3146,19 @@ SECCOMP_HINTS = re.compile(r"operation not permitted|seccomp|bwrap:|clone3|"
 SHM_HINTS = re.compile(r"/dev/shm|shm_open|no space left on device", re.I)
 
 
+def _gpu_fix(text, gp, opts, tried):
+    """Step the GPU back one notch (gpu.fallback) and re-plan on the next try."""
+    step = gpu_fallback(text, gp, tried)
+    if not step:
+        return None
+    desc, key = step
+
+    def apply():
+        opts["gpu_tried"] = sorted(set(opts.get("gpu_tried") or []) | {key})
+        opts["gpu_plan"] = None
+    return desc, key, apply
+
+
 def pick_fix(problem, plan, opts, host, tried):
     """Decide how to retry a failed start. Returns (description, apply) or None."""
     text = "%s\n%s" % (problem, getattr(problem, "detail", ""))
@@ -2434,11 +3170,18 @@ def pick_fix(problem, plan, opts, host, tried):
             def apply():
                 plan["memory_mb"] = int(round(new / 256.0) * 256)
             return ("it ran out of memory; retrying with %s" % human_mb(new), "memory", apply)
-    if SHM_HINTS.search(text) and "shm" not in tried:
+    shm_cap = max(4096, int(host.get("mem_total_mb") or 0) // 2)
+    shm_new = int(min(shm_cap, plan["shm_mb"] * 2))
+    if SHM_HINTS.search(text) and "shm" not in tried and shm_new > plan["shm_mb"]:
         def apply():
-            plan["shm_mb"] = int(min(4096, plan["shm_mb"] * 2))
-        return ("shared memory ran out; retrying with %s /dev/shm"
-                % human_mb(min(4096, plan["shm_mb"] * 2)), "shm", apply)
+            plan["shm_mb"] = shm_new
+        return ("shared memory ran out; retrying with %s /dev/shm" % human_mb(shm_new),
+                "shm", apply)
+    gp = opts.get("gpu_plan")
+    if gp and GPU_HINTS.search(text):
+        gfix = _gpu_fix(text, gp, opts, tried)
+        if gfix:
+            return gfix
     if kind in ("crash", "exited", "nowm") and "seccomp" not in tried and \
             not opts.get("seccomp_unconfined") and \
             (SECCOMP_HINTS.search(text) or kind in ("crash", "nowm")):
@@ -2446,6 +3189,10 @@ def pick_fix(problem, plan, opts, host, tried):
             opts["seccomp_unconfined"] = True
         return ("the session was blocked by Docker's syscall filter; retrying with "
                 "seccomp unconfined", "seccomp", apply)
+    if gp and kind in ("crash", "exited", "nowm"):
+        gfix = _gpu_fix(text, gp, opts, tried)
+        if gfix:
+            return gfix
     if kind == "timeout" and "slow" not in tried:
         def apply():
             opts["health_timeout"] = int(int(opts.get("health_timeout") or 300) * 1.6)
@@ -2587,6 +3334,16 @@ def host_info(fresh=False):
         info["disk_free_mb"] = du.free // (1024 * 1024)
     except Exception:
         pass
+
+    try:
+        from .gpu import host_gpus
+        g = host_gpus()
+        prim = next((x for x in g["gpus"] if x["node"] == g.get("primary")), None)
+        info["gpu"] = {"summary": g["summary"], "primary": g.get("primary"),
+                       "vendor": prim and prim["vendor"], "driver": prim and prim.get("driver"),
+                       "count": len(g["gpus"])}
+    except Exception as ex:          # never let GPU detection break the host report
+        info["gpu"] = {"summary": "GPU detection failed: %s" % ex, "primary": None}
 
     cache_put("host", info)
     return info
@@ -3670,7 +4427,7 @@ The launch pipeline: resolve, fetch, layer, start, verify, tunnel.
 
 import time
 
-from . import catalog, ledger
+from . import catalog, gpu, ledger
 from .health import LaunchProblem, mem_pressure, pick_fix, wait_http, wait_session
 from .host import docker_ok, host_info, image_present, manifest_probe
 from .images import ensure_layer, get_image
@@ -3756,7 +4513,10 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                    ", ".join(alts) or "another desktop"))
         if real_dl:
             job.log("download : about %s for %s" % (human_mb(real_dl), host["arch"]))
+        opts["gpu"] = gpu.normalize_mode(opts.get("gpu", "auto"))
         if opts.get("dry_run"):
+            opts["gpu_plan"] = gpu.plan(opts["gpu"], None, host, profile=entry["profile"],
+                                        probe=False, want=opts.get("gpu_device"))
             return _dry_run(entry, plan, opts, host, job, name, real_dl, res)
 
         if not host["quota_support"] and plan.get("disk_mb"):
@@ -3772,6 +4532,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
         job.set_phase("layer", "Adding the forge layer", 0.80)
         run_image = ensure_layer(entry, image, job)
         job.check()
+        _gpu_plan(entry, run_image, host, opts, job)
 
         # ---- 3 + 4. start it and make sure the desktop really came up -----
         tried = set()
@@ -3785,6 +4546,8 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
             job.check()
             job.set_phase("create", "Starting the container" if attempt == 1
                           else "Starting it again (try %d)" % attempt, 0.84)
+            if opts.get("gpu_plan") is None and opts["gpu"] != "off":
+                _gpu_plan(entry, run_image, host, opts, job)   # after a GPU step-back
             if not cname:
                 cname = container_name_for(entry, name or opts.get("name"))
                 # A volume kept from a removed desktop of the same name is
@@ -3801,7 +4564,9 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                           entry=entry["id"], image=run_image)
             note = {"entry_id": entry["id"], "created": time.time(),
                     "plan": plan, "opts": {k: v for k, v in opts.items()
-                                           if k not in ("password", "job_id", "prepared_volume", "dry_run")},
+                                           if k not in ("password", "job_id", "prepared_volume", "dry_run",
+                                                        "gpu_plan")},
+                    "gpu": (opts.get("gpu_plan") or {}).get("label", "off"),
                     "volume": vol, "image": run_image,
                     "ports": reserved, "tunnel": None}
             if opts.get("idle_stop") is not None:
@@ -3859,6 +4624,14 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
             job.log("session  : still starting, the page will catch up", "err")
         if tried:
             job.log("fixed    : %s" % ", ".join(sorted(tried)))
+        gp = opts.get("gpu_plan") or {}
+        if gp.get("render"):
+            if _dri3_confirmed(cname):
+                job.log("gpu      : the desktop is drawing on %s (DRI3 is up)"
+                        % (gp.get("gpu") or {}).get("node", "the GPU"))
+            else:
+                job.log("gpu      : the desktop did not report DRI3; it may be drawing in "
+                        "software (see the container log)", "err")
 
         # ---- 5. tunnel --------------------------------------------------
         job.check()
@@ -3896,6 +4669,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                                   ({"user": opts["username"], "password": opts["password"]}
                                    if opts.get("username") else None)),
                   "quota_enforced": bool(host.get("quota_support")),
+                  "gpu": {k: gp.get(k) for k in ("mode", "label", "render", "encode", "gpu", "notes")},
                   }
         events.record(cname, "ready", warning or (session.get("wm") or "up"),
                       fixes=sorted(tried) or None)
@@ -3923,6 +4697,24 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
             events.record(cname, "launch-failed", str(ex)[:500])
         job.fail(str(ex), hints=_hints_for(str(ex)))
         raise
+
+
+def _gpu_plan(entry, run_image, host, opts, job):
+    """Decide (and check, once per image) what GPU this desktop gets."""
+    gp = gpu.plan(opts["gpu"], run_image, host, profile=entry["profile"], job=job,
+                  tried=opts.get("gpu_tried") or (), want=opts.get("gpu_device"))
+    opts["gpu_plan"] = gp
+    for n in gp.get("notes") or []:
+        job.log("gpu      : %s" % n)
+    if gp["mode"] == "off":
+        job.log("gpu      : off for this desktop")
+    return gp
+
+
+def _dri3_confirmed(cname):
+    """The base image logs which node Xvfb draws on when glamor comes up."""
+    rc, out, err = run(["docker", "logs", "--tail", "400", cname], timeout=30)
+    return "using DRI3" in (out or "") + (err or "")
 
 
 def admit_memory(entry, plan, host, job, opts):
@@ -5250,6 +6042,7 @@ from .images import ensure_layer
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .recipes import build_image_tag
 from .registry import docker_instances
+from .gpu import ENV_KEYS as GPU_ENV_KEYS, mode_from_container as gpu_mode_from_container
 from .runner import FIXED_SCREEN_KEYS, OLD_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
 from .store import reg_delete, reg_load, reg_update
 from .tunnels import tunnel_start, tunnel_stop
@@ -5428,7 +6221,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
         "disk_mb": int(disk_mb or cur_disk or 10240),
     }
     opts = {"autostart": (restart != "no") if autostart is None else bool(autostart),
-            "gpu": any(d.get("PathOnHost") == "/dev/dri" for d in (hostcfg.get("Devices") or [])),
+            "gpu": gpu_mode_from_container(labels, hostcfg, "%s.gpu" % LABEL),
             "seccomp_unconfined": "seccomp=unconfined" in (hostcfg.get("SecurityOpt") or []),
             "heal": labels.get("%s.heal" % LABEL) != "off"}
     if env.get("CUSTOM_USER") and env.get("PASSWORD"):
@@ -5438,7 +6231,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     if env.get("LC_ALL"):
         opts["locale"] = env["LC_ALL"]
     ours = ("PUID", "PGID", "TZ", "TITLE", "CUSTOM_USER", "PASSWORD", "VNC_PW", "LC_ALL",
-            "MAX_RES") + FIXED_SCREEN_KEYS + OLD_SCREEN_KEYS
+            "MAX_RES") + FIXED_SCREEN_KEYS + OLD_SCREEN_KEYS + GPU_ENV_KEYS
     opts["env"] = ["%s=%s" % (k, v) for k, v in env.items()
                    if k not in ours and "%s=%s" % (k, v) not in image_env]
     opts["display"] = want_display if want_display in ("fit", "fixed") else "auto"
@@ -5531,7 +6324,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.7.2"
+VERSION = "1.8.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -6011,6 +6804,7 @@ import shlex
 import time
 import uuid
 
+from . import gpu
 from .host import tz_name
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS, VERSION
 from .ports import alloc_ports, release_port_reservation
@@ -6121,8 +6915,14 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
         args += ["--storage-opt", "size=%dM" % int(plan["disk_mb"])]
     args += ["-v", "%s:/config" % vol]
 
-    if opts.get("gpu") and os.path.exists("/dev/dri"):
-        args += ["--device", "/dev/dri"]
+    # GPU Smart Passthrough (gpu.py). The launch hands over a checked plan;
+    # a recreate asks for one here. No "gpu" option at all means off.
+    gp = opts.get("gpu_plan")
+    if gp is None and gpu.normalize_mode(opts.get("gpu", False)) != "off":
+        gp = gpu.plan(opts.get("gpu"), image, host, profile=prof,
+                      tried=opts.get("gpu_tried") or (), want=opts.get("gpu_device"))
+    args += ["--label", "%s.gpu=%s" % (LABEL, (gp or {}).get("label", "off"))]
+    args += gpu.docker_bits(gp)
     if opts.get("seccomp_unconfined"):
         args += ["--security-opt", "seccomp=unconfined"]
 
@@ -6600,6 +7400,9 @@ class Handler(BaseHTTPRequestHandler):
             out = dict(host_info(fresh=True))
             out["pressure"] = dict(PRESSURE)
             return self._send(200, out)
+        if route == "/api/gpu":
+            from .gpu import report as gpu_report
+            return self._send(200, gpu_report(fresh=True))
         if route == "/api/lifecycle":
             return self._send(200, {"last_stop": last_stop_report(), "boot": boot_report()})
         if route == "/api/update":
@@ -6725,7 +7528,8 @@ class Handler(BaseHTTPRequestHandler):
                     plan[k] = body["plan"][k]
             plan["memory_mb"] = int(clamp(plan["memory_mb"], 256, max(256, host["mem_total_mb"])))
             plan["cpus"] = float(clamp(float(plan["cpus"]), 0.25, host["cpus"]))
-            plan["shm_mb"] = int(clamp(plan["shm_mb"], 64, 4096))
+            # /dev/shm is a ceiling, not a reservation: up to half the RAM.
+            plan["shm_mb"] = int(clamp(plan["shm_mb"], 64, max(4096, host["mem_total_mb"] // 2)))
             opts = body.get("opts") or {}
             job = job_put(Job("launch", eid, entry["name"]))
 
@@ -11067,8 +11871,7 @@ __FORGE_FILE_WEB_APP_CSS__
         kasm ? "https image, so a short-lived TCP tunnel" : "an https link that works from anywhere") +
       toggle("oAuto", false, "Start with Docker",
         "off: it only runs when you start it, not after a reboot") +
-      toggle("oGpu", false, "Pass the GPU through",
-        S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
+      gpuField("oGpu", "auto") +
       toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
       idleField("oIdle", null) +
       (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
@@ -11134,6 +11937,22 @@ __FORGE_FILE_WEB_APP_CSS__
      desktop that has had none for this long. Its files are kept. */
   var IDLE_CHOICES = [["", "Forge default"], ["0", "Never"], ["30", "After 30 minutes"],
     ["60", "After 1 hour"], ["120", "After 2 hours"], ["240", "After 4 hours"]];
+  /* GPU Smart Passthrough: auto checks what really works inside the image
+     and falls back by itself; on forces it; off keeps the GPU out. */
+  function gpuField(id, cur) {
+    var g = (S.host && S.host.gpu) || {};
+    var found = !!g.primary;
+    var opt = function (v, t) { return '<option value="' + v + '"' + (cur === v ? " selected" : "") + ">" + t + "</option>"; };
+    return '<label class="field" style="margin-top:12px"><span>GPU</span><select id="' + id + '">' +
+      opt("auto", found ? "Smart · use it where it’s checked to work" : "Smart · none usable here, software") +
+      opt("on", "Force on · skip the checks and fallbacks") +
+      opt("off", "Off · draw and encode in software") +
+      "</select></label>" +
+      '<p class="sub" style="margin:2px 0 0;font-size:12px">' + h(g.summary || "Detecting…") +
+      (found ? ". Checked once inside the image; if the desktop misbehaves with it, the forge steps back to software by itself." : "") +
+      "</p>";
+  }
+
   function idleField(id, cur) {
     var v = cur === null || cur === undefined ? "" : String(cur);
     if (v && !IDLE_CHOICES.some(function (c) { return c[0] === v; })) IDLE_CHOICES.push([v, "After " + v + " minutes"]);
@@ -11197,7 +12016,7 @@ __FORGE_FILE_WEB_APP_CSS__
     var opts = {
       tunnel: $("#oTunnel") ? $("#oTunnel").checked : true,
       autostart: $("#oAuto") ? $("#oAuto").checked : false,
-      gpu: $("#oGpu") ? $("#oGpu").checked : false,
+      gpu: $("#oGpu") ? $("#oGpu").value : "auto",
       seccomp_unconfined: $("#oSeccomp") ? $("#oSeccomp").checked : false
     };
     if ($("#oDisplay")) {
@@ -14456,7 +15275,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.7.2"
+FORGE_VERSION="1.8.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

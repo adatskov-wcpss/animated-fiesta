@@ -19,6 +19,7 @@ from .images import ensure_layer
 from .paths import CPREFIX, KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
 from .recipes import build_image_tag
 from .registry import docker_instances
+from .gpu import ENV_KEYS as GPU_ENV_KEYS, mode_from_container as gpu_mode_from_container
 from .runner import FIXED_SCREEN_KEYS, OLD_SCREEN_KEYS, display_for, docker_run_args, parse_display_label
 from .store import reg_delete, reg_load, reg_update
 from .tunnels import tunnel_start, tunnel_stop
@@ -197,7 +198,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
         "disk_mb": int(disk_mb or cur_disk or 10240),
     }
     opts = {"autostart": (restart != "no") if autostart is None else bool(autostart),
-            "gpu": any(d.get("PathOnHost") == "/dev/dri" for d in (hostcfg.get("Devices") or [])),
+            "gpu": gpu_mode_from_container(labels, hostcfg, "%s.gpu" % LABEL),
             "seccomp_unconfined": "seccomp=unconfined" in (hostcfg.get("SecurityOpt") or []),
             "heal": labels.get("%s.heal" % LABEL) != "off"}
     if env.get("CUSTOM_USER") and env.get("PASSWORD"):
@@ -207,7 +208,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     if env.get("LC_ALL"):
         opts["locale"] = env["LC_ALL"]
     ours = ("PUID", "PGID", "TZ", "TITLE", "CUSTOM_USER", "PASSWORD", "VNC_PW", "LC_ALL",
-            "MAX_RES") + FIXED_SCREEN_KEYS + OLD_SCREEN_KEYS
+            "MAX_RES") + FIXED_SCREEN_KEYS + OLD_SCREEN_KEYS + GPU_ENV_KEYS
     opts["env"] = ["%s=%s" % (k, v) for k, v in env.items()
                    if k not in ours and "%s=%s" % (k, v) not in image_env]
     opts["display"] = want_display if want_display in ("fit", "fixed") else "auto"

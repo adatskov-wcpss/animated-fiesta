@@ -285,6 +285,9 @@ class Handler(BaseHTTPRequestHandler):
             out = dict(host_info(fresh=True))
             out["pressure"] = dict(PRESSURE)
             return self._send(200, out)
+        if route == "/api/gpu":
+            from .gpu import report as gpu_report
+            return self._send(200, gpu_report(fresh=True))
         if route == "/api/lifecycle":
             return self._send(200, {"last_stop": last_stop_report(), "boot": boot_report()})
         if route == "/api/update":
@@ -410,7 +413,8 @@ class Handler(BaseHTTPRequestHandler):
                     plan[k] = body["plan"][k]
             plan["memory_mb"] = int(clamp(plan["memory_mb"], 256, max(256, host["mem_total_mb"])))
             plan["cpus"] = float(clamp(float(plan["cpus"]), 0.25, host["cpus"]))
-            plan["shm_mb"] = int(clamp(plan["shm_mb"], 64, 4096))
+            # /dev/shm is a ceiling, not a reservation: up to half the RAM.
+            plan["shm_mb"] = int(clamp(plan["shm_mb"], 64, max(4096, host["mem_total_mb"] // 2)))
             opts = body.get("opts") or {}
             job = job_put(Job("launch", eid, entry["name"]))
 

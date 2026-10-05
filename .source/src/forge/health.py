@@ -12,6 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from .gpu import GPU_HINTS, fallback as gpu_fallback
 from .util import clamp, human_mb, run
 
 
@@ -180,6 +181,19 @@ SECCOMP_HINTS = re.compile(r"operation not permitted|seccomp|bwrap:|clone3|"
 SHM_HINTS = re.compile(r"/dev/shm|shm_open|no space left on device", re.I)
 
 
+def _gpu_fix(text, gp, opts, tried):
+    """Step the GPU back one notch (gpu.fallback) and re-plan on the next try."""
+    step = gpu_fallback(text, gp, tried)
+    if not step:
+        return None
+    desc, key = step
+
+    def apply():
+        opts["gpu_tried"] = sorted(set(opts.get("gpu_tried") or []) | {key})
+        opts["gpu_plan"] = None
+    return desc, key, apply
+
+
 def pick_fix(problem, plan, opts, host, tried):
     """Decide how to retry a failed start. Returns (description, apply) or None."""
     text = "%s\n%s" % (problem, getattr(problem, "detail", ""))
@@ -191,11 +205,18 @@ def pick_fix(problem, plan, opts, host, tried):
             def apply():
                 plan["memory_mb"] = int(round(new / 256.0) * 256)
             return ("it ran out of memory; retrying with %s" % human_mb(new), "memory", apply)
-    if SHM_HINTS.search(text) and "shm" not in tried:
+    shm_cap = max(4096, int(host.get("mem_total_mb") or 0) // 2)
+    shm_new = int(min(shm_cap, plan["shm_mb"] * 2))
+    if SHM_HINTS.search(text) and "shm" not in tried and shm_new > plan["shm_mb"]:
         def apply():
-            plan["shm_mb"] = int(min(4096, plan["shm_mb"] * 2))
-        return ("shared memory ran out; retrying with %s /dev/shm"
-                % human_mb(min(4096, plan["shm_mb"] * 2)), "shm", apply)
+            plan["shm_mb"] = shm_new
+        return ("shared memory ran out; retrying with %s /dev/shm" % human_mb(shm_new),
+                "shm", apply)
+    gp = opts.get("gpu_plan")
+    if gp and GPU_HINTS.search(text):
+        gfix = _gpu_fix(text, gp, opts, tried)
+        if gfix:
+            return gfix
     if kind in ("crash", "exited", "nowm") and "seccomp" not in tried and \
             not opts.get("seccomp_unconfined") and \
             (SECCOMP_HINTS.search(text) or kind in ("crash", "nowm")):
@@ -203,6 +224,10 @@ def pick_fix(problem, plan, opts, host, tried):
             opts["seccomp_unconfined"] = True
         return ("the session was blocked by Docker's syscall filter; retrying with "
                 "seccomp unconfined", "seccomp", apply)
+    if gp and kind in ("crash", "exited", "nowm"):
+        gfix = _gpu_fix(text, gp, opts, tried)
+        if gfix:
+            return gfix
     if kind == "timeout" and "slow" not in tried:
         def apply():
             opts["health_timeout"] = int(int(opts.get("health_timeout") or 300) * 1.6)

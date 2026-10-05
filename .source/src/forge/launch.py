@@ -6,7 +6,7 @@ The launch pipeline: resolve, fetch, layer, start, verify, tunnel.
 
 import time
 
-from . import catalog, ledger
+from . import catalog, gpu, ledger
 from .health import LaunchProblem, mem_pressure, pick_fix, wait_http, wait_session
 from .host import docker_ok, host_info, image_present, manifest_probe
 from .images import ensure_layer, get_image
@@ -92,7 +92,10 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                    ", ".join(alts) or "another desktop"))
         if real_dl:
             job.log("download : about %s for %s" % (human_mb(real_dl), host["arch"]))
+        opts["gpu"] = gpu.normalize_mode(opts.get("gpu", "auto"))
         if opts.get("dry_run"):
+            opts["gpu_plan"] = gpu.plan(opts["gpu"], None, host, profile=entry["profile"],
+                                        probe=False, want=opts.get("gpu_device"))
             return _dry_run(entry, plan, opts, host, job, name, real_dl, res)
 
         if not host["quota_support"] and plan.get("disk_mb"):
@@ -108,6 +111,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
         job.set_phase("layer", "Adding the forge layer", 0.80)
         run_image = ensure_layer(entry, image, job)
         job.check()
+        _gpu_plan(entry, run_image, host, opts, job)
 
         # ---- 3 + 4. start it and make sure the desktop really came up -----
         tried = set()
@@ -121,6 +125,8 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
             job.check()
             job.set_phase("create", "Starting the container" if attempt == 1
                           else "Starting it again (try %d)" % attempt, 0.84)
+            if opts.get("gpu_plan") is None and opts["gpu"] != "off":
+                _gpu_plan(entry, run_image, host, opts, job)   # after a GPU step-back
             if not cname:
                 cname = container_name_for(entry, name or opts.get("name"))
                 # A volume kept from a removed desktop of the same name is
@@ -137,7 +143,9 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                           entry=entry["id"], image=run_image)
             note = {"entry_id": entry["id"], "created": time.time(),
                     "plan": plan, "opts": {k: v for k, v in opts.items()
-                                           if k not in ("password", "job_id", "prepared_volume", "dry_run")},
+                                           if k not in ("password", "job_id", "prepared_volume", "dry_run",
+                                                        "gpu_plan")},
+                    "gpu": (opts.get("gpu_plan") or {}).get("label", "off"),
                     "volume": vol, "image": run_image,
                     "ports": reserved, "tunnel": None}
             if opts.get("idle_stop") is not None:
@@ -195,6 +203,14 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
             job.log("session  : still starting, the page will catch up", "err")
         if tried:
             job.log("fixed    : %s" % ", ".join(sorted(tried)))
+        gp = opts.get("gpu_plan") or {}
+        if gp.get("render"):
+            if _dri3_confirmed(cname):
+                job.log("gpu      : the desktop is drawing on %s (DRI3 is up)"
+                        % (gp.get("gpu") or {}).get("node", "the GPU"))
+            else:
+                job.log("gpu      : the desktop did not report DRI3; it may be drawing in "
+                        "software (see the container log)", "err")
 
         # ---- 5. tunnel --------------------------------------------------
         job.check()
@@ -232,6 +248,7 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
                                   ({"user": opts["username"], "password": opts["password"]}
                                    if opts.get("username") else None)),
                   "quota_enforced": bool(host.get("quota_support")),
+                  "gpu": {k: gp.get(k) for k in ("mode", "label", "render", "encode", "gpu", "notes")},
                   }
         events.record(cname, "ready", warning or (session.get("wm") or "up"),
                       fixes=sorted(tried) or None)
@@ -259,6 +276,24 @@ def launch(entry_id, plan=None, opts=None, job=None, name=None):
             events.record(cname, "launch-failed", str(ex)[:500])
         job.fail(str(ex), hints=_hints_for(str(ex)))
         raise
+
+
+def _gpu_plan(entry, run_image, host, opts, job):
+    """Decide (and check, once per image) what GPU this desktop gets."""
+    gp = gpu.plan(opts["gpu"], run_image, host, profile=entry["profile"], job=job,
+                  tried=opts.get("gpu_tried") or (), want=opts.get("gpu_device"))
+    opts["gpu_plan"] = gp
+    for n in gp.get("notes") or []:
+        job.log("gpu      : %s" % n)
+    if gp["mode"] == "off":
+        job.log("gpu      : off for this desktop")
+    return gp
+
+
+def _dri3_confirmed(cname):
+    """The base image logs which node Xvfb draws on when glamor comes up."""
+    rc, out, err = run(["docker", "logs", "--tail", "400", cname], timeout=30)
+    return "using DRI3" in (out or "") + (err or "")
 
 
 def admit_memory(entry, plan, host, job, opts):

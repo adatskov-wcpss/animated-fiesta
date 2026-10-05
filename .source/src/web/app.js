@@ -607,8 +607,7 @@
         kasm ? "https image, so a short-lived TCP tunnel" : "an https link that works from anywhere") +
       toggle("oAuto", false, "Start with Docker",
         "off: it only runs when you start it, not after a reboot") +
-      toggle("oGpu", false, "Pass the GPU through",
-        S.host.has_dri ? "uses /dev/dri for smoother video" : "no /dev/dri on this machine") +
+      gpuField("oGpu", "auto") +
       toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
       idleField("oIdle", null) +
       (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
@@ -674,6 +673,22 @@
      desktop that has had none for this long. Its files are kept. */
   var IDLE_CHOICES = [["", "Forge default"], ["0", "Never"], ["30", "After 30 minutes"],
     ["60", "After 1 hour"], ["120", "After 2 hours"], ["240", "After 4 hours"]];
+  /* GPU Smart Passthrough: auto checks what really works inside the image
+     and falls back by itself; on forces it; off keeps the GPU out. */
+  function gpuField(id, cur) {
+    var g = (S.host && S.host.gpu) || {};
+    var found = !!g.primary;
+    var opt = function (v, t) { return '<option value="' + v + '"' + (cur === v ? " selected" : "") + ">" + t + "</option>"; };
+    return '<label class="field" style="margin-top:12px"><span>GPU</span><select id="' + id + '">' +
+      opt("auto", found ? "Smart · use it where it’s checked to work" : "Smart · none usable here, software") +
+      opt("on", "Force on · skip the checks and fallbacks") +
+      opt("off", "Off · draw and encode in software") +
+      "</select></label>" +
+      '<p class="sub" style="margin:2px 0 0;font-size:12px">' + h(g.summary || "Detecting…") +
+      (found ? ". Checked once inside the image; if the desktop misbehaves with it, the forge steps back to software by itself." : "") +
+      "</p>";
+  }
+
   function idleField(id, cur) {
     var v = cur === null || cur === undefined ? "" : String(cur);
     if (v && !IDLE_CHOICES.some(function (c) { return c[0] === v; })) IDLE_CHOICES.push([v, "After " + v + " minutes"]);
@@ -737,7 +752,7 @@
     var opts = {
       tunnel: $("#oTunnel") ? $("#oTunnel").checked : true,
       autostart: $("#oAuto") ? $("#oAuto").checked : false,
-      gpu: $("#oGpu") ? $("#oGpu").checked : false,
+      gpu: $("#oGpu") ? $("#oGpu").value : "auto",
       seccomp_unconfined: $("#oSeccomp") ? $("#oSeccomp").checked : false
     };
     if ($("#oDisplay")) {

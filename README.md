@@ -148,9 +148,10 @@ flowchart LR
   A[catalog entry] --> B{resolve<br/>arch · disk · memory}
   B --> C[pull / build<br/>scheduled · retried]
   C --> D[forge layer<br/>seeds · agent · supervisor]
-  D --> E[docker run<br/>self-fixing]
+  D --> P[GPU check<br/>in the image · cached]
+  P --> E[docker run<br/>self-fixing]
   E --> F{really up?<br/>web port + window manager}
-  F -- problem --> G[pick a fix<br/>memory · shm · seccomp · time]
+  F -- problem --> G[pick a fix<br/>memory · shm · GPU · seccomp · time]
   G --> E
   F -- yes --> H[tunnel] --> I((Ready))
   I -.-> W[watchdog<br/>crash → heal · journal]
@@ -159,6 +160,7 @@ flowchart LR
 | | |
 |---|---|
 | **Health that means something** | The web port answering isn't enough. An agent inside every desktop reports its window manager and screen, and the engine waits for one that stays up. |
+| **GPU Smart Passthrough** | Finds any GPU (Intel, AMD, NVIDIA, Raspberry Pi, Mali, Adreno, virtual), proves inside the desktop's own image that it draws and encodes, hands over one render node with settings pinned, and steps back to software by itself. On by default. [How it works](docs/gpu.md) |
 | **Automatic fixes** | Out of memory, more memory. Blocked syscalls, a relaxed seccomp profile. Out of `/dev/shm`, double it. A slow boot, more patience. Ports, names and quotas fix themselves in `docker run`. Every fix is logged. |
 | **Never flattens the machine** | One build, two pulls and two boots at a time, enforced across every process. A desktop the machine can't hold is refused up front, with the reason. |
 | **Cancel anything** | Kills the download or build (and its children) and removes the half-made desktop. Nothing is left behind. |

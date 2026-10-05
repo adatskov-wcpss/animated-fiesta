@@ -20,7 +20,7 @@
 - **Screenshots.** Pictures of the desktop from Wikimedia Commons, plus the distro's own pictures **only when they show this same desktop**. Pictures that showed installers, other window managers or decades-old releases are filtered out. Click any picture for the lightbox (← → and Esc). Captions are shown in full.
 - **Resources.** Sliders for memory, CPU, shared memory (browsers inside want 512 MB+) and storage, each with advice, and this machine's free resources.
 - **Sign-in.** Optional username and password in front of the desktop; *Generate* makes a strong one. Kasm images always ask, as `kasm_user`.
-- **Options.** A name, a public serveo link, start with Docker, pass the GPU (`/dev/dri`), relax seccomp, and **Screen** (automatic, follow my window, or fixed size with a resolution; phones, HiDPI and 4K screens are handled by the [screen guard](forge-layer.md#the-screen-guard-hidpi-phones-and-4k)).
+- **Options.** A name, a public serveo link, start with Docker, **GPU** (Smart, Force on or Off; see [GPU Smart Passthrough](gpu.md)), relax seccomp, and **Screen** (automatic, follow my window, or fixed size with a resolution; phones, HiDPI and 4K screens are handled by the [screen guard](forge-layer.md#the-screen-guard-hidpi-phones-and-4k)).
 - **How it's built.** The Dockerfile, for built desktops.
 
 ## Forging
