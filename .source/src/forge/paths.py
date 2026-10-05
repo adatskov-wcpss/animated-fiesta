@@ -16,7 +16,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.8.1"
+VERSION = "1.9.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +36,6 @@ INSTANCES_JSON = os.path.join(STATE, "instances.json")
 PORTS_JSON = os.path.join(STATE, "ports.json")
 CACHE_JSON = os.path.join(STATE, "cache.json")
 EVENTS_JSONL = os.path.join(STATE, "events.jsonl")
-TOKEN_FILE = os.path.join(STATE, "token")
 SSH_KEY = os.path.join(STATE, "serveo_key")
 SERVER_JSON = os.path.join(STATE, "server.json")
 LIFE_JSON = os.path.join(STATE, "webui-life.json")

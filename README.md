@@ -118,7 +118,7 @@ Desktops that crash are restarted (and logged). Daemon blips are retried. A cras
 <td valign="top">
 
 ### 🌍 Share a link
-A public https link through serveo, optional sign-in in front of any desktop, and an access token if you expose the UI itself.
+A public https link through serveo, and optional sign-in in front of any desktop.
 
 </td>
 </tr>
@@ -222,7 +222,7 @@ It needs only Python 3 and bash. The full guide, including how to add your own d
 
 ## 🔒 Good to know
 
-- The web UI listens on **localhost only**. `--expose` opens it to your network behind a token, and refuses cross-site requests either way. [Security →](docs/security.md)
+- The web UI listens on **localhost only**. `--expose` opens it to your network with **no access control**, and refuses cross-site requests either way. [Security →](docs/security.md)
 - **Desktops only start when you start them** (unless you turn on auto-start for one). After a reboot, the forge offers to bring back the ones that were running.
 - **Your files** live in each desktop's `/config` volume. They survive restarts, limit changes and repairs.
 - **Updates** arrive by `git fetch`, fast-forward only, and never go backwards. `FORGE_AUTO_UPDATE=0` turns them off.

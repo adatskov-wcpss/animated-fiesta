@@ -74,7 +74,7 @@ These work with `selkies-cli` and with `docker.sh` itself:
 | `--doctor` | Check this machine |
 | `--port N` | Web UI port (default 8787, or the next free one) |
 | `--bind ADDR` | Address the web UI listens on (default `127.0.0.1`) |
-| `--expose` | Listen on all interfaces, behind a token (see [Security](security.md)) |
+| `--expose` | Listen on all interfaces, with no access control (see [Security](security.md)) |
 | `--no-tunnel` | No public serveo link |
 | `--yes`, `-y` | Accept the install prompts for Python and Docker |
 | `--extract-only DIR` | Unpack the engine and UI into `DIR` and stop: no installs, no checks |

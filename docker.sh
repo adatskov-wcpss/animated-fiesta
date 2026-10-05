@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.8.1"
+FORGE_VERSION="1.9.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -543,13 +543,13 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="883069a2d4a76c2c45446bb8256f4d2fdc816b8d88b90eb6a3778553aa954ee0"
+FORGE_SHA_FORGE_PATHS_PY="58e72798465e7b4f9a8b904dedf96edaa5b317f235fd33881e13b90be57344d9"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
 FORGE_SHA_FORGE_RUNNER_PY="65d10364866e5ebf7d409c2113e2e9708337b04ef8555a0bf92ab54ac14c267c"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="6f3e15f6d4c3ac689120ba3c36ea28f84ed84ce16c6fe2ac81e68b2a2b633c67"
+FORGE_SHA_FORGE_SERVER_PY="dad7198e18ae93366dda0ac12583bdacb6c108aba3c1c65d839cfc32467662cd"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -559,17 +559,17 @@ FORGE_SHA_FORGE_TUNNELS_PY="e2758607ff12b385f51d78a8469eb21ccbaba7312afe5091c69f
 FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2603212e511a5"
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="27dc5c8016adeb4ee1ead130bab53ad80a883f9bf8fd8b7cfb794c7fe3a43e1a"
-FORGE_SHA_FORGE_WEBUI_PY="d952965a3e59d3a66e0660d60db9950acfe8ea21f58407fcec354b4eff7040bc"
+FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
 FORGE_SHA_WEB_APP_CSS="cde7b0533be9734bfd18d55989987ddb598754dd3bfbf4df0da985dcb3b3061d"
-FORGE_SHA_WEB_APP_JS="9d8874a2c4a9cea0a9f6496a74e151c41f148f917c691b8e5eac6dd7c55aef17"
+FORGE_SHA_WEB_APP_JS="c701d32d3d84984a15afad0d3576ece1cc7717535c4dff7cf2c172376809d914"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="f830edb32b2fb69a6918064d08bc2cfe33949dba14c4960a789372e203e1e409"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="7751d5ae4463d18b6cee41cd4f6f1a0931d579bc622d1398c1e0ec91d489114f"
-FORGE_PAYLOAD_SHA="7402305644c585de947e7a704df2019511107370d4acd45c7e029de9ac596e08"
+FORGE_SHA_SELKIES_CLI="5bbdf8a58e82de48bf804adf289d5845dd6ba780c310e610aa8da4f8c5020b7a"
+FORGE_PAYLOAD_SHA="c9a00e58c53e152e592187e4a3750b659bd9e3c5271a5af098d3ef5f6717558e"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -6324,7 +6324,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.8.1"
+VERSION = "1.9.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -6344,7 +6344,6 @@ INSTANCES_JSON = os.path.join(STATE, "instances.json")
 PORTS_JSON = os.path.join(STATE, "ports.json")
 CACHE_JSON = os.path.join(STATE, "cache.json")
 EVENTS_JSONL = os.path.join(STATE, "events.jsonl")
-TOKEN_FILE = os.path.join(STATE, "token")
 SSH_KEY = os.path.join(STATE, "serveo_key")
 SERVER_JSON = os.path.join(STATE, "server.json")
 LIFE_JSON = os.path.join(STATE, "webui-life.json")
@@ -7121,7 +7120,6 @@ The web UI's HTTP server and JSON/SSE API.
 
 import base64
 import errno
-import hmac
 import json
 import os
 import re
@@ -7130,7 +7128,6 @@ import sys
 import threading
 import time
 import urllib.parse
-import uuid
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -7153,7 +7150,6 @@ from .paths import (
     SELKIES_HTTP,
     SERVER_JSON,
     STOP_REQUEST_JSON,
-    TOKEN_FILE,
     VERSION,
 )
 from .recipes import gen_dockerfile, gen_startwm
@@ -7189,27 +7185,10 @@ MIME = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
         ".png": "image/png", ".woff2": "font/woff2"}
 
 
-def get_token(create=True):
-    """The web UI's access token (state/token, readable only by you)."""
-    try:
-        with open(TOKEN_FILE) as fh:
-            tok = fh.read().strip()
-    except OSError:
-        tok = None
-    if not tok and create:
-        ensure_dirs()
-        tok = uuid.uuid4().hex
-        fd = os.open(TOKEN_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(fd, "w") as fh:
-            fh.write(tok)
-    return tok
-
-
 class Handler(BaseHTTPRequestHandler):
     server_version = "SelkiesForge/" + VERSION
     protocol_version = "HTTP/1.1"
-    require_token = False
-    token = None
+    loopback_only = True
 
     # -- plumbing ---------------------------------------------------------
     def log_message(self, fmt, *args):
@@ -7226,7 +7205,8 @@ class Handler(BaseHTTPRequestHandler):
         * POST bodies must be JSON: a cross-site page can only send JSON after
           a CORS preflight, which this server never approves.
         * Host: a UI listening on localhost only answers to localhost names,
-          which stops DNS-rebinding pages from reading the API.
+          which stops DNS-rebinding pages from reading the API. A UI bound
+          beyond localhost answers to any name and has no access control.
         Returns an error message, or None when the request is fine.
         """
         host = (self.headers.get("Host") or "").strip().lower()
@@ -7234,7 +7214,7 @@ class Handler(BaseHTTPRequestHandler):
             hostname = host.split("]", 1)[0] + "]"
         else:
             hostname = host.rsplit(":", 1)[0] if ":" in host else host
-        if not self.require_token and hostname and hostname not in self.LOOPBACK_HOSTS:
+        if self.loopback_only and hostname and hostname not in self.LOOPBACK_HOSTS:
             return "this web UI only answers on localhost"
         origin = self.headers.get("Origin")
         if origin is not None:
@@ -7246,20 +7226,6 @@ class Handler(BaseHTTPRequestHandler):
             if ctype != "application/json":
                 return "POST requests must send Content-Type: application/json"
         return None
-
-    def _authed(self):
-        if not self.require_token:
-            return True
-        want = self.token
-        got = self.headers.get("X-Forge-Token")
-        if not got:
-            q = self._query()
-            got = q.get("k")
-        if not got:
-            cookie = self.headers.get("Cookie") or ""
-            m = re.search(r"forge_token=([0-9a-f]+)", cookie)
-            got = m.group(1) if m else None
-        return bool(want) and bool(got) and hmac.compare_digest(str(got), str(want))
 
     def _query(self):
         if "?" not in self.path:
@@ -7338,8 +7304,6 @@ class Handler(BaseHTTPRequestHandler):
         why = self._guard(post=False)
         if why:
             return self._err(403, why)
-        if not self._authed():
-            return self._err(401, "token required")
         try:
             return self._api_get(route)
         except Exception as ex:
@@ -7352,8 +7316,6 @@ class Handler(BaseHTTPRequestHandler):
         why = self._guard(post=True)
         if why:
             return self._err(403, why)
-        if not self._authed():
-            return self._err(401, "token required")
         try:
             return self._api_post(route, self._body())
         except Exception as ex:
@@ -7370,12 +7332,7 @@ class Handler(BaseHTTPRequestHandler):
             with open(path, "rb") as fh:
                 data = fh.read()
         ext = os.path.splitext(name)[1]
-        extra = {}
-        if name == "index.html" and self.require_token and self.token:
-            q = self._query()
-            if q.get("k") == self.token:
-                extra["Set-Cookie"] = "forge_token=%s; Path=/; SameSite=Lax; Max-Age=86400" % self.token
-        return self._send(200, data, MIME.get(ext, "application/octet-stream"), extra)
+        return self._send(200, data, MIME.get(ext, "application/octet-stream"))
 
     # -- API --------------------------------------------------------------
     def _api_get(self, route):
@@ -7676,8 +7633,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     ensure_dirs()
     os.environ["FORGE_JOB_OWNER"] = "server"
     loopback = bind in ("127.0.0.1", "localhost", "::1")
-    Handler.require_token = not loopback
-    Handler.token = get_token(create=not loopback) if not loopback else None
+    Handler.loopback_only = loopback
 
     for attempt in range(60):
         try:
@@ -7711,10 +7667,8 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     threading.Thread(target=_update_loop, daemon=True).start()
 
     url = "http://%s:%d/" % ("localhost" if loopback else bind, port)
-    if Handler.token:
-        url += "?k=" + Handler.token
     info = {"pid": os.getpid(), "port": port, "bind": bind, "url": url,
-            "token": Handler.token, "started": time.time(), "version": VERSION,
+            "started": time.time(), "version": VERSION,
             "payload": updates.SERVE_PAYLOAD}
     jsave(SERVER_JSON, info)
 
@@ -7769,7 +7723,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     if open_tunnel:
         try:
             tun = tunnel_start("__webui__", port, mode="http")
-            info["tunnel"] = tun["url"] + ("?k=" + Handler.token if Handler.token else "")
+            info["tunnel"] = tun["url"]
             jsave(SERVER_JSON, info)
         except Exception as ex:
             info["tunnel_error"] = str(ex)
@@ -9893,12 +9847,11 @@ def webui_status():
         return out
     try:
         req = urllib.request.Request("http://127.0.0.1:%d/api/host" % int(info["port"]),
-                                     headers={"User-Agent": "selkies-cli",
-                                              "X-Forge-Token": info.get("token") or ""})
+                                     headers={"User-Agent": "selkies-cli"})
         with urllib.request.urlopen(req, timeout=4) as r:
             ok = r.status < 500
     except urllib.error.HTTPError as ex:
-        ok = ex.code in (401, 403)          # token-protected, but alive
+        ok = ex.code in (401, 403)          # pre-1.9 servers wanted a token, but alive
     except Exception as ex:
         ok = False
         out["why"] = "it is running but not answering (%s)" % type(ex).__name__
@@ -11297,16 +11250,9 @@ __FORGE_FILE_WEB_APP_CSS__
     return Math.round(s / 86400) + "d";
   }
 
-  var TOKEN = (function () {
-    var m = location.search.match(/[?&]k=([0-9a-f]+)/);
-    if (m) { try { sessionStorage.setItem("forge_token", m[1]); } catch (e) {} return m[1]; }
-    try { return sessionStorage.getItem("forge_token") || ""; } catch (e) { return ""; }
-  })();
-
   function api(path, opts) {
     opts = opts || {};
     var init = { method: opts.method || "GET", headers: { "Accept": "application/json" } };
-    if (TOKEN) init.headers["X-Forge-Token"] = TOKEN;
     if (opts.body !== undefined) {
       init.headers["Content-Type"] = "application/json";
       init.body = JSON.stringify(opts.body);
@@ -11323,7 +11269,7 @@ __FORGE_FILE_WEB_APP_CSS__
   }
 
   function sse(path, handlers) {
-    var url = path + (path.indexOf("?") < 0 ? "?" : "&") + (TOKEN ? "k=" + TOKEN : "_=1");
+    var url = path + (path.indexOf("?") < 0 ? "?" : "&") + "_=1";
     var es = new EventSource(url);
     Object.keys(handlers).forEach(function (k) {
       if (k === "error") return;
@@ -13054,7 +13000,7 @@ __FORGE_FILE_WEB_APP_CSS__
     var tries = 0;
     function waitForIt() {
       tries++;
-      fetch("/api/update", { headers: TOKEN ? { "X-Forge-Token": TOKEN } : {}, cache: "no-store" })
+      fetch("/api/update", { cache: "no-store" })
         .then(function (r) { return r.json(); })
         .then(function (u) {
           if (!u.restart_needed) location.reload();
@@ -15275,7 +15221,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.8.1"
+FORGE_VERSION="1.9.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -16308,7 +16254,7 @@ cmd_webui() {
   [ "$WEBUI_EXPOSE" = 1 ] && args+=(--tunnel)
 
   if [ "$WEBUI_BIND" != "127.0.0.1" ] || [ "$WEBUI_EXPOSE" = 1 ]; then
-    warn "this exposes docker control beyond localhost; a token is required in the URL"
+    warn "this exposes docker control beyond localhost; anyone who can reach it controls docker"
   fi
 
   # Always start it detached, then decide whether to sit on it or hand the
@@ -17185,7 +17131,7 @@ After the first run:
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
-   --expose       serve the web UI beyond localhost, behind a token
+   --expose       serve the web UI beyond localhost (no access control)
    --no-tunnel    skip the public serveo link
    --yes, -y      accept the install prompts (Python, Docker)
 
@@ -17907,7 +17853,7 @@ cmd_webui() {
   [ "$WEBUI_EXPOSE" = 1 ] && args+=(--tunnel)
 
   if [ "$WEBUI_BIND" != "127.0.0.1" ] || [ "$WEBUI_EXPOSE" = 1 ]; then
-    warn "this exposes docker control beyond localhost; a token is required in the URL"
+    warn "this exposes docker control beyond localhost; anyone who can reach it controls docker"
   fi
 
   # Always start it detached, then decide whether to sit on it or hand the
@@ -18784,7 +18730,7 @@ After the first run:
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
-   --expose       serve the web UI beyond localhost, behind a token
+   --expose       serve the web UI beyond localhost (no access control)
    --no-tunnel    skip the public serveo link
    --yes, -y      accept the install prompts (Python, Docker)
 

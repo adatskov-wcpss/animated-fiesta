@@ -5,8 +5,8 @@ Selkies Forge controls Docker on your machine. Docker access is root-equivalent,
 ## The web UI
 
 - **Listens on `127.0.0.1` only by default.** Nothing outside this machine can reach it.
-- **`--expose`** (or `--bind 0.0.0.0`) makes it listen on all interfaces **and requires a token** on every API call. Anyone who has the full link, with `?k=<token>`, can control Docker here. The token is in `~/.selkies-forge/state/token`.
-- **Public link for the UI** (`--expose` with a tunnel) puts that same token-protected link on the internet through serveo.
+- **`--expose`** (or `--bind 0.0.0.0`, or any non-loopback address) makes it listen beyond localhost **with no token or login**. Anyone who can reach the port can control Docker here. Only do this on a network you trust, or behind a reverse proxy that signs people in.
+- **Public link for the UI** (`--expose` with a tunnel) puts that unprotected UI on the internet through serveo: anyone with the link controls Docker on this machine.
 - **Cross-site protection.** Even on localhost, a web page you visit can try to send requests to `localhost:8787`. The server refuses any request whose `Origin` doesn't match the address it's served on, and accepts only JSON POSTs. Browsers won't send a cross-site JSON POST without a preflight, which the server never approves. A localhost-only UI also refuses requests addressed to any other host name, which stops DNS-rebinding attacks.
 
 ## Desktops

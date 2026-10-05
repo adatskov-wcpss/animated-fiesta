@@ -9,13 +9,13 @@ class FakeHandler(object):
     LOOPBACK_HOSTS = Handler.LOOPBACK_HOSTS
     _guard = Handler._guard
 
-    def __init__(self, headers, require_token=False):
+    def __init__(self, headers, loopback_only=True):
         self.headers = headers
-        self.require_token = require_token
+        self.loopback_only = loopback_only
 
 
-def guard(headers, post=False, token=False):
-    return FakeHandler(headers, token)._guard(post)
+def guard(headers, post=False, exposed=False):
+    return FakeHandler(headers, not exposed)._guard(post)
 
 
 class GuardTest(unittest.TestCase):
@@ -42,11 +42,12 @@ class GuardTest(unittest.TestCase):
     def test_dns_rebinding_is_refused_on_localhost(self):
         self.assertTrue(guard({"Host": "attacker.example:8787"}))
 
-    def test_exposed_ui_relies_on_its_token(self):
+    def test_exposed_ui_answers_any_name_but_still_refuses_cross_site(self):
         h = {"Host": "abc.serveousercontent.com", "Origin": "https://abc.serveousercontent.com",
              "Content-Type": "application/json"}
-        self.assertIsNone(guard(h, post=True, token=True))
-        self.assertTrue(guard(dict(h, Origin="https://evil.example"), post=True, token=True))
+        self.assertIsNone(guard(h, post=True, exposed=True))
+        self.assertIsNone(guard({"Host": "100.66.153.83:8787"}, exposed=True))
+        self.assertTrue(guard(dict(h, Origin="https://evil.example"), post=True, exposed=True))
 
 
 if __name__ == "__main__":

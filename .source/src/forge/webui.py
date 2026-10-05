@@ -364,12 +364,11 @@ def webui_status():
         return out
     try:
         req = urllib.request.Request("http://127.0.0.1:%d/api/host" % int(info["port"]),
-                                     headers={"User-Agent": "selkies-cli",
-                                              "X-Forge-Token": info.get("token") or ""})
+                                     headers={"User-Agent": "selkies-cli"})
         with urllib.request.urlopen(req, timeout=4) as r:
             ok = r.status < 500
     except urllib.error.HTTPError as ex:
-        ok = ex.code in (401, 403)          # token-protected, but alive
+        ok = ex.code in (401, 403)          # pre-1.9 servers wanted a token, but alive
     except Exception as ex:
         ok = False
         out["why"] = "it is running but not answering (%s)" % type(ex).__name__

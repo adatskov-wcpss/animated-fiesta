@@ -17,7 +17,7 @@ Everything about Selkies Forge, from your first desktop to rebuilding `docker.sh
 | [Running it day to day](operations.md) | Start on boot, how it last stopped, restoring desktops, updates, disk space, uninstalling |
 | [GPU Smart Passthrough](gpu.md) | How desktops get your GPU: detection, the in-image check, what is passed, fallbacks, NVIDIA |
 | [Configuration](configuration.md) | Every environment variable and option, with defaults |
-| [Security](security.md) | What listens where, what it connects to, sign-in, tokens, tunnels |
+| [Security](security.md) | What listens where, what it connects to, sign-in, tunnels |
 | [Troubleshooting](troubleshooting.md) | Symptoms and fixes, and how to read the logs and the event journal |
 | [FAQ](faq.md) | Short answers to the usual questions |
 

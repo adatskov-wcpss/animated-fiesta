@@ -9,10 +9,10 @@ curl -s localhost:8787/api/instances | jq '.instances[] | {name, running, sessio
 ## Rules
 
 - **Base URL:** wherever the web UI runs (`selkies-cli open` prints it). By default it's `http://localhost:8787`, listening on `127.0.0.1` only.
-- **Token:** with `--expose` (or any non-loopback bind) every `/api/` call needs the token, sent as a header `X-Forge-Token: <token>`, a query `?k=<token>`, or the `forge_token` cookie (which the page sets when you open the `?k=` link). The token is in `~/.selkies-forge/state/token`. On localhost-only, no token is needed.
+- **No token.** There is no access control on the API: whoever can reach the web UI can use it. Keep it on localhost, or put it behind something that signs people in.
 - **POST bodies must be JSON** (`Content-Type: application/json`), even when empty (`{}`).
 - **Cross-site requests are refused.** If a request carries an `Origin` header, it must match the host it was sent to. A localhost-only UI also refuses any `Host` header that isn't `localhost`, `127.0.0.1` or `[::1]` (DNS rebinding). Scripts that send neither header are unaffected.
-- **Errors** are `{"error": "message"}` with status 400, 401, 403, 404 or 500.
+- **Errors** are `{"error": "message"}` with status 400, 403, 404 or 500.
 - **Streams** (job events, terminal output) are Server-Sent Events.
 
 ## Catalog and machine

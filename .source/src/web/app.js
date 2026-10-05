@@ -33,16 +33,9 @@
     return Math.round(s / 86400) + "d";
   }
 
-  var TOKEN = (function () {
-    var m = location.search.match(/[?&]k=([0-9a-f]+)/);
-    if (m) { try { sessionStorage.setItem("forge_token", m[1]); } catch (e) {} return m[1]; }
-    try { return sessionStorage.getItem("forge_token") || ""; } catch (e) { return ""; }
-  })();
-
   function api(path, opts) {
     opts = opts || {};
     var init = { method: opts.method || "GET", headers: { "Accept": "application/json" } };
-    if (TOKEN) init.headers["X-Forge-Token"] = TOKEN;
     if (opts.body !== undefined) {
       init.headers["Content-Type"] = "application/json";
       init.body = JSON.stringify(opts.body);
@@ -59,7 +52,7 @@
   }
 
   function sse(path, handlers) {
-    var url = path + (path.indexOf("?") < 0 ? "?" : "&") + (TOKEN ? "k=" + TOKEN : "_=1");
+    var url = path + (path.indexOf("?") < 0 ? "?" : "&") + "_=1";
     var es = new EventSource(url);
     Object.keys(handlers).forEach(function (k) {
       if (k === "error") return;
@@ -1790,7 +1783,7 @@
     var tries = 0;
     function waitForIt() {
       tries++;
-      fetch("/api/update", { headers: TOKEN ? { "X-Forge-Token": TOKEN } : {}, cache: "no-store" })
+      fetch("/api/update", { cache: "no-store" })
         .then(function (r) { return r.json(); })
         .then(function (u) {
           if (!u.restart_needed) location.reload();

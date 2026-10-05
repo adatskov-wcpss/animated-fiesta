@@ -540,7 +540,7 @@ cmd_webui() {
   [ "$WEBUI_EXPOSE" = 1 ] && args+=(--tunnel)
 
   if [ "$WEBUI_BIND" != "127.0.0.1" ] || [ "$WEBUI_EXPOSE" = 1 ]; then
-    warn "this exposes docker control beyond localhost; a token is required in the URL"
+    warn "this exposes docker control beyond localhost; anyone who can reach it controls docker"
   fi
 
   # Always start it detached, then decide whether to sit on it or hand the
@@ -1417,7 +1417,7 @@ After the first run:
 
 Options:
    --port N       web UI port (default 8787, the next free one if taken)
-   --expose       serve the web UI beyond localhost, behind a token
+   --expose       serve the web UI beyond localhost (no access control)
    --no-tunnel    skip the public serveo link
    --yes, -y      accept the install prompts (Python, Docker)
 

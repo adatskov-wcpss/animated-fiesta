@@ -6,7 +6,6 @@ The web UI's HTTP server and JSON/SSE API.
 
 import base64
 import errno
-import hmac
 import json
 import os
 import re
@@ -15,7 +14,6 @@ import sys
 import threading
 import time
 import urllib.parse
-import uuid
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -38,7 +36,6 @@ from .paths import (
     SELKIES_HTTP,
     SERVER_JSON,
     STOP_REQUEST_JSON,
-    TOKEN_FILE,
     VERSION,
 )
 from .recipes import gen_dockerfile, gen_startwm
@@ -74,27 +71,10 @@ MIME = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
         ".png": "image/png", ".woff2": "font/woff2"}
 
 
-def get_token(create=True):
-    """The web UI's access token (state/token, readable only by you)."""
-    try:
-        with open(TOKEN_FILE) as fh:
-            tok = fh.read().strip()
-    except OSError:
-        tok = None
-    if not tok and create:
-        ensure_dirs()
-        tok = uuid.uuid4().hex
-        fd = os.open(TOKEN_FILE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-        with os.fdopen(fd, "w") as fh:
-            fh.write(tok)
-    return tok
-
-
 class Handler(BaseHTTPRequestHandler):
     server_version = "SelkiesForge/" + VERSION
     protocol_version = "HTTP/1.1"
-    require_token = False
-    token = None
+    loopback_only = True
 
     # -- plumbing ---------------------------------------------------------
     def log_message(self, fmt, *args):
@@ -111,7 +91,8 @@ class Handler(BaseHTTPRequestHandler):
         * POST bodies must be JSON: a cross-site page can only send JSON after
           a CORS preflight, which this server never approves.
         * Host: a UI listening on localhost only answers to localhost names,
-          which stops DNS-rebinding pages from reading the API.
+          which stops DNS-rebinding pages from reading the API. A UI bound
+          beyond localhost answers to any name and has no access control.
         Returns an error message, or None when the request is fine.
         """
         host = (self.headers.get("Host") or "").strip().lower()
@@ -119,7 +100,7 @@ class Handler(BaseHTTPRequestHandler):
             hostname = host.split("]", 1)[0] + "]"
         else:
             hostname = host.rsplit(":", 1)[0] if ":" in host else host
-        if not self.require_token and hostname and hostname not in self.LOOPBACK_HOSTS:
+        if self.loopback_only and hostname and hostname not in self.LOOPBACK_HOSTS:
             return "this web UI only answers on localhost"
         origin = self.headers.get("Origin")
         if origin is not None:
@@ -131,20 +112,6 @@ class Handler(BaseHTTPRequestHandler):
             if ctype != "application/json":
                 return "POST requests must send Content-Type: application/json"
         return None
-
-    def _authed(self):
-        if not self.require_token:
-            return True
-        want = self.token
-        got = self.headers.get("X-Forge-Token")
-        if not got:
-            q = self._query()
-            got = q.get("k")
-        if not got:
-            cookie = self.headers.get("Cookie") or ""
-            m = re.search(r"forge_token=([0-9a-f]+)", cookie)
-            got = m.group(1) if m else None
-        return bool(want) and bool(got) and hmac.compare_digest(str(got), str(want))
 
     def _query(self):
         if "?" not in self.path:
@@ -223,8 +190,6 @@ class Handler(BaseHTTPRequestHandler):
         why = self._guard(post=False)
         if why:
             return self._err(403, why)
-        if not self._authed():
-            return self._err(401, "token required")
         try:
             return self._api_get(route)
         except Exception as ex:
@@ -237,8 +202,6 @@ class Handler(BaseHTTPRequestHandler):
         why = self._guard(post=True)
         if why:
             return self._err(403, why)
-        if not self._authed():
-            return self._err(401, "token required")
         try:
             return self._api_post(route, self._body())
         except Exception as ex:
@@ -255,12 +218,7 @@ class Handler(BaseHTTPRequestHandler):
             with open(path, "rb") as fh:
                 data = fh.read()
         ext = os.path.splitext(name)[1]
-        extra = {}
-        if name == "index.html" and self.require_token and self.token:
-            q = self._query()
-            if q.get("k") == self.token:
-                extra["Set-Cookie"] = "forge_token=%s; Path=/; SameSite=Lax; Max-Age=86400" % self.token
-        return self._send(200, data, MIME.get(ext, "application/octet-stream"), extra)
+        return self._send(200, data, MIME.get(ext, "application/octet-stream"))
 
     # -- API --------------------------------------------------------------
     def _api_get(self, route):
@@ -561,8 +519,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     ensure_dirs()
     os.environ["FORGE_JOB_OWNER"] = "server"
     loopback = bind in ("127.0.0.1", "localhost", "::1")
-    Handler.require_token = not loopback
-    Handler.token = get_token(create=not loopback) if not loopback else None
+    Handler.loopback_only = loopback
 
     for attempt in range(60):
         try:
@@ -596,10 +553,8 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     threading.Thread(target=_update_loop, daemon=True).start()
 
     url = "http://%s:%d/" % ("localhost" if loopback else bind, port)
-    if Handler.token:
-        url += "?k=" + Handler.token
     info = {"pid": os.getpid(), "port": port, "bind": bind, "url": url,
-            "token": Handler.token, "started": time.time(), "version": VERSION,
+            "started": time.time(), "version": VERSION,
             "payload": updates.SERVE_PAYLOAD}
     jsave(SERVER_JSON, info)
 
@@ -654,7 +609,7 @@ def serve(bind="127.0.0.1", port=8787, open_tunnel=False, quiet=False):
     if open_tunnel:
         try:
             tun = tunnel_start("__webui__", port, mode="http")
-            info["tunnel"] = tun["url"] + ("?k=" + Handler.token if Handler.token else "")
+            info["tunnel"] = tun["url"]
             jsave(SERVER_JSON, info)
         except Exception as ex:
             info["tunnel_error"] = str(ex)
