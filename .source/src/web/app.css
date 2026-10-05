@@ -1696,3 +1696,36 @@ html[data-theme="ember"] {
   .lk-row { flex-wrap: wrap; }
   .lk-acts { width: 100%; justify-content: flex-end; }
 }
+
+/* ================================================================ addon update check */
+.up { display: grid; gap: 10px; }
+.up-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.up-head b { display: block; font-size: 16px; }
+.up-head .mono { font-size: 12px; color: var(--dim-2); }
+.up-state { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: var(--r-m); border: 1px solid var(--line); background: rgba(var(--ink), 0.03); }
+.up-state > svg, .up-state > .spin-sm { width: 26px; height: 26px; flex: none; }
+.up-state > .spin-sm { width: 20px; height: 20px; margin: 3px; }
+.up-state > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.up-state b { font-size: 15px; }
+.up-state span { font-size: 13px; color: var(--dim); }
+.up-state.ok { border-color: rgba(61, 220, 151, 0.4); background: rgba(61, 220, 151, 0.07); }
+.up-state.ok > svg { color: var(--ok); }
+.up-state.new { border-color: rgba(var(--acc-rgb), 0.45); background: var(--acc-soft); }
+.up-state.new > svg { color: var(--acc); }
+.up-state.bad { border-color: rgba(255, 107, 126, 0.45); }
+.up-state.bad > svg { color: var(--bad); }
+.up-ver { display: flex; align-items: center; gap: 8px; flex: none; font: 12.5px var(--mono); color: var(--dim); }
+.up-ver b { color: var(--txt); }
+.up-k { margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim-2); }
+.up-commit { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-s); min-width: 0; }
+.up-sha { display: inline-block; padding: 3px 8px; border-radius: 7px; font: 600 12px var(--mono); background: rgba(var(--ink), 0.06);
+          border: 1px solid var(--line); color: var(--txt); flex: none; }
+.up-commit a { text-decoration: none; }
+.up-commit a:hover .up-sha { border-color: var(--acc); color: var(--acc); }
+.up-msg { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.up-msg b { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-msg span { font-size: 12px; color: var(--dim-2); }
+.up-more { font-size: 12px; padding-left: 4px; }
+.up-foot { align-items: center; gap: 8px; margin-top: 8px; }
+.up-foot .faint { font-size: 12px; color: var(--dim-2); }
+@media (max-width: 620px) { .up-state { flex-wrap: wrap; } .up-ver { width: 100%; } }

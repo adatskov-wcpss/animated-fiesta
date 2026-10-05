@@ -93,6 +93,7 @@ See [Addons](addons.md) for the format. Long operations are jobs, streamed like 
 |---|---|
 | `GET /api/addons` | `{addons: [...], spec}`: each with name, version, description, source, logo URL, settings (passwords masked), actions, requirement problems, `detected`, `installed`, and a live `status` (`{state, url, version, detail}`) |
 | `GET /api/addons/<id>` | One addon, with its live status |
+| `GET /api/addons/<id>/check` | Newer commits than the installed one? `{up_to_date, local, remote, commits, note?}` (only commits touching the addon's folder count) |
 | `GET /api/addons/<id>/image[?path=…]` | Its logo, or an icon its manifest names. SVGs carry a sandboxing CSP |
 | `POST /api/addons/add` | `{source}` → `{addon}`. Fetches, checks the manifest, runs `detect`. 400 with the exact problem otherwise |
 | `POST /api/addons/<id>/install` | `{settings?: {KEY: value}}` → `{job}`. Links it instead when `detect` finds it already here |

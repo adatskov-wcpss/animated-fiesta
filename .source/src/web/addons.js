@@ -58,7 +58,7 @@
       });
       if (a.settings.length) menu.push('<button data-ad="install" data-id="' + h(a.id) + '">' + F.I.tune + "Settings and reinstall</button>");
     }
-    menu.push('<button data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + (a.installed ? "Update" : "Fetch again") + "</button>");
+    menu.push('<button data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + "Check for updates</button>");
     (a.links || []).forEach(function (l) {
       menu.push('<a href="' + h(l.url) + '" target="_blank" rel="noopener">' + F.I.open + h(l.label) + "</a>");
     });
@@ -79,9 +79,13 @@
       (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
         ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
       (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +
+      (!a.update_pending && a.remote && a.remote.up_to_date === false ? '<div class="ad-note found">' + F.I.upd +
+        "<span>Commit <b class=\"mono\">" + h(String(a.remote.commit || "").slice(0, 7)) + "</b> is available" +
+        (a.remote.version && a.remote.version !== a.version ? " (v" + h(a.remote.version) + ")" : "") + ".</span></div>" : "") +
       (a.installed && st.detail && st.state !== "error" ? '<div class="ad-status mono">' + h(st.detail) + "</div>" : "") +
       '<div class="ad-foot">' + main +
-        (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
+        (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>"
+          : a.remote && a.remote.up_to_date === false ? '<button class="btn" data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
         '<span class="spacer"></span>' +
         '<div class="menu-wrap"><button class="iconbtn" data-menu title="More" aria-label="More">' + F.I.more + "</button>" +
         '<div class="menu" hidden>' + menu.join("") + "</div></div>" +
@@ -237,6 +241,78 @@
     });
   }
 
+  /* -------------------------------------------------------------- updates */
+  function ago(t) {
+    if (!t) return "";
+    var s = Math.max(0, Date.now() / 1000 - t);
+    if (s < 60) return "just now";
+    if (s < 3600) return Math.round(s / 60) + " min ago";
+    if (s < 86400) return Math.round(s / 3600) + " h ago";
+    if (s < 86400 * 60) return Math.round(s / 86400) + " days ago";
+    return new Date(t * 1000).toLocaleDateString();
+  }
+  function commitUrl(source, sha) {
+    var m = String(source || "").match(/^(https:\/\/(?:github\.com|codeberg\.org)\/[^/]+\/[^/#]+?)(?:\.git)?(?:\/tree\/.*)?(?:#.*)?$/);
+    if (m) return m[1] + "/commit/" + sha;
+    m = String(source || "").match(/^(https:\/\/gitlab\.com\/[^/]+\/[^/#]+?)(?:\.git)?(?:\/-\/tree\/.*)?(?:#.*)?$/);
+    return m ? m[1] + "/-/commit/" + sha : null;
+  }
+  function commitLine(c, source) {
+    var url = commitUrl(source, c.commit);
+    var sha = '<span class="up-sha">' + h(c.short || String(c.commit || "").slice(0, 7)) + "</span>";
+    return '<div class="up-commit">' + (url ? '<a href="' + h(url) + '" target="_blank" rel="noopener">' + sha + "</a>" : sha) +
+      '<div class="up-msg"><b>' + h(c.subject || "(no message)") + "</b><span>" + h([c.author, ago(c.date)].filter(Boolean).join(" \u00b7 ")) + "</span></div></div>";
+  }
+
+  function checkUpdates(a) {
+    var logo = '<div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>";
+    F.openModal("Updates \u00b7 " + a.name, '<div class="up">' +
+      '<div class="up-head">' + logo + '<div><b>' + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
+      '<div class="up-state checking"><span class="spin-sm"></span><div><b>Checking for new commits\u2026</b>' +
+      "<span>Asking " + h(String(a.source).replace(/^https?:\/\//, "").split("/")[0] || "the repository") + " what is newest.</span></div></div></div>");
+    F.api("/api/addons/" + encodeURIComponent(a.id) + "/check").then(function (r) {
+      var body = $("#modalBody .up");
+      if (!body) return;
+      var st = body.querySelector(".up-state");
+      var html, local = r.local || {};
+      if (r.kind !== "git") {
+        html = '<div class="up-state info">' + F.I.upd + "<div><b>Added from a folder</b><span>" + h(r.note) + "</span></div></div>" +
+          '<div class="row end"><button class="btn primary" id="upGo">' + F.I.upd + " Copy it again</button></div>";
+      } else if (r.up_to_date) {
+        html = '<div class="up-state ok">' + I_CHECK + "<div><b>Up to date</b><span>" +
+          (r.note ? h(r.note) : "No new commits since this addon was fetched.") + "</span></div></div>" +
+          '<div class="up-k">Installed</div>' + commitLine(local, r.source) +
+          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
+          '<button class="btn ghost" id="upAgain">Check again</button><button class="btn" id="upClose">Close</button></div>';
+      } else {
+        var rem = r.remote || {}, commits = r.commits || [];
+        var ver = rem.version && rem.version !== (local.installed_version || local.version)
+          ? '<span class="up-ver"><span>v' + h(local.installed_version || local.version) + '</span>\u2192<b>v' + h(rem.version) + "</b></span>" : "";
+        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available</b><span>Commit <span class=\"mono\">" + h(rem.short) +
+          "</span> is available to update to" + (commits.length > 1 ? ", " + commits.length + (r.more ? "+" : "") + " new commits" : "") + ".</span></div>" + ver + "</div>" +
+          '<div class="up-k">New</div>' + commits.slice(0, 8).map(function (c) { return commitLine(c, r.source); }).join("") +
+          (commits.length > 8 ? '<div class="faint up-more">and ' + (commits.length - 8) + " more</div>" : "") +
+          '<div class="up-k">Installed now</div>' + commitLine(local, r.source) +
+          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
+          '<button class="btn ghost" id="upClose">Later</button><button class="btn primary" id="upGo">' + F.I.upd +
+          " Update to " + h(rem.short) + "</button></div>";
+      }
+      st.outerHTML = html;
+      var go = $("#upGo"), again = $("#upAgain"), close = $("#upClose");
+      if (go) go.onclick = function () { runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name); };
+      if (again) again.onclick = function () { checkUpdates(a); };
+      if (close) close.onclick = F.closeModal;
+      load();
+    }).catch(function (e) {
+      var st = $("#modalBody .up-state");
+      if (st) st.outerHTML = '<div class="up-state bad">' + F.I.close + "<div><b>Could not check</b><span>" + h(e.message) + "</span></div></div>" +
+        '<div class="row end"><button class="btn" id="upAgain">Try again</button></div>';
+      var again = $("#upAgain");
+      if (again) again.onclick = function () { checkUpdates(a); };
+    });
+  }
+  var I_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 10"/></svg>';
+
   /* -------------------------------------------------------------- open */
   // The same chooser as a desktop's: this machine, this network, a serveo
   // public link, Burrow. Only for addons whose status script names a port.
@@ -294,7 +370,8 @@
     if (!a) return;
     var menu = t.closest(".menu");
     if (menu) menu.hidden = true;
-    if (what === "open") openAddon(a);
+    if (what === "check") checkUpdates(a);
+    else if (what === "open") openAddon(a);
     else if (what === "install") installForm(a);
     else if (what === "update") runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name);
     else if (what === "action") {

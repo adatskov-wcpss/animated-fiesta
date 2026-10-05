@@ -432,7 +432,14 @@ fi
 
 ## Updates
 
-**Update** (in the card's menu, or `selkies-cli addon update ID`):
+**Check for updates** (in the card's menu) asks the addon's repository for its newest commit and compares it with the one the addon was fetched at. It fetches commit history only, no files, and changes nothing:
+
+- **Up to date**: no new commits, with the installed commit, its message and its age. When the link points at a folder, only commits that touch that folder count, so a repository that moved on elsewhere is still up to date (and says so).
+- **Update available**: "Commit `4759c64` is available to update to", the new commits with their messages (each links to the commit on GitHub, GitLab or Codeberg), the version change if the manifest's `version` moved, the installed commit, and **Update to 4759c64**.
+
+The result is remembered, so the card itself shows "Commit … is available" and an **Update** button until you update. `GET /api/addons/<id>/check` returns the same thing as JSON.
+
+**Update** (from that card, or `selkies-cli addon update ID`):
 
 1. Fetches the source again into a temporary folder, from the same link and branch.
 2. Checks the new manifest (it must have the same `id`).
@@ -677,6 +684,7 @@ Addons feel native when they follow the forge's habits:
 | `GET /api/addons/<id>` | One addon |
 | `GET /api/addons/<id>/image[?path=…]` | Its logo, or an icon the manifest names |
 | `POST /api/addons/add` | `{source}` → `{addon}`. Fetches and checks; runs `detect` |
+| `GET /api/addons/<id>/check` | `{up_to_date, local, remote, commits: [{commit, short, subject, author, date}], note?}`. Compares with the newest commit; changes nothing |
 | `POST /api/addons/<id>/install` | `{settings: {KEY: value}}` → `{job}` |
 | `POST /api/addons/<id>/update` | `{}` → `{job}` |
 | `POST /api/addons/<id>/uninstall` | `{keep_data: true}` → `{job}` |

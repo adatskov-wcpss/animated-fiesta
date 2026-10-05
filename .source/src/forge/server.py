@@ -331,6 +331,12 @@ class Handler(BaseHTTPRequestHandler):
             except (addons.AddonError, OSError) as ex:
                 return self._err(404, ex)
             return self._image(data, ctype)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/check$", route)
+        if m:
+            try:
+                return self._send(200, addons.check_updates(m.group(1)))
+            except addons.AddonError as ex:
+                return self._err(400, ex)
         m = re.match(r"^/api/addons/([a-z0-9-]{2,40})$", route)
         if m:
             try:

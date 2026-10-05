@@ -81,7 +81,7 @@ A desktop published through Burrow also shows a **Burrow** row on its card, besi
 
 ## Addons
 
-Apps that install beside the forge. Paste a repository link and press **Add**. The forge fetches it and shows a card: logo, name, version, author, source, description, and anything about this machine that rules it out. Nothing is installed until you press **Install** (or **Link it**, when the app is already on the machine). That opens its settings, if it has any, then a live log with a progress bar and **Cancel**. Installed cards show a live state, **Open**, and a **⋯** menu with the addon's actions, *Settings and reinstall*, *Update*, its links, and *Uninstall*. *Try the example addon* adds [Hello Forge](../addons/hello-forge/). Everything about addons, including writing one: [Addons](addons.md).
+Apps that install beside the forge. Paste a repository link and press **Add**. The forge fetches it and shows a card: logo, name, version, author, source, description, and anything about this machine that rules it out. Nothing is installed until you press **Install** (or **Link it**, when the app is already on the machine). That opens its settings, if it has any, then a live log with a progress bar and **Cancel**. Installed cards show a live state, **Open**, and a **⋯** menu with the addon's actions, *Settings and reinstall*, *Check for updates*, its links, and *Uninstall*. *Check for updates* compares the installed commit with the repository's newest one and says **Up to date**, or names the commit available to update to, with its new commits and an **Update** button. *Try the example addon* adds [Hello Forge](../addons/hello-forge/). Everything about addons, including writing one: [Addons](addons.md).
 
 ## Themes
 

@@ -712,7 +712,7 @@ def update(aid, job=None):
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     old_version = rec["manifest"]["version"]
-    rec = _update(aid, {"manifest": m, "commit": commit, "updated": time.time()})
+    rec = _update(aid, {"manifest": m, "commit": commit, "updated": time.time(), "remote": None})
     if job:
         job.log("%s %s -> %s%s" % (m["name"], old_version, m["version"],
                                    " (%s)" % commit[:10] if commit else ""))
@@ -734,6 +734,83 @@ def update(aid, job=None):
     if job:
         job.finish(res)
     return res
+
+
+def check_updates(aid):
+    """Is there newer code than what this addon was fetched at?
+
+    For a git source: fetch the newest commit (shallow, no file contents) into
+    the addon's checkout and compare. When the link points at a folder, only
+    commits that touch that folder count; a repository that moved on
+    elsewhere is still "up to date". Nothing is installed or changed.
+    """
+    rec = get(aid)
+    src = rec["source"]
+    m = rec["manifest"]
+    out = {"id": aid, "name": m["name"], "kind": src["kind"], "source": src.get("display"),
+           "checked": time.time(), "local": {"commit": rec.get("commit"), "version": m["version"],
+                                             "installed_version": rec.get("installed_version")}}
+    if src["kind"] != "git":
+        out.update(up_to_date=None, note="This addon was added from a folder on this machine. "
+                                         "Update copies the folder again.")
+        return out
+    repo = os.path.join(addon_dir(aid), "repo")
+    if not os.path.isdir(os.path.join(repo, ".git")):
+        raise AddonError("Its checkout has no git history. Remove it and add it again.")
+    ref = src.get("ref") or "HEAD"
+    rc, _, err = _git(["fetch", "--quiet", "--depth", "40", "--filter=blob:none", "origin", ref], cwd=repo, timeout=90)
+    if rc != 0:
+        msg = (err.strip().splitlines() or ["git fetch failed"])[-1]
+        raise AddonError("Could not reach %s: %s" % (src.get("display"), msg))
+    rc, remote, _ = _git(["rev-parse", "FETCH_HEAD"], cwd=repo, timeout=20)
+    remote = remote.strip()
+    local = rec.get("commit") or ""
+    sub = (rec.get("subdir") or "").strip("/")
+
+    def info(sha):
+        rc, o, _ = _git(["log", "-1", "--format=%H%x09%ct%x09%an%x09%s", sha], cwd=repo, timeout=20)
+        if rc != 0 or "\t" not in o:
+            return {"commit": sha, "short": sha[:7]}
+        h, ct, an, subj = (o.strip().split("\t", 3) + ["", "", ""])[:4]
+        return {"commit": h, "short": h[:7], "date": int(ct or 0), "author": an, "subject": subj}
+
+    out["remote"] = info(remote)
+    out["local"].update({k: v for k, v in info(local).items() if k != "commit"} if local else {})
+    if local:
+        out["local"]["short"] = local[:7]
+    same = remote == local
+    if not same and sub and local:
+        # the folder's tree on both sides: equal means nothing in this addon changed
+        r1, t1, _ = _git(["rev-parse", "%s:%s" % (remote, sub)], cwd=repo, timeout=20)
+        r2, t2, _ = _git(["rev-parse", "%s:%s" % (local, sub)], cwd=repo, timeout=20)
+        if r1 == 0 and r2 == 0 and t1.strip() == t2.strip():
+            same = True
+            out["note"] = "The repository has newer commits, but none of them touch this addon."
+    out["up_to_date"] = same
+    if not same:
+        args = ["log", "--format=%H%x09%ct%x09%an%x09%s", "-n", "30", remote]
+        if sub:
+            args += ["--", sub]
+        rc, o, _ = _git(args, cwd=repo, timeout=30)
+        commits = []
+        for line in o.splitlines():
+            h, ct, an, subj = (line.split("\t", 3) + ["", "", ""])[:4]
+            if h == local:
+                break
+            commits.append({"commit": h, "short": h[:7], "date": int(ct or 0), "author": an, "subject": subj})
+        out["commits"] = commits[:20]
+        out["more"] = len(commits) > 20
+        if commits:
+            out["remote"] = commits[0]          # the newest commit that changes this addon
+        mpath = (sub + "/" if sub else "") + MANIFEST
+        rc, mj, _ = _git(["show", "%s:%s" % (remote, mpath)], cwd=repo, timeout=60)
+        try:
+            out["remote"]["version"] = str(json.loads(mj).get("version") or "")[:30] if rc == 0 else ""
+        except ValueError:
+            out["remote"]["version"] = ""
+    _update(aid, {"remote": {"checked": out["checked"], "up_to_date": out["up_to_date"],
+                             "commit": out.get("remote", {}).get("commit"), "version": out.get("remote", {}).get("version")}})
+    return out
 
 
 def uninstall(aid, keep_data=True, job=None):
@@ -921,6 +998,7 @@ def public(rec, with_status=False):
         "has": {k: k in m["scripts"] for k in SCRIPTS},
         "problems": check_requirements(m),
         "integration": bool(m["integration"]),
+        "remote": rec.get("remote"),
     }
     out["update_pending"] = bool(out["installed"] and out["installed_version"]
                                  and out["installed_version"] != m["version"])

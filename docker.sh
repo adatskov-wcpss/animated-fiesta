@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.1"
+FORGE_VERSION="1.10.2"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,7 +528,7 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_ADDONS_PY="178710919d5e5759831276ba3e53953365aece10624fd21da298b12f4fe7654e"
+FORGE_SHA_FORGE_ADDONS_PY="71a6fe95760c636a1fbb1f0f50af7774f1f6ba4231e2d4d9ba8b419b4802d213"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_BURROW_PY="3ccb27671163bdf276980970e357386806d0b4813dd4f486b235ee0fedafe028"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
@@ -545,13 +545,13 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="335ce6dccc5ec7cdd4743a6ba85d6087ab25334c410a9985cef9233536b957fd"
+FORGE_SHA_FORGE_PATHS_PY="b0e39cdac68b2cbb7a3ae268e56f27e9ce7dd0e487b331927a5c077eb5f94e6c"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
 FORGE_SHA_FORGE_RUNNER_PY="49ed1180baa2441188c328fc3af12307a8f33c214b3e9e7d101b0a6d39633ec2"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="473ca5ca445906814c18d2fbba1c34313e79c4762ad044843e0ac38829e9edde"
+FORGE_SHA_FORGE_SERVER_PY="a65ac25736ae245ee79ff131282309e53d0007e4f24291f1cdb9b228300c6554"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -562,8 +562,8 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="9b84a7b25ac4c27a2adfb8ec1ed1383e35fd1dab96ac56bb81ffd2ae154d6348"
-FORGE_SHA_WEB_APP_CSS="ed079325a8b6cfd371e3e1b6c0e9aff42c7785a9272a126b770b0dc6363c12ba"
+FORGE_SHA_WEB_ADDONS_JS="5b7c9f01217bb8ccdf12e7091abc3bccb2fdd800487cb5dea1e794fd8c79fd53"
+FORGE_SHA_WEB_APP_CSS="9e4f5f7d244014dd4507d2d9a573f42992c5f9e259f1a8e3df22d8d429e76184"
 FORGE_SHA_WEB_APP_JS="5ad2b3fee6a67b51c8d3067de9bbe6a30ff871d76febe31301848e9ae5b6cb57"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="ed9c43fc2d1ad33cb895dab0dbf5d0ee6ed71102d0ffeecc812af7e7fce51084"
-FORGE_PAYLOAD_SHA="f2e1bd55a31157ff18dc9a4a7075e717e4380c248083cec88bd3c18c1939a68e"
+FORGE_SHA_SELKIES_CLI="52d99c8de3190521c1cfb8b0478341f36761bdbe3aceba248c80b786d6ca4325"
+FORGE_PAYLOAD_SHA="7ccf297ef71b7a5ae24a4e10629843ecf2e16ccec60b5736a80acb380e0a6fe7"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -1338,7 +1338,7 @@ def update(aid, job=None):
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     old_version = rec["manifest"]["version"]
-    rec = _update(aid, {"manifest": m, "commit": commit, "updated": time.time()})
+    rec = _update(aid, {"manifest": m, "commit": commit, "updated": time.time(), "remote": None})
     if job:
         job.log("%s %s -> %s%s" % (m["name"], old_version, m["version"],
                                    " (%s)" % commit[:10] if commit else ""))
@@ -1360,6 +1360,83 @@ def update(aid, job=None):
     if job:
         job.finish(res)
     return res
+
+
+def check_updates(aid):
+    """Is there newer code than what this addon was fetched at?
+
+    For a git source: fetch the newest commit (shallow, no file contents) into
+    the addon's checkout and compare. When the link points at a folder, only
+    commits that touch that folder count; a repository that moved on
+    elsewhere is still "up to date". Nothing is installed or changed.
+    """
+    rec = get(aid)
+    src = rec["source"]
+    m = rec["manifest"]
+    out = {"id": aid, "name": m["name"], "kind": src["kind"], "source": src.get("display"),
+           "checked": time.time(), "local": {"commit": rec.get("commit"), "version": m["version"],
+                                             "installed_version": rec.get("installed_version")}}
+    if src["kind"] != "git":
+        out.update(up_to_date=None, note="This addon was added from a folder on this machine. "
+                                         "Update copies the folder again.")
+        return out
+    repo = os.path.join(addon_dir(aid), "repo")
+    if not os.path.isdir(os.path.join(repo, ".git")):
+        raise AddonError("Its checkout has no git history. Remove it and add it again.")
+    ref = src.get("ref") or "HEAD"
+    rc, _, err = _git(["fetch", "--quiet", "--depth", "40", "--filter=blob:none", "origin", ref], cwd=repo, timeout=90)
+    if rc != 0:
+        msg = (err.strip().splitlines() or ["git fetch failed"])[-1]
+        raise AddonError("Could not reach %s: %s" % (src.get("display"), msg))
+    rc, remote, _ = _git(["rev-parse", "FETCH_HEAD"], cwd=repo, timeout=20)
+    remote = remote.strip()
+    local = rec.get("commit") or ""
+    sub = (rec.get("subdir") or "").strip("/")
+
+    def info(sha):
+        rc, o, _ = _git(["log", "-1", "--format=%H%x09%ct%x09%an%x09%s", sha], cwd=repo, timeout=20)
+        if rc != 0 or "\t" not in o:
+            return {"commit": sha, "short": sha[:7]}
+        h, ct, an, subj = (o.strip().split("\t", 3) + ["", "", ""])[:4]
+        return {"commit": h, "short": h[:7], "date": int(ct or 0), "author": an, "subject": subj}
+
+    out["remote"] = info(remote)
+    out["local"].update({k: v for k, v in info(local).items() if k != "commit"} if local else {})
+    if local:
+        out["local"]["short"] = local[:7]
+    same = remote == local
+    if not same and sub and local:
+        # the folder's tree on both sides: equal means nothing in this addon changed
+        r1, t1, _ = _git(["rev-parse", "%s:%s" % (remote, sub)], cwd=repo, timeout=20)
+        r2, t2, _ = _git(["rev-parse", "%s:%s" % (local, sub)], cwd=repo, timeout=20)
+        if r1 == 0 and r2 == 0 and t1.strip() == t2.strip():
+            same = True
+            out["note"] = "The repository has newer commits, but none of them touch this addon."
+    out["up_to_date"] = same
+    if not same:
+        args = ["log", "--format=%H%x09%ct%x09%an%x09%s", "-n", "30", remote]
+        if sub:
+            args += ["--", sub]
+        rc, o, _ = _git(args, cwd=repo, timeout=30)
+        commits = []
+        for line in o.splitlines():
+            h, ct, an, subj = (line.split("\t", 3) + ["", "", ""])[:4]
+            if h == local:
+                break
+            commits.append({"commit": h, "short": h[:7], "date": int(ct or 0), "author": an, "subject": subj})
+        out["commits"] = commits[:20]
+        out["more"] = len(commits) > 20
+        if commits:
+            out["remote"] = commits[0]          # the newest commit that changes this addon
+        mpath = (sub + "/" if sub else "") + MANIFEST
+        rc, mj, _ = _git(["show", "%s:%s" % (remote, mpath)], cwd=repo, timeout=60)
+        try:
+            out["remote"]["version"] = str(json.loads(mj).get("version") or "")[:30] if rc == 0 else ""
+        except ValueError:
+            out["remote"]["version"] = ""
+    _update(aid, {"remote": {"checked": out["checked"], "up_to_date": out["up_to_date"],
+                             "commit": out.get("remote", {}).get("commit"), "version": out.get("remote", {}).get("version")}})
+    return out
 
 
 def uninstall(aid, keep_data=True, job=None):
@@ -1547,6 +1624,7 @@ def public(rec, with_status=False):
         "has": {k: k in m["scripts"] for k in SCRIPTS},
         "problems": check_requirements(m),
         "integration": bool(m["integration"]),
+        "remote": rec.get("remote"),
     }
     out["update_pending"] = bool(out["installed"] and out["installed_version"]
                                  and out["installed_version"] != m["version"])
@@ -7564,7 +7642,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.1"
+VERSION = "1.10.2"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8690,6 +8768,12 @@ class Handler(BaseHTTPRequestHandler):
             except (addons.AddonError, OSError) as ex:
                 return self._err(404, ex)
             return self._image(data, ctype)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/check$", route)
+        if m:
+            try:
+                return self._send(200, addons.check_updates(m.group(1)))
+            except addons.AddonError as ex:
+                return self._err(400, ex)
         m = re.match(r"^/api/addons/([a-z0-9-]{2,40})$", route)
         if m:
             try:
@@ -11325,7 +11409,7 @@ __FORGE_FILE_FORGE_WEBUI_PY__
       });
       if (a.settings.length) menu.push('<button data-ad="install" data-id="' + h(a.id) + '">' + F.I.tune + "Settings and reinstall</button>");
     }
-    menu.push('<button data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + (a.installed ? "Update" : "Fetch again") + "</button>");
+    menu.push('<button data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + "Check for updates</button>");
     (a.links || []).forEach(function (l) {
       menu.push('<a href="' + h(l.url) + '" target="_blank" rel="noopener">' + F.I.open + h(l.label) + "</a>");
     });
@@ -11346,9 +11430,13 @@ __FORGE_FILE_FORGE_WEBUI_PY__
       (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
         ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
       (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +
+      (!a.update_pending && a.remote && a.remote.up_to_date === false ? '<div class="ad-note found">' + F.I.upd +
+        "<span>Commit <b class=\"mono\">" + h(String(a.remote.commit || "").slice(0, 7)) + "</b> is available" +
+        (a.remote.version && a.remote.version !== a.version ? " (v" + h(a.remote.version) + ")" : "") + ".</span></div>" : "") +
       (a.installed && st.detail && st.state !== "error" ? '<div class="ad-status mono">' + h(st.detail) + "</div>" : "") +
       '<div class="ad-foot">' + main +
-        (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
+        (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>"
+          : a.remote && a.remote.up_to_date === false ? '<button class="btn" data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
         '<span class="spacer"></span>' +
         '<div class="menu-wrap"><button class="iconbtn" data-menu title="More" aria-label="More">' + F.I.more + "</button>" +
         '<div class="menu" hidden>' + menu.join("") + "</div></div>" +
@@ -11504,6 +11592,78 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     });
   }
 
+  /* -------------------------------------------------------------- updates */
+  function ago(t) {
+    if (!t) return "";
+    var s = Math.max(0, Date.now() / 1000 - t);
+    if (s < 60) return "just now";
+    if (s < 3600) return Math.round(s / 60) + " min ago";
+    if (s < 86400) return Math.round(s / 3600) + " h ago";
+    if (s < 86400 * 60) return Math.round(s / 86400) + " days ago";
+    return new Date(t * 1000).toLocaleDateString();
+  }
+  function commitUrl(source, sha) {
+    var m = String(source || "").match(/^(https:\/\/(?:github\.com|codeberg\.org)\/[^/]+\/[^/#]+?)(?:\.git)?(?:\/tree\/.*)?(?:#.*)?$/);
+    if (m) return m[1] + "/commit/" + sha;
+    m = String(source || "").match(/^(https:\/\/gitlab\.com\/[^/]+\/[^/#]+?)(?:\.git)?(?:\/-\/tree\/.*)?(?:#.*)?$/);
+    return m ? m[1] + "/-/commit/" + sha : null;
+  }
+  function commitLine(c, source) {
+    var url = commitUrl(source, c.commit);
+    var sha = '<span class="up-sha">' + h(c.short || String(c.commit || "").slice(0, 7)) + "</span>";
+    return '<div class="up-commit">' + (url ? '<a href="' + h(url) + '" target="_blank" rel="noopener">' + sha + "</a>" : sha) +
+      '<div class="up-msg"><b>' + h(c.subject || "(no message)") + "</b><span>" + h([c.author, ago(c.date)].filter(Boolean).join(" \u00b7 ")) + "</span></div></div>";
+  }
+
+  function checkUpdates(a) {
+    var logo = '<div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>";
+    F.openModal("Updates \u00b7 " + a.name, '<div class="up">' +
+      '<div class="up-head">' + logo + '<div><b>' + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
+      '<div class="up-state checking"><span class="spin-sm"></span><div><b>Checking for new commits\u2026</b>' +
+      "<span>Asking " + h(String(a.source).replace(/^https?:\/\//, "").split("/")[0] || "the repository") + " what is newest.</span></div></div></div>");
+    F.api("/api/addons/" + encodeURIComponent(a.id) + "/check").then(function (r) {
+      var body = $("#modalBody .up");
+      if (!body) return;
+      var st = body.querySelector(".up-state");
+      var html, local = r.local || {};
+      if (r.kind !== "git") {
+        html = '<div class="up-state info">' + F.I.upd + "<div><b>Added from a folder</b><span>" + h(r.note) + "</span></div></div>" +
+          '<div class="row end"><button class="btn primary" id="upGo">' + F.I.upd + " Copy it again</button></div>";
+      } else if (r.up_to_date) {
+        html = '<div class="up-state ok">' + I_CHECK + "<div><b>Up to date</b><span>" +
+          (r.note ? h(r.note) : "No new commits since this addon was fetched.") + "</span></div></div>" +
+          '<div class="up-k">Installed</div>' + commitLine(local, r.source) +
+          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
+          '<button class="btn ghost" id="upAgain">Check again</button><button class="btn" id="upClose">Close</button></div>';
+      } else {
+        var rem = r.remote || {}, commits = r.commits || [];
+        var ver = rem.version && rem.version !== (local.installed_version || local.version)
+          ? '<span class="up-ver"><span>v' + h(local.installed_version || local.version) + '</span>\u2192<b>v' + h(rem.version) + "</b></span>" : "";
+        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available</b><span>Commit <span class=\"mono\">" + h(rem.short) +
+          "</span> is available to update to" + (commits.length > 1 ? ", " + commits.length + (r.more ? "+" : "") + " new commits" : "") + ".</span></div>" + ver + "</div>" +
+          '<div class="up-k">New</div>' + commits.slice(0, 8).map(function (c) { return commitLine(c, r.source); }).join("") +
+          (commits.length > 8 ? '<div class="faint up-more">and ' + (commits.length - 8) + " more</div>" : "") +
+          '<div class="up-k">Installed now</div>' + commitLine(local, r.source) +
+          '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
+          '<button class="btn ghost" id="upClose">Later</button><button class="btn primary" id="upGo">' + F.I.upd +
+          " Update to " + h(rem.short) + "</button></div>";
+      }
+      st.outerHTML = html;
+      var go = $("#upGo"), again = $("#upAgain"), close = $("#upClose");
+      if (go) go.onclick = function () { runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name); };
+      if (again) again.onclick = function () { checkUpdates(a); };
+      if (close) close.onclick = F.closeModal;
+      load();
+    }).catch(function (e) {
+      var st = $("#modalBody .up-state");
+      if (st) st.outerHTML = '<div class="up-state bad">' + F.I.close + "<div><b>Could not check</b><span>" + h(e.message) + "</span></div></div>" +
+        '<div class="row end"><button class="btn" id="upAgain">Try again</button></div>';
+      var again = $("#upAgain");
+      if (again) again.onclick = function () { checkUpdates(a); };
+    });
+  }
+  var I_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16 10"/></svg>';
+
   /* -------------------------------------------------------------- open */
   // The same chooser as a desktop's: this machine, this network, a serveo
   // public link, Burrow. Only for addons whose status script names a port.
@@ -11561,7 +11721,8 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     if (!a) return;
     var menu = t.closest(".menu");
     if (menu) menu.hidden = true;
-    if (what === "open") openAddon(a);
+    if (what === "check") checkUpdates(a);
+    else if (what === "open") openAddon(a);
     else if (what === "install") installForm(a);
     else if (what === "update") runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name);
     else if (what === "action") {
@@ -13288,6 +13449,39 @@ html[data-theme="ember"] {
   .lk-row { flex-wrap: wrap; }
   .lk-acts { width: 100%; justify-content: flex-end; }
 }
+
+/* ================================================================ addon update check */
+.up { display: grid; gap: 10px; }
+.up-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.up-head b { display: block; font-size: 16px; }
+.up-head .mono { font-size: 12px; color: var(--dim-2); }
+.up-state { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: var(--r-m); border: 1px solid var(--line); background: rgba(var(--ink), 0.03); }
+.up-state > svg, .up-state > .spin-sm { width: 26px; height: 26px; flex: none; }
+.up-state > .spin-sm { width: 20px; height: 20px; margin: 3px; }
+.up-state > div { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.up-state b { font-size: 15px; }
+.up-state span { font-size: 13px; color: var(--dim); }
+.up-state.ok { border-color: rgba(61, 220, 151, 0.4); background: rgba(61, 220, 151, 0.07); }
+.up-state.ok > svg { color: var(--ok); }
+.up-state.new { border-color: rgba(var(--acc-rgb), 0.45); background: var(--acc-soft); }
+.up-state.new > svg { color: var(--acc); }
+.up-state.bad { border-color: rgba(255, 107, 126, 0.45); }
+.up-state.bad > svg { color: var(--bad); }
+.up-ver { display: flex; align-items: center; gap: 8px; flex: none; font: 12.5px var(--mono); color: var(--dim); }
+.up-ver b { color: var(--txt); }
+.up-k { margin-top: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim-2); }
+.up-commit { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-s); min-width: 0; }
+.up-sha { display: inline-block; padding: 3px 8px; border-radius: 7px; font: 600 12px var(--mono); background: rgba(var(--ink), 0.06);
+          border: 1px solid var(--line); color: var(--txt); flex: none; }
+.up-commit a { text-decoration: none; }
+.up-commit a:hover .up-sha { border-color: var(--acc); color: var(--acc); }
+.up-msg { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.up-msg b { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.up-msg span { font-size: 12px; color: var(--dim-2); }
+.up-more { font-size: 12px; padding-left: 4px; }
+.up-foot { align-items: center; gap: 8px; margin-top: 8px; }
+.up-foot .faint { font-size: 12px; color: var(--dim-2); }
+@media (max-width: 620px) { .up-state { flex-wrap: wrap; } .up-ver { width: 100%; } }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -17473,7 +17667,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.1"
+FORGE_VERSION="1.10.2"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

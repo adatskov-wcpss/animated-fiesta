@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -256,6 +257,71 @@ class RunJobTest(unittest.TestCase):
         server._run_job(job, work, 7, job=job)
         job.thread.join(5)
         self.assertEqual(got, {"x": 7, "job": job})
+
+
+class CheckUpdatesTest(unittest.TestCase):
+    """check_updates against a real (local) git repository, addon in a subfolder."""
+
+    def git(self, *args, cwd=None):
+        env = dict(os.environ, GIT_AUTHOR_NAME="T", GIT_AUTHOR_EMAIL="t@x", GIT_COMMITTER_NAME="T",
+                   GIT_COMMITTER_EMAIL="t@x")
+        out = subprocess.run(["git"] + list(args), cwd=cwd or self.origin, env=env, check=True,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return out.stdout.strip()
+
+    def setUp(self):
+        self.origin = tempfile.mkdtemp()
+        self.git("init", "-q", "-b", "main")
+        self.git("config", "uploadpack.allowFilter", "true")
+        make_addon(os.path.join(self.origin, "addons", "demo"), {"id": "upd", "name": "Upd"})
+        with open(os.path.join(self.origin, "README"), "w") as fh:
+            fh.write("one\n")
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "first")
+        src = {"kind": "git", "url": "file://" + self.origin, "ref": None, "subdir": "addons/demo",
+               "display": "file://%s#addons/demo" % self.origin}
+        dest = addons.addon_dir("upd")
+        shutil.rmtree(dest, ignore_errors=True)
+        os.makedirs(dest)
+        commit = addons.fetch(src, os.path.join(dest, "repo"))
+        m = addons.load_manifest(os.path.join(dest, "repo", "addons", "demo"))
+        recs = addons._load()
+        recs["upd"] = {"id": "upd", "source": src, "subdir": "addons/demo", "commit": commit, "manifest": m,
+                       "installed": False, "settings": {}}
+        addons._save(recs)
+
+    def tearDown(self):
+        addons.remove("upd", force=True)
+        shutil.rmtree(self.origin, ignore_errors=True)
+
+    def test_up_to_date_then_new_commits(self):
+        r = addons.check_updates("upd")
+        self.assertTrue(r["up_to_date"])
+        # a commit elsewhere in the repository does not count
+        with open(os.path.join(self.origin, "README"), "w") as fh:
+            fh.write("two\n")
+        self.git("commit", "-qam", "readme only")
+        r = addons.check_updates("upd")
+        self.assertTrue(r["up_to_date"])
+        self.assertIn("none of them touch", r["note"])
+        # a commit in the addon's folder does
+        path = os.path.join(self.origin, "addons", "demo", "forge-addon.json")
+        with open(path) as fh:
+            m = json.load(fh)
+        m["version"] = "2.0.0"
+        with open(path, "w") as fh:
+            json.dump(m, fh)
+        self.git("commit", "-qam", "Demo 2.0")
+        head = self.git("rev-parse", "HEAD")
+        r = addons.check_updates("upd")
+        self.assertFalse(r["up_to_date"])
+        self.assertEqual((r["remote"]["commit"], r["remote"]["subject"], r["remote"]["version"]), (head, "Demo 2.0", "2.0.0"))
+        self.assertEqual([c["subject"] for c in r["commits"]], ["Demo 2.0"])
+        self.assertFalse(addons.get("upd")["remote"]["up_to_date"])
+        # updating clears the cached check
+        addons.update("upd")
+        self.assertIsNone(addons.get("upd").get("remote"))
+        self.assertTrue(addons.check_updates("upd")["up_to_date"])
 
 
 class WaysInTest(unittest.TestCase):
