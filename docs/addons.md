@@ -4,7 +4,10 @@ An **addon** is an app that installs beside Selkies Forge. You paste a repositor
 
 This page is the complete guide: how to use addons, and how to write one. The format is small on purpose. An addon is **one JSON file and a few bash scripts**, in any repository, written in any language.
 
+**One format, two hosts.** [Burrow](https://github.com/alexd-aero/aegis-burrow), the tunnel engine of Aegis × Burrow, reads the very same `forge-addon.json` with the very same rules, runs the same scripts with the same environment, and understands the same `::` lines. Write an addon once and it installs in either. An addon that only makes sense in one of them says so with [`platforms`](#platforms-one-host-or-both).
+
 - [Using addons](#using-addons)
+- [Found on this machine: the smart scan](#found-on-this-machine-the-smart-scan)
 - [What an addon is](#what-an-addon-is)
 - [Your first addon in ten minutes](#your-first-addon-in-ten-minutes)
 - [`forge-addon.json`, field by field](#forge-addonjson-field-by-field)
@@ -17,6 +20,7 @@ This page is the complete guide: how to use addons, and how to write one. The fo
 - [Actions](#actions)
 - [Using the forge's API](#using-the-forges-api)
 - [Integrations: when the forge plugs into your app](#integrations-when-the-forge-plugs-into-your-app)
+- [The bridge: Selkies Forge and Burrow, both ways](#the-bridge-selkies-forge-and-burrow-both-ways)
 - [Where things live](#where-things-live)
 - [The example addon, line by line](#the-example-addon-line-by-line)
 - [Testing and debugging](#testing-and-debugging)
@@ -60,14 +64,25 @@ Open **Addons** in the left rail (or press <kbd>4</kbd>).
 
 **Try it:** the *Try the example addon* link on the Addons page adds [Hello Forge](../addons/hello-forge/), a tiny web page that lists your desktops. It installs in a second and uninstalls cleanly.
 
+### Found on this machine: the smart scan
+
+Opening **Addons** also looks through this machine for addons that are already here: any folder with a valid `forge-addon.json` in your home (four levels deep, skipping caches, `node_modules`, virtualenvs and the like), `/opt`, `/srv`, and the code folder any app names in `~/.config/<app>/<app>.json`. Each one found is shown once (the newest version wins; a git checkout beats a plain copy), with:
+
+- whether the app is **installed, running or stopped**: the scan runs its `detect` script and, when that finds it, its `status` script. Both are read-only by the spec; they get a scratch `ADDON_DATA` and `ADDON_SCAN=1`, and nothing they write is kept;
+- a source the forge can fetch and later update: the checkout's `origin` (with the folder, as a `tree/` link) when it has one, otherwise the folder itself;
+- **Add** (or **Add and link**, when the app is already installed): the same as pasting that source;
+- addons made for another host greyed out, labelled *Burrow only*.
+
+*Scan again* runs it afresh; otherwise a scan is kept for a minute. A manifest that doesn't validate is skipped (the API lists it under `broken` with the reason). `GET /api/addons/scan` (`?fresh=1`) returns the same list.
+
 ### From the terminal
 
 ```bash
-selkies-cli addon add https://github.com/alexd-aero/burrow
-selkies-cli addon install burrow --set PORT=4310 --set TERMIX=1
+selkies-cli addon add https://github.com/alexd-aero/aegis-burrow
+selkies-cli addon install aegis-burrow --set PORT=4310 --set TERMIX=1
 selkies-cli addon list
-selkies-cli addon status burrow
-selkies-cli addon action burrow restart
+selkies-cli addon status aegis-burrow
+selkies-cli addon action aegis-burrow restart
 selkies-cli addon update burrow
 selkies-cli addon uninstall burrow            # --purge also deletes its data
 selkies-cli addon remove burrow
@@ -216,6 +231,7 @@ Push it to GitHub and anyone can paste the link. That's a complete addon. Everyt
 | `settings` | no | list, ≤ 16 | A form shown before installing. See [Settings](#settings). |
 | `integration` | no | object | `{"dir": "~/.config/yourapp/integrations"}`: the forge drops a file describing itself there. See [Integrations](#integrations-when-the-forge-plugs-into-your-app). |
 | `links` | no | list, ≤ 6 | `[{"label": "Docs", "url": "https://…"}]`, shown in the card's menu. |
+| `platforms` | no | list | The hosts it is made for: `"selkies-forge"`, `"burrow"`. Leave it out and it runs on both. See below. |
 
 Unknown top-level fields are ignored, so a newer manifest still loads in an older forge. Unknown **script names** are an error, because a typo there (`"instal"`) would silently do nothing.
 
@@ -238,6 +254,16 @@ Unknown top-level fields are ignored, so a newer manifest still loads in an olde
 | `commands` | Programs that must be on `PATH`. |
 
 If any requirement fails, the card lists exactly what's missing ("needs docker installed", "has no build for armv7l"), and **Install** stays disabled. Requirements are checked again right before installing.
+
+`requires.burrow` works like `forge`, for Burrow (`">=2.0.0"`). Each host checks only its own key.
+
+### `platforms`: one host, or both
+
+```json
+"platforms": ["selkies-forge"]
+```
+
+Most addons don't need this: an app that installs and runs works the same beside either host. Name the hosts only when the addon depends on one of them. [Hello Forge](../addons/hello-forge/) lists the forge's desktops through `FORGE_API`, so it is `["selkies-forge"]`. Selkies Forge itself is an addon for Burrow (its repository's root `forge-addon.json`), so it is `["burrow"]`. A host shows an addon made for another one, but won't install it: "is made for Burrow, not Selkies Forge".
 
 ---
 
@@ -301,7 +327,7 @@ Prints one JSON line (the last JSON line printed wins):
 | `url` | Where **Open** goes. It overrides the URL from `::open`, so it can follow changes (a new port, a linked domain). |
 | `version` | The version actually running, if you know it. |
 | `detail` | A short line under the description ("3 visits so far", "linked to example.com"). |
-| `name` | A name to show instead of the manifest's, while installed. For when the app is more than one thing: Aegis reports "Aegis × Burrow" while its Burrow module is on. |
+| `name` | A name to show instead of the manifest's, while installed. For when the app is more than one thing: Aegis × Burrow reports plain "Aegis" while its Burrow engine is switched off. |
 | `port` | The port your app's web page listens on. With it, **Open** offers every way in, like a desktop's: see [below](#ways-in-open). |
 
 Without a `status` script the card just says "installed", and **Open** uses the last `::open` URL.
@@ -315,7 +341,7 @@ When `status` reports a `port`, the card's **Open** button opens the same choose
 | **This machine** | `http://localhost:PORT/`, or the address in your status `url` when the app listens only there |
 | **This network** | the same port on the address the forge's page was opened with (a LAN or Tailscale address) |
 | **Public link** | **Make a public link** opens a serveo tunnel (`https://….serveousercontent.com`) to the port; **Drop** closes it |
-| **Burrow** | when [Burrow](https://github.com/alexd-aero/burrow) is on the machine: **Publish through Burrow** gives the port its own HTTPS address behind Burrow's login; **Unpublish** removes it |
+| **Burrow** | when [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow) is on the machine: **Publish through Burrow** gives the port its own HTTPS address behind Burrow's login; **Unpublish** removes it |
 
 The forge points the tunnels at the host in your status `url` when that's this machine, so an app that listens only on `FORGE_BIND` still works. Uninstalling drops both tunnels. The forge's API has the same thing as `ways` on each addon, so your app can show its own addresses (Hello Forge's page does, under *Ways in*).
 
@@ -344,6 +370,21 @@ The forge points the tunnels at the host in your status `url` when that's this m
 | `FORGE_ARCH` | `aarch64` | `uname -m`, normalised |
 
 Everything else in the forge's own environment (`HOME`, `PATH`, `USER`, `XDG_*`…) is passed through.
+
+**The universal names.** Every host also sets these, with the same values, so one script runs anywhere. New scripts should prefer them; the `FORGE_ADDON_*` names stay, forever, in both hosts.
+
+| Variable | Meaning |
+|---|---|
+| `ADDON_ID` `ADDON_NAME` `ADDON_VERSION` `ADDON_SPEC` | As `FORGE_ADDON_*` |
+| `ADDON_DIR` `ADDON_DATA` | As `FORGE_ADDON_DIR`, `FORGE_ADDON_DATA` |
+| `ADDON_SETTING_<KEY>` | As `FORGE_ADDON_SETTING_<KEY>` |
+| `ADDON_ADOPT` `ADDON_UPDATE` `ADDON_KEEP_DATA` | As their `FORGE_ADDON_*` twins |
+| `ADDON_HOST` | `selkies-forge` or `burrow`: who is running you |
+| `ADDON_HOST_VERSION` `ADDON_HOST_URL` | That host's version and dashboard |
+| `ADDON_BIND` | The address the host listens on (as `FORGE_BIND`) |
+| `ADDON_SCAN` | `1` while the smart scan probes you (`detect` and `status` only) |
+
+Burrow adds `BURROW_SOCKET` (its control socket, to publish a port yourself) and, when a Selkies Forge has registered with it, `FORGE_HOME`, `FORGE_URL` and `FORGE_API`.
 
 ---
 
@@ -427,7 +468,7 @@ else
 fi
 ```
 
-[Burrow](https://github.com/alexd-aero/burrow) is a full example. Its `detect` reads `~/.config/burrow/burrow.json`, which its own installer writes. Its install upgrades an existing Burrow in place, keeping the login, the linked domain and every tunnel, even when that Burrow runs as a system service someone set up by hand.
+[Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow) is a full example. Its `detect` reads `~/.config/aegis/aegis.json`, which its own installer writes. Its install upgrades an existing copy in place, keeping the login, the linked domain and every tunnel, even when it runs as a system service someone set up by hand (and points that service at the new code). It has five actions: open the dashboard, Burrow on/off, show tunnels, restart, doctor.
 
 ---
 
@@ -517,15 +558,52 @@ While your addon is installed and the forge's web UI runs, the forge keeps a fil
   "public_url": null,
   "logo": "<svg …>",
   "home": "/home/you/.selkies-forge",
+  "addon": {
+    "id": "myapp", "name": "MyApp", "version": "1.2.0",
+    "commit": "26fae53a279022c41f6b12b2de687f0b4b6d2fe1",
+    "source": "https://github.com/you/myapp",
+    "adopted": false, "installed_at": 1760000000, "state": "running",
+    "checked_at": 1760000500,
+    "update": { "available": true, "commit": "9c1e…", "version": "1.3.0", "subject": "Faster startup" },
+    "page": "http://127.0.0.1:8787/#addons/myapp"
+  },
   "updated": 1760000000
 }
 ```
 
 Your app reads it to find the forge, and calls `api` for desktops (`GET instances`) and actions (`POST instance/NAME/start|stop|restart`). The file is written when something changes and touched once an hour, so `updated` also tells you the forge is alive.
 
-[Burrow](https://github.com/alexd-aero/burrow) does exactly this. The forge also knows Burrow's folder (`~/.config/burrow/integrations`), so it registers itself there **whenever Burrow is on the machine**, however Burrow was installed. Burrow then shows a Selkies Forge card on its Tunnels page: every desktop, its links, start/stop/restart, and one-click publishing.
+`addon` is how the forge runs **your app** as an addon: which version and commit it installed, from where, whether it linked a copy that was already there (`adopted`), its last known state, and the result of the last update check (`update`, or `null` before the first check; checks happen when someone presses *Update* or *Check for updates*). `page` opens the forge's Addons page with your card in view: the web UI scrolls to `#addons/<id>` and lights it up. `addon` is `null` while your app is on the machine but not added to the forge.
+
+[Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow) does all of this. The forge also knows its folder (`~/.config/aegis/integrations`, and `~/.config/burrow/integrations` for the older standalone Burrow), so it registers itself there **whenever it is on the machine**, however it was installed. Its Burrow page then shows a Selkies Forge card (every desktop, its links, start/stop/restart, one-click publishing) and an **Addon** tab built from the `addon` block, with what the forge did through Burrow's control socket.
 
 ---
+
+## The bridge: Selkies Forge and Burrow, both ways
+
+When [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow) and the forge are on one machine, each becomes the other's addon, and either side can start it:
+
+| You start from | What happens |
+|---|---|
+| **The forge**: *Addons*, paste the Aegis × Burrow link (or press *Add and link* under *Found on this machine*) | The forge links the copy that's already installed. It registers itself in Aegis × Burrow's drop-in folder with an `addon` block, and Burrow, seeing that, adds the forge as one of *its* addons, from the forge's own checkout (`~/.selkies-forge/repo`, whose root `forge-addon.json` is made for Burrow). |
+| **Burrow**: *Burrow → Selkies Forge → Connect* | Burrow checks its own `forge-addon.json` with the forge's rules, then asks the forge's API to add and link it (from its repository, or its own folder when the forge can't reach GitHub), and adds the forge as its own addon. |
+| **Burrow**: *Burrow → Addons*, *Add and link* on Selkies Forge | Burrow links the forge, then submits itself to the forge, as above. |
+
+Both sides then show it: the forge lists Aegis × Burrow among its addons, and Burrow lists Selkies Forge among its own, with its desktops, an HTTPS address for its dashboard, and the forge's update state.
+
+**Bridge health.** Each side checks the link and shows the result: the forge at the top of *Addons* (**Burrow bridge**, `GET /api/bridge`), Burrow on its *Selkies Forge* tab (`GET /__gate/api/bridge`, which also includes the forge's view). A check is `ok`, `warn` or `fail`:
+
+| Check | Fails or warns when |
+|---|---|
+| The control socket is private | it is missing, not a socket, not yours, readable by others (not mode `600`), or in a folder others can enter |
+| Burrow answers / the forge answers | the socket or the forge's API doesn't respond |
+| The forge registered itself | its drop-in is missing, older than three hours, or writable by anyone but you (the forge writes it `644`) |
+| Each side has the other as an addon | one side hasn't added the other yet (Connect fixes it) |
+| The forge's API stays private | its address isn't loopback, a private network or Tailscale |
+| The forge's dashboard needs a login | a Burrow tunnel publishes it to anyone (a warning: you may mean it) |
+| Our manifest is valid / versions fit | Burrow's own `forge-addon.json` doesn't validate, or the forge is older than it needs |
+
+Every call the forge makes on Burrow's socket carries `X-Burrow-Client: selkies-forge/<version>`, so Burrow can show what it did.
 
 ## Where things live
 
@@ -659,7 +737,7 @@ Bump `version` with every release that changes behaviour. People update when the
 
 - Adding an addon runs **only** its `detect` script. Nothing installs until someone presses **Install**.
 - The install dialog names the source whose script will run.
-- The web UI has no sign-in (see [Security](security.md)). Anyone who can reach it can install addons, just as they can already run containers. Keep it on localhost, or behind a login like [Burrow](https://github.com/alexd-aero/burrow)'s.
+- The web UI has no sign-in (see [Security](security.md)). Anyone who can reach it can install addons, just as they can already run containers. Keep it on localhost, or behind a login like [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow)'s.
 - Addon logos and icons are never rendered as pages, and SVGs can't run script.
 - Password settings never go back to the browser.
 

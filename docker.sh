@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.7"
+FORGE_VERSION="1.10.8"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,9 +528,9 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_ADDONS_PY="9008c26c15fef3d2a7ad2c202d67e660a1351c3101217590039e8a12fde18d40"
+FORGE_SHA_FORGE_ADDONS_PY="f390964355395ae28df3ae5e36b4fc3cf59f474b6aaf007b43daedbe76c30664"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
-FORGE_SHA_FORGE_BURROW_PY="d7b3096ef3c5ef7ea9628f42ed0af2d93b2cc7e0073af013a340cce3fdf8bf80"
+FORGE_SHA_FORGE_BURROW_PY="5a4d6f3633981f6c5a8523b2540e40ed68391b759e188c08f712e0bedd82c65c"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
 FORGE_SHA_FORGE_CLI_PY="78c8dd8258cee01bacfb22840ed7988d94470d3b0857881749cd39e7c3ca332b"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
@@ -545,13 +545,13 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="3c607914d9748e869f9f07cfb3d18a1709ef90818395a41acf9d195a2c43afda"
+FORGE_SHA_FORGE_PATHS_PY="e61ab63591cf1f7b845bda3a703b7a7b9f76f0923f9dea0ca1ec947fda3db66f"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
 FORGE_SHA_FORGE_RUNNER_PY="49ed1180baa2441188c328fc3af12307a8f33c214b3e9e7d101b0a6d39633ec2"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="a65ac25736ae245ee79ff131282309e53d0007e4f24291f1cdb9b228300c6554"
+FORGE_SHA_FORGE_SERVER_PY="35e6b6d8344d988d0c960c9cc9e9b1857a1e15a7e077b6ae629e9257534046de"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -562,17 +562,17 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="b9e6e9a63ac595c56dd97ab69a9ab356c2de9dcaaf889881630d4a90d8812cd8"
-FORGE_SHA_WEB_APP_CSS="b7ded4584b9996e377417d8ca4cf61b30bfdeed5dfae977a946e5334f643edbe"
-FORGE_SHA_WEB_APP_JS="5ad2b3fee6a67b51c8d3067de9bbe6a30ff871d76febe31301848e9ae5b6cb57"
+FORGE_SHA_WEB_ADDONS_JS="27710bd877e1330427c45998fc0a1592e7bbb8f3c84052b0d9ee809b9152b46d"
+FORGE_SHA_WEB_APP_CSS="b840d86ad0f3b64c5b4c2c058b692a1cfd91f61d14bf0f25073a0dbc6dacefec"
+FORGE_SHA_WEB_APP_JS="59954908c608904af7ab61fa8f5fc28d7c704688f029d1cef302e8ccd4f7029a"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
+FORGE_SHA_WEB_INDEX_HTML="082dcf8d2f74e75266814e8923213668056486210f4198b2ce192b2f14ecc647"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="433d46074ea3336fe90e083d527e04c6a62edce680166d80aafeb13219b3fed4"
-FORGE_PAYLOAD_SHA="16cb18e7c561de99c8e73e05d3c0610cd5a62650e803a1606c40743ce9e434bf"
+FORGE_SHA_SELKIES_CLI="29e4368d887a3fbf87eb471df0b52fec4dbf335af658fcf65a5bac7a1056cf35"
+FORGE_PAYLOAD_SHA="3b8f2ad01a8ddbce091497c7aecabc55aab96fc80d677333f518cd791ac0562a"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -676,6 +676,10 @@ ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,39}$")
 SETTING_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,31}$")
 ACTION_RE = re.compile(r"^[a-z][a-z0-9-]{0,23}$")
 SCRIPTS = ("detect", "install", "update", "uninstall", "status")
+# One addon format for every host. An addon runs on all of them unless its
+# manifest names the ones it is made for ("platforms").
+PLATFORMS = ("selkies-forge", "burrow")
+HOST = "selkies-forge"
 SETTING_TYPES = ("text", "number", "bool", "select", "password")
 IMAGE_TYPES = {".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp",
                ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
@@ -685,9 +689,9 @@ TIMEOUT = {"detect": 20, "status": 15, "install": 3600, "update": 3600,
            "uninstall": 900, "action": 900}
 ARCH_ALIASES = {"amd64": "x86_64", "x64": "x86_64", "arm64": "aarch64", "armhf": "armv7l"}
 
-# Burrow (github.com/alexd-aero/burrow) and Aegis (github.com/alexd-aero/aegis)
-# keep their drop-in folders here; the forge registers itself whenever either
-# is on this machine, however it got there.
+# Aegis × Burrow (github.com/alexd-aero/aegis-burrow), and the standalone
+# Burrow it grew from, keep their drop-in folders here; the forge registers
+# itself whenever either is on this machine, however it got there.
 KNOWN_INTEGRATION_DIRS = ("~/.config/burrow/integrations", "~/.config/aegis/integrations")
 
 FORGE_LOGO = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
@@ -926,17 +930,30 @@ def load_manifest(root):
     if len(m["settings"]) > 16:
         raise AddonError("at most 16 settings")
 
+    plats = d.get("platforms")
+    if plats is None:
+        m["platforms"] = list(PLATFORMS)
+    else:
+        if not isinstance(plats, list) or not plats or not all(isinstance(x, str) for x in plats):
+            raise AddonError("\"platforms\" must be a list, e.g. [\"selkies-forge\", \"burrow\"]")
+        bad = [x for x in plats if x not in PLATFORMS]
+        if bad:
+            raise AddonError("unknown platform \"%s\" (known: %s)" % (bad[0], ", ".join(PLATFORMS)))
+        m["platforms"] = [x for x in PLATFORMS if x in plats]
+
     req = d.get("requires") or {}
     if not isinstance(req, dict):
         raise AddonError("\"requires\" must be an object")
     m["requires"] = {
         "forge": str(req.get("forge") or "").strip(),
+        "burrow": str(req.get("burrow") or "").strip(),
         "os": [str(x).lower() for x in req.get("os") or []],
         "arch": [ARCH_ALIASES.get(str(x).lower(), str(x).lower()) for x in req.get("arch") or []],
         "commands": [str(x) for x in req.get("commands") or [] if re.match(r"^[A-Za-z0-9._+-]+$", str(x))],
     }
-    if m["requires"]["forge"] and not re.match(r"^(>=)?\s*\d+(\.\d+){0,2}$", m["requires"]["forge"]):
-        raise AddonError("requires.forge must look like \">=1.10.0\"")
+    for host in ("forge", "burrow"):
+        if m["requires"][host] and not re.match(r"^(>=)?\s*\d+(\.\d+){0,2}$", m["requires"][host]):
+            raise AddonError("requires.%s must look like \">=1.10.0\"" % host)
 
     integ = d.get("integration") or {}
     m["integration"] = {}
@@ -979,6 +996,9 @@ def _coerce(st, v):
 def check_requirements(m):
     """What this machine lacks for the addon, as sentences (empty: all good)."""
     out = []
+    if HOST not in m.get("platforms", PLATFORMS):
+        out.append("is made for %s, not Selkies Forge" % " and ".join(
+            {"burrow": "Burrow"}.get(p, p) for p in m["platforms"]))
     r = m["requires"]
     if r["forge"]:
         want = version_tuple(r["forge"].lstrip(">= "))
@@ -1074,6 +1094,11 @@ def script_env(rec, extra=None):
             v = "1" if v else "0"
         env["FORGE_ADDON_SETTING_" + st["key"]] = str(v)
     env.update(extra or {})
+    # The universal names every host sets (FORGE_ADDON_* stay for older scripts).
+    for k in [k for k in env if k.startswith("FORGE_ADDON_")]:
+        env["ADDON_" + k[len("FORGE_ADDON_"):]] = env[k]
+    env.update({"ADDON_HOST": HOST, "ADDON_HOST_VERSION": VERSION, "ADDON_HOST_URL": url or "",
+                "ADDON_BIND": env["FORGE_BIND"]})
     return env
 
 
@@ -1438,7 +1463,9 @@ def check_updates(aid):
         except ValueError:
             out["remote"]["version"] = ""
     _update(aid, {"remote": {"checked": out["checked"], "up_to_date": out["up_to_date"],
-                             "commit": out.get("remote", {}).get("commit"), "version": out.get("remote", {}).get("version")}})
+                             "commit": out.get("remote", {}).get("commit"), "version": out.get("remote", {}).get("version"),
+                             "subject": (out.get("remote", {}).get("subject") or "")[:160]}})
+    sync_integrations()                 # an app showing its own addon state sees it now
     return out
 
 
@@ -1462,6 +1489,7 @@ def uninstall(aid, keep_data=True, job=None):
     _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False,
                   "tunnel": None, "port": None})
     _forget_status(aid)
+    sync_integrations()
     res = {"id": aid, "name": m["name"], "kept_data": bool(keep_data)}
     if job:
         job.finish(res)
@@ -1627,6 +1655,7 @@ def public(rec, with_status=False):
         "has": {k: k in m["scripts"] for k in SCRIPTS},
         "problems": check_requirements(m),
         "integration": bool(m["integration"]),
+        "platforms": m.get("platforms") or list(PLATFORMS),
         "remote": rec.get("remote"),
     }
     out["update_pending"] = bool(out["installed"] and out["installed_version"]
@@ -1665,6 +1694,193 @@ def list_addons(with_status=True):
     return [o for o in out if o]
 
 
+# ------------------------------------------------------------------ the smart scan
+#
+# Addons already on this machine, in any folder: a checkout you cloned, an app
+# that installed itself, another host's copy. Anything with a valid
+# forge-addon.json counts. Each one's detect script says whether the app is
+# installed, and its status script whether it runs; both are read-only by the
+# spec and are given a scratch data folder, so a scan never changes anything.
+
+SCAN_SKIP = {"node_modules", "__pycache__", ".git", ".cache", ".npm", ".nvm", ".cargo", ".rustup", ".local/lib",
+             "snap", "venv", ".venv", "site-packages", "proc", "sys", "dev", ".mozilla", ".config/chromium",
+             "go", ".gradle", ".m2", ".docker", "Downloads", "builds", "logs"}
+SCAN_HIDDEN_OK = {".local", ".selkies-forge", ".config", ".share"}
+_SCAN = {"at": 0.0, "value": None}
+
+
+def _scan_roots():
+    home = os.path.expanduser("~")
+    roots = [(home, 4), ("/opt", 3), ("/srv", 3)]
+    # apps that say where their code is (~/.config/<app>/<app>.json, "code": ...)
+    cfg = os.environ.get("XDG_CONFIG_HOME") or os.path.join(home, ".config")
+    try:
+        for app in os.listdir(cfg):
+            d = jload(os.path.join(cfg, app, app + ".json"), None)
+            if isinstance(d, dict) and isinstance(d.get("code"), str):
+                roots.append((d["code"], 1))
+    except OSError:
+        pass
+    return roots
+
+
+def _find_manifests(budget=25000, seconds=4.0):
+    found, seen, t0 = [], set(), time.time()
+    for root, depth in _scan_roots():
+        stack = [(os.path.realpath(root), 0)]
+        while stack and budget > 0 and time.time() - t0 < seconds:
+            d, lvl = stack.pop()
+            if d in seen:
+                continue
+            seen.add(d)
+            budget -= 1
+            try:
+                names = os.listdir(d)
+            except OSError:
+                continue
+            if MANIFEST in names:
+                found.append(d)
+            if lvl >= depth:
+                continue
+            for n in names:
+                if n in SCAN_SKIP or (n.startswith(".") and n not in SCAN_HIDDEN_OK):
+                    continue
+                p = os.path.join(d, n)
+                if os.path.isdir(p) and not os.path.islink(p):
+                    stack.append((p, lvl + 1))
+    return found
+
+
+def _git_source(path):
+    """A link the forge can fetch (and later update) for a checkout at path, or the folder itself."""
+    rc, top, _ = _git(["rev-parse", "--show-toplevel"], cwd=path, timeout=10) if have("git") else (1, "", "")
+    if rc == 0:
+        rc2, url, _ = _git(["remote", "get-url", "origin"], cwd=path, timeout=10)
+        url = url.strip()
+        if rc2 == 0 and re.match(r"^https://\S+$", url):
+            url = re.sub(r"\.git$", "", url)
+            sub = os.path.relpath(path, top.strip())
+            if sub in (".", ""):
+                return url
+            rc3, br, _ = _git(["rev-parse", "--abbrev-ref", "HEAD"], cwd=path, timeout=10)
+            return "%s/tree/%s/%s" % (url, br.strip() or "main", sub) if re.match(r"^https://(github|gitlab)\.com/", url) \
+                else "%s#%s" % (url, sub)
+    return path
+
+
+def _probe(root, m):
+    """detect, then status, from a found folder (scratch data dir, nothing kept)."""
+    rec = {"id": m["id"], "manifest": m, "subdir": "", "settings": {}}
+    scratch = tempfile.mkdtemp(prefix=".scan-", dir=ADDONDIR)
+    env = {"FORGE_ADDON_DIR": root, "FORGE_ADDON_DATA": scratch, "FORGE_ADDON_SCAN": "1"}
+    out = {"found": False, "state": None}
+    try:
+        for key in ("detect", "status"):
+            s = m["scripts"].get(key)
+            if not s or (key == "status" and not out["found"]):
+                continue
+            p = subprocess.run(["bash", os.path.join(root, s)], cwd=root, env=script_env_at(rec, root, env),
+                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                               timeout=TIMEOUT[key], start_new_session=True)
+            info = _last_json(p.stdout.decode("utf-8", "replace").splitlines())
+            if key == "detect":
+                out["found"] = p.returncode == 0
+                out.update({k: str(info.get(k) or "")[:200] for k in ("version", "url", "detail")})
+            else:
+                out["state"] = str(info.get("state") or "")[:20] or None
+                if isinstance(info.get("name"), str):
+                    out["name"] = info["name"][:60]
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+    return out
+
+
+def script_env_at(rec, root, extra):
+    """script_env for a folder that is not (yet) one of ours."""
+    m = rec["manifest"]
+    env = dict(os.environ)
+    url = forge_url()
+    env.update({"FORGE_ADDON_SPEC": str(SPEC), "FORGE_ADDON_ID": m["id"], "FORGE_ADDON_NAME": m["name"],
+                "FORGE_ADDON_VERSION": m["version"], "FORGE_HOME": ROOT, "FORGE_VERSION": VERSION,
+                "FORGE_URL": url or "", "FORGE_API": (url + "api/") if url else "",
+                "FORGE_ADDON_ADOPT": "0", "FORGE_ADDON_UPDATE": "0"})
+    for st in m["settings"]:
+        v = st.get("default")
+        env["FORGE_ADDON_SETTING_" + st["key"]] = ("1" if v else "0") if st["type"] == "bool" else ("" if v is None else str(v))
+    env.update(extra)
+    for k in [k for k in env if k.startswith("FORGE_ADDON_")]:
+        env["ADDON_" + k[len("FORGE_ADDON_"):]] = env[k]
+    env.update({"ADDON_HOST": HOST, "ADDON_HOST_VERSION": VERSION, "ADDON_HOST_URL": url or ""})
+    return env
+
+
+def scan(max_age=60.0):
+    """Every addon on this machine, one entry per id:
+    {id, name, version, description, logo, platforms, compatible, problems,
+     registered, installed, found, state, source, locations, error}"""
+    if _SCAN["value"] is not None and time.time() - _SCAN["at"] < max_age:
+        return _SCAN["value"]
+    ensure_dirs()
+    os.makedirs(ADDONDIR, exist_ok=True)
+    mine = os.path.realpath(ADDONDIR) + os.sep
+    reg = _load()
+    by_id, broken = {}, []
+    for d in _find_manifests():
+        if (os.path.realpath(d) + os.sep).startswith(mine) or os.path.basename(d).startswith(".scan-"):
+            continue                                  # our own checkouts: already in the list
+        try:
+            m = load_manifest(d)
+        except AddonError as ex:
+            broken.append({"path": d, "error": str(ex)})
+            continue
+        if m["id"] == "selkies-forge":
+            continue                                  # the forge itself (an addon for Burrow)
+        by_id.setdefault(m["id"], []).append((d, m))
+    out = []
+    lock = threading.Lock()
+
+    def one(aid, places):
+        # the newest version wins; a git checkout (updatable) beats a plain copy
+        places.sort(key=lambda p: (version_tuple(p[1]["version"]), os.path.isdir(os.path.join(p[0], ".git"))), reverse=True)
+        d, m = places[0]
+        probe = _probe(d, m)
+        logo = None
+        if m.get("logo") and m["logo"].endswith(".svg") and os.path.getsize(os.path.join(d, m["logo"])) <= 65536:
+            with open(os.path.join(d, m["logo"]), "rb") as fh:
+                import base64
+                logo = "data:image/svg+xml;base64," + base64.b64encode(fh.read()).decode()
+        rec = reg.get(aid) or {}
+        if rec.get("installed"):                     # ours already: what the forge knows
+            st = status(rec)
+            probe = {"found": True, "state": st.get("state"), "version": rec.get("installed_version"),
+                     "name": st.get("name"), "detail": st.get("detail")}
+        e = {"id": aid, "name": probe.get("name") or m["name"], "version": m["version"],
+             "description": m["description"][:300], "logo": logo,
+             "platforms": m["platforms"], "compatible": HOST in m["platforms"], "problems": check_requirements(m),
+             "registered": bool(rec), "installed": bool(rec.get("installed")),
+             "found": probe["found"], "installed_version": probe.get("version") or None,
+             "state": probe["state"], "detail": probe.get("detail") or "",
+             "source": _git_source(d), "locations": [p[0] for p in places]}
+        with lock:
+            out.append(e)
+
+    threads = [threading.Thread(target=one, args=(k, v), daemon=True) for k, v in by_id.items()]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(40)
+    out.sort(key=lambda e: (not e["compatible"], e["registered"], not e["found"], e["name"].lower()))
+    value = {"scanned": time.time(), "addons": out, "broken": broken[:20]}
+    _SCAN.update(at=time.time(), value=value)
+    return value
+
+
+def forget_scan():
+    _SCAN.update(at=0.0, value=None)
+
+
 # ------------------------------------------------------------------ integrations
 def _integration_dirs():
     dirs = []
@@ -1674,40 +1890,71 @@ def _integration_dirs():
             dirs.append(full)
     for rec in _load().values():
         d = (rec.get("manifest") or {}).get("integration", {}).get("dir")
-        if rec.get("installed") and d:
-            dirs.append(os.path.expanduser(d.replace("$HOME/", "~/", 1)))
+        if not d:
+            continue
+        full = os.path.expanduser(d.replace("$HOME/", "~/", 1))
+        # installed, or uninstalled with its folder still there (it learns it is no longer an addon)
+        if rec.get("installed") or os.path.isdir(full):
+            dirs.append(full)
     return sorted(set(dirs))
 
 
-def forge_descriptor():
+def _addon_for_dir(d):
+    """The installed addon that owns integration folder d: how this forge runs
+    it, for that app to show (Aegis × Burrow's Burrow → Addon tab)."""
+    url = forge_url()
+    for rec in _load().values():
+        idir = (rec.get("manifest") or {}).get("integration", {}).get("dir")
+        if not rec.get("installed") or not idir:
+            continue
+        if os.path.expanduser(idir.replace("$HOME/", "~/", 1)) != d:
+            continue
+        m, rem = rec["manifest"], rec.get("remote") or {}
+        with _STATUS_LOCK:
+            hit = _STATUS.get(rec["id"])           # never run the status script from here
+        return {"id": rec["id"], "name": m["name"], "version": rec.get("installed_version") or m["version"],
+                "commit": rec.get("commit"), "source": (rec.get("source") or {}).get("display"),
+                "adopted": bool(rec.get("adopted")), "installed_at": int(rec.get("installed_at") or 0),
+                "state": hit[1].get("state") if hit else None, "checked_at": int(rem.get("checked") or 0) or None,
+                "update": ({"available": rem.get("up_to_date") is False, "commit": rem.get("commit"),
+                            "version": rem.get("version"), "subject": rem.get("subject")} if rem else None),
+                "page": (url + "#addons/" + rec["id"]) if url else None}
+    return None
+
+
+def forge_descriptor(d=None):
     url = forge_url()
     if not url:
         return None
     srv = jload(SERVER_JSON, None) or {}
-    return {"spec": 1, "id": "selkies-forge", "kind": "selkies-forge", "name": "Selkies Forge",
-            "version": VERSION, "url": url, "api": url + "api/", "port": int(srv.get("port") or 0),
-            "public_url": srv.get("tunnel") or None, "logo": FORGE_LOGO, "home": ROOT}
+    out = {"spec": 1, "id": "selkies-forge", "kind": "selkies-forge", "name": "Selkies Forge",
+           "version": VERSION, "url": url, "api": url + "api/", "port": int(srv.get("port") or 0),
+           "public_url": srv.get("tunnel") or None, "logo": FORGE_LOGO, "home": ROOT}
+    if d:
+        out["addon"] = _addon_for_dir(d)
+    return out
 
 
 def sync_integrations():
     """Tell every app with a drop-in folder where this forge is. Cheap: only
     writes when something changed (and touches the file once an hour)."""
-    desc = forge_descriptor()
-    if not desc:
+    if not forge_url():
         return []
     written = []
     for d in _integration_dirs():
         path = os.path.join(d, "selkies-forge.json")
         try:
             old = jload(path, None) or {}
-            fresh = dict(desc, updated=old.get("updated"))
-            if old == fresh and time.time() - float(old.get("updated") or 0) < 3600:
+            fresh = dict(forge_descriptor(d), updated=old.get("updated"))
+            loose = os.path.exists(path) and os.stat(path).st_mode & 0o022
+            if old == fresh and time.time() - float(old.get("updated") or 0) < 3600 and not loose:
                 continue
             os.makedirs(d, exist_ok=True)
             fresh["updated"] = int(time.time())
             tmp = "%s.tmp.%d" % (path, os.getpid())
             with open(tmp, "w") as fh:
                 json.dump(fresh, fh, indent=2)
+            os.chmod(tmp, 0o644)                    # the bridge check insists: only we may write it
             os.replace(tmp, path)
             written.append(path)
         except OSError:
@@ -1987,8 +2234,9 @@ __FORGE_FILE_FORGE_BACKUPS_PY__
 """
 Selkies Forge engine - burrow
 
-Burrow (github.com/alexd-aero/burrow) publishes ports on their own HTTPS
-addresses behind a login. When it is on this machine, the forge offers a
+Burrow publishes ports on their own HTTPS addresses behind a login. It is the
+tunnel engine of Aegis × Burrow (github.com/alexd-aero/aegis-burrow), and also
+ran on its own (github.com/alexd-aero/burrow). When it is on this machine, the forge offers a
 Burrow address for every desktop and addon next to the local and serveo ones.
 
 The forge finds Burrow through ~/.config/burrow/burrow.json and talks to its
@@ -2005,6 +2253,7 @@ import time
 
 from http.client import HTTPConnection
 
+from .paths import VERSION
 from .util import jload
 
 _CACHE = {"at": 0.0, "value": None}
@@ -2012,8 +2261,8 @@ _LOCK = threading.Lock()
 
 
 def discovery():
-    """Burrow on its own, or inside Aegis (github.com/alexd-aero/aegis), which
-    carries Burrow as a module and the same control socket."""
+    """Aegis × Burrow (Burrow as the engine under Aegis's gate), or Burrow on
+    its own. Both keep the same control socket."""
     cfg = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
     for env, name, file in (("AEGIS_CONFIG_DIR", "aegis", "aegis.json"), ("BURROW_CONFIG_DIR", "burrow", "burrow.json")):
         d = jload(os.path.join(os.environ.get(env) or os.path.join(cfg, name), file), None)
@@ -2039,7 +2288,7 @@ class _UnixConnection(HTTPConnection):
     def connect(self):
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         s.settimeout(self.timeout)
-        s.connect(self._path)
+        s.connect(os.path.realpath(self._path))      # a deep home links the socket to a short path
         self.sock = s
 
 
@@ -2050,8 +2299,10 @@ def call(method, path, body=None, timeout=10.0):
     conn = _UnixConnection(sp, timeout)
     try:
         data = json.dumps(body).encode("utf-8") if body is not None else None
-        conn.request(method, path, body=data,
-                     headers={"Content-Type": "application/json"} if data is not None else {})
+        headers = {"X-Burrow-Client": "selkies-forge/" + VERSION}     # shown in Burrow's Addon tab
+        if data is not None:
+            headers["Content-Type"] = "application/json"
+        conn.request(method, path, body=data, headers=headers)
         r = conn.getresponse()
         out = json.loads(r.read().decode("utf-8") or "{}")
         if r.status >= 400:
@@ -2136,6 +2387,131 @@ def unpublish(port):
         return call("DELETE", "/tunnels/%d" % int(t["port"]), timeout=60.0)
     finally:
         forget()
+
+
+# ------------------------------------------------------------------ the bridge
+#
+# Selkies Forge <-> Aegis × Burrow. Is the link up, and is it private?
+#   up:      Burrow is on this machine, its control socket answers, the forge's
+#            drop-in file sits in its integrations folder and is current, and
+#            the forge has it as an addon
+#   secured: the socket is a socket, owned by this user, mode 600, in a folder
+#            only this user can enter; the drop-in can't be rewritten by others;
+#            the forge's own dashboard isn't published without a login
+# Each check: {"id", "label", "state": ok|warn|fail|off, "detail"}.
+
+def _mode(path):
+    try:
+        st = os.stat(path)
+        return st.st_mode & 0o777, st.st_uid
+    except OSError:
+        return None, None
+
+
+def health(addons_mod=None):
+    import stat as _stat
+    checks = []
+
+    def add(cid, label, state, detail=""):
+        checks.append({"id": cid, "label": label, "state": state, "detail": detail})
+
+    d = discovery()
+    if not d:
+        add("found", "Aegis × Burrow on this machine", "off", "not installed: add it under Addons to build the bridge")
+        return {"state": "off", "checks": checks, "checked": time.time()}
+    add("found", "Aegis × Burrow on this machine", "ok", "%s %s in %s" % (d.get("app") or "burrow", d.get("version") or "", d.get("home") or "?"))
+
+    home = d.get("home") or ""
+    sock = os.path.join(home, "data", "control.sock")
+    mode, uid = _mode(sock)
+    if mode is None:
+        add("socket", "Control socket", "fail", "%s is missing: is it running?" % sock)
+    else:
+        is_sock = _stat.S_ISSOCK(os.stat(sock).st_mode)
+        dmode, duid = _mode(os.path.dirname(os.path.realpath(sock)))   # data/, or the runtime folder it links to
+        problems = []
+        if not is_sock:
+            problems.append("not a socket")
+        if uid != os.getuid():
+            problems.append("owned by another user")
+        if mode & 0o077:
+            problems.append("mode %o, others can connect" % mode)
+        if dmode is not None and dmode & 0o077:
+            problems.append("its folder is mode %o" % dmode)
+        add("socket", "Control socket is private", "fail" if problems else "ok",
+            "; ".join(problems) if problems else "%s · mode %o · folder %o · yours" % (sock.replace(os.path.expanduser("~"), "~"), mode, dmode or 0))
+    t0 = time.time()
+    st = status(max_age=0)
+    if st.get("running"):
+        add("answer", "Burrow answers", "ok", "%d ms · %s · %d tunnel%s" % ((time.time() - t0) * 1000, st.get("mode") or "?",
+                                                                       len(st["tunnels"]), "" if len(st["tunnels"]) == 1 else "s"))
+    else:
+        add("answer", "Burrow answers", "fail", st.get("error") or "no answer on the control socket")
+
+    if addons_mod is not None:
+        dirs = [p for p in addons_mod._integration_dirs() if "/aegis/" in p or "/burrow/" in p]
+        drop = None
+        for p in dirs:
+            f = os.path.join(p, "selkies-forge.json")
+            if os.path.isfile(f):
+                drop = f
+                break
+        if not drop:
+            add("dropin", "The forge is registered with it", "fail", "no selkies-forge.json in its integrations folder yet")
+        else:
+            fm, fu = _mode(drop)
+            age = time.time() - float((jload(drop, {}) or {}).get("updated") or 0)
+            bad = []
+            if fu != os.getuid():
+                bad.append("owned by another user")
+            if fm & 0o022:
+                bad.append("group or others can write it (mode %o)" % fm)
+            add("dropin", "The forge is registered with it", "fail" if bad else ("ok" if age < 3 * 3600 else "warn"),
+                "; ".join(bad) if bad else "%s · refreshed %s ago" % (drop.replace(os.path.expanduser("~"), "~"), _ago(age)))
+        recs = [r for r in addons_mod._load().values()
+                if (r.get("manifest") or {}).get("integration", {}).get("dir", "").rstrip("/").endswith(("aegis/integrations", "burrow/integrations"))]
+        rec = next((r for r in recs if r.get("installed")), None)
+        if rec:
+            add("addon", "It is an addon of this forge", "ok", "%s %s · %s" % (rec["id"], rec.get("installed_version") or "",
+                                                                           "linked" if rec.get("adopted") else "installed here"))
+        else:
+            add("addon", "It is an addon of this forge", "warn",
+                "not added yet: Addons → it is listed under Found on this machine, or use Connect in its Burrow → Selkies Forge tab")
+
+    # the forge's own dashboard: published without a login?
+    from .paths import SERVER_JSON
+    srv = jload(SERVER_JSON, None) or {}
+    port = int(srv.get("port") or 0)
+    pub = [t for t in st.get("tunnels") or [] if port and t.get("targetPort") == port and t.get("access") == "public" and t.get("enabled")]
+    if pub:
+        add("exposed", "The forge's dashboard needs a login", "warn",
+            "%s publishes it to anyone (no login). Fine if you meant it; switch it to Login in Burrow otherwise." % (pub[0].get("url") or "a tunnel"))
+    elif port:
+        add("exposed", "The forge's dashboard needs a login", "ok", "no public tunnel to port %d" % port)
+
+    logos = {}
+    if addons_mod is not None:
+        import base64
+        logos["forge"] = "data:image/svg+xml;base64," + base64.b64encode(addons_mod.FORGE_LOGO.encode()).decode()
+        code = d.get("code") or os.path.join(home, "app")
+        for rel in ("public/logos/aegis-burrow.svg", "logo.svg"):
+            p = os.path.join(code, rel)
+            if os.path.isfile(p) and os.path.getsize(p) < 65536:
+                with open(p, "rb") as fh:
+                    logos["burrow"] = "data:image/svg+xml;base64," + base64.b64encode(fh.read()).decode()
+                break
+    worst = "ok"
+    for c in checks:
+        if c["state"] == "fail":
+            worst = "fail"
+        elif c["state"] == "warn" and worst == "ok":
+            worst = "warn"
+    return {"state": worst, "checks": checks, "checked": time.time(), "logos": logos}
+
+
+def _ago(s):
+    s = max(0, int(s))
+    return "%ds" % s if s < 60 else "%dm" % (s // 60) if s < 3600 else "%dh" % (s // 3600)
 __FORGE_FILE_FORGE_BURROW_PY__
   cat > "$FORGE_APP/forge/catalog.py" <<'__FORGE_FILE_FORGE_CATALOG_PY__'
 """
@@ -7652,7 +8028,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.7"
+VERSION = "1.10.8"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8719,6 +9095,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"instances": docker_instances(), "burrow": burrow.status()})
         if route == "/api/burrow":
             return self._send(200, burrow.status(max_age=0))
+        if route == "/api/bridge":
+            return self._send(200, burrow.health(addons))
         if route == "/api/stats":
             return self._send(200, {"stats": STATS.report(), "host": host_info()})
         if route == "/api/jobs":
@@ -8771,6 +9149,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, space.report())
         if route == "/api/addons":
             return self._send(200, {"addons": addons.list_addons(), "spec": addons.SPEC})
+        if route == "/api/addons/scan":
+            return self._send(200, addons.scan(max_age=0 if self._query().get("fresh") else 60))
         m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/image$", route)
         if m:
             try:
@@ -8860,7 +9240,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._err(400, ex)
         if route == "/api/addons/add":
             try:
-                return self._send(200, {"addon": addons.add(body.get("source") or "")})
+                a = addons.add(body.get("source") or "")
+                addons.forget_scan()
+                return self._send(200, {"addon": a})
             except addons.AddonError as ex:
                 return self._err(400, ex)
         m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/(install|update|uninstall|remove|action)$", route)
@@ -11368,7 +11750,7 @@ __FORGE_FILE_FORGE_WEBUI_PY__
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var h = F.h;
   var EXAMPLE = "https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge";
-  var A = { list: null, timer: null, jobs: {}, busy: {}, es: null };
+  var A = { list: null, timer: null, jobs: {}, busy: {}, es: null, scan: null, scanning: false, bridge: null, bridgeOpen: false };
 
   /* -------------------------------------------------------------- data */
   function load() {
@@ -11472,6 +11854,79 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     var open = document.querySelector("#addonList .menu:not([hidden])");
     if (open) return;
     box.innerHTML = A.list.map(card).join("");
+    if (A.focus) {
+      // arrived from #addons/<id> (e.g. Aegis × Burrow's Addon tab): show that card
+      var el = box.querySelector('.ad[data-id="' + A.focus + '"]');
+      A.focus = null;
+      if (el) {
+        el.scrollIntoView({ block: "center", behavior: "smooth" });
+        el.classList.add("flash");
+        setTimeout(function () { el.classList.remove("flash"); }, 2400);
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------- smart scan */
+  // Addons already on this machine (a checkout, an app that installed itself,
+  // another host's copy): anything with a valid forge-addon.json.
+  var PLAT = { "selkies-forge": "Selkies Forge", burrow: "Burrow" };
+  function loadScan(fresh) {
+    A.scanning = true; renderFound();
+    return F.api("/api/addons/scan" + (fresh ? "?fresh=1" : "")).then(function (r) { A.scan = r; })
+      .catch(function (e) { A.scan = { error: e.message, addons: [] }; })
+      .then(function () { A.scanning = false; renderFound(); });
+  }
+  function foundState(e) {
+    if (e.state === "running") return '<span class="pill up"><i></i>running</span>';
+    if (e.state === "stopped") return '<span class="pill bad"><i></i>stopped</span>';
+    if (e.found) return '<span class="pill found"><i></i>installed' + (e.installed_version ? " " + h(e.installed_version) : "") + "</span>";
+    return '<span class="pill"><i></i>not installed</span>';
+  }
+  function renderFound() {
+    var box = $("#addonFound");
+    if (!box) return;
+    var list = ((A.scan && A.scan.addons) || []).filter(function (e) { return !e.registered; });
+    var head = '<div class="found-head"><h3>Found on this machine</h3><span class="sub">' +
+      (A.scanning ? "scanning your folders for forge-addon.json…" : A.scan && A.scan.scanned ? list.length + " not added yet · " + (A.scan.addons.length - list.length) + " already here" : "") +
+      '</span><span class="spacer"></span><button class="btn ghost sm" type="button" data-ad="scan"' + (A.scanning ? " disabled" : "") + ">" +
+      (A.scanning ? '<span class="spin-sm"></span>' : F.I.restart) + " Scan again</button></div>";
+    if (!list.length && !A.scanning) { box.innerHTML = '<div class="found">' + head + "</div>"; return; }
+    box.innerHTML = '<div class="found">' + head + '<div class="found-grid">' + list.map(function (e) {
+      var only = !e.compatible ? '<span class="pill">' + h(e.platforms.map(function (p) { return PLAT[p] || p; }).join(" + ")) + " only</span>" : "";
+      var btn = !e.compatible ? "" : e.problems.length ? '<span class="sub">' + h(e.problems[0]) + "</span>"
+        : '<button class="btn ' + (e.found ? "primary" : "") + ' sm" type="button" data-ad="add-found" data-src="' + h(e.source) + '">' + (e.found ? "Add and link" : "Add") + "</button>";
+      return '<div class="fnd' + (e.compatible ? "" : " off") + '">' +
+        '<div class="ad-logo sm">' + (e.logo ? '<img src="' + h(e.logo) + '" alt="">' : "<span>" + h(e.name.charAt(0)) + "</span>") + "</div>" +
+        '<div class="fnd-t"><div class="fnd-n">' + h(e.name) + ' <span class="ad-ver">v' + h(e.version) + "</span> " + foundState(e) + only + "</div>" +
+        '<div class="fnd-p mono" title="' + h(e.locations.join("\n")) + '">' + h(e.source.replace(/^https:\/\/(www\.)?/, "")) +
+        (e.locations.length > 1 ? " · " + e.locations.length + " copies" : "") + "</div></div>" + btn + "</div>";
+    }).join("") + (A.scanning && !list.length ? '<div class="skel" style="height:62px"></div>' : "") + "</div></div>";
+  }
+
+  /* -------------------------------------------------------------- the bridge */
+  // Selkies Forge <-> Aegis × Burrow: up, and private?
+  function loadBridge() {
+    return F.api("/api/bridge").then(function (b) { A.bridge = b; renderBridge(); }).catch(function () {});
+  }
+  function renderBridge() {
+    var box = $("#addonBridge"), b = A.bridge;
+    if (!box || !b || b.state === "off") { if (box) box.innerHTML = ""; return; }
+    var word = { ok: "healthy and private", warn: "up, with a warning", fail: "needs attention" }[b.state];
+    var n = { ok: 0, warn: 0, fail: 0 };
+    b.checks.forEach(function (c) { if (n[c.state] != null) n[c.state]++; });
+    box.innerHTML = '<div class="bridge ' + b.state + (A.bridgeOpen ? " open" : "") + '">' +
+      '<button class="bridge-bar" type="button" data-ad="bridge-toggle" aria-expanded="' + A.bridgeOpen + '">' +
+        '<span class="bridge-ends">' + (b.logos && b.logos.forge ? '<img src="' + h(b.logos.forge) + '" alt="">' : "") + "<i></i>" +
+          (b.logos && b.logos.burrow ? '<img src="' + h(b.logos.burrow) + '" alt="">' : "") + "</span>" +
+        '<span class="bridge-t"><b>Burrow bridge</b> <span class="sub">' + h(word) + " · " + n.ok + "/" + b.checks.length + " checks pass</span></span>" +
+        '<span class="pill ' + (b.state === "ok" ? "up" : "bad") + '"><i></i>' + (b.state === "ok" ? "secured" : b.state === "warn" ? "check" : "broken") + "</span>" +
+        '<span class="bridge-chev">' + (A.bridgeOpen ? "▴" : "▾") + "</span></button>" +
+      (A.bridgeOpen ? '<ul class="bridge-list">' + b.checks.map(function (c) {
+        return '<li class="' + c.state + '"><span class="bc-ico">' + ({ ok: "✓", warn: "!", fail: "✕", off: "–" }[c.state]) + "</span>" +
+          "<div><b>" + h(c.label) + '</b><div class="sub">' + h(c.detail) + "</div></div></li>";
+      }).join("") + '</ul><div class="bridge-foot"><span class="sub">Checked ' + new Date(b.checked * 1000).toLocaleTimeString() +
+        '</span><span class="spacer"></span><button class="btn ghost sm" type="button" data-ad="bridge-check">' + F.I.restart + " Check again</button></div>" : "") +
+      "</div>";
   }
 
   /* -------------------------------------------------------------- add */
@@ -11748,6 +12203,10 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     if (!t) return;
     var what = t.dataset.ad;
     if (what === "example") { addSource(EXAMPLE); return; }
+    if (what === "scan") { loadScan(true); return; }
+    if (what === "add-found") { addSource(t.dataset.src).then(function () { loadScan(true); }); return; }
+    if (what === "bridge-toggle") { A.bridgeOpen = !A.bridgeOpen; renderBridge(); return; }
+    if (what === "bridge-check") { t.disabled = true; loadBridge(); return; }
     var a = byId(t.dataset.id);
     if (!a) return;
     var menu = t.closest(".menu");
@@ -11777,7 +12236,8 @@ __FORGE_FILE_FORGE_WEBUI_PY__
   });
 
   window.ForgeAddons = {
-    show: function () { render(); load(); schedule(); }
+    show: function () { render(); load(); schedule(); loadBridge(); if (!A.scan || Date.now() - A.scan.scanned * 1000 > 60000) loadScan(false); else renderFound(); },
+    focus: function (id) { A.focus = /^[a-z0-9-]{1,40}$/.test(id || "") ? id : null; }
   };
 })();
 __FORGE_FILE_WEB_ADDONS_JS__
@@ -13488,6 +13948,11 @@ html[data-theme="ember"] {
 :root { --upd: #3ddc97; --upd-hi: #7af5c0; --upd-deep: #16a868; --upd-ink: #03140b; --upd-rgb: 61, 220, 151; }
 
 /* an addon with an update waiting: it glows */
+.ad.flash { animation: adFlash 2.4s ease-out; }
+@keyframes adFlash {
+  0%, 30% { box-shadow: 0 0 0 2px rgba(var(--acc-rgb), 0.9), 0 0 40px rgba(var(--acc-rgb), 0.35); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--acc-rgb), 0); }
+}
 .ad.has-update { border-color: rgba(var(--upd-rgb), 0.55);
                  box-shadow: var(--sh), 0 0 0 1px rgba(var(--upd-rgb), 0.14), 0 0 60px -18px rgba(var(--upd-rgb), 0.55); }
 html body .ad.has-update:hover { border-color: rgba(var(--upd-rgb), 0.75); }
@@ -13626,6 +14091,40 @@ html.lite .uc-hero.new .uc-orb::before, html.lite .new-chip { animation: none; }
 /* dialogs sit on a solid surface: nothing behind them shows through */
 #modalPanel { background: var(--surface); }
 html[data-theme="stealth"] #modalPanel { background: linear-gradient(180deg, #121316, #0c0d0f); }
+
+/* ---------- Addons: the Burrow bridge, and what the scan found ---------- */
+.bridge { margin: 16px 0 0; border: 1px solid var(--line); border-radius: var(--r-l); background: var(--surface, rgba(255,255,255,.02)); overflow: hidden; }
+.bridge.ok { border-color: rgba(61, 220, 151, 0.35); box-shadow: 0 0 34px -16px rgba(61, 220, 151, 0.55); }
+.bridge.warn { border-color: rgba(242, 193, 78, 0.4); }
+.bridge.fail { border-color: rgba(255, 107, 126, 0.45); }
+.bridge-bar { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 16px; border: 0; background: transparent; color: inherit; cursor: pointer; text-align: left; font: inherit; }
+.bridge-ends { display: inline-flex; align-items: center; gap: 0; flex: none; }
+.bridge-ends img { width: 30px; height: 30px; border-radius: 9px; }
+.bridge-ends i { display: block; width: 34px; height: 2px; margin: 0 4px; border-radius: 2px; background: currentColor; opacity: .35; position: relative; }
+.bridge.ok .bridge-ends i { background: linear-gradient(90deg, #5aa6ff, #3ddc97, #e8eaed); opacity: 1; box-shadow: 0 0 10px rgba(61, 220, 151, .55); }
+.bridge.fail .bridge-ends i { background: repeating-linear-gradient(90deg, var(--bad) 0 4px, transparent 4px 8px); opacity: 1; }
+.bridge-t { flex: 1; min-width: 0; }
+.bridge-chev { opacity: .5; }
+.bridge-list { list-style: none; margin: 0; padding: 4px 16px 6px; border-top: 1px solid var(--line); }
+.bridge-list li { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.bridge-list li:last-child { border-bottom: 0; }
+.bc-ico { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; flex: none; font-size: 12px; font-weight: 700; }
+.bridge-list li.ok .bc-ico { background: rgba(61, 220, 151, .16); color: var(--ok); }
+.bridge-list li.warn .bc-ico { background: rgba(242, 193, 78, .16); color: #f2c14e; }
+.bridge-list li.fail .bc-ico { background: rgba(255, 107, 126, .16); color: var(--bad); }
+.bridge-list li.off .bc-ico { background: rgba(255,255,255,.06); }
+.bridge-foot { display: flex; align-items: center; gap: 10px; padding: 8px 16px 12px; }
+.found { margin: 16px 0 0; }
+.found-head { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; }
+.found-head h3 { margin: 0; font-size: 15px; }
+.found-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); gap: 10px; }
+.fnd { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px dashed var(--line); border-radius: var(--r-m, 12px); background: rgba(255,255,255,.015); min-width: 0; }
+.fnd.off { opacity: .55; }
+.fnd-t { flex: 1; min-width: 0; }
+.fnd-n { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 600; }
+.fnd-p { font-size: 11.5px; opacity: .65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.ad-logo.sm { width: 38px; height: 38px; border-radius: 10px; flex: none; }
+.ad-logo.sm img { width: 38px; height: 38px; }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -13866,6 +14365,9 @@ __FORGE_FILE_WEB_APP_CSS__
       pollUpdate();
       pollLife();
       api("/api/burrow").then(function (b) { S.burrow = b; S.instKey = ""; if (S.view === "manager") renderManager(); }).catch(function () {});
+      // deep links: #addons, #addons/<id> (other apps link straight to their card)
+      var m = /^#addons(?:\/([a-z0-9-]{1,40}))?$/.exec(location.hash);
+      if (m && window.ForgeAddons) { window.ForgeAddons.focus(m[1]); show("addons"); }
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
         '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
@@ -16034,6 +16536,8 @@ __FORGE_FILE_WEB_BRANDS_JS__
         </div>
         <div id="addonAddMsg"></div>
       </div>
+      <div id="addonBridge"></div>
+      <div id="addonFound"></div>
       <div class="jobstrip" id="addonJobs" hidden></div>
       <div class="addon-grid" id="addonList"><div class="skel" style="height:170px"></div><div class="skel" style="height:170px"></div></div>
     </section>
@@ -17811,7 +18315,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.7"
+FORGE_VERSION="1.10.8"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

@@ -7,7 +7,7 @@
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var h = F.h;
   var EXAMPLE = "https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge";
-  var A = { list: null, timer: null, jobs: {}, busy: {}, es: null };
+  var A = { list: null, timer: null, jobs: {}, busy: {}, es: null, scan: null, scanning: false, bridge: null, bridgeOpen: false };
 
   /* -------------------------------------------------------------- data */
   function load() {
@@ -111,6 +111,79 @@
     var open = document.querySelector("#addonList .menu:not([hidden])");
     if (open) return;
     box.innerHTML = A.list.map(card).join("");
+    if (A.focus) {
+      // arrived from #addons/<id> (e.g. Aegis × Burrow's Addon tab): show that card
+      var el = box.querySelector('.ad[data-id="' + A.focus + '"]');
+      A.focus = null;
+      if (el) {
+        el.scrollIntoView({ block: "center", behavior: "smooth" });
+        el.classList.add("flash");
+        setTimeout(function () { el.classList.remove("flash"); }, 2400);
+      }
+    }
+  }
+
+  /* -------------------------------------------------------------- smart scan */
+  // Addons already on this machine (a checkout, an app that installed itself,
+  // another host's copy): anything with a valid forge-addon.json.
+  var PLAT = { "selkies-forge": "Selkies Forge", burrow: "Burrow" };
+  function loadScan(fresh) {
+    A.scanning = true; renderFound();
+    return F.api("/api/addons/scan" + (fresh ? "?fresh=1" : "")).then(function (r) { A.scan = r; })
+      .catch(function (e) { A.scan = { error: e.message, addons: [] }; })
+      .then(function () { A.scanning = false; renderFound(); });
+  }
+  function foundState(e) {
+    if (e.state === "running") return '<span class="pill up"><i></i>running</span>';
+    if (e.state === "stopped") return '<span class="pill bad"><i></i>stopped</span>';
+    if (e.found) return '<span class="pill found"><i></i>installed' + (e.installed_version ? " " + h(e.installed_version) : "") + "</span>";
+    return '<span class="pill"><i></i>not installed</span>';
+  }
+  function renderFound() {
+    var box = $("#addonFound");
+    if (!box) return;
+    var list = ((A.scan && A.scan.addons) || []).filter(function (e) { return !e.registered; });
+    var head = '<div class="found-head"><h3>Found on this machine</h3><span class="sub">' +
+      (A.scanning ? "scanning your folders for forge-addon.json…" : A.scan && A.scan.scanned ? list.length + " not added yet · " + (A.scan.addons.length - list.length) + " already here" : "") +
+      '</span><span class="spacer"></span><button class="btn ghost sm" type="button" data-ad="scan"' + (A.scanning ? " disabled" : "") + ">" +
+      (A.scanning ? '<span class="spin-sm"></span>' : F.I.restart) + " Scan again</button></div>";
+    if (!list.length && !A.scanning) { box.innerHTML = '<div class="found">' + head + "</div>"; return; }
+    box.innerHTML = '<div class="found">' + head + '<div class="found-grid">' + list.map(function (e) {
+      var only = !e.compatible ? '<span class="pill">' + h(e.platforms.map(function (p) { return PLAT[p] || p; }).join(" + ")) + " only</span>" : "";
+      var btn = !e.compatible ? "" : e.problems.length ? '<span class="sub">' + h(e.problems[0]) + "</span>"
+        : '<button class="btn ' + (e.found ? "primary" : "") + ' sm" type="button" data-ad="add-found" data-src="' + h(e.source) + '">' + (e.found ? "Add and link" : "Add") + "</button>";
+      return '<div class="fnd' + (e.compatible ? "" : " off") + '">' +
+        '<div class="ad-logo sm">' + (e.logo ? '<img src="' + h(e.logo) + '" alt="">' : "<span>" + h(e.name.charAt(0)) + "</span>") + "</div>" +
+        '<div class="fnd-t"><div class="fnd-n">' + h(e.name) + ' <span class="ad-ver">v' + h(e.version) + "</span> " + foundState(e) + only + "</div>" +
+        '<div class="fnd-p mono" title="' + h(e.locations.join("\n")) + '">' + h(e.source.replace(/^https:\/\/(www\.)?/, "")) +
+        (e.locations.length > 1 ? " · " + e.locations.length + " copies" : "") + "</div></div>" + btn + "</div>";
+    }).join("") + (A.scanning && !list.length ? '<div class="skel" style="height:62px"></div>' : "") + "</div></div>";
+  }
+
+  /* -------------------------------------------------------------- the bridge */
+  // Selkies Forge <-> Aegis × Burrow: up, and private?
+  function loadBridge() {
+    return F.api("/api/bridge").then(function (b) { A.bridge = b; renderBridge(); }).catch(function () {});
+  }
+  function renderBridge() {
+    var box = $("#addonBridge"), b = A.bridge;
+    if (!box || !b || b.state === "off") { if (box) box.innerHTML = ""; return; }
+    var word = { ok: "healthy and private", warn: "up, with a warning", fail: "needs attention" }[b.state];
+    var n = { ok: 0, warn: 0, fail: 0 };
+    b.checks.forEach(function (c) { if (n[c.state] != null) n[c.state]++; });
+    box.innerHTML = '<div class="bridge ' + b.state + (A.bridgeOpen ? " open" : "") + '">' +
+      '<button class="bridge-bar" type="button" data-ad="bridge-toggle" aria-expanded="' + A.bridgeOpen + '">' +
+        '<span class="bridge-ends">' + (b.logos && b.logos.forge ? '<img src="' + h(b.logos.forge) + '" alt="">' : "") + "<i></i>" +
+          (b.logos && b.logos.burrow ? '<img src="' + h(b.logos.burrow) + '" alt="">' : "") + "</span>" +
+        '<span class="bridge-t"><b>Burrow bridge</b> <span class="sub">' + h(word) + " · " + n.ok + "/" + b.checks.length + " checks pass</span></span>" +
+        '<span class="pill ' + (b.state === "ok" ? "up" : "bad") + '"><i></i>' + (b.state === "ok" ? "secured" : b.state === "warn" ? "check" : "broken") + "</span>" +
+        '<span class="bridge-chev">' + (A.bridgeOpen ? "▴" : "▾") + "</span></button>" +
+      (A.bridgeOpen ? '<ul class="bridge-list">' + b.checks.map(function (c) {
+        return '<li class="' + c.state + '"><span class="bc-ico">' + ({ ok: "✓", warn: "!", fail: "✕", off: "–" }[c.state]) + "</span>" +
+          "<div><b>" + h(c.label) + '</b><div class="sub">' + h(c.detail) + "</div></div></li>";
+      }).join("") + '</ul><div class="bridge-foot"><span class="sub">Checked ' + new Date(b.checked * 1000).toLocaleTimeString() +
+        '</span><span class="spacer"></span><button class="btn ghost sm" type="button" data-ad="bridge-check">' + F.I.restart + " Check again</button></div>" : "") +
+      "</div>";
   }
 
   /* -------------------------------------------------------------- add */
@@ -387,6 +460,10 @@
     if (!t) return;
     var what = t.dataset.ad;
     if (what === "example") { addSource(EXAMPLE); return; }
+    if (what === "scan") { loadScan(true); return; }
+    if (what === "add-found") { addSource(t.dataset.src).then(function () { loadScan(true); }); return; }
+    if (what === "bridge-toggle") { A.bridgeOpen = !A.bridgeOpen; renderBridge(); return; }
+    if (what === "bridge-check") { t.disabled = true; loadBridge(); return; }
     var a = byId(t.dataset.id);
     if (!a) return;
     var menu = t.closest(".menu");
@@ -416,6 +493,7 @@
   });
 
   window.ForgeAddons = {
-    show: function () { render(); load(); schedule(); }
+    show: function () { render(); load(); schedule(); loadBridge(); if (!A.scan || Date.now() - A.scan.scanned * 1000 > 60000) loadScan(false); else renderFound(); },
+    focus: function (id) { A.focus = /^[a-z0-9-]{1,40}$/.test(id || "") ? id : null; }
   };
 })();

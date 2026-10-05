@@ -245,6 +245,99 @@ class IntegrationTest(unittest.TestCase):
             os.remove(paths.SERVER_JSON)
 
 
+    def test_an_addon_learns_how_the_forge_runs_it(self):
+        # The drop-in folder an installed addon declares gets an "addon" block
+        # (version, commit, update state, a link to its card); others don't.
+        home = tempfile.mkdtemp()
+        src = make_addon(tempfile.mkdtemp(), {"id": "gate", "name": "Gate",
+                                              "integration": {"dir": "~/.config/gate/integrations"}})
+        old_known, old_home = addons.KNOWN_INTEGRATION_DIRS, os.environ.get("HOME")
+        os.environ["HOME"] = home
+        addons.KNOWN_INTEGRATION_DIRS = ("~/.config/other/integrations",)
+        os.makedirs(os.path.join(home, ".config", "other"))
+        try:
+            addons.jsave(paths.SERVER_JSON, {"port": 8787, "bind": "0.0.0.0"})
+            addons.add(src)
+            addons.install("gate")
+            addons._update("gate", {"remote": {"checked": 5, "up_to_date": False, "commit": "abc", "version": "2.0.0",
+                                               "subject": "new"}})
+            addons.sync_integrations()
+            with open(os.path.join(home, ".config", "gate", "integrations", "selkies-forge.json")) as fh:
+                mine = json.load(fh)["addon"]
+            self.assertEqual((mine["id"], mine["version"], mine["adopted"]), ("gate", "1.2.3", False))
+            self.assertEqual(mine["update"], {"available": True, "commit": "abc", "version": "2.0.0", "subject": "new"})
+            self.assertEqual(mine["page"], "http://127.0.0.1:8787/#addons/gate")
+            with open(os.path.join(home, ".config", "other", "integrations", "selkies-forge.json")) as fh:
+                self.assertIsNone(json.load(fh)["addon"])
+            addons.uninstall("gate")                  # uninstalled: its folder no longer says it is an addon
+            with open(os.path.join(home, ".config", "gate", "integrations", "selkies-forge.json")) as fh:
+                self.assertIsNone(json.load(fh)["addon"])
+        finally:
+            addons.remove("gate", force=True)
+            shutil.rmtree(src, ignore_errors=True)
+            addons.KNOWN_INTEGRATION_DIRS = old_known
+            os.environ["HOME"] = old_home
+            os.remove(paths.SERVER_JSON)
+
+
+class UniversalFormatTest(unittest.TestCase):
+    """One manifest for every host: platforms, requires.burrow, ADDON_* names."""
+
+    def test_platforms(self):
+        d = make_addon(tempfile.mkdtemp())
+        self.assertEqual(addons.load_manifest(d)["platforms"], ["selkies-forge", "burrow"])
+        make_addon(d, {"platforms": ["burrow"]})
+        m = addons.load_manifest(d)
+        self.assertEqual(m["platforms"], ["burrow"])
+        self.assertIn("is made for Burrow, not Selkies Forge", addons.check_requirements(m))
+        for bad in (["windows"], [], "burrow"):
+            make_addon(d, {"platforms": bad})
+            with self.assertRaises(addons.AddonError):
+                addons.load_manifest(d)
+        make_addon(d, {"requires": {"burrow": "two"}})
+        with self.assertRaises(addons.AddonError):
+            addons.load_manifest(d)
+        shutil.rmtree(d)
+
+    def test_universal_environment(self):
+        src = make_addon(tempfile.mkdtemp(), {"id": "envy", "settings": [{"key": "PORT", "label": "Port", "default": 5}]},
+                         {"install.sh": 'echo "$ADDON_ID $ADDON_SETTING_PORT $ADDON_HOST $ADDON_ADOPT $FORGE_ADDON_ID"\n'})
+        try:
+            addons.add(src)
+            rc, lines, _ = addons.run_script(addons.get("envy"), "install.sh")
+            self.assertEqual(lines[-1], "envy 5 selkies-forge 0 envy")
+        finally:
+            addons.remove("envy", force=True)
+            shutil.rmtree(src, ignore_errors=True)
+
+    def test_scan_finds_addons_on_the_machine(self):
+        home = tempfile.mkdtemp()
+        make_addon(os.path.join(home, "code", "gizmo"), {"id": "gizmo", "name": "Gizmo", "scripts": {
+            "install": "install.sh", "detect": "detect.sh", "status": "status.sh"}},
+            {"detect.sh": 'echo \'{"version":"0.9"}\'\n', "status.sh": 'echo \'{"state":"stopped"}\'\n'})
+        make_addon(os.path.join(home, "code", "other"), {"id": "other", "platforms": ["burrow"]})
+        os.makedirs(os.path.join(home, "code", "broken"))
+        with open(os.path.join(home, "code", "broken", "forge-addon.json"), "w") as fh:
+            fh.write("{nope")
+        old = addons._scan_roots
+        addons._scan_roots = lambda: [(home, 4)]
+        try:
+            r = addons.scan(max_age=0)
+            by = {e["id"]: e for e in r["addons"]}
+            self.assertEqual((by["gizmo"]["found"], by["gizmo"]["state"], by["gizmo"]["installed_version"]), (True, "stopped", "0.9"))
+            self.assertTrue(by["gizmo"]["compatible"])
+            self.assertFalse(by["other"]["compatible"])
+            self.assertEqual(len(r["broken"]), 1)
+        finally:
+            addons._scan_roots = old
+            addons.forget_scan()
+            shutil.rmtree(home)
+
+    def test_bridge_off_without_burrow(self):
+        from forge import burrow as b
+        self.assertEqual(b.health(addons)["state"], "off")
+
+
 class RunJobTest(unittest.TestCase):
     def test_work_functions_may_take_job(self):
         # Regression: _run_job's own first parameter was called `job`, so every

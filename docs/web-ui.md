@@ -64,7 +64,7 @@ The top strip totals desktops, memory in use, and data downloaded and uploaded.
 | **This machine** | `localhost:PORT`, for a browser on the forge's own machine |
 | **This network** | the same port on the address you opened the forge with (your LAN or Tailscale address), when that isn't localhost |
 | **Public link** | its serveo link (`https://….serveousercontent.com`), or **Make a public link** |
-| **Burrow** | when [Burrow](https://github.com/alexd-aero/burrow) is installed: its Burrow address behind Burrow's login, or **Publish through Burrow**; **Unpublish** removes it |
+| **Burrow** | when [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow) is installed: its Burrow address behind Burrow's login, or **Publish through Burrow**; **Unpublish** removes it |
 
 A desktop published through Burrow also shows a **Burrow** row on its card, beside *Local* and *Public*. Addons whose status reports a port get the same chooser from their **Open** button.
 
@@ -81,7 +81,7 @@ A desktop published through Burrow also shows a **Burrow** row on its card, besi
 
 ## Addons
 
-Apps that install beside the forge. Paste a repository link and press **Add**. The forge fetches it and shows a card: logo, name, version, author, source, description, and anything about this machine that rules it out. Nothing is installed until you press **Install** (or **Link it**, when the app is already on the machine). That opens its settings, if it has any, then a live log with a progress bar and **Cancel**. Installed cards show a live state, **Open**, and a **⋯** menu with the addon's actions, *Settings and reinstall*, *Check for updates*, its links, and *Uninstall*. *Check for updates* compares the installed commit with the repository's newest one and says **Up to date**, or names the commit available to update to, with its new commits and an **Update** button. *Try the example addon* adds [Hello Forge](../addons/hello-forge/). Everything about addons, including writing one: [Addons](addons.md).
+Apps that install beside the forge. Paste a repository link and press **Add**. The forge fetches it and shows a card: logo, name, version, author, source, description, and anything about this machine that rules it out. Nothing is installed until you press **Install** (or **Link it**, when the app is already on the machine). That opens its settings, if it has any, then a live log with a progress bar and **Cancel**. Installed cards show a live state, **Open**, and a **⋯** menu with the addon's actions, *Settings and reinstall*, *Check for updates*, its links, and *Uninstall*. *Check for updates* compares the installed commit with the repository's newest one and says **Up to date**, or names the commit available to update to, with its new commits and an **Update** button. *Try the example addon* adds [Hello Forge](../addons/hello-forge/). A link to `#addons/<id>` opens this page with that addon's card in view (other apps, like Aegis × Burrow, link straight to their own card). Everything about addons, including writing one: [Addons](addons.md).
 
 ## Themes
 
@@ -90,7 +90,7 @@ The **Theme** picker in the left rail switches the whole UI; each browser rememb
 | Theme | Look |
 |---|---|
 | **Forge** | Blue glass, the default |
-| **Stealth** | Black room, a faint grid, graphite surfaces lit along their top edge, white as the only accent: the same look as [Burrow](https://github.com/alexd-aero/burrow)'s dashboard |
+| **Stealth** | Black room, a faint grid, graphite surfaces lit along their top edge, white as the only accent: the same look as [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow)'s dashboard |
 | **Daylight** | Light surfaces, for bright rooms (terminals stay dark) |
 | **Ember** | Warm amber on charcoal |
 

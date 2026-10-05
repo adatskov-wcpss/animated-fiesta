@@ -1,0 +1,64 @@
+{
+  "spec": 1,
+  "id": "selkies-forge",
+  "name": "Selkies Forge",
+  "version": "1.10.8",
+  "description": "150+ Linux desktops, streamed to your browser: Ubuntu, Debian, Fedora, Arch, Kali, Alpine and more, each in its own container. As a Burrow addon it gets its own HTTPS address, and its desktops a card in Burrow with one-click publishing.",
+  "author": "Selkies Forge",
+  "homepage": "https://github.com/adatskov-wcpss/animated-fiesta",
+  "license": "MIT",
+  "logo": "burrow-addon/logo.svg",
+  "platforms": [
+    "burrow"
+  ],
+  "requires": {
+    "burrow": ">=2.0.0",
+    "os": [
+      "linux"
+    ],
+    "commands": [
+      "bash",
+      "curl",
+      "docker"
+    ]
+  },
+  "scripts": {
+    "detect": "burrow-addon/detect.sh",
+    "install": "burrow-addon/install.sh",
+    "update": "burrow-addon/update.sh",
+    "uninstall": "burrow-addon/uninstall.sh",
+    "status": "burrow-addon/status.sh"
+  },
+  "actions": [
+    {
+      "id": "start",
+      "label": "Start the web UI",
+      "script": "burrow-addon/start.sh"
+    },
+    {
+      "id": "stop",
+      "label": "Stop the web UI",
+      "script": "burrow-addon/stop.sh"
+    },
+    {
+      "id": "restart",
+      "label": "Restart",
+      "script": "burrow-addon/restart.sh"
+    },
+    {
+      "id": "doctor",
+      "label": "Doctor",
+      "script": "burrow-addon/doctor.sh"
+    }
+  ],
+  "links": [
+    {
+      "label": "Documentation",
+      "url": "https://github.com/adatskov-wcpss/animated-fiesta#readme"
+    },
+    {
+      "label": "The addon format",
+      "url": "https://github.com/adatskov-wcpss/animated-fiesta/blob/main/docs/addons.md"
+    }
+  ]
+}

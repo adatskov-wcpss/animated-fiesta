@@ -272,6 +272,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {"instances": docker_instances(), "burrow": burrow.status()})
         if route == "/api/burrow":
             return self._send(200, burrow.status(max_age=0))
+        if route == "/api/bridge":
+            return self._send(200, burrow.health(addons))
         if route == "/api/stats":
             return self._send(200, {"stats": STATS.report(), "host": host_info()})
         if route == "/api/jobs":
@@ -324,6 +326,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, space.report())
         if route == "/api/addons":
             return self._send(200, {"addons": addons.list_addons(), "spec": addons.SPEC})
+        if route == "/api/addons/scan":
+            return self._send(200, addons.scan(max_age=0 if self._query().get("fresh") else 60))
         m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/image$", route)
         if m:
             try:
@@ -413,7 +417,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self._err(400, ex)
         if route == "/api/addons/add":
             try:
-                return self._send(200, {"addon": addons.add(body.get("source") or "")})
+                a = addons.add(body.get("source") or "")
+                addons.forget_scan()
+                return self._send(200, {"addon": a})
             except addons.AddonError as ex:
                 return self._err(400, ex)
         m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/(install|update|uninstall|remove|action)$", route)

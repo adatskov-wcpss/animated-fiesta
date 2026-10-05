@@ -236,6 +236,9 @@
       pollUpdate();
       pollLife();
       api("/api/burrow").then(function (b) { S.burrow = b; S.instKey = ""; if (S.view === "manager") renderManager(); }).catch(function () {});
+      // deep links: #addons, #addons/<id> (other apps link straight to their card)
+      var m = /^#addons(?:\/([a-z0-9-]{1,40}))?$/.exec(location.hash);
+      if (m && window.ForgeAddons) { window.ForgeAddons.focus(m[1]); show("addons"); }
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
         '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +

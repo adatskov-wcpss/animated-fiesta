@@ -95,6 +95,7 @@ See [Addons](addons.md) for the format. Long operations are jobs, streamed like 
 | `GET /api/addons/<id>` | One addon, with its live status |
 | `GET /api/addons/<id>/check` | Newer commits than the installed one? `{up_to_date, local, remote, commits, note?}` (only commits touching the addon's folder count) |
 | `GET /api/addons/<id>/image[?path=…]` | Its logo, or an icon its manifest names. SVGs carry a sandboxing CSP |
+| `GET /api/addons/scan` | `?fresh=1` to skip the one-minute cache → `{scanned, addons: [{id, name, version, platforms, compatible, problems, registered, installed, found, state, installed_version, source, locations, logo}], broken: [{path, error}]}`: addons already on this machine ([the smart scan](addons.md#found-on-this-machine-the-smart-scan)) |
 | `POST /api/addons/add` | `{source}` → `{addon}`. Fetches, checks the manifest, runs `detect`. 400 with the exact problem otherwise |
 | `POST /api/addons/<id>/install` | `{settings?: {KEY: value}}` → `{job}`. Links it instead when `detect` finds it already here |
 | `POST /api/addons/<id>/update` | `{}` → `{job}` |
@@ -105,13 +106,14 @@ See [Addons](addons.md) for the format. Long operations are jobs, streamed like 
 
 ## Burrow
 
-When [Burrow](https://github.com/alexd-aero/burrow) is on the machine, the forge talks to it over its control socket (`BURROW_HOME/data/control.sock`, readable by your user only), found through `~/.config/burrow/burrow.json`.
+When [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow) is on the machine, the forge talks to Burrow, its tunnel engine, over the control socket (`AEGIS_HOME/data/control.sock`, readable by your user only), found through `~/.config/aegis/aegis.json` (or `~/.config/burrow/burrow.json` for the older standalone Burrow). Every call carries `X-Burrow-Client: selkies-forge/<version>`, so Burrow's Addon tab can show what the forge did.
 
 | Method & path | Returns |
 |---|---|
 | `GET /api/burrow` | `{installed, running, mode, pattern, dashboard, tunnels: [{port, url, access, enabled, targetHost, targetPort}]}`. Also included in `GET /api/instances` as `burrow` |
 | `POST /api/burrow/publish` | `{desktop, access?: "login"\|"public"}` → `{tunnel, burrow}`: the desktop's web port gets its own Burrow address. Desktops only, never an arbitrary port |
 | `POST /api/burrow/unpublish` | `{desktop}` → `{removed, burrow}` |
+| `GET /api/bridge` | The [bridge's health](addons.md#the-bridge-selkies-forge-and-burrow-both-ways): `{state: ok\|warn\|fail\|off, checks: [{id, label, state, detail}], checked, logos}` |
 
 ## Disk
 

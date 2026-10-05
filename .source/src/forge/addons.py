@@ -50,6 +50,10 @@ ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{1,39}$")
 SETTING_RE = re.compile(r"^[A-Z][A-Z0-9_]{0,31}$")
 ACTION_RE = re.compile(r"^[a-z][a-z0-9-]{0,23}$")
 SCRIPTS = ("detect", "install", "update", "uninstall", "status")
+# One addon format for every host. An addon runs on all of them unless its
+# manifest names the ones it is made for ("platforms").
+PLATFORMS = ("selkies-forge", "burrow")
+HOST = "selkies-forge"
 SETTING_TYPES = ("text", "number", "bool", "select", "password")
 IMAGE_TYPES = {".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp",
                ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
@@ -59,9 +63,9 @@ TIMEOUT = {"detect": 20, "status": 15, "install": 3600, "update": 3600,
            "uninstall": 900, "action": 900}
 ARCH_ALIASES = {"amd64": "x86_64", "x64": "x86_64", "arm64": "aarch64", "armhf": "armv7l"}
 
-# Burrow (github.com/alexd-aero/burrow) and Aegis (github.com/alexd-aero/aegis)
-# keep their drop-in folders here; the forge registers itself whenever either
-# is on this machine, however it got there.
+# Aegis × Burrow (github.com/alexd-aero/aegis-burrow), and the standalone
+# Burrow it grew from, keep their drop-in folders here; the forge registers
+# itself whenever either is on this machine, however it got there.
 KNOWN_INTEGRATION_DIRS = ("~/.config/burrow/integrations", "~/.config/aegis/integrations")
 
 FORGE_LOGO = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
@@ -300,17 +304,30 @@ def load_manifest(root):
     if len(m["settings"]) > 16:
         raise AddonError("at most 16 settings")
 
+    plats = d.get("platforms")
+    if plats is None:
+        m["platforms"] = list(PLATFORMS)
+    else:
+        if not isinstance(plats, list) or not plats or not all(isinstance(x, str) for x in plats):
+            raise AddonError("\"platforms\" must be a list, e.g. [\"selkies-forge\", \"burrow\"]")
+        bad = [x for x in plats if x not in PLATFORMS]
+        if bad:
+            raise AddonError("unknown platform \"%s\" (known: %s)" % (bad[0], ", ".join(PLATFORMS)))
+        m["platforms"] = [x for x in PLATFORMS if x in plats]
+
     req = d.get("requires") or {}
     if not isinstance(req, dict):
         raise AddonError("\"requires\" must be an object")
     m["requires"] = {
         "forge": str(req.get("forge") or "").strip(),
+        "burrow": str(req.get("burrow") or "").strip(),
         "os": [str(x).lower() for x in req.get("os") or []],
         "arch": [ARCH_ALIASES.get(str(x).lower(), str(x).lower()) for x in req.get("arch") or []],
         "commands": [str(x) for x in req.get("commands") or [] if re.match(r"^[A-Za-z0-9._+-]+$", str(x))],
     }
-    if m["requires"]["forge"] and not re.match(r"^(>=)?\s*\d+(\.\d+){0,2}$", m["requires"]["forge"]):
-        raise AddonError("requires.forge must look like \">=1.10.0\"")
+    for host in ("forge", "burrow"):
+        if m["requires"][host] and not re.match(r"^(>=)?\s*\d+(\.\d+){0,2}$", m["requires"][host]):
+            raise AddonError("requires.%s must look like \">=1.10.0\"" % host)
 
     integ = d.get("integration") or {}
     m["integration"] = {}
@@ -353,6 +370,9 @@ def _coerce(st, v):
 def check_requirements(m):
     """What this machine lacks for the addon, as sentences (empty: all good)."""
     out = []
+    if HOST not in m.get("platforms", PLATFORMS):
+        out.append("is made for %s, not Selkies Forge" % " and ".join(
+            {"burrow": "Burrow"}.get(p, p) for p in m["platforms"]))
     r = m["requires"]
     if r["forge"]:
         want = version_tuple(r["forge"].lstrip(">= "))
@@ -448,6 +468,11 @@ def script_env(rec, extra=None):
             v = "1" if v else "0"
         env["FORGE_ADDON_SETTING_" + st["key"]] = str(v)
     env.update(extra or {})
+    # The universal names every host sets (FORGE_ADDON_* stay for older scripts).
+    for k in [k for k in env if k.startswith("FORGE_ADDON_")]:
+        env["ADDON_" + k[len("FORGE_ADDON_"):]] = env[k]
+    env.update({"ADDON_HOST": HOST, "ADDON_HOST_VERSION": VERSION, "ADDON_HOST_URL": url or "",
+                "ADDON_BIND": env["FORGE_BIND"]})
     return env
 
 
@@ -812,7 +837,9 @@ def check_updates(aid):
         except ValueError:
             out["remote"]["version"] = ""
     _update(aid, {"remote": {"checked": out["checked"], "up_to_date": out["up_to_date"],
-                             "commit": out.get("remote", {}).get("commit"), "version": out.get("remote", {}).get("version")}})
+                             "commit": out.get("remote", {}).get("commit"), "version": out.get("remote", {}).get("version"),
+                             "subject": (out.get("remote", {}).get("subject") or "")[:160]}})
+    sync_integrations()                 # an app showing its own addon state sees it now
     return out
 
 
@@ -836,6 +863,7 @@ def uninstall(aid, keep_data=True, job=None):
     _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False,
                   "tunnel": None, "port": None})
     _forget_status(aid)
+    sync_integrations()
     res = {"id": aid, "name": m["name"], "kept_data": bool(keep_data)}
     if job:
         job.finish(res)
@@ -1001,6 +1029,7 @@ def public(rec, with_status=False):
         "has": {k: k in m["scripts"] for k in SCRIPTS},
         "problems": check_requirements(m),
         "integration": bool(m["integration"]),
+        "platforms": m.get("platforms") or list(PLATFORMS),
         "remote": rec.get("remote"),
     }
     out["update_pending"] = bool(out["installed"] and out["installed_version"]
@@ -1039,6 +1068,193 @@ def list_addons(with_status=True):
     return [o for o in out if o]
 
 
+# ------------------------------------------------------------------ the smart scan
+#
+# Addons already on this machine, in any folder: a checkout you cloned, an app
+# that installed itself, another host's copy. Anything with a valid
+# forge-addon.json counts. Each one's detect script says whether the app is
+# installed, and its status script whether it runs; both are read-only by the
+# spec and are given a scratch data folder, so a scan never changes anything.
+
+SCAN_SKIP = {"node_modules", "__pycache__", ".git", ".cache", ".npm", ".nvm", ".cargo", ".rustup", ".local/lib",
+             "snap", "venv", ".venv", "site-packages", "proc", "sys", "dev", ".mozilla", ".config/chromium",
+             "go", ".gradle", ".m2", ".docker", "Downloads", "builds", "logs"}
+SCAN_HIDDEN_OK = {".local", ".selkies-forge", ".config", ".share"}
+_SCAN = {"at": 0.0, "value": None}
+
+
+def _scan_roots():
+    home = os.path.expanduser("~")
+    roots = [(home, 4), ("/opt", 3), ("/srv", 3)]
+    # apps that say where their code is (~/.config/<app>/<app>.json, "code": ...)
+    cfg = os.environ.get("XDG_CONFIG_HOME") or os.path.join(home, ".config")
+    try:
+        for app in os.listdir(cfg):
+            d = jload(os.path.join(cfg, app, app + ".json"), None)
+            if isinstance(d, dict) and isinstance(d.get("code"), str):
+                roots.append((d["code"], 1))
+    except OSError:
+        pass
+    return roots
+
+
+def _find_manifests(budget=25000, seconds=4.0):
+    found, seen, t0 = [], set(), time.time()
+    for root, depth in _scan_roots():
+        stack = [(os.path.realpath(root), 0)]
+        while stack and budget > 0 and time.time() - t0 < seconds:
+            d, lvl = stack.pop()
+            if d in seen:
+                continue
+            seen.add(d)
+            budget -= 1
+            try:
+                names = os.listdir(d)
+            except OSError:
+                continue
+            if MANIFEST in names:
+                found.append(d)
+            if lvl >= depth:
+                continue
+            for n in names:
+                if n in SCAN_SKIP or (n.startswith(".") and n not in SCAN_HIDDEN_OK):
+                    continue
+                p = os.path.join(d, n)
+                if os.path.isdir(p) and not os.path.islink(p):
+                    stack.append((p, lvl + 1))
+    return found
+
+
+def _git_source(path):
+    """A link the forge can fetch (and later update) for a checkout at path, or the folder itself."""
+    rc, top, _ = _git(["rev-parse", "--show-toplevel"], cwd=path, timeout=10) if have("git") else (1, "", "")
+    if rc == 0:
+        rc2, url, _ = _git(["remote", "get-url", "origin"], cwd=path, timeout=10)
+        url = url.strip()
+        if rc2 == 0 and re.match(r"^https://\S+$", url):
+            url = re.sub(r"\.git$", "", url)
+            sub = os.path.relpath(path, top.strip())
+            if sub in (".", ""):
+                return url
+            rc3, br, _ = _git(["rev-parse", "--abbrev-ref", "HEAD"], cwd=path, timeout=10)
+            return "%s/tree/%s/%s" % (url, br.strip() or "main", sub) if re.match(r"^https://(github|gitlab)\.com/", url) \
+                else "%s#%s" % (url, sub)
+    return path
+
+
+def _probe(root, m):
+    """detect, then status, from a found folder (scratch data dir, nothing kept)."""
+    rec = {"id": m["id"], "manifest": m, "subdir": "", "settings": {}}
+    scratch = tempfile.mkdtemp(prefix=".scan-", dir=ADDONDIR)
+    env = {"FORGE_ADDON_DIR": root, "FORGE_ADDON_DATA": scratch, "FORGE_ADDON_SCAN": "1"}
+    out = {"found": False, "state": None}
+    try:
+        for key in ("detect", "status"):
+            s = m["scripts"].get(key)
+            if not s or (key == "status" and not out["found"]):
+                continue
+            p = subprocess.run(["bash", os.path.join(root, s)], cwd=root, env=script_env_at(rec, root, env),
+                               stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                               timeout=TIMEOUT[key], start_new_session=True)
+            info = _last_json(p.stdout.decode("utf-8", "replace").splitlines())
+            if key == "detect":
+                out["found"] = p.returncode == 0
+                out.update({k: str(info.get(k) or "")[:200] for k in ("version", "url", "detail")})
+            else:
+                out["state"] = str(info.get("state") or "")[:20] or None
+                if isinstance(info.get("name"), str):
+                    out["name"] = info["name"][:60]
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    finally:
+        shutil.rmtree(scratch, ignore_errors=True)
+    return out
+
+
+def script_env_at(rec, root, extra):
+    """script_env for a folder that is not (yet) one of ours."""
+    m = rec["manifest"]
+    env = dict(os.environ)
+    url = forge_url()
+    env.update({"FORGE_ADDON_SPEC": str(SPEC), "FORGE_ADDON_ID": m["id"], "FORGE_ADDON_NAME": m["name"],
+                "FORGE_ADDON_VERSION": m["version"], "FORGE_HOME": ROOT, "FORGE_VERSION": VERSION,
+                "FORGE_URL": url or "", "FORGE_API": (url + "api/") if url else "",
+                "FORGE_ADDON_ADOPT": "0", "FORGE_ADDON_UPDATE": "0"})
+    for st in m["settings"]:
+        v = st.get("default")
+        env["FORGE_ADDON_SETTING_" + st["key"]] = ("1" if v else "0") if st["type"] == "bool" else ("" if v is None else str(v))
+    env.update(extra)
+    for k in [k for k in env if k.startswith("FORGE_ADDON_")]:
+        env["ADDON_" + k[len("FORGE_ADDON_"):]] = env[k]
+    env.update({"ADDON_HOST": HOST, "ADDON_HOST_VERSION": VERSION, "ADDON_HOST_URL": url or ""})
+    return env
+
+
+def scan(max_age=60.0):
+    """Every addon on this machine, one entry per id:
+    {id, name, version, description, logo, platforms, compatible, problems,
+     registered, installed, found, state, source, locations, error}"""
+    if _SCAN["value"] is not None and time.time() - _SCAN["at"] < max_age:
+        return _SCAN["value"]
+    ensure_dirs()
+    os.makedirs(ADDONDIR, exist_ok=True)
+    mine = os.path.realpath(ADDONDIR) + os.sep
+    reg = _load()
+    by_id, broken = {}, []
+    for d in _find_manifests():
+        if (os.path.realpath(d) + os.sep).startswith(mine) or os.path.basename(d).startswith(".scan-"):
+            continue                                  # our own checkouts: already in the list
+        try:
+            m = load_manifest(d)
+        except AddonError as ex:
+            broken.append({"path": d, "error": str(ex)})
+            continue
+        if m["id"] == "selkies-forge":
+            continue                                  # the forge itself (an addon for Burrow)
+        by_id.setdefault(m["id"], []).append((d, m))
+    out = []
+    lock = threading.Lock()
+
+    def one(aid, places):
+        # the newest version wins; a git checkout (updatable) beats a plain copy
+        places.sort(key=lambda p: (version_tuple(p[1]["version"]), os.path.isdir(os.path.join(p[0], ".git"))), reverse=True)
+        d, m = places[0]
+        probe = _probe(d, m)
+        logo = None
+        if m.get("logo") and m["logo"].endswith(".svg") and os.path.getsize(os.path.join(d, m["logo"])) <= 65536:
+            with open(os.path.join(d, m["logo"]), "rb") as fh:
+                import base64
+                logo = "data:image/svg+xml;base64," + base64.b64encode(fh.read()).decode()
+        rec = reg.get(aid) or {}
+        if rec.get("installed"):                     # ours already: what the forge knows
+            st = status(rec)
+            probe = {"found": True, "state": st.get("state"), "version": rec.get("installed_version"),
+                     "name": st.get("name"), "detail": st.get("detail")}
+        e = {"id": aid, "name": probe.get("name") or m["name"], "version": m["version"],
+             "description": m["description"][:300], "logo": logo,
+             "platforms": m["platforms"], "compatible": HOST in m["platforms"], "problems": check_requirements(m),
+             "registered": bool(rec), "installed": bool(rec.get("installed")),
+             "found": probe["found"], "installed_version": probe.get("version") or None,
+             "state": probe["state"], "detail": probe.get("detail") or "",
+             "source": _git_source(d), "locations": [p[0] for p in places]}
+        with lock:
+            out.append(e)
+
+    threads = [threading.Thread(target=one, args=(k, v), daemon=True) for k, v in by_id.items()]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(40)
+    out.sort(key=lambda e: (not e["compatible"], e["registered"], not e["found"], e["name"].lower()))
+    value = {"scanned": time.time(), "addons": out, "broken": broken[:20]}
+    _SCAN.update(at=time.time(), value=value)
+    return value
+
+
+def forget_scan():
+    _SCAN.update(at=0.0, value=None)
+
+
 # ------------------------------------------------------------------ integrations
 def _integration_dirs():
     dirs = []
@@ -1048,40 +1264,71 @@ def _integration_dirs():
             dirs.append(full)
     for rec in _load().values():
         d = (rec.get("manifest") or {}).get("integration", {}).get("dir")
-        if rec.get("installed") and d:
-            dirs.append(os.path.expanduser(d.replace("$HOME/", "~/", 1)))
+        if not d:
+            continue
+        full = os.path.expanduser(d.replace("$HOME/", "~/", 1))
+        # installed, or uninstalled with its folder still there (it learns it is no longer an addon)
+        if rec.get("installed") or os.path.isdir(full):
+            dirs.append(full)
     return sorted(set(dirs))
 
 
-def forge_descriptor():
+def _addon_for_dir(d):
+    """The installed addon that owns integration folder d: how this forge runs
+    it, for that app to show (Aegis × Burrow's Burrow → Addon tab)."""
+    url = forge_url()
+    for rec in _load().values():
+        idir = (rec.get("manifest") or {}).get("integration", {}).get("dir")
+        if not rec.get("installed") or not idir:
+            continue
+        if os.path.expanduser(idir.replace("$HOME/", "~/", 1)) != d:
+            continue
+        m, rem = rec["manifest"], rec.get("remote") or {}
+        with _STATUS_LOCK:
+            hit = _STATUS.get(rec["id"])           # never run the status script from here
+        return {"id": rec["id"], "name": m["name"], "version": rec.get("installed_version") or m["version"],
+                "commit": rec.get("commit"), "source": (rec.get("source") or {}).get("display"),
+                "adopted": bool(rec.get("adopted")), "installed_at": int(rec.get("installed_at") or 0),
+                "state": hit[1].get("state") if hit else None, "checked_at": int(rem.get("checked") or 0) or None,
+                "update": ({"available": rem.get("up_to_date") is False, "commit": rem.get("commit"),
+                            "version": rem.get("version"), "subject": rem.get("subject")} if rem else None),
+                "page": (url + "#addons/" + rec["id"]) if url else None}
+    return None
+
+
+def forge_descriptor(d=None):
     url = forge_url()
     if not url:
         return None
     srv = jload(SERVER_JSON, None) or {}
-    return {"spec": 1, "id": "selkies-forge", "kind": "selkies-forge", "name": "Selkies Forge",
-            "version": VERSION, "url": url, "api": url + "api/", "port": int(srv.get("port") or 0),
-            "public_url": srv.get("tunnel") or None, "logo": FORGE_LOGO, "home": ROOT}
+    out = {"spec": 1, "id": "selkies-forge", "kind": "selkies-forge", "name": "Selkies Forge",
+           "version": VERSION, "url": url, "api": url + "api/", "port": int(srv.get("port") or 0),
+           "public_url": srv.get("tunnel") or None, "logo": FORGE_LOGO, "home": ROOT}
+    if d:
+        out["addon"] = _addon_for_dir(d)
+    return out
 
 
 def sync_integrations():
     """Tell every app with a drop-in folder where this forge is. Cheap: only
     writes when something changed (and touches the file once an hour)."""
-    desc = forge_descriptor()
-    if not desc:
+    if not forge_url():
         return []
     written = []
     for d in _integration_dirs():
         path = os.path.join(d, "selkies-forge.json")
         try:
             old = jload(path, None) or {}
-            fresh = dict(desc, updated=old.get("updated"))
-            if old == fresh and time.time() - float(old.get("updated") or 0) < 3600:
+            fresh = dict(forge_descriptor(d), updated=old.get("updated"))
+            loose = os.path.exists(path) and os.stat(path).st_mode & 0o022
+            if old == fresh and time.time() - float(old.get("updated") or 0) < 3600 and not loose:
                 continue
             os.makedirs(d, exist_ok=True)
             fresh["updated"] = int(time.time())
             tmp = "%s.tmp.%d" % (path, os.getpid())
             with open(tmp, "w") as fh:
                 json.dump(fresh, fh, indent=2)
+            os.chmod(tmp, 0o644)                    # the bridge check insists: only we may write it
             os.replace(tmp, path)
             written.append(path)
         except OSError:

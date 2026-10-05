@@ -71,7 +71,7 @@ selkies-cli backup forge-noble-xfce
 selkies-cli clone forge-noble-xfce work
 
 # add an app beside the forge
-selkies-cli addon add https://github.com/alexd-aero/burrow
+selkies-cli addon add https://github.com/alexd-aero/aegis-burrow
 ```
 
 </td>
@@ -191,7 +191,7 @@ Apps that install beside the forge. **Paste a repository link** under *Addons*: 
 
 An addon is one `forge-addon.json` and a few bash scripts, in any repository, in any language. **[The addon guide →](docs/addons.md)** · **[The example addon →](addons/hello-forge/)**
 
-**[Burrow](https://github.com/alexd-aero/burrow)** is one: publish any port, or any desktop, on your own domain behind a post-quantum login, with a Selkies Forge panel in its dashboard.
+**[Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow)** is one: a post-quantum gate and dashboard (Aegis) on a tunnel engine (Burrow). Publish any port, or any desktop, on your own domain, with a Selkies Forge panel and an Addon tab in its dashboard.
 
 </td>
 <td width="50%" valign="top">
