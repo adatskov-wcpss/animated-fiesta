@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.8.0"
+FORGE_VERSION="1.8.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -543,7 +543,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="e0a9300dbc05cea47ea1df15760c28f884e90d30d4a78223074a2c3e0d4e41da"
+FORGE_SHA_FORGE_PATHS_PY="883069a2d4a76c2c45446bb8256f4d2fdc816b8d88b90eb6a3778553aa954ee0"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -561,15 +561,15 @@ FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768
 FORGE_SHA_FORGE_WATCHDOG_PY="27dc5c8016adeb4ee1ead130bab53ad80a883f9bf8fd8b7cfb794c7fe3a43e1a"
 FORGE_SHA_FORGE_WEBUI_PY="d952965a3e59d3a66e0660d60db9950acfe8ea21f58407fcec354b4eff7040bc"
 FORGE_SHA_WEB_APP_CSS="cde7b0533be9734bfd18d55989987ddb598754dd3bfbf4df0da985dcb3b3061d"
-FORGE_SHA_WEB_APP_JS="e6300bbe378cee9416883e37c3ea78b142d37ffc9efbc635e5e3fc04bf2013fa"
+FORGE_SHA_WEB_APP_JS="9d8874a2c4a9cea0a9f6496a74e151c41f148f917c691b8e5eac6dd7c55aef17"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="f830edb32b2fb69a6918064d08bc2cfe33949dba14c4960a789372e203e1e409"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="181c326b07c4177a7c0dc459cd6bba1d4aace6c685627628e335b693a476218e"
-FORGE_PAYLOAD_SHA="7d0184687937a8d3d5c24895bb83a61af7157e8090bd4e92c43b07a83f4e00b2"
+FORGE_SHA_SELKIES_CLI="7751d5ae4463d18b6cee41cd4f6f1a0931d579bc622d1398c1e0ec91d489114f"
+FORGE_PAYLOAD_SHA="7402305644c585de947e7a704df2019511107370d4acd45c7e029de9ac596e08"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -6324,7 +6324,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.8.0"
+VERSION = "1.8.1"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11948,7 +11948,7 @@ __FORGE_FILE_WEB_APP_CSS__
       opt("on", "Force on · skip the checks and fallbacks") +
       opt("off", "Off · draw and encode in software") +
       "</select></label>" +
-      '<p class="sub" style="margin:2px 0 0;font-size:12px">' + h(g.summary || "Detecting…") +
+      '<p class="sub" style="margin:2px 0 14px;font-size:12px">' + h(g.summary || "Detecting…") +
       (found ? ". Checked once inside the image; if the desktop misbehaves with it, the forge steps back to software by itself." : "") +
       "</p>";
   }
@@ -15275,7 +15275,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.8.0"
+FORGE_VERSION="1.8.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

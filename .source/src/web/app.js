@@ -684,7 +684,7 @@
       opt("on", "Force on · skip the checks and fallbacks") +
       opt("off", "Off · draw and encode in software") +
       "</select></label>" +
-      '<p class="sub" style="margin:2px 0 0;font-size:12px">' + h(g.summary || "Detecting…") +
+      '<p class="sub" style="margin:2px 0 14px;font-size:12px">' + h(g.summary || "Detecting…") +
       (found ? ". Checked once inside the image; if the desktop misbehaves with it, the forge steps back to software by itself." : "") +
       "</p>";
   }
