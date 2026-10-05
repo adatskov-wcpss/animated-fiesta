@@ -1698,7 +1698,7 @@ html[data-theme="ember"] {
 }
 
 /* ================================================================ addon update check */
-.up { display: grid; gap: 10px; }
+.upcheck { display: grid; gap: 10px; }
 .up-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
 .up-head b { display: block; font-size: 16px; }
 .up-head .mono { font-size: 12px; color: var(--dim-2); }

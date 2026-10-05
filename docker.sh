@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.3"
+FORGE_VERSION="1.10.4"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -545,7 +545,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="794440c87a16b0d78902399fd1c83b6be225001eebf50dcc85d8064e207fe891"
+FORGE_SHA_FORGE_PATHS_PY="95bc35166ccf7dc969533499b03fd4ae0866c5cb34bb9aec8e862fddf0be35cf"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -562,8 +562,8 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="40d9b069cdd7d909163d4e506d71ba7db6c35348a50f21833472e0f919a05953"
-FORGE_SHA_WEB_APP_CSS="6bf8ca570c4ca4e9e912c1a4a175807a8522bc614537fc6987848604dd4b61b4"
+FORGE_SHA_WEB_ADDONS_JS="c3f52e6c2963f969e3daffbeee49b8ebdee80c02fe23148efc84eb1dad53a7dd"
+FORGE_SHA_WEB_APP_CSS="0ece7db4466fca90ce3fe2cbc5e39a0c6685792fa69cb3a13a1243a27adf4a69"
 FORGE_SHA_WEB_APP_JS="5ad2b3fee6a67b51c8d3067de9bbe6a30ff871d76febe31301848e9ae5b6cb57"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="945197cff047efc29359b997da9a03ebc8cd531cf6bb0f1e5c5efcfe289af335"
-FORGE_PAYLOAD_SHA="40b238ff6fa62c15b410f955d565bcbbca749b7b01d36e05a32780da5e89c4cf"
+FORGE_SHA_SELKIES_CLI="1bdaf4236273c29431c47e903799fc37c0b4e9f5b1bff0604b25dc815717963b"
+FORGE_PAYLOAD_SHA="32ad21a9a30acca406b3daa318f80c7632d5e1da914d181cb36873a0afc980bd"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -7642,7 +7642,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.3"
+VERSION = "1.10.4"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11618,12 +11618,12 @@ __FORGE_FILE_FORGE_WEBUI_PY__
 
   function checkUpdates(a) {
     var logo = '<div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>";
-    F.openModal("Updates \u00b7 " + a.name, '<div class="up">' +
+    F.openModal("Updates \u00b7 " + a.name, '<div class="upcheck">' +
       '<div class="up-head">' + logo + '<div><b>' + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
       '<div class="up-state checking"><span class="spin-sm"></span><div><b>Checking for new commits\u2026</b>' +
       "<span>Asking " + h(String(a.source).replace(/^https?:\/\//, "").split("/")[0] || "the repository") + " what is newest.</span></div></div></div>");
     F.api("/api/addons/" + encodeURIComponent(a.id) + "/check").then(function (r) {
-      var body = $("#modalBody .up");
+      var body = $("#modalBody .upcheck");
       if (!body) return;
       var st = body.querySelector(".up-state");
       var html, local = r.local || {};
@@ -13452,7 +13452,7 @@ html[data-theme="ember"] {
 }
 
 /* ================================================================ addon update check */
-.up { display: grid; gap: 10px; }
+.upcheck { display: grid; gap: 10px; }
 .up-head { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
 .up-head b { display: block; font-size: 16px; }
 .up-head .mono { font-size: 12px; color: var(--dim-2); }
@@ -17686,7 +17686,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.3"
+FORGE_VERSION="1.10.4"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

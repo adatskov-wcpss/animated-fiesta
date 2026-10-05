@@ -267,12 +267,12 @@
 
   function checkUpdates(a) {
     var logo = '<div class="ad-logo lg">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="">' : "") + "</div>";
-    F.openModal("Updates \u00b7 " + a.name, '<div class="up">' +
+    F.openModal("Updates \u00b7 " + a.name, '<div class="upcheck">' +
       '<div class="up-head">' + logo + '<div><b>' + h(a.name) + '</b><span class="mono">' + h(shortSource(a.source)) + "</span></div></div>" +
       '<div class="up-state checking"><span class="spin-sm"></span><div><b>Checking for new commits\u2026</b>' +
       "<span>Asking " + h(String(a.source).replace(/^https?:\/\//, "").split("/")[0] || "the repository") + " what is newest.</span></div></div></div>");
     F.api("/api/addons/" + encodeURIComponent(a.id) + "/check").then(function (r) {
-      var body = $("#modalBody .up");
+      var body = $("#modalBody .upcheck");
       if (!body) return;
       var st = body.querySelector(".up-state");
       var html, local = r.local || {};
