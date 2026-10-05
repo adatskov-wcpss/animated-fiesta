@@ -1673,3 +1673,26 @@ html[data-theme="ember"] {
     radial-gradient(1200px 800px at 50% 110%, rgba(200, 110, 40, 0.10), transparent 60%),
     linear-gradient(180deg, #120d0a 0%, #0e0b09 60%, #0b0907 100%);
 }
+
+/* ================================================================ link chooser (Open desktop / Open addon) */
+.lk { display: grid; gap: 8px; }
+.lk-intro { margin: 0 0 12px; }
+.lk-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-m);
+          background: rgba(var(--ink), 0.03); min-width: 0; }
+.lk-row.off { background: transparent; border-style: dashed; }
+.lk-ic { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--acc-soft); color: var(--acc); }
+.lk-row.off .lk-ic { background: rgba(var(--ink), 0.05); color: var(--dim); }
+.lk-ic svg { width: 17px; height: 17px; }
+.lk-t { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.lk-t b { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+.lk-t > span { font-size: 12.5px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk-t > span.mono { font-size: 12px; color: var(--txt); }
+.lk-acts { display: flex; align-items: center; gap: 6px; flex: none; }
+.lk-acts .btn svg { width: 14px; height: 14px; }
+.spin-sm { display: inline-block; width: 12px; height: 12px; border: 1.5px solid rgba(var(--ink), 0.25); border-top-color: var(--txt);
+           border-radius: 50%; animation: spinlk 0.7s linear infinite; }
+@keyframes spinlk { to { transform: rotate(360deg); } }
+@media (max-width: 620px) {
+  .lk-row { flex-wrap: wrap; }
+  .lk-acts { width: 100%; justify-content: flex-end; }
+}

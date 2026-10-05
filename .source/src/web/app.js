@@ -158,7 +158,8 @@
     info: null, gallery: [], shotIdx: 0,
     filters: { q: "", family: "", weight: "", kind: "", sort: "beauty" },
     smart: { taste: "balanced", purpose: "general" },
-    lite: false
+    lite: false,
+    burrow: null
   };
 
   /* ------------------------------------------------------------ lite mode */
@@ -234,6 +235,7 @@
       setInterval(refreshHost, 15000);
       pollUpdate();
       pollLife();
+      api("/api/burrow").then(function (b) { S.burrow = b; S.instKey = ""; if (S.view === "manager") renderManager(); }).catch(function () {});
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
         '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
@@ -271,6 +273,7 @@
     if (S.view === "manager") refreshJobs();
     return api("/api/instances").then(function (r) {
       S.instances = r.instances || [];
+      S.burrow = r.burrow || null;
       renderRail();
       if (S.view === "manager") renderManager();
     }).catch(function () {});
@@ -980,8 +983,9 @@
         (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
         i.autostart ? 1 : 0, i.auth ? i.auth.user : "",
         i.session ? [i.session.wm, i.session.mode, i.session.screen, i.session.viewers,
-          Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min].join(":");
-    }).join("|");
+          Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min,
+        (burrowFor(i) || {}).url || ""].join(":");
+    }).join("|") + "|b" + (S.burrow && S.burrow.running ? 1 : 0);
   }
 
   function renderManager() {
@@ -1020,9 +1024,100 @@
     return { head: head, tail: "." + parts.join(".") + (m[2] || "") };
   }
 
+  /* ------------------------------------------------------- ways to open */
+  // A desktop (or an addon) can be reached up to four ways: on this machine,
+  // from this network (the address this page came from), through a serveo
+  // public link, and through Burrow when it is installed. The chooser lists
+  // them all, with buttons to make the missing ones.
+  function deskPort(i) {
+    return (i.ports || {})[i.profile === "kasm" ? "6901" : "3000"] || null;
+  }
+  function burrowFor(i) {
+    var b = S.burrow, port = deskPort(i);
+    if (!b || !b.running || !port) return null;
+    var mine = (b.tunnels || []).filter(function (t) { return t.targetPort === port; });
+    return mine[0] || null;
+  }
+  function networkUrl(localUrl) {
+    var host = location.hostname;
+    if (!localUrl || /^(localhost|127\.0\.0\.1|\[?::1\]?)$/.test(host)) return null;
+    return localUrl.replace(/^(https?:\/\/)[^/:]+/, "$1" + (host.indexOf(":") >= 0 ? "[" + host + "]" : host));
+  }
+
+  // rows: [{icon, label, sub, url, pill, pillCls, buttons: [{label, cls, icon, run}]}]
+  function linkChooser(title, intro, rows) {
+    var html = (intro ? '<p class="sub lk-intro">' + intro + "</p>" : "") + '<div class="lk">' + rows.map(function (r, n) {
+      var acts = "";
+      if (r.url) {
+        acts += '<button class="iconbtn" data-copy="' + h(r.url) + '" title="Copy">' + I.copy + "</button>" +
+          '<a class="btn sm primary" href="' + h(r.url) + '" target="_blank" rel="noopener">' + I.open + "Open</a>";
+      }
+      (r.buttons || []).forEach(function (b, k) {
+        acts += '<button class="btn sm ' + (b.cls || "") + '" data-lk="' + n + ":" + k + '">' + (b.icon ? I[b.icon] : "") + h(b.label) + "</button>";
+      });
+      return '<div class="lk-row' + (r.url ? "" : " off") + '"><span class="lk-ic">' + I[r.icon] + "</span>" +
+        '<div class="lk-t"><b>' + h(r.label) + (r.pill ? ' <span class="pill ' + (r.pillCls || "") + '"><i></i>' + h(r.pill) + "</span>" : "") +
+        "</b><span" + (r.url ? ' class="mono"' : "") + ">" + h(r.url || r.sub || "") + "</span></div>" +
+        '<div class="lk-acts">' + acts + "</div></div>";
+    }).join("") + "</div>";
+    openModal(title, html);
+    Array.prototype.forEach.call(document.querySelectorAll("#modalBody [data-lk]"), function (el) {
+      el.onclick = function () {
+        var nk = el.dataset.lk.split(":"), b = rows[+nk[0]].buttons[+nk[1]];
+        el.disabled = true;
+        el.innerHTML = '<span class="spin-sm"></span>' + h(b.busy || "Working\u2026");
+        Promise.resolve(b.run()).catch(function (e) {
+          toast(b.label + " failed", e.message, "bad");
+          el.disabled = false;
+          el.textContent = b.label;
+        });
+      };
+    });
+  }
+
+  function openDesktop(name) {
+    var i = S.instances.filter(function (x) { return x.name === name; })[0];
+    if (!i) return;
+    var tun = (i.tunnel && i.tunnel.url) ? i.tunnel : null;
+    var b = S.burrow || {};
+    var bt = burrowFor(i);
+    var rows = [{ icon: "home", label: "This machine", url: i.local_url }];
+    var net = networkUrl(i.local_url);
+    if (net) rows.push({ icon: "plug", label: "This network", url: net });
+    rows.push(tun && tun.alive
+      ? { icon: "globe", label: "Public link", url: tun.url, pill: "serveo", buttons: [
+          { label: "Drop", cls: "ghost danger", busy: "Dropping\u2026", run: function () { closeModal(); instAction(name, "untunnel"); } }] }
+      : { icon: "globe", label: "Public link", sub: tun ? "The serveo link went down." : "A random serveousercontent.com address anyone can open.",
+          buttons: [{ label: tun ? "Reopen public link" : "Make a public link", icon: "plug", busy: "Opening\u2026",
+                      run: function () { closeModal(); instAction(name, "tunnel"); } }] });
+    if (b.installed) {
+      if (!b.running) {
+        rows.push({ icon: "lock", label: "Burrow", sub: "Burrow is installed but not answering" + (b.error ? ": " + b.error : "") + "." });
+      } else if (bt) {
+        rows.push({ icon: "lock", label: "Burrow", url: bt.url, sub: bt.url ? "" : "Getting an address\u2026",
+                    pill: bt.access === "public" ? "public" : "login", pillCls: bt.access === "public" ? "" : "up",
+                    buttons: [{ label: "Unpublish", cls: "ghost danger", busy: "Removing\u2026", run: function () {
+                      return api("/api/burrow/unpublish", { body: { desktop: name } }).then(function (r) {
+                        S.burrow = r.burrow; S.instKey = ""; renderManager(); openDesktop(name); toast("No longer published through Burrow", "", "ok");
+                      });
+                    } }] });
+      } else {
+        rows.push({ icon: "lock", label: "Burrow", sub: "Its own address (" + (b.pattern || "Burrow") + "), behind Burrow's login.",
+                    buttons: [{ label: "Publish through Burrow", icon: "lock", busy: "Publishing\u2026", run: function () {
+                      return api("/api/burrow/publish", { body: { desktop: name } }).then(function (r) {
+                        S.burrow = r.burrow; S.instKey = ""; renderManager(); openDesktop(name);
+                        toast("Published through Burrow", (r.tunnel && r.tunnel.url) || "its address is on the way", "ok");
+                      });
+                    } }] });
+      }
+    }
+    linkChooser("Open " + i.title, "", rows);
+  }
+
   function mcCard(i) {
     var running = i.running;
     var tun = (i.tunnel && i.tunnel.url) ? i.tunnel : null;
+    var bt = burrowFor(i);
     var lim = i.limits || {};
     var fam = (S.boot && S.boot.family_labels && S.boot.family_labels[i.family]) || i.family;
     var rows = "";
@@ -1037,6 +1132,11 @@
         h(sh.tail) + "</span>", tun.url, tun.url, "pub" + (tun.alive ? "" : " down"),
         tun.alive ? "" : "tunnel is down, use the menu to reopen it");
     }
+    if (bt && bt.url) {
+      var bh = shortHost(bt.url);
+      rows += arow("lock", "Burrow", '<span>' + h(bh.head) + '</span><span class="muted">' + h(bh.tail) + "</span>",
+        bt.url, bt.url, "pub", bt.access === "public" ? "published through Burrow, public" : "published through Burrow, behind its login");
+    }
     if (i.auth) {
       rows += '<div class="arow"><span class="ic">' + I.lock + '</span><span class="lab">Sign-in</span>' +
         '<span class="val" data-secret="' + h(i.name) + '"><span>' + h(i.auth.user) +
@@ -1047,8 +1147,7 @@
     }
 
     var actions = running
-      ? '<a class="btn primary" href="' + h(i.local_url || "#") + '" target="_blank" rel="noopener">' +
-        I.open + "Open desktop</a>" +
+      ? '<button class="btn primary" data-open="' + h(i.name) + '">' + I.open + "Open desktop</button>" +
         '<button class="btn" data-drawer="' + h(i.name) + '">' + I.term + "Shell</button>" +
         '<button class="btn" data-act="stop">' + I.stop + "Stop</button>"
       : '<button class="btn primary" data-act="start">' + I.play + "Start</button>" +
@@ -1966,6 +2065,7 @@
       if (!t.closest(".menu")) closeMenus();
 
       var x;
+      if ((x = t.closest("[data-open]"))) { openDesktop(x.dataset.open); return; }
       if ((x = t.closest("[data-drawer]"))) { toggleDrawer(x.dataset.drawer); return; }
       if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy); return; }
       if ((x = t.closest("[data-back]"))) { show(x.dataset.back); return; }
@@ -2071,6 +2171,7 @@
   window.Forge = {
     api: api, sse: sse, h: h, toast: toast, copy: copy, ago: ago, I: I,
     openModal: openModal, closeModal: closeModal, show: show,
+    linkChooser: linkChooser, networkUrl: networkUrl,
     view: function () { return S.view; }
   };
 

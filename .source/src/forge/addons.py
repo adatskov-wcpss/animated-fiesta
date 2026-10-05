@@ -39,8 +39,10 @@ import tempfile
 import threading
 import time
 
+from . import burrow
 from .paths import ADDONDIR, ADDONS_JSON, ROOT, SERVER_JSON, VERSION
-from .util import FileLock, ensure_dirs, have, jload, jsave
+from .tunnels import kill_tunnel, tunnel_start
+from .util import FileLock, ensure_dirs, have, jload, jsave, pid_alive
 
 SPEC = 1
 MANIFEST = "forge-addon.json"
@@ -581,6 +583,12 @@ def status(rec, max_age=8.0):
         st = {"state": str(info.get("state") or ("installed" if rc == 0 else "error"))[:20],
               "url": info.get("url") if re.match(r"^https?://\S+$", str(info.get("url") or "")) else rec.get("open_url"),
               "version": str(info.get("version") or "")[:30], "detail": str(info.get("detail") or "")[:200]}
+        try:
+            port = int(info.get("port") or 0)
+        except (TypeError, ValueError):
+            port = 0
+        if 0 < port < 65536:
+            st["port"] = port
     except Exception as ex:
         st = {"state": "error", "detail": str(ex)[:200], "url": rec.get("open_url")}
     with _STATUS_LOCK:
@@ -744,7 +752,9 @@ def uninstall(aid, keep_data=True, job=None):
         job.log("%s has no uninstall script; the forge only forgets that it is installed." % m["name"])
     if not keep_data:
         shutil.rmtree(os.path.join(addon_dir(aid), "data"), ignore_errors=True)
-    _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False})
+    _drop_shares(rec, job)
+    _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False,
+                  "tunnel": None, "port": None})
     _forget_status(aid)
     res = {"id": aid, "name": m["name"], "kept_data": bool(keep_data)}
     if job:
@@ -784,6 +794,91 @@ def action(aid, action_id, job=None):
     if job:
         job.finish(res)
     return res
+
+
+# ------------------------------------------------------------------ sharing
+# An addon whose status script reports a "port" can be opened every way a
+# desktop can: on this machine, through a serveo public link, and through a
+# Burrow address when Burrow is on the machine.
+def _port(rec, st=None):
+    st = status(rec) if st is None else st
+    return st.get("port") or rec.get("port")
+
+
+def _host(rec, st=None):
+    """Where the addon listens: the host in its status URL when that is this
+    machine (it may listen only on the forge's LAN or Tailscale address),
+    otherwise loopback."""
+    st = status(rec) if st is None else st
+    m = re.match(r"^https?://\[?([^\]/:]+)\]?(?::(\d+))?", str(st.get("url") or ""))
+    if m and m.group(1) in burrow.local_addresses():
+        return "127.0.0.1" if m.group(1) == "localhost" else m.group(1)
+    return "127.0.0.1"
+
+
+def links(rec, st=None):
+    st = status(rec) if st is None else st
+    port = _port(rec, st)
+    if not port:
+        return None
+    t = rec.get("tunnel") or None
+    if t and not pid_alive(t.get("pid")):
+        t = dict(t, alive=False)
+    b = burrow.status()
+    bt = burrow.tunnel_for(port, b) if b.get("running") else None
+    host = _host(rec, st)
+    shown = "localhost" if host == "127.0.0.1" else ("[%s]" % host if ":" in host else host)
+    return {"port": port, "host": host, "local": "http://%s:%d/" % (shown, port),
+            "serveo": {"url": t["url"], "alive": t.get("alive", True)} if t else None,
+            "burrow": {"installed": b.get("installed"), "running": b.get("running"),
+                       "tunnel": bt and {k: bt.get(k) for k in ("url", "access", "enabled", "port")}}}
+
+
+def share(aid, via, on=True, access="login"):
+    """Open or drop a serveo link or a Burrow address for an addon's port."""
+    rec = get(aid)
+    if not rec.get("installed"):
+        raise AddonError("Install %s first." % rec["manifest"]["name"])
+    st = status(rec, max_age=0)
+    port, host = _port(rec, st), _host(rec, st)
+    if not port:
+        raise AddonError("%s does not say which port it listens on (its status script has no \"port\")."
+                         % rec["manifest"]["name"])
+    if via == "serveo":
+        kill_tunnel(rec.get("tunnel"))
+        info = None
+        if on:
+            try:
+                info = tunnel_start("addon-%s" % aid, port, mode="http", record=False, host=host)
+            except RuntimeError as ex:
+                raise AddonError(str(ex))
+        _update(aid, {"tunnel": info, "port": port})
+    elif via == "burrow":
+        try:
+            if on:
+                burrow.publish(port, rec["manifest"]["name"], access=access, host=host)
+            else:
+                burrow.unpublish(port)
+        except RuntimeError as ex:
+            raise AddonError(str(ex))
+        _update(aid, {"port": port})
+    else:
+        raise AddonError("Share through serveo or burrow.")
+    return links(get(aid), status(get(aid), max_age=0))
+
+
+def _drop_shares(rec, job=None):
+    """Uninstalling: its public links would point at nothing."""
+    if rec.get("tunnel"):
+        kill_tunnel(rec["tunnel"])
+    port = rec.get("port")
+    if port and burrow.tunnel_for(port, burrow.status(max_age=0)):
+        try:
+            burrow.unpublish(port)
+            if job:
+                job.log("removed its Burrow address")
+        except RuntimeError:
+            pass
 
 
 # ------------------------------------------------------------------ views
@@ -834,6 +929,11 @@ def public(rec, with_status=False):
         out["status"] = st
         if st.get("url"):
             out["open_url"] = st["url"]
+        if out["installed"]:
+            try:
+                out["ways"] = links(rec, st)       # "links" is the manifest's doc links
+            except Exception:
+                out["ways"] = None
     return out
 
 

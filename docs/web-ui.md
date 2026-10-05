@@ -55,6 +55,19 @@ The top strip totals desktops, memory in use, and data downloaded and uploaded.
 
 **Update banner.** When the forge has installed a new version from GitHub, a banner offers **Restart now**. Your desktops keep running.
 
+### Open desktop
+
+**Open desktop** lists every way into the desktop:
+
+| | |
+|---|---|
+| **This machine** | `localhost:PORT`, for a browser on the forge's own machine |
+| **This network** | the same port on the address you opened the forge with (your LAN or Tailscale address), when that isn't localhost |
+| **Public link** | its serveo link (`https://….serveousercontent.com`), or **Make a public link** |
+| **Burrow** | when [Burrow](https://github.com/alexd-aero/burrow) is installed: its Burrow address behind Burrow's login, or **Publish through Burrow**; **Unpublish** removes it |
+
+A desktop published through Burrow also shows a **Burrow** row on its card, beside *Local* and *Public*. Addons whose status reports a port get the same chooser from their **Open** button.
+
 ## The shell
 
 **Shell** on a card opens a real PTY into the desktop (`docker exec -it`, bash if it has one): colours, cursor keys, Ctrl-C, paste, resize to fit. Pop it out to the full-size shell view if you need room.

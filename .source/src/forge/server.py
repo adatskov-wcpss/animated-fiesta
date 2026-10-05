@@ -17,7 +17,7 @@ import urllib.parse
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import addons, catalog, events, scheduler, space, updates
+from . import addons, burrow, catalog, events, scheduler, space, updates
 from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
@@ -269,7 +269,9 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/doctor":
             return self._send(200, cli_doctor())
         if route == "/api/instances":
-            return self._send(200, {"instances": docker_instances()})
+            return self._send(200, {"instances": docker_instances(), "burrow": burrow.status()})
+        if route == "/api/burrow":
+            return self._send(200, burrow.status(max_age=0))
         if route == "/api/stats":
             return self._send(200, {"stats": STATS.report(), "host": host_info()})
         if route == "/api/jobs":
@@ -378,6 +380,31 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, space.clean(everything=bool(body.get("all")),
                                                volumes=bool(body.get("volumes")),
                                                dry_run=bool(body.get("dry_run"))))
+        if route in ("/api/burrow/publish", "/api/burrow/unpublish"):
+            # Only desktops (by name), never an arbitrary port: whoever can
+            # reach this API must not be able to publish, say, ssh.
+            name = body.get("desktop") or ""
+            inst = next((i for i in docker_instances() if i["name"] == name), None)
+            if not inst:
+                return self._err(404, "no such desktop")
+            port = (inst.get("ports") or {}).get(str(KASM_HTTPS) if inst.get("profile") == "kasm" else str(SELKIES_HTTP))
+            if not port:
+                return self._err(400, "%s has no published port; start it first" % name)
+            try:
+                if route.endswith("/publish"):
+                    t = burrow.publish(port, inst.get("title") or name,
+                                       access="public" if body.get("access") == "public" else "login")
+                    return self._send(200, {"tunnel": t, "burrow": burrow.status()})
+                return self._send(200, dict(burrow.unpublish(port), burrow=burrow.status()))
+            except RuntimeError as ex:
+                return self._err(400, ex)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/share$", route)
+        if m:
+            try:
+                return self._send(200, {"ways": addons.share(m.group(1), body.get("via"), on=body.get("on", True) is not False,
+                                                              access="public" if body.get("access") == "public" else "login")})
+            except addons.AddonError as ex:
+                return self._err(400, ex)
         if route == "/api/addons/add":
             try:
                 return self._send(200, {"addon": addons.add(body.get("source") or "")})

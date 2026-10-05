@@ -52,6 +52,18 @@ def desktops(cfg):
         return None, "the forge's API did not answer (%s)" % type(ex).__name__
 
 
+def ways_in(cfg):
+    """Every address this page has, as the forge sees it: GET {FORGE_API}addons/hello-forge."""
+    if not cfg.get("forge_api"):
+        return None
+    try:
+        req = urllib.request.Request(cfg["forge_api"] + "addons/hello-forge", headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=4) as r:
+            return json.load(r).get("ways")
+    except Exception:
+        return None
+
+
 def page(cfg):
     a1, a2 = ACCENTS.get(cfg.get("accent"), ACCENTS["blue"])
     ink = "#000" if cfg.get("accent") == "mono" else "#061020"
@@ -62,7 +74,7 @@ def page(cfg):
         body = '<p class="muted">%s</p>' % html.escape(err)
     elif not items:
         body = '<p class="muted">No desktops yet. Make one in Selkies Forge and reload.</p>'
-    else:
+    if items:
         rows = []
         for i in items:
             dot = "on" if i.get("running") else "off"
@@ -72,6 +84,23 @@ def page(cfg):
                 html.escape(i.get("status") or ""),
                 '<a href="%s" target="_blank" rel="noopener">open</a>' % html.escape(link) if link and i.get("running") else ""))
         body = '<ul class="desks">%s</ul>' % "".join(rows)
+    body = "<h2>Desktops on this machine</h2>" + body
+    L = ways_in(cfg) or {}
+    ways = [("This machine", L.get("local"))]
+    bind = cfg.get("bind") or "127.0.0.1"
+    if bind not in ("127.0.0.1", "localhost", "::1", "0.0.0.0", "::") and bind not in str(L.get("local") or ""):
+        ways.append(("This network", "http://%s:%s/" % ("[%s]" % bind if ":" in bind else bind, cfg.get("port"))))
+    if (L.get("serveo") or {}).get("alive"):
+        ways.append(("Public link (serveo)", L["serveo"]["url"]))
+    bt = (L.get("burrow") or {}).get("tunnel") or {}
+    if bt.get("url"):
+        ways.append(("Burrow (%s)" % ("public" if bt.get("access") == "public" else "behind its login"), bt["url"]))
+    ways_html = "".join('<li><span>%s</span><a href="%s" target="_blank" rel="noopener">%s</a></li>'
+                        % (html.escape(k), html.escape(v), html.escape(v)) for k, v in ways if v)
+    if not ways_html:
+        ways_html = '<li><span>This machine</span><a href="/">here</a></li>'
+    body = ('<h2>Ways in</h2><ul class="ways">%s</ul><p class="muted tip">More in the forge: Addons &rarr; Hello Forge &rarr; Open. '
+            'It can make a serveo public link, and a Burrow address when Burrow is installed.</p>' % ways_html) + body
     return """<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Hello Forge</title>
 <style>
@@ -93,13 +122,15 @@ h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#6a80a8;ma
 .desks i{width:8px;height:8px;border-radius:50%%;background:#4a5568}.desks i.on{background:#3ddc97;box-shadow:0 0 10px #3ddc97}
 .desks span{color:#6a80a8;font-size:12px}.desks a{margin-left:auto;color:var(--a1);font-weight:600;text-decoration:none}
 footer{margin-top:22px;font-size:12px;color:#6a80a8}
+.ways{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:6px}.ways li{display:flex;gap:10px;align-items:baseline;font-size:13px;min-width:0}
+.ways span{color:#6a80a8;width:150px;flex:none}.ways a{color:var(--a1);text-decoration:none;font:12.5px ui-monospace,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tip{font-size:12px;margin:0 0 20px}h2+.desks{margin-top:0}
 </style></head><body><main>
 <div class="mark">&#9650;</div>
 <h1>%(greeting)s</h1>
 <p class="muted">This page is Hello Forge, the example addon for Selkies Forge. Its whole source is in
 <code>addons/hello-forge/</code>.</p>
 <div class="meta"><span>addon v%(version)s</span><span>forge v%(fv)s</span><span>%(visits)d visits</span></div>
-<h2>Desktops on this machine</h2>
 %(body)s
 <footer>Settings live in the forge: Addons &rarr; Hello Forge &rarr; &hellip; &rarr; Settings and reinstall.</footer>
 </main></body></html>""" % {"a1": a1, "a2": a2, "ink": ink, "greeting": html.escape(cfg.get("greeting") or "Hello"),

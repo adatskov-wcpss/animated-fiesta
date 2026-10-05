@@ -258,6 +258,33 @@ class RunJobTest(unittest.TestCase):
         self.assertEqual(got, {"x": 7, "job": job})
 
 
+class WaysInTest(unittest.TestCase):
+    def setUp(self):
+        self.rec = {"id": "w", "installed": True, "manifest": {"name": "W"}}
+
+    def test_host_follows_the_status_url_when_it_is_this_machine(self):
+        from forge import burrow
+        burrow._ADDRS.update(at=1e18, set={"127.0.0.1", "localhost", "::1", "100.64.0.5"})
+        try:
+            self.assertEqual(addons._host(self.rec, {"url": "http://100.64.0.5:8790/"}), "100.64.0.5")
+            self.assertEqual(addons._host(self.rec, {"url": "http://localhost:8790/"}), "127.0.0.1")
+            self.assertEqual(addons._host(self.rec, {"url": "https://example.com/"}), "127.0.0.1")
+            self.assertEqual(addons._host(self.rec, {}), "127.0.0.1")
+        finally:
+            burrow._ADDRS.update(at=0.0, set=set())
+
+    def test_links_need_a_port_and_know_burrow_is_absent(self):
+        self.assertIsNone(addons.links(self.rec, {"state": "running"}))
+        w = addons.links(self.rec, {"state": "running", "port": 8790, "url": "http://localhost:8790/"})
+        self.assertEqual((w["port"], w["local"], w["serveo"]), (8790, "http://localhost:8790/", None))
+        self.assertFalse(w["burrow"]["installed"])
+
+    def test_burrow_publish_without_burrow_says_so(self):
+        from forge import burrow
+        with self.assertRaises(RuntimeError):
+            burrow.publish(8790, "x")
+
+
 class WatchdogOwnerTest(unittest.TestCase):
     def test_only_its_own_desktops(self):
         # A second forge (another FORGE_HOME) once "healed" desktops the first

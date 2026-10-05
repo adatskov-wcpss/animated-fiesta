@@ -38,12 +38,16 @@ def tunnel_logfile(name):
     return os.path.join(LOGDIR, "tunnel-%s.log" % slug(name))
 
 
-def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0):
-    """Open a serveo tunnel.  Returns a dict describing it, or raises."""
+def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0, record=True, host="localhost"):
+    """Open a serveo tunnel.  Returns a dict describing it, or raises.
+
+    record=False leaves the desktop registry alone (addons keep their own
+    record); stop such a tunnel with kill_tunnel(info)."""
     if not have("ssh"):
         raise RuntimeError("ssh is not installed, cannot open a tunnel")
     ensure_dirs()
-    tunnel_stop(name)
+    if record:
+        tunnel_stop(name)
     log = tunnel_logfile(name)
     try:
         os.remove(log)
@@ -65,7 +69,7 @@ def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0):
     # "Permission denied (publickey,keyboard-interactive)".
     if key:
         cmd += ["-i", key, "-o", "IdentitiesOnly=yes"]
-    cmd += ["-R", "%s:localhost:%d" % (remote, int(local_port)), "serveo.net"]
+    cmd += ["-R", "%s:%s:%d" % (remote, host, int(local_port)), "serveo.net"]
 
     fh = open(log, "ab", buffering=0)
     proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT,
@@ -107,8 +111,21 @@ def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0):
 
     info = {"url": url, "mode": mode, "pid": proc.pid, "port": int(local_port),
             "log": log, "started": time.time(), "alive": True}
-    reg_update(name, {"tunnel": info})
+    if record:
+        reg_update(name, {"tunnel": info})
     return info
+
+
+def kill_tunnel(info):
+    """Stop a tunnel from its info dict (what tunnel_start returned)."""
+    if info and info.get("pid") and pid_alive(info["pid"]):
+        try:
+            os.killpg(os.getpgid(int(info["pid"])), signal.SIGTERM)
+        except Exception:
+            try:
+                os.kill(int(info["pid"]), signal.SIGTERM)
+            except Exception:
+                pass
 
 
 def tunnel_status(name, info=None):

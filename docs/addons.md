@@ -301,8 +301,22 @@ Prints one JSON line (the last JSON line printed wins):
 | `url` | Where **Open** goes. It overrides the URL from `::open`, so it can follow changes (a new port, a linked domain). |
 | `version` | The version actually running, if you know it. |
 | `detail` | A short line under the description ("3 visits so far", "linked to example.com"). |
+| `port` | The port your app's web page listens on. With it, **Open** offers every way in, like a desktop's: see [below](#ways-in-open). |
 
 Without a `status` script the card just says "installed", and **Open** uses the last `::open` URL.
+
+### Ways in: Open
+
+When `status` reports a `port`, the card's **Open** button opens the same chooser as a desktop's **Open desktop**:
+
+| Way in | Address |
+|---|---|
+| **This machine** | `http://localhost:PORT/`, or the address in your status `url` when the app listens only there |
+| **This network** | the same port on the address the forge's page was opened with (a LAN or Tailscale address) |
+| **Public link** | **Make a public link** opens a serveo tunnel (`https://….serveousercontent.com`) to the port; **Drop** closes it |
+| **Burrow** | when [Burrow](https://github.com/alexd-aero/burrow) is on the machine: **Publish through Burrow** gives the port its own HTTPS address behind Burrow's login; **Unpublish** removes it |
+
+The forge points the tunnels at the host in your status `url` when that's this machine, so an app that listens only on `FORGE_BIND` still works. Uninstalling drops both tunnels. The forge's API has the same thing as `ways` on each addon, so your app can show its own addresses (Hello Forge's page does, under *Ways in*).
 
 ---
 
@@ -538,7 +552,7 @@ addons/hello-forge/
     ├── install.sh         checks, config, service, waits until healthy, ::open
     ├── update.sh          rewrites the config (new FORGE_API), restarts on new code
     ├── uninstall.sh       removes the service; deletes settings if asked
-    ├── status.sh          {"state","url","version","detail": "N visits so far"}
+    ├── status.sh          {"state","url","port","version","detail": "N visits so far"}
     ├── restart.sh         an action
     └── reset-visits.sh    an action with a confirmation
 ```
@@ -668,6 +682,7 @@ Addons feel native when they follow the forge's habits:
 | `POST /api/addons/<id>/uninstall` | `{keep_data: true}` → `{job}` |
 | `POST /api/addons/<id>/action` | `{action: "restart"}` → `{job}` |
 | `POST /api/addons/<id>/remove` | `{}` → `{ok}`. Only when uninstalled |
+| `POST /api/addons/<id>/share` | `{via: "serveo"\|"burrow", on: true\|false, access?: "login"\|"public"}` → `{ways}`. Needs a `port` from `status` |
 
 Jobs stream like launches: `GET /api/job/<id>/events` (Server-Sent Events), cancel with `POST /api/job/<id>/cancel`. See [the HTTP API](api.md).
 

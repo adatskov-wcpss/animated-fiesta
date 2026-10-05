@@ -100,6 +100,17 @@ See [Addons](addons.md) for the format. Long operations are jobs, streamed like 
 | `POST /api/addons/<id>/uninstall` | `{keep_data?: true}` → `{job}` |
 | `POST /api/addons/<id>/action` | `{action}` → `{job}` |
 | `POST /api/addons/<id>/remove` | `{}` → `{ok}`, only once uninstalled |
+| `POST /api/addons/<id>/share` | `{via: "serveo"\|"burrow", on, access?}` → `{ways}`: open or drop a serveo link or a Burrow address for an addon whose status reports a `port`. Each addon's `ways` lists `{port, host, local, serveo, burrow}` |
+
+## Burrow
+
+When [Burrow](https://github.com/alexd-aero/burrow) is on the machine, the forge talks to it over its control socket (`BURROW_HOME/data/control.sock`, readable by your user only), found through `~/.config/burrow/burrow.json`.
+
+| Method & path | Returns |
+|---|---|
+| `GET /api/burrow` | `{installed, running, mode, pattern, dashboard, tunnels: [{port, url, access, enabled, targetHost, targetPort}]}`. Also included in `GET /api/instances` as `burrow` |
+| `POST /api/burrow/publish` | `{desktop, access?: "login"\|"public"}` → `{tunnel, burrow}`: the desktop's web port gets its own Burrow address. Desktops only, never an arbitrary port |
+| `POST /api/burrow/unpublish` | `{desktop}` → `{removed, burrow}` |
 
 ## Disk
 

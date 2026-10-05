@@ -16,7 +16,8 @@
       $("#tagAddons").textContent = A.list.length ? A.list.filter(function (a) { return a.installed; }).length + "/" + A.list.length : "0";
       if (F.view() === "addons") render();
     }).catch(function (e) {
-      if (F.view() === "addons" && !A.list) $("#addonList").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
+      if (window.console) console.error("addons:", e);
+      if (F.view() === "addons") $("#addonList").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
     });
   }
 
@@ -45,6 +46,8 @@
     if (!a.installed) {
       main = '<button class="btn primary" data-ad="install" data-id="' + h(a.id) + '"' + (busy || a.problems.length ? " disabled" : "") + ">" +
         (found ? F.I.plug + " Link it" : F.I.save + " Install") + "</button>";
+    } else if (a.ways) {
+      main = '<button class="btn primary" data-ad="open" data-id="' + h(a.id) + '">' + F.I.open + " Open</button>";
     } else if (a.open_url) {
       main = '<a class="btn primary" href="' + h(a.open_url) + '" target="_blank" rel="noopener">' + F.I.open + " Open</a>";
     }
@@ -225,13 +228,51 @@
     }
     A.es = F.sse("/api/job/" + job.id + "/events", {
       snapshot: function (s) { prog(s.progress, s.label); },
-      log: function (d) { line(d.line, d.stream === "err" ? "e" : ""); },
-      phase: function (d) { prog(d.progress, d.label); line("▸ " + d.label, "i"); },
-      progress: function (d) { prog(d.progress); },
-      done: function (d) { finish(true, d); },
-      error: function (d) { if (d && d.message) { line(d.message, "e"); finish(false, d); } },
+      // job events arrive as {seq, t, type, data: {...}}; snapshots and finals are bare
+      log: function (e) { var d = e.data || e; line(d.line, d.stream === "err" ? "e" : ""); },
+      phase: function (e) { var d = e.data || e; prog(d.progress, d.label); line("▸ " + d.label, "i"); },
+      progress: function (e) { var d = e.data || e; prog(d.progress); },
+      done: function (e) { finish(true, e.data || e); },
       final: function (s) { if (s.status === "done") finish(true, s.result); else if (s.status !== "running") finish(false, s.error); }
     });
+  }
+
+  /* -------------------------------------------------------------- open */
+  // The same chooser as a desktop's: this machine, this network, a serveo
+  // public link, Burrow. Only for addons whose status script names a port.
+  function share(a, via, on) {
+    return F.api("/api/addons/" + encodeURIComponent(a.id) + "/share", { body: { via: via, on: on } }).then(function (r) {
+      a.ways = r.ways;
+      openAddon(a);
+      load();
+    });
+  }
+
+  function openAddon(a) {
+    var L = a.ways;
+    var rows = [{ icon: "home", label: "This machine", url: L.local }];
+    var net = F.networkUrl(L.local);
+    if (net && net !== L.local) rows.push({ icon: "plug", label: "This network", url: net });
+    var bt = L.burrow && L.burrow.tunnel;
+    if (a.open_url && a.open_url !== L.local && a.open_url !== net && !(bt && a.open_url === bt.url)) {
+      rows.unshift({ icon: "open", label: "Its own address", url: a.open_url });
+    }
+    rows.push(L.serveo && L.serveo.alive
+      ? { icon: "globe", label: "Public link", url: L.serveo.url, pill: "serveo", buttons: [
+          { label: "Drop", cls: "ghost danger", busy: "Dropping…", run: function () { return share(a, "serveo", false); } }] }
+      : { icon: "globe", label: "Public link", sub: L.serveo ? "The serveo link went down." : "A random serveousercontent.com address anyone can open.",
+          buttons: [{ label: L.serveo ? "Reopen public link" : "Make a public link", icon: "plug", busy: "Opening (up to a minute)…",
+                      run: function () { return share(a, "serveo", true); } }] });
+    var b = L.burrow || {};
+    if (b.installed && a.id !== "burrow") {
+      if (!b.running) rows.push({ icon: "lock", label: "Burrow", sub: "Burrow is installed but not answering." });
+      else if (bt) rows.push({ icon: "lock", label: "Burrow", url: bt.url, sub: bt.url ? "" : "Getting an address…",
+          pill: bt.access === "public" ? "public" : "login", pillCls: bt.access === "public" ? "" : "up",
+          buttons: [{ label: "Unpublish", cls: "ghost danger", busy: "Removing…", run: function () { return share(a, "burrow", false); } }] });
+      else rows.push({ icon: "lock", label: "Burrow", sub: "Its own address, behind Burrow's login.",
+          buttons: [{ label: "Publish through Burrow", icon: "lock", busy: "Publishing…", run: function () { return share(a, "burrow", true); } }] });
+    }
+    F.linkChooser("Open " + a.name, "", rows);
   }
 
   function confirmBox(title, text, okLabel, extra, cb) {
@@ -253,7 +294,8 @@
     if (!a) return;
     var menu = t.closest(".menu");
     if (menu) menu.hidden = true;
-    if (what === "install") installForm(a);
+    if (what === "open") openAddon(a);
+    else if (what === "install") installForm(a);
     else if (what === "update") runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name);
     else if (what === "action") {
       var go = function () { runJob(a, "action", { action: t.dataset.action }, a.name + ": " + t.textContent.trim()); };

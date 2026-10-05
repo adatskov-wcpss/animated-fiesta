@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.0"
+FORGE_VERSION="1.10.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,8 +528,9 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_ADDONS_PY="d71c5a1b1e5c7a61ad3dafcdd598a6165c798da39a20e5c69c32ab930cce404b"
+FORGE_SHA_FORGE_ADDONS_PY="178710919d5e5759831276ba3e53953365aece10624fd21da298b12f4fe7654e"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
+FORGE_SHA_FORGE_BURROW_PY="3ccb27671163bdf276980970e357386806d0b4813dd4f486b235ee0fedafe028"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
 FORGE_SHA_FORGE_CLI_PY="78c8dd8258cee01bacfb22840ed7988d94470d3b0857881749cd39e7c3ca332b"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
@@ -544,35 +545,35 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="348a8bfb2d96028bfca1ebdb8141b00186b7ad70482bc5c27b2e7596126bc0a5"
+FORGE_SHA_FORGE_PATHS_PY="335ce6dccc5ec7cdd4743a6ba85d6087ab25334c410a9985cef9233536b957fd"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
 FORGE_SHA_FORGE_RUNNER_PY="49ed1180baa2441188c328fc3af12307a8f33c214b3e9e7d101b0a6d39633ec2"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="7315dc66e9397d8ba7c6dc69b36700f90e09440344f11fb494644c832f125792"
+FORGE_SHA_FORGE_SERVER_PY="473ca5ca445906814c18d2fbba1c34313e79c4762ad044843e0ac38829e9edde"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
 FORGE_SHA_FORGE_STORE_PY="ff80f149c72bcb9bae180695a7f45c124caeca4fb4e6d7e4fc0bcb4d61c35e03"
 FORGE_SHA_FORGE_TERMINAL_PY="befcf471ac7032b93bb187cc51159667ab9cf5531251938cc92b415a27f72556"
-FORGE_SHA_FORGE_TUNNELS_PY="e2758607ff12b385f51d78a8469eb21ccbaba7312afe5091c69fdbc0869f30db"
+FORGE_SHA_FORGE_TUNNELS_PY="a1b9358251897753fd461702446225e47f04830f8f11039760ffc1040d8743d5"
 FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2603212e511a5"
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="356887ea4117012773f8e8c54c0bcc18e5c3c2bedbeea8f744c8596816b167b5"
-FORGE_SHA_WEB_APP_CSS="58892c4ed124f59e622c4488660ef2aeec433a989b5f0236617694eae883ca69"
-FORGE_SHA_WEB_APP_JS="65b63e1f8d290eb843bbcd0a932fe3b23e150633a3eabd40edd1c2de4cd9ca58"
+FORGE_SHA_WEB_ADDONS_JS="9b84a7b25ac4c27a2adfb8ec1ed1383e35fd1dab96ac56bb81ffd2ae154d6348"
+FORGE_SHA_WEB_APP_CSS="ed079325a8b6cfd371e3e1b6c0e9aff42c7785a9272a126b770b0dc6363c12ba"
+FORGE_SHA_WEB_APP_JS="5ad2b3fee6a67b51c8d3067de9bbe6a30ff871d76febe31301848e9ae5b6cb57"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="304f58abc71274425de8e530fd5ed1a499fc4e467ff971e1717a2856f4a3552d"
-FORGE_PAYLOAD_SHA="c19e9a33eacb48428a34fb20e899a810f84757e0affe31f0d08e9c15cc222e4f"
-FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
+FORGE_SHA_SELKIES_CLI="ed9c43fc2d1ad33cb895dab0dbf5d0ee6ed71102d0ffeecc812af7e7fce51084"
+FORGE_PAYLOAD_SHA="f2e1bd55a31157ff18dc9a4a7075e717e4380c248083cec88bd3c18c1939a68e"
+FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -664,8 +665,10 @@ import tempfile
 import threading
 import time
 
+from . import burrow
 from .paths import ADDONDIR, ADDONS_JSON, ROOT, SERVER_JSON, VERSION
-from .util import FileLock, ensure_dirs, have, jload, jsave
+from .tunnels import kill_tunnel, tunnel_start
+from .util import FileLock, ensure_dirs, have, jload, jsave, pid_alive
 
 SPEC = 1
 MANIFEST = "forge-addon.json"
@@ -1206,6 +1209,12 @@ def status(rec, max_age=8.0):
         st = {"state": str(info.get("state") or ("installed" if rc == 0 else "error"))[:20],
               "url": info.get("url") if re.match(r"^https?://\S+$", str(info.get("url") or "")) else rec.get("open_url"),
               "version": str(info.get("version") or "")[:30], "detail": str(info.get("detail") or "")[:200]}
+        try:
+            port = int(info.get("port") or 0)
+        except (TypeError, ValueError):
+            port = 0
+        if 0 < port < 65536:
+            st["port"] = port
     except Exception as ex:
         st = {"state": "error", "detail": str(ex)[:200], "url": rec.get("open_url")}
     with _STATUS_LOCK:
@@ -1369,7 +1378,9 @@ def uninstall(aid, keep_data=True, job=None):
         job.log("%s has no uninstall script; the forge only forgets that it is installed." % m["name"])
     if not keep_data:
         shutil.rmtree(os.path.join(addon_dir(aid), "data"), ignore_errors=True)
-    _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False})
+    _drop_shares(rec, job)
+    _update(aid, {"installed": False, "installed_version": None, "open_url": None, "adopted": False,
+                  "tunnel": None, "port": None})
     _forget_status(aid)
     res = {"id": aid, "name": m["name"], "kept_data": bool(keep_data)}
     if job:
@@ -1409,6 +1420,91 @@ def action(aid, action_id, job=None):
     if job:
         job.finish(res)
     return res
+
+
+# ------------------------------------------------------------------ sharing
+# An addon whose status script reports a "port" can be opened every way a
+# desktop can: on this machine, through a serveo public link, and through a
+# Burrow address when Burrow is on the machine.
+def _port(rec, st=None):
+    st = status(rec) if st is None else st
+    return st.get("port") or rec.get("port")
+
+
+def _host(rec, st=None):
+    """Where the addon listens: the host in its status URL when that is this
+    machine (it may listen only on the forge's LAN or Tailscale address),
+    otherwise loopback."""
+    st = status(rec) if st is None else st
+    m = re.match(r"^https?://\[?([^\]/:]+)\]?(?::(\d+))?", str(st.get("url") or ""))
+    if m and m.group(1) in burrow.local_addresses():
+        return "127.0.0.1" if m.group(1) == "localhost" else m.group(1)
+    return "127.0.0.1"
+
+
+def links(rec, st=None):
+    st = status(rec) if st is None else st
+    port = _port(rec, st)
+    if not port:
+        return None
+    t = rec.get("tunnel") or None
+    if t and not pid_alive(t.get("pid")):
+        t = dict(t, alive=False)
+    b = burrow.status()
+    bt = burrow.tunnel_for(port, b) if b.get("running") else None
+    host = _host(rec, st)
+    shown = "localhost" if host == "127.0.0.1" else ("[%s]" % host if ":" in host else host)
+    return {"port": port, "host": host, "local": "http://%s:%d/" % (shown, port),
+            "serveo": {"url": t["url"], "alive": t.get("alive", True)} if t else None,
+            "burrow": {"installed": b.get("installed"), "running": b.get("running"),
+                       "tunnel": bt and {k: bt.get(k) for k in ("url", "access", "enabled", "port")}}}
+
+
+def share(aid, via, on=True, access="login"):
+    """Open or drop a serveo link or a Burrow address for an addon's port."""
+    rec = get(aid)
+    if not rec.get("installed"):
+        raise AddonError("Install %s first." % rec["manifest"]["name"])
+    st = status(rec, max_age=0)
+    port, host = _port(rec, st), _host(rec, st)
+    if not port:
+        raise AddonError("%s does not say which port it listens on (its status script has no \"port\")."
+                         % rec["manifest"]["name"])
+    if via == "serveo":
+        kill_tunnel(rec.get("tunnel"))
+        info = None
+        if on:
+            try:
+                info = tunnel_start("addon-%s" % aid, port, mode="http", record=False, host=host)
+            except RuntimeError as ex:
+                raise AddonError(str(ex))
+        _update(aid, {"tunnel": info, "port": port})
+    elif via == "burrow":
+        try:
+            if on:
+                burrow.publish(port, rec["manifest"]["name"], access=access, host=host)
+            else:
+                burrow.unpublish(port)
+        except RuntimeError as ex:
+            raise AddonError(str(ex))
+        _update(aid, {"port": port})
+    else:
+        raise AddonError("Share through serveo or burrow.")
+    return links(get(aid), status(get(aid), max_age=0))
+
+
+def _drop_shares(rec, job=None):
+    """Uninstalling: its public links would point at nothing."""
+    if rec.get("tunnel"):
+        kill_tunnel(rec["tunnel"])
+    port = rec.get("port")
+    if port and burrow.tunnel_for(port, burrow.status(max_age=0)):
+        try:
+            burrow.unpublish(port)
+            if job:
+                job.log("removed its Burrow address")
+        except RuntimeError:
+            pass
 
 
 # ------------------------------------------------------------------ views
@@ -1459,6 +1555,11 @@ def public(rec, with_status=False):
         out["status"] = st
         if st.get("url"):
             out["open_url"] = st["url"]
+        if out["installed"]:
+            try:
+                out["ways"] = links(rec, st)       # "links" is the manifest's doc links
+            except Exception:
+                out["ways"] = None
     return out
 
 
@@ -1799,6 +1900,155 @@ def clone(name, new_name=None, job=None, tunnel=False, from_backup=None):
     events.record(res["name"], "cloned", "from %s" % (name or from_backup))
     return res
 __FORGE_FILE_FORGE_BACKUPS_PY__
+  cat > "$FORGE_APP/forge/burrow.py" <<'__FORGE_FILE_FORGE_BURROW_PY__'
+"""
+Selkies Forge engine - burrow
+
+Burrow (github.com/alexd-aero/burrow) publishes ports on their own HTTPS
+addresses behind a login. When it is on this machine, the forge offers a
+Burrow address for every desktop and addon next to the local and serveo ones.
+
+The forge finds Burrow through ~/.config/burrow/burrow.json and talks to its
+control socket, BURROW_HOME/data/control.sock: plain HTTP over a Unix socket
+that only this user can open (Burrow's HTTPS may speak only the post-quantum
+key exchange, which this Python's OpenSSL may not).
+"""
+
+import json
+import os
+import socket
+import threading
+import time
+
+from http.client import HTTPConnection
+
+from .util import jload
+
+_CACHE = {"at": 0.0, "value": None}
+_LOCK = threading.Lock()
+
+
+def discovery():
+    base = os.environ.get("BURROW_CONFIG_DIR") or os.path.join(
+        os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"), "burrow")
+    return jload(os.path.join(base, "burrow.json"), None)
+
+
+def socket_path():
+    d = discovery() or {}
+    home = d.get("home")
+    if not home:
+        return None
+    p = os.path.join(home, "data", "control.sock")
+    return p if os.path.exists(p) else None
+
+
+class _UnixConnection(HTTPConnection):
+    def __init__(self, path, timeout):
+        HTTPConnection.__init__(self, "burrow", timeout=timeout)
+        self._path = path
+
+    def connect(self):
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.settimeout(self.timeout)
+        s.connect(self._path)
+        self.sock = s
+
+
+def call(method, path, body=None, timeout=10.0):
+    sp = socket_path()
+    if not sp:
+        raise RuntimeError("Burrow is not installed on this machine")
+    conn = _UnixConnection(sp, timeout)
+    try:
+        data = json.dumps(body).encode("utf-8") if body is not None else None
+        conn.request(method, path, body=data,
+                     headers={"Content-Type": "application/json"} if data is not None else {})
+        r = conn.getresponse()
+        out = json.loads(r.read().decode("utf-8") or "{}")
+        if r.status >= 400:
+            raise RuntimeError(out.get("error") or "Burrow answered HTTP %d" % r.status)
+        return out
+    finally:
+        conn.close()
+
+
+def status(max_age=3.0):
+    """{"installed", "running", "mode", "pattern", "tunnels": [{port, url, access, enabled, ...}]}"""
+    with _LOCK:
+        if _CACHE["value"] is not None and time.time() - _CACHE["at"] < max_age:
+            return _CACHE["value"]
+    d = discovery()
+    out = {"installed": bool(d), "running": False, "dashboard": (d or {}).get("dashboard"), "tunnels": []}
+    if d:
+        try:
+            r = call("GET", "/tunnels", timeout=4.0)
+            out.update(running=True, mode=r.get("mode"), pattern=r.get("pattern"), version=r.get("version"),
+                       tunnels=[{k: t.get(k) for k in ("port", "url", "host", "access", "enabled",
+                                                       "targetHost", "targetPort", "name")}
+                                for t in r.get("tunnels") or []])
+        except Exception as ex:
+            out["error"] = str(ex)
+    with _LOCK:
+        _CACHE.update(at=time.time(), value=out)
+    return out
+
+
+def forget():
+    with _LOCK:
+        _CACHE.update(at=0.0, value=None)
+
+
+_ADDRS = {"at": 0.0, "set": set()}
+
+
+def local_addresses():
+    """Every address of this machine (a tunnel to the Tailscale IP is still local)."""
+    if time.time() - _ADDRS["at"] > 60:
+        found = {"127.0.0.1", "localhost", "::1"}
+        try:
+            with os.popen("hostname -I 2>/dev/null") as fh:
+                found.update(fh.read().split())
+        except OSError:
+            pass
+        _ADDRS.update(at=time.time(), set=found)
+    return _ADDRS["set"]
+
+
+def tunnel_for(port, st=None):
+    st = st or status()
+    mine = local_addresses()
+    for t in st.get("tunnels") or []:
+        if t.get("targetPort") == int(port) and t.get("targetHost") in mine:
+            return t
+    return None
+
+
+def publish(port, name, access="login", host="127.0.0.1"):
+    """Give a local port its own Burrow address (login-protected unless access="public")."""
+    st = status(max_age=0)
+    if not st.get("running"):
+        raise RuntimeError(st.get("error") or "Burrow is not running")
+    have = tunnel_for(port, st)
+    if have:
+        return have
+    try:
+        t = call("POST", "/tunnels", {"port": int(port), "targetHost": host, "targetPort": int(port),
+                                      "name": str(name or "")[:60], "access": access}, timeout=60.0)
+    finally:
+        forget()
+    return t
+
+
+def unpublish(port):
+    t = tunnel_for(port, status(max_age=0))
+    if not t:
+        return {"ok": True, "removed": None}
+    try:
+        return call("DELETE", "/tunnels/%d" % int(t["port"]), timeout=60.0)
+    finally:
+        forget()
+__FORGE_FILE_FORGE_BURROW_PY__
   cat > "$FORGE_APP/forge/catalog.py" <<'__FORGE_FILE_FORGE_CATALOG_PY__'
 """
 Selkies Forge - distro catalog.
@@ -7314,7 +7564,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.0"
+VERSION = "1.10.1"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8126,7 +8376,7 @@ import urllib.parse
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from . import addons, catalog, events, scheduler, space, updates
+from . import addons, burrow, catalog, events, scheduler, space, updates
 from .doctor import cli_doctor
 from .health import container_logs
 from .host import host_info
@@ -8378,7 +8628,9 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/doctor":
             return self._send(200, cli_doctor())
         if route == "/api/instances":
-            return self._send(200, {"instances": docker_instances()})
+            return self._send(200, {"instances": docker_instances(), "burrow": burrow.status()})
+        if route == "/api/burrow":
+            return self._send(200, burrow.status(max_age=0))
         if route == "/api/stats":
             return self._send(200, {"stats": STATS.report(), "host": host_info()})
         if route == "/api/jobs":
@@ -8487,6 +8739,31 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, space.clean(everything=bool(body.get("all")),
                                                volumes=bool(body.get("volumes")),
                                                dry_run=bool(body.get("dry_run"))))
+        if route in ("/api/burrow/publish", "/api/burrow/unpublish"):
+            # Only desktops (by name), never an arbitrary port: whoever can
+            # reach this API must not be able to publish, say, ssh.
+            name = body.get("desktop") or ""
+            inst = next((i for i in docker_instances() if i["name"] == name), None)
+            if not inst:
+                return self._err(404, "no such desktop")
+            port = (inst.get("ports") or {}).get(str(KASM_HTTPS) if inst.get("profile") == "kasm" else str(SELKIES_HTTP))
+            if not port:
+                return self._err(400, "%s has no published port; start it first" % name)
+            try:
+                if route.endswith("/publish"):
+                    t = burrow.publish(port, inst.get("title") or name,
+                                       access="public" if body.get("access") == "public" else "login")
+                    return self._send(200, {"tunnel": t, "burrow": burrow.status()})
+                return self._send(200, dict(burrow.unpublish(port), burrow=burrow.status()))
+            except RuntimeError as ex:
+                return self._err(400, ex)
+        m = re.match(r"^/api/addons/([a-z0-9-]{2,40})/share$", route)
+        if m:
+            try:
+                return self._send(200, {"ways": addons.share(m.group(1), body.get("via"), on=body.get("on", True) is not False,
+                                                              access="public" if body.get("access") == "public" else "login")})
+            except addons.AddonError as ex:
+                return self._err(400, ex)
         if route == "/api/addons/add":
             try:
                 return self._send(200, {"addon": addons.add(body.get("source") or "")})
@@ -9568,12 +9845,16 @@ def tunnel_logfile(name):
     return os.path.join(LOGDIR, "tunnel-%s.log" % slug(name))
 
 
-def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0):
-    """Open a serveo tunnel.  Returns a dict describing it, or raises."""
+def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0, record=True, host="localhost"):
+    """Open a serveo tunnel.  Returns a dict describing it, or raises.
+
+    record=False leaves the desktop registry alone (addons keep their own
+    record); stop such a tunnel with kill_tunnel(info)."""
     if not have("ssh"):
         raise RuntimeError("ssh is not installed, cannot open a tunnel")
     ensure_dirs()
-    tunnel_stop(name)
+    if record:
+        tunnel_stop(name)
     log = tunnel_logfile(name)
     try:
         os.remove(log)
@@ -9595,7 +9876,7 @@ def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0):
     # "Permission denied (publickey,keyboard-interactive)".
     if key:
         cmd += ["-i", key, "-o", "IdentitiesOnly=yes"]
-    cmd += ["-R", "%s:localhost:%d" % (remote, int(local_port)), "serveo.net"]
+    cmd += ["-R", "%s:%s:%d" % (remote, host, int(local_port)), "serveo.net"]
 
     fh = open(log, "ab", buffering=0)
     proc = subprocess.Popen(cmd, stdout=fh, stderr=subprocess.STDOUT,
@@ -9637,8 +9918,21 @@ def tunnel_start(name, local_port, mode="http", subdomain=None, wait=50.0):
 
     info = {"url": url, "mode": mode, "pid": proc.pid, "port": int(local_port),
             "log": log, "started": time.time(), "alive": True}
-    reg_update(name, {"tunnel": info})
+    if record:
+        reg_update(name, {"tunnel": info})
     return info
+
+
+def kill_tunnel(info):
+    """Stop a tunnel from its info dict (what tunnel_start returned)."""
+    if info and info.get("pid") and pid_alive(info["pid"]):
+        try:
+            os.killpg(os.getpgid(int(info["pid"])), signal.SIGTERM)
+        except Exception:
+            try:
+                os.kill(int(info["pid"]), signal.SIGTERM)
+            except Exception:
+                pass
 
 
 def tunnel_status(name, info=None):
@@ -10989,7 +11283,8 @@ __FORGE_FILE_FORGE_WEBUI_PY__
       $("#tagAddons").textContent = A.list.length ? A.list.filter(function (a) { return a.installed; }).length + "/" + A.list.length : "0";
       if (F.view() === "addons") render();
     }).catch(function (e) {
-      if (F.view() === "addons" && !A.list) $("#addonList").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
+      if (window.console) console.error("addons:", e);
+      if (F.view() === "addons") $("#addonList").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
     });
   }
 
@@ -11018,6 +11313,8 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     if (!a.installed) {
       main = '<button class="btn primary" data-ad="install" data-id="' + h(a.id) + '"' + (busy || a.problems.length ? " disabled" : "") + ">" +
         (found ? F.I.plug + " Link it" : F.I.save + " Install") + "</button>";
+    } else if (a.ways) {
+      main = '<button class="btn primary" data-ad="open" data-id="' + h(a.id) + '">' + F.I.open + " Open</button>";
     } else if (a.open_url) {
       main = '<a class="btn primary" href="' + h(a.open_url) + '" target="_blank" rel="noopener">' + F.I.open + " Open</a>";
     }
@@ -11198,13 +11495,51 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     }
     A.es = F.sse("/api/job/" + job.id + "/events", {
       snapshot: function (s) { prog(s.progress, s.label); },
-      log: function (d) { line(d.line, d.stream === "err" ? "e" : ""); },
-      phase: function (d) { prog(d.progress, d.label); line("▸ " + d.label, "i"); },
-      progress: function (d) { prog(d.progress); },
-      done: function (d) { finish(true, d); },
-      error: function (d) { if (d && d.message) { line(d.message, "e"); finish(false, d); } },
+      // job events arrive as {seq, t, type, data: {...}}; snapshots and finals are bare
+      log: function (e) { var d = e.data || e; line(d.line, d.stream === "err" ? "e" : ""); },
+      phase: function (e) { var d = e.data || e; prog(d.progress, d.label); line("▸ " + d.label, "i"); },
+      progress: function (e) { var d = e.data || e; prog(d.progress); },
+      done: function (e) { finish(true, e.data || e); },
       final: function (s) { if (s.status === "done") finish(true, s.result); else if (s.status !== "running") finish(false, s.error); }
     });
+  }
+
+  /* -------------------------------------------------------------- open */
+  // The same chooser as a desktop's: this machine, this network, a serveo
+  // public link, Burrow. Only for addons whose status script names a port.
+  function share(a, via, on) {
+    return F.api("/api/addons/" + encodeURIComponent(a.id) + "/share", { body: { via: via, on: on } }).then(function (r) {
+      a.ways = r.ways;
+      openAddon(a);
+      load();
+    });
+  }
+
+  function openAddon(a) {
+    var L = a.ways;
+    var rows = [{ icon: "home", label: "This machine", url: L.local }];
+    var net = F.networkUrl(L.local);
+    if (net && net !== L.local) rows.push({ icon: "plug", label: "This network", url: net });
+    var bt = L.burrow && L.burrow.tunnel;
+    if (a.open_url && a.open_url !== L.local && a.open_url !== net && !(bt && a.open_url === bt.url)) {
+      rows.unshift({ icon: "open", label: "Its own address", url: a.open_url });
+    }
+    rows.push(L.serveo && L.serveo.alive
+      ? { icon: "globe", label: "Public link", url: L.serveo.url, pill: "serveo", buttons: [
+          { label: "Drop", cls: "ghost danger", busy: "Dropping…", run: function () { return share(a, "serveo", false); } }] }
+      : { icon: "globe", label: "Public link", sub: L.serveo ? "The serveo link went down." : "A random serveousercontent.com address anyone can open.",
+          buttons: [{ label: L.serveo ? "Reopen public link" : "Make a public link", icon: "plug", busy: "Opening (up to a minute)…",
+                      run: function () { return share(a, "serveo", true); } }] });
+    var b = L.burrow || {};
+    if (b.installed && a.id !== "burrow") {
+      if (!b.running) rows.push({ icon: "lock", label: "Burrow", sub: "Burrow is installed but not answering." });
+      else if (bt) rows.push({ icon: "lock", label: "Burrow", url: bt.url, sub: bt.url ? "" : "Getting an address…",
+          pill: bt.access === "public" ? "public" : "login", pillCls: bt.access === "public" ? "" : "up",
+          buttons: [{ label: "Unpublish", cls: "ghost danger", busy: "Removing…", run: function () { return share(a, "burrow", false); } }] });
+      else rows.push({ icon: "lock", label: "Burrow", sub: "Its own address, behind Burrow's login.",
+          buttons: [{ label: "Publish through Burrow", icon: "lock", busy: "Publishing…", run: function () { return share(a, "burrow", true); } }] });
+    }
+    F.linkChooser("Open " + a.name, "", rows);
   }
 
   function confirmBox(title, text, okLabel, extra, cb) {
@@ -11226,7 +11561,8 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     if (!a) return;
     var menu = t.closest(".menu");
     if (menu) menu.hidden = true;
-    if (what === "install") installForm(a);
+    if (what === "open") openAddon(a);
+    else if (what === "install") installForm(a);
     else if (what === "update") runJob(a, "update", {}, (a.installed ? "Updating " : "Fetching ") + a.name);
     else if (what === "action") {
       var go = function () { runJob(a, "action", { action: t.dataset.action }, a.name + ": " + t.textContent.trim()); };
@@ -12929,6 +13265,29 @@ html[data-theme="ember"] {
     radial-gradient(1200px 800px at 50% 110%, rgba(200, 110, 40, 0.10), transparent 60%),
     linear-gradient(180deg, #120d0a 0%, #0e0b09 60%, #0b0907 100%);
 }
+
+/* ================================================================ link chooser (Open desktop / Open addon) */
+.lk { display: grid; gap: 8px; }
+.lk-intro { margin: 0 0 12px; }
+.lk-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-m);
+          background: rgba(var(--ink), 0.03); min-width: 0; }
+.lk-row.off { background: transparent; border-style: dashed; }
+.lk-ic { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--acc-soft); color: var(--acc); }
+.lk-row.off .lk-ic { background: rgba(var(--ink), 0.05); color: var(--dim); }
+.lk-ic svg { width: 17px; height: 17px; }
+.lk-t { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.lk-t b { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+.lk-t > span { font-size: 12.5px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk-t > span.mono { font-size: 12px; color: var(--txt); }
+.lk-acts { display: flex; align-items: center; gap: 6px; flex: none; }
+.lk-acts .btn svg { width: 14px; height: 14px; }
+.spin-sm { display: inline-block; width: 12px; height: 12px; border: 1.5px solid rgba(var(--ink), 0.25); border-top-color: var(--txt);
+           border-radius: 50%; animation: spinlk 0.7s linear infinite; }
+@keyframes spinlk { to { transform: rotate(360deg); } }
+@media (max-width: 620px) {
+  .lk-row { flex-wrap: wrap; }
+  .lk-acts { width: 100%; justify-content: flex-end; }
+}
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -13091,7 +13450,8 @@ __FORGE_FILE_WEB_APP_CSS__
     info: null, gallery: [], shotIdx: 0,
     filters: { q: "", family: "", weight: "", kind: "", sort: "beauty" },
     smart: { taste: "balanced", purpose: "general" },
-    lite: false
+    lite: false,
+    burrow: null
   };
 
   /* ------------------------------------------------------------ lite mode */
@@ -13167,6 +13527,7 @@ __FORGE_FILE_WEB_APP_CSS__
       setInterval(refreshHost, 15000);
       pollUpdate();
       pollLife();
+      api("/api/burrow").then(function (b) { S.burrow = b; S.instKey = ""; if (S.view === "manager") renderManager(); }).catch(function () {});
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
         '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
@@ -13204,6 +13565,7 @@ __FORGE_FILE_WEB_APP_CSS__
     if (S.view === "manager") refreshJobs();
     return api("/api/instances").then(function (r) {
       S.instances = r.instances || [];
+      S.burrow = r.burrow || null;
       renderRail();
       if (S.view === "manager") renderManager();
     }).catch(function () {});
@@ -13913,8 +14275,9 @@ __FORGE_FILE_WEB_APP_CSS__
         (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
         i.autostart ? 1 : 0, i.auth ? i.auth.user : "",
         i.session ? [i.session.wm, i.session.mode, i.session.screen, i.session.viewers,
-          Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min].join(":");
-    }).join("|");
+          Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min,
+        (burrowFor(i) || {}).url || ""].join(":");
+    }).join("|") + "|b" + (S.burrow && S.burrow.running ? 1 : 0);
   }
 
   function renderManager() {
@@ -13953,9 +14316,100 @@ __FORGE_FILE_WEB_APP_CSS__
     return { head: head, tail: "." + parts.join(".") + (m[2] || "") };
   }
 
+  /* ------------------------------------------------------- ways to open */
+  // A desktop (or an addon) can be reached up to four ways: on this machine,
+  // from this network (the address this page came from), through a serveo
+  // public link, and through Burrow when it is installed. The chooser lists
+  // them all, with buttons to make the missing ones.
+  function deskPort(i) {
+    return (i.ports || {})[i.profile === "kasm" ? "6901" : "3000"] || null;
+  }
+  function burrowFor(i) {
+    var b = S.burrow, port = deskPort(i);
+    if (!b || !b.running || !port) return null;
+    var mine = (b.tunnels || []).filter(function (t) { return t.targetPort === port; });
+    return mine[0] || null;
+  }
+  function networkUrl(localUrl) {
+    var host = location.hostname;
+    if (!localUrl || /^(localhost|127\.0\.0\.1|\[?::1\]?)$/.test(host)) return null;
+    return localUrl.replace(/^(https?:\/\/)[^/:]+/, "$1" + (host.indexOf(":") >= 0 ? "[" + host + "]" : host));
+  }
+
+  // rows: [{icon, label, sub, url, pill, pillCls, buttons: [{label, cls, icon, run}]}]
+  function linkChooser(title, intro, rows) {
+    var html = (intro ? '<p class="sub lk-intro">' + intro + "</p>" : "") + '<div class="lk">' + rows.map(function (r, n) {
+      var acts = "";
+      if (r.url) {
+        acts += '<button class="iconbtn" data-copy="' + h(r.url) + '" title="Copy">' + I.copy + "</button>" +
+          '<a class="btn sm primary" href="' + h(r.url) + '" target="_blank" rel="noopener">' + I.open + "Open</a>";
+      }
+      (r.buttons || []).forEach(function (b, k) {
+        acts += '<button class="btn sm ' + (b.cls || "") + '" data-lk="' + n + ":" + k + '">' + (b.icon ? I[b.icon] : "") + h(b.label) + "</button>";
+      });
+      return '<div class="lk-row' + (r.url ? "" : " off") + '"><span class="lk-ic">' + I[r.icon] + "</span>" +
+        '<div class="lk-t"><b>' + h(r.label) + (r.pill ? ' <span class="pill ' + (r.pillCls || "") + '"><i></i>' + h(r.pill) + "</span>" : "") +
+        "</b><span" + (r.url ? ' class="mono"' : "") + ">" + h(r.url || r.sub || "") + "</span></div>" +
+        '<div class="lk-acts">' + acts + "</div></div>";
+    }).join("") + "</div>";
+    openModal(title, html);
+    Array.prototype.forEach.call(document.querySelectorAll("#modalBody [data-lk]"), function (el) {
+      el.onclick = function () {
+        var nk = el.dataset.lk.split(":"), b = rows[+nk[0]].buttons[+nk[1]];
+        el.disabled = true;
+        el.innerHTML = '<span class="spin-sm"></span>' + h(b.busy || "Working\u2026");
+        Promise.resolve(b.run()).catch(function (e) {
+          toast(b.label + " failed", e.message, "bad");
+          el.disabled = false;
+          el.textContent = b.label;
+        });
+      };
+    });
+  }
+
+  function openDesktop(name) {
+    var i = S.instances.filter(function (x) { return x.name === name; })[0];
+    if (!i) return;
+    var tun = (i.tunnel && i.tunnel.url) ? i.tunnel : null;
+    var b = S.burrow || {};
+    var bt = burrowFor(i);
+    var rows = [{ icon: "home", label: "This machine", url: i.local_url }];
+    var net = networkUrl(i.local_url);
+    if (net) rows.push({ icon: "plug", label: "This network", url: net });
+    rows.push(tun && tun.alive
+      ? { icon: "globe", label: "Public link", url: tun.url, pill: "serveo", buttons: [
+          { label: "Drop", cls: "ghost danger", busy: "Dropping\u2026", run: function () { closeModal(); instAction(name, "untunnel"); } }] }
+      : { icon: "globe", label: "Public link", sub: tun ? "The serveo link went down." : "A random serveousercontent.com address anyone can open.",
+          buttons: [{ label: tun ? "Reopen public link" : "Make a public link", icon: "plug", busy: "Opening\u2026",
+                      run: function () { closeModal(); instAction(name, "tunnel"); } }] });
+    if (b.installed) {
+      if (!b.running) {
+        rows.push({ icon: "lock", label: "Burrow", sub: "Burrow is installed but not answering" + (b.error ? ": " + b.error : "") + "." });
+      } else if (bt) {
+        rows.push({ icon: "lock", label: "Burrow", url: bt.url, sub: bt.url ? "" : "Getting an address\u2026",
+                    pill: bt.access === "public" ? "public" : "login", pillCls: bt.access === "public" ? "" : "up",
+                    buttons: [{ label: "Unpublish", cls: "ghost danger", busy: "Removing\u2026", run: function () {
+                      return api("/api/burrow/unpublish", { body: { desktop: name } }).then(function (r) {
+                        S.burrow = r.burrow; S.instKey = ""; renderManager(); openDesktop(name); toast("No longer published through Burrow", "", "ok");
+                      });
+                    } }] });
+      } else {
+        rows.push({ icon: "lock", label: "Burrow", sub: "Its own address (" + (b.pattern || "Burrow") + "), behind Burrow's login.",
+                    buttons: [{ label: "Publish through Burrow", icon: "lock", busy: "Publishing\u2026", run: function () {
+                      return api("/api/burrow/publish", { body: { desktop: name } }).then(function (r) {
+                        S.burrow = r.burrow; S.instKey = ""; renderManager(); openDesktop(name);
+                        toast("Published through Burrow", (r.tunnel && r.tunnel.url) || "its address is on the way", "ok");
+                      });
+                    } }] });
+      }
+    }
+    linkChooser("Open " + i.title, "", rows);
+  }
+
   function mcCard(i) {
     var running = i.running;
     var tun = (i.tunnel && i.tunnel.url) ? i.tunnel : null;
+    var bt = burrowFor(i);
     var lim = i.limits || {};
     var fam = (S.boot && S.boot.family_labels && S.boot.family_labels[i.family]) || i.family;
     var rows = "";
@@ -13970,6 +14424,11 @@ __FORGE_FILE_WEB_APP_CSS__
         h(sh.tail) + "</span>", tun.url, tun.url, "pub" + (tun.alive ? "" : " down"),
         tun.alive ? "" : "tunnel is down, use the menu to reopen it");
     }
+    if (bt && bt.url) {
+      var bh = shortHost(bt.url);
+      rows += arow("lock", "Burrow", '<span>' + h(bh.head) + '</span><span class="muted">' + h(bh.tail) + "</span>",
+        bt.url, bt.url, "pub", bt.access === "public" ? "published through Burrow, public" : "published through Burrow, behind its login");
+    }
     if (i.auth) {
       rows += '<div class="arow"><span class="ic">' + I.lock + '</span><span class="lab">Sign-in</span>' +
         '<span class="val" data-secret="' + h(i.name) + '"><span>' + h(i.auth.user) +
@@ -13980,8 +14439,7 @@ __FORGE_FILE_WEB_APP_CSS__
     }
 
     var actions = running
-      ? '<a class="btn primary" href="' + h(i.local_url || "#") + '" target="_blank" rel="noopener">' +
-        I.open + "Open desktop</a>" +
+      ? '<button class="btn primary" data-open="' + h(i.name) + '">' + I.open + "Open desktop</button>" +
         '<button class="btn" data-drawer="' + h(i.name) + '">' + I.term + "Shell</button>" +
         '<button class="btn" data-act="stop">' + I.stop + "Stop</button>"
       : '<button class="btn primary" data-act="start">' + I.play + "Start</button>" +
@@ -14899,6 +15357,7 @@ __FORGE_FILE_WEB_APP_CSS__
       if (!t.closest(".menu")) closeMenus();
 
       var x;
+      if ((x = t.closest("[data-open]"))) { openDesktop(x.dataset.open); return; }
       if ((x = t.closest("[data-drawer]"))) { toggleDrawer(x.dataset.drawer); return; }
       if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy); return; }
       if ((x = t.closest("[data-back]"))) { show(x.dataset.back); return; }
@@ -15004,6 +15463,7 @@ __FORGE_FILE_WEB_APP_CSS__
   window.Forge = {
     api: api, sse: sse, h: h, toast: toast, copy: copy, ago: ago, I: I,
     openModal: openModal, closeModal: closeModal, show: show,
+    linkChooser: linkChooser, networkUrl: networkUrl,
     view: function () { return S.view; }
   };
 
@@ -17013,7 +17473,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.0"
+FORGE_VERSION="1.10.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
