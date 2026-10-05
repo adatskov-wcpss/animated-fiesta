@@ -42,6 +42,7 @@
     var st = a.status || {};
     var busy = !!A.busy[a.id];
     var found = !a.installed && a.detected && a.detected.found;
+    var hasUpdate = !a.update_pending && a.remote && a.remote.up_to_date === false;
     var main = "";
     if (!a.installed) {
       main = '<button class="btn primary" data-ad="install" data-id="' + h(a.id) + '"' + (busy || a.problems.length ? " disabled" : "") + ">" +
@@ -67,7 +68,7 @@
     if (a.installed) menu.push('<button class="danger" data-ad="uninstall" data-id="' + h(a.id) + '">' + F.I.unplug + "Uninstall</button>");
     else menu.push('<button class="danger" data-ad="remove" data-id="' + h(a.id) + '">' + F.I.trash + "Remove from the list</button>");
 
-    return '<article class="ad' + (a.installed ? " on" : "") + (busy ? " busy" : "") + '" data-id="' + h(a.id) + '">' +
+    return '<article class="ad' + (a.installed ? " on" : "") + (busy ? " busy" : "") + (hasUpdate ? " has-update" : "") + '" data-id="' + h(a.id) + '">' +
       '<div class="ad-head">' +
         '<div class="ad-logo">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="" loading="lazy">' : "<span>" + h(a.name.charAt(0)) + "</span>") + "</div>" +
         '<div class="ad-t"><div class="ad-name">' + h(a.name) + ' <span class="ad-ver">v' + h(a.installed && a.installed_version ? a.installed_version : a.version) + "</span></div>" +
@@ -79,13 +80,13 @@
       (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
         ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
       (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +
-      (!a.update_pending && a.remote && a.remote.up_to_date === false ? '<div class="ad-note found">' + F.I.upd +
-        "<span>Commit <b class=\"mono\">" + h(String(a.remote.commit || "").slice(0, 7)) + "</b> is available" +
+      (hasUpdate ? '<div class="ad-note update"><span class="new-chip">NEW</span>' +
+        "<span>Commit <b class=\"mono\">" + h(String(a.remote.commit || "").slice(0, 7)) + "</b> is available to update to" +
         (a.remote.version && a.remote.version !== a.version ? " (v" + h(a.remote.version) + ")" : "") + ".</span></div>" : "") +
       (a.installed && st.detail && st.state !== "error" ? '<div class="ad-status mono">' + h(st.detail) + "</div>" : "") +
       '<div class="ad-foot">' + main +
         (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>"
-          : a.remote && a.remote.up_to_date === false ? '<button class="btn" data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
+          : hasUpdate ? '<button class="btn upd" data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
         '<span class="spacer"></span>' +
         '<div class="menu-wrap"><button class="iconbtn" data-menu title="More" aria-label="More">' + F.I.more + "</button>" +
         '<div class="menu" hidden>' + menu.join("") + "</div></div>" +
@@ -288,13 +289,13 @@
         var rem = r.remote || {}, commits = r.commits || [];
         var ver = rem.version && rem.version !== (local.installed_version || local.version)
           ? '<span class="up-ver"><span>v' + h(local.installed_version || local.version) + '</span>\u2192<b>v' + h(rem.version) + "</b></span>" : "";
-        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available</b><span>Commit <span class=\"mono\">" + h(rem.short) +
+        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available <span class=\"new-chip\">NEW</span></b><span>Commit <span class=\"mono\">" + h(rem.short) +
           "</span> is available to update to" + (commits.length > 1 ? ", " + commits.length + (r.more ? "+" : "") + " new commits" : "") + ".</span></div>" + ver + "</div>" +
           '<div class="up-k">New</div>' + commits.slice(0, 8).map(function (c) { return commitLine(c, r.source); }).join("") +
           (commits.length > 8 ? '<div class="faint up-more">and ' + (commits.length - 8) + " more</div>" : "") +
           '<div class="up-k">Installed now</div>' + commitLine(local, r.source) +
           '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
-          '<button class="btn ghost" id="upClose">Later</button><button class="btn primary" id="upGo">' + F.I.upd +
+          '<button class="btn ghost" id="upClose">Later</button><button class="btn upd" id="upGo">' + F.I.upd +
           " Update to " + h(rem.short) + "</button></div>";
       }
       st.outerHTML = html;

@@ -569,6 +569,7 @@ Things worth copying from it:
 - **One `lib.sh`, sourced by every script**, so paths and the service logic live in one place.
 - **`write_config` turns settings into a config file** in `FORGE_ADDON_DATA`, keeping state the user built up (the visit counter) across reinstalls.
 - **`port_taken` refuses a port something else holds**, but not its own previous instance, so a reinstall on the same port works.
+- **The unit's name includes a hash of `FORGE_ADDON_DATA`**, so every install has its own and none can stop another's.
 - **The service unit runs the app from `FORGE_ADDON_DIR`**. That path stays the same across updates, so `update.sh` only restarts.
 - **`wait_up` polls `/health`** before declaring success, and on failure prints the log's last lines, so the install's error message explains itself.
 - **The app listens on `FORGE_BIND`**, so it's reachable from exactly where the forge's web UI is.
@@ -611,6 +612,7 @@ selkies-cli addon status my-addon   # just the status script's answer
 - [ ] `install`, `uninstall`, `install` works.
 - [ ] `uninstall` leaves no process, service or container behind.
 - [ ] A reboot brings the app back (a systemd user unit, or `@reboot` in cron).
+- [ ] Service, container and file names are unique **per install** (derive them from `FORGE_ADDON_DATA`, as the example does with `cksum`). Two forges on one machine must never rewrite or remove each other's.
 - [ ] `status` answers within a second or two, even when the app is down.
 - [ ] `detect` is read-only and quick.
 - [ ] A failed install prints a clear last line.

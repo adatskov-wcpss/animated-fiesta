@@ -2,7 +2,7 @@
   "spec": 1,
   "id": "hello-forge",
   "name": "Hello Forge",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The example addon: a tiny web page that greets you and lists this machine's desktops through the Selkies Forge API. Read its folder to see every part of an addon at work.",
   "author": "Selkies Forge",
   "homepage": "https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge",

@@ -14,8 +14,12 @@ APPDIR="${FORGE_ADDON_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 CONF="$DATA/config.json"
 LOG="$DATA/hello-forge.log"
 PIDF="$DATA/hello-forge.pid"
-UNIT="forge-addon-hello-forge.service"
-UNIT_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT"
+# One unit per install: two forges on one machine (or a test copy) each get
+# their own, so one never rewrites or removes the other's service.
+UNIT="forge-addon-hello-forge-$(printf '%s' "$DATA" | cksum | cut -d' ' -f1).service"
+UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
+UNIT_FILE="$UNIT_DIR/$UNIT"
+OLD_UNIT="forge-addon-hello-forge.service"     # the shared name 1.0.0 used
 
 has_systemd() { command -v systemctl >/dev/null && systemctl --user show-environment >/dev/null 2>&1; }
 
@@ -61,7 +65,17 @@ port_taken() {  # by something that is not us
   ! curl -fs -m 2 "http://127.0.0.1:$1/health" 2>/dev/null | grep -q '"app": *"hello-forge"'
 }
 
+# 1.0.0 used one unit name for every install; take it over if it is ours.
+retire_old_unit() {
+  local old="$UNIT_DIR/$OLD_UNIT"
+  [ -f "$old" ] && grep -q -- "$CONF" "$old" || return 0
+  systemctl --user disable --now "$OLD_UNIT" >/dev/null 2>&1 || true
+  rm -f "$old"
+  systemctl --user daemon-reload 2>/dev/null || true
+}
+
 service_install() {
+  retire_old_unit
   if has_systemd; then
     mkdir -p "$(dirname "$UNIT_FILE")"
     cat > "$UNIT_FILE" <<UNIT
@@ -94,6 +108,7 @@ service_stop() {
 }
 
 service_remove() {
+  retire_old_unit
   service_stop
   if [ -f "$UNIT_FILE" ]; then
     systemctl --user disable "$UNIT" >/dev/null 2>&1 || true

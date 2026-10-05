@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.2"
+FORGE_VERSION="1.10.3"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -545,7 +545,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="b0e39cdac68b2cbb7a3ae268e56f27e9ce7dd0e487b331927a5c077eb5f94e6c"
+FORGE_SHA_FORGE_PATHS_PY="794440c87a16b0d78902399fd1c83b6be225001eebf50dcc85d8064e207fe891"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -562,8 +562,8 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="5b7c9f01217bb8ccdf12e7091abc3bccb2fdd800487cb5dea1e794fd8c79fd53"
-FORGE_SHA_WEB_APP_CSS="9e4f5f7d244014dd4507d2d9a573f42992c5f9e259f1a8e3df22d8d429e76184"
+FORGE_SHA_WEB_ADDONS_JS="40d9b069cdd7d909163d4e506d71ba7db6c35348a50f21833472e0f919a05953"
+FORGE_SHA_WEB_APP_CSS="6bf8ca570c4ca4e9e912c1a4a175807a8522bc614537fc6987848604dd4b61b4"
 FORGE_SHA_WEB_APP_JS="5ad2b3fee6a67b51c8d3067de9bbe6a30ff871d76febe31301848e9ae5b6cb57"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="aaa109e0e31dd24ecb74b1b46e75016cb44a9915a18480da8399d2f8b1e51aeb"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="52d99c8de3190521c1cfb8b0478341f36761bdbe3aceba248c80b786d6ca4325"
-FORGE_PAYLOAD_SHA="7ccf297ef71b7a5ae24a4e10629843ecf2e16ccec60b5736a80acb380e0a6fe7"
+FORGE_SHA_SELKIES_CLI="945197cff047efc29359b997da9a03ebc8cd531cf6bb0f1e5c5efcfe289af335"
+FORGE_PAYLOAD_SHA="40b238ff6fa62c15b410f955d565bcbbca749b7b01d36e05a32780da5e89c4cf"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -7642,7 +7642,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.2"
+VERSION = "1.10.3"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11393,6 +11393,7 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     var st = a.status || {};
     var busy = !!A.busy[a.id];
     var found = !a.installed && a.detected && a.detected.found;
+    var hasUpdate = !a.update_pending && a.remote && a.remote.up_to_date === false;
     var main = "";
     if (!a.installed) {
       main = '<button class="btn primary" data-ad="install" data-id="' + h(a.id) + '"' + (busy || a.problems.length ? " disabled" : "") + ">" +
@@ -11418,7 +11419,7 @@ __FORGE_FILE_FORGE_WEBUI_PY__
     if (a.installed) menu.push('<button class="danger" data-ad="uninstall" data-id="' + h(a.id) + '">' + F.I.unplug + "Uninstall</button>");
     else menu.push('<button class="danger" data-ad="remove" data-id="' + h(a.id) + '">' + F.I.trash + "Remove from the list</button>");
 
-    return '<article class="ad' + (a.installed ? " on" : "") + (busy ? " busy" : "") + '" data-id="' + h(a.id) + '">' +
+    return '<article class="ad' + (a.installed ? " on" : "") + (busy ? " busy" : "") + (hasUpdate ? " has-update" : "") + '" data-id="' + h(a.id) + '">' +
       '<div class="ad-head">' +
         '<div class="ad-logo">' + (a.logo ? '<img src="' + h(a.logo) + '" alt="" loading="lazy">' : "<span>" + h(a.name.charAt(0)) + "</span>") + "</div>" +
         '<div class="ad-t"><div class="ad-name">' + h(a.name) + ' <span class="ad-ver">v' + h(a.installed && a.installed_version ? a.installed_version : a.version) + "</span></div>" +
@@ -11430,13 +11431,13 @@ __FORGE_FILE_FORGE_WEBUI_PY__
       (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
         ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
       (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +
-      (!a.update_pending && a.remote && a.remote.up_to_date === false ? '<div class="ad-note found">' + F.I.upd +
-        "<span>Commit <b class=\"mono\">" + h(String(a.remote.commit || "").slice(0, 7)) + "</b> is available" +
+      (hasUpdate ? '<div class="ad-note update"><span class="new-chip">NEW</span>' +
+        "<span>Commit <b class=\"mono\">" + h(String(a.remote.commit || "").slice(0, 7)) + "</b> is available to update to" +
         (a.remote.version && a.remote.version !== a.version ? " (v" + h(a.remote.version) + ")" : "") + ".</span></div>" : "") +
       (a.installed && st.detail && st.state !== "error" ? '<div class="ad-status mono">' + h(st.detail) + "</div>" : "") +
       '<div class="ad-foot">' + main +
         (a.update_pending ? '<button class="btn" data-ad="update" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>"
-          : a.remote && a.remote.up_to_date === false ? '<button class="btn" data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
+          : hasUpdate ? '<button class="btn upd" data-ad="check" data-id="' + h(a.id) + '">' + F.I.upd + " Update</button>" : "") +
         '<span class="spacer"></span>' +
         '<div class="menu-wrap"><button class="iconbtn" data-menu title="More" aria-label="More">' + F.I.more + "</button>" +
         '<div class="menu" hidden>' + menu.join("") + "</div></div>" +
@@ -11639,13 +11640,13 @@ __FORGE_FILE_FORGE_WEBUI_PY__
         var rem = r.remote || {}, commits = r.commits || [];
         var ver = rem.version && rem.version !== (local.installed_version || local.version)
           ? '<span class="up-ver"><span>v' + h(local.installed_version || local.version) + '</span>\u2192<b>v' + h(rem.version) + "</b></span>" : "";
-        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available</b><span>Commit <span class=\"mono\">" + h(rem.short) +
+        html = '<div class="up-state new">' + F.I.upd + "<div><b>Update available <span class=\"new-chip\">NEW</span></b><span>Commit <span class=\"mono\">" + h(rem.short) +
           "</span> is available to update to" + (commits.length > 1 ? ", " + commits.length + (r.more ? "+" : "") + " new commits" : "") + ".</span></div>" + ver + "</div>" +
           '<div class="up-k">New</div>' + commits.slice(0, 8).map(function (c) { return commitLine(c, r.source); }).join("") +
           (commits.length > 8 ? '<div class="faint up-more">and ' + (commits.length - 8) + " more</div>" : "") +
           '<div class="up-k">Installed now</div>' + commitLine(local, r.source) +
           '<div class="row end up-foot"><span class="faint">Checked ' + ago(r.checked) + "</span><span class=\"spacer\"></span>" +
-          '<button class="btn ghost" id="upClose">Later</button><button class="btn primary" id="upGo">' + F.I.upd +
+          '<button class="btn ghost" id="upClose">Later</button><button class="btn upd" id="upGo">' + F.I.upd +
           " Update to " + h(rem.short) + "</button></div>";
       }
       st.outerHTML = html;
@@ -13482,6 +13483,24 @@ html[data-theme="ember"] {
 .up-foot { align-items: center; gap: 8px; margin-top: 8px; }
 .up-foot .faint { font-size: 12px; color: var(--dim-2); }
 @media (max-width: 620px) { .up-state { flex-wrap: wrap; } .up-ver { width: 100%; } }
+
+/* ================================================================ addon cards: status pill, updates */
+.ad-head .pill { flex: none; white-space: nowrap; align-self: flex-start; }
+/* an update waiting: green, hard to miss, in every theme */
+.ad.has-update { border-color: rgba(61, 220, 151, 0.5); box-shadow: var(--sh), 0 0 0 1px rgba(61, 220, 151, 0.12), 0 0 46px -14px rgba(61, 220, 151, 0.45); }
+html body .ad.has-update:hover { border-color: rgba(61, 220, 151, 0.7); }
+.ad-note.update { align-items: center; border-color: rgba(61, 220, 151, 0.5); background: rgba(61, 220, 151, 0.1); color: var(--ok-txt); }
+.ad-note.update b { color: var(--ok-txt); }
+.new-chip { display: inline-flex; align-items: center; flex: none; padding: 2px 7px; border-radius: 999px; background: var(--ok); color: #03140b;
+            font: 800 10px/1.4 var(--mono); letter-spacing: 0.12em; box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.6); animation: newglow 2.2s ease-out infinite; }
+@keyframes newglow { 0% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0.55); } 70% { box-shadow: 0 0 0 7px rgba(61, 220, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(61, 220, 151, 0); } }
+html.lite .new-chip { animation: none; }
+html body .btn.upd { background: #3ddc97; border-color: transparent; color: #03140b; font-weight: 700;
+                     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 8px 22px -10px rgba(61, 220, 151, 0.8); }
+html body .btn.upd:hover { background: #5ae8ab; border-color: transparent; }
+.up-state.new { border-color: rgba(61, 220, 151, 0.5); background: rgba(61, 220, 151, 0.09); }
+.up-state.new > svg { color: var(--ok); }
+.up-state.new b { display: flex; align-items: center; gap: 8px; }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -17667,7 +17686,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.2"
+FORGE_VERSION="1.10.3"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

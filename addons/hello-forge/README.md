@@ -31,4 +31,4 @@ https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge
 | `ACCENT` | select | `blue` | blue, green, amber, black and white |
 | `SHOW_DESKTOPS` | bool | on | list the forge's desktops |
 
-Needs `python3` and `curl`. Runs as a systemd user service (`forge-addon-hello-forge.service`) when there is one, otherwise in the background. MIT licensed, like the forge: copy it as the start of your own addon.
+Needs `python3` and `curl`. Runs as a systemd user service (`forge-addon-hello-forge-<id>.service`, one per install) when there is one, otherwise in the background. MIT licensed, like the forge: copy it as the start of your own addon.
