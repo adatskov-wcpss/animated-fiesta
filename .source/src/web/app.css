@@ -1731,7 +1731,9 @@ html body .btn.upd, .uc-go { position: relative; overflow: hidden; display: inli
   color: var(--upd-ink); font: inherit; font-weight: 750; cursor: pointer;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 10px 28px -10px rgba(var(--upd-rgb), 0.9), 0 0 0 1px rgba(var(--upd-rgb), 0.35);
   transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), filter 0.15s; }
-html body .btn.upd:hover, .uc-go:hover { transform: translateY(-1px); filter: brightness(1.06);
+/* restate the green on hover: every theme's .btn:hover would otherwise paint it dark */
+html body .btn.upd:hover, html body .btn.upd:focus-visible, .uc-go:hover { transform: translateY(-1px); filter: brightness(1.06);
+  background: linear-gradient(135deg, var(--upd-hi), var(--upd) 55%, var(--upd-deep)); color: var(--upd-ink); border-color: transparent;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset, 0 16px 36px -10px rgba(var(--upd-rgb), 1), 0 0 0 1px rgba(var(--upd-rgb), 0.5); }
 html body .btn.upd:active, .uc-go:active { transform: translateY(0); }
 html body .btn.upd svg, .uc-go svg { width: 16px; height: 16px; }

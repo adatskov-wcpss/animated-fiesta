@@ -26,9 +26,14 @@ _LOCK = threading.Lock()
 
 
 def discovery():
-    base = os.environ.get("BURROW_CONFIG_DIR") or os.path.join(
-        os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config"), "burrow")
-    return jload(os.path.join(base, "burrow.json"), None)
+    """Burrow on its own, or inside Aegis (github.com/alexd-aero/aegis), which
+    carries Burrow as a module and the same control socket."""
+    cfg = os.environ.get("XDG_CONFIG_HOME") or os.path.join(os.path.expanduser("~"), ".config")
+    for env, name, file in (("AEGIS_CONFIG_DIR", "aegis", "aegis.json"), ("BURROW_CONFIG_DIR", "burrow", "burrow.json")):
+        d = jload(os.path.join(os.environ.get(env) or os.path.join(cfg, name), file), None)
+        if d:
+            return d
+    return None
 
 
 def socket_path():

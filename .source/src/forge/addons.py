@@ -59,9 +59,10 @@ TIMEOUT = {"detect": 20, "status": 15, "install": 3600, "update": 3600,
            "uninstall": 900, "action": 900}
 ARCH_ALIASES = {"amd64": "x86_64", "x64": "x86_64", "arm64": "aarch64", "armhf": "armv7l"}
 
-# Burrow (github.com/alexd-aero/burrow) keeps its drop-in folder here; the
-# forge registers itself whenever Burrow is on this machine, however it got there.
-KNOWN_INTEGRATION_DIRS = ("~/.config/burrow/integrations",)
+# Burrow (github.com/alexd-aero/burrow) and Aegis (github.com/alexd-aero/aegis)
+# keep their drop-in folders here; the forge registers itself whenever either
+# is on this machine, however it got there.
+KNOWN_INTEGRATION_DIRS = ("~/.config/burrow/integrations", "~/.config/aegis/integrations")
 
 FORGE_LOGO = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
               '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
