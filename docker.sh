@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.8"
+FORGE_VERSION="1.10.9"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,7 +528,7 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_ADDONS_PY="f390964355395ae28df3ae5e36b4fc3cf59f474b6aaf007b43daedbe76c30664"
+FORGE_SHA_FORGE_ADDONS_PY="3078904ce67a88e1322f8657f4e21d613d427a883c26dfbe4b91f335f0ef7a60"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_BURROW_PY="5a4d6f3633981f6c5a8523b2540e40ed68391b759e188c08f712e0bedd82c65c"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
@@ -545,7 +545,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="e61ab63591cf1f7b845bda3a703b7a7b9f76f0923f9dea0ca1ec947fda3db66f"
+FORGE_SHA_FORGE_PATHS_PY="68fb92dd6cd1c32ae00db9025dce2ae60e75eb4848adafd91b97f6f9fb5cc54b"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -562,8 +562,8 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="27710bd877e1330427c45998fc0a1592e7bbb8f3c84052b0d9ee809b9152b46d"
-FORGE_SHA_WEB_APP_CSS="b840d86ad0f3b64c5b4c2c058b692a1cfd91f61d14bf0f25073a0dbc6dacefec"
+FORGE_SHA_WEB_ADDONS_JS="26e2821dd5f79b659011a24a48433c1c2356e0d6bae97ef62a0e356e1bb0c443"
+FORGE_SHA_WEB_APP_CSS="549513b6eb819ca89af71c3da80ba0a0537f3129bafea4d38421b013de5f9561"
 FORGE_SHA_WEB_APP_JS="59954908c608904af7ab61fa8f5fc28d7c704688f029d1cef302e8ccd4f7029a"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="082dcf8d2f74e75266814e8923213668056486210f4198b2ce192b2f14ecc647"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="29e4368d887a3fbf87eb471df0b52fec4dbf335af658fcf65a5bac7a1056cf35"
-FORGE_PAYLOAD_SHA="3b8f2ad01a8ddbce091497c7aecabc55aab96fc80d677333f518cd791ac0562a"
+FORGE_SHA_SELKIES_CLI="e3df85018306d7420d56e893319653810129edd939a7f1e788bc92bd1abd78b7"
+FORGE_PAYLOAD_SHA="92d6b8cd5990f6600fd739c5905b6a8f630c4490c68875e8139851cd9ca10d72"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -962,6 +962,11 @@ def load_manifest(root):
         if not (p.startswith("~/") or p.startswith("$HOME/")) or ".." in p.split("/"):
             raise AddonError("integration.dir must be a folder under ~/ (e.g. ~/.config/myapp/integrations)")
         m["integration"] = {"dir": p}
+
+    rep = d.get("replaces") or []
+    if not isinstance(rep, list) or len(rep) > 8 or not all(isinstance(x, str) and ID_RE.match(x) for x in rep):
+        raise AddonError("\"replaces\" must be a list of addon ids, e.g. [\"old-name\"]")
+    m["replaces"] = [x for x in rep if x != m["id"]]
 
     m["links"] = []
     for ln in (d.get("links") or [])[:6]:
@@ -1838,6 +1843,15 @@ def scan(max_age=60.0):
         if m["id"] == "selkies-forge":
             continue                                  # the forge itself (an addon for Burrow)
         by_id.setdefault(m["id"], []).append((d, m))
+    # an addon that replaces older ones (renamed, merged) hides them
+    gone = set()
+    for places in by_id.values():
+        for _, m in places:
+            gone.update(m.get("replaces") or [])
+    for rec in reg.values():
+        gone.update((rec.get("manifest") or {}).get("replaces") or [])
+    for aid in [a for a in by_id if a in gone]:
+        del by_id[aid]
     out = []
     lock = threading.Lock()
 
@@ -8028,7 +8042,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.8"
+VERSION = "1.10.9"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11919,7 +11933,7 @@ __FORGE_FILE_FORGE_WEBUI_PY__
         '<span class="bridge-ends">' + (b.logos && b.logos.forge ? '<img src="' + h(b.logos.forge) + '" alt="">' : "") + "<i></i>" +
           (b.logos && b.logos.burrow ? '<img src="' + h(b.logos.burrow) + '" alt="">' : "") + "</span>" +
         '<span class="bridge-t"><b>Burrow bridge</b> <span class="sub">' + h(word) + " · " + n.ok + "/" + b.checks.length + " checks pass</span></span>" +
-        '<span class="pill ' + (b.state === "ok" ? "up" : "bad") + '"><i></i>' + (b.state === "ok" ? "secured" : b.state === "warn" ? "check" : "broken") + "</span>" +
+        '<span class="pill ' + (b.state === "ok" ? "up" : b.state === "warn" ? "warnp" : "bad") + '"><i></i>' + (b.state === "ok" ? "secured" : b.state === "warn" ? "check" : "broken") + "</span>" +
         '<span class="bridge-chev">' + (A.bridgeOpen ? "▴" : "▾") + "</span></button>" +
       (A.bridgeOpen ? '<ul class="bridge-list">' + b.checks.map(function (c) {
         return '<li class="' + c.state + '"><span class="bc-ico">' + ({ ok: "✓", warn: "!", fail: "✕", off: "–" }[c.state]) + "</span>" +
@@ -14125,6 +14139,8 @@ html[data-theme="stealth"] #modalPanel { background: linear-gradient(180deg, #12
 .fnd-p { font-size: 11.5px; opacity: .65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
 .ad-logo.sm { width: 38px; height: 38px; border-radius: 10px; flex: none; }
 .ad-logo.sm img { width: 38px; height: 38px; }
+.pill.warnp { color: #f2c14e; border-color: rgba(242, 193, 78, 0.38); background: rgba(242, 193, 78, 0.1); }
+.pill.warnp i { background: #f2c14e; }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -18315,7 +18331,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.8"
+FORGE_VERSION="1.10.9"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

@@ -1881,3 +1881,5 @@ html[data-theme="stealth"] #modalPanel { background: linear-gradient(180deg, #12
 .fnd-p { font-size: 11.5px; opacity: .65; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
 .ad-logo.sm { width: 38px; height: 38px; border-radius: 10px; flex: none; }
 .ad-logo.sm img { width: 38px; height: 38px; }
+.pill.warnp { color: #f2c14e; border-color: rgba(242, 193, 78, 0.38); background: rgba(242, 193, 78, 0.1); }
+.pill.warnp i { background: #f2c14e; }

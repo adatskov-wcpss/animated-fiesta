@@ -176,7 +176,7 @@
         '<span class="bridge-ends">' + (b.logos && b.logos.forge ? '<img src="' + h(b.logos.forge) + '" alt="">' : "") + "<i></i>" +
           (b.logos && b.logos.burrow ? '<img src="' + h(b.logos.burrow) + '" alt="">' : "") + "</span>" +
         '<span class="bridge-t"><b>Burrow bridge</b> <span class="sub">' + h(word) + " · " + n.ok + "/" + b.checks.length + " checks pass</span></span>" +
-        '<span class="pill ' + (b.state === "ok" ? "up" : "bad") + '"><i></i>' + (b.state === "ok" ? "secured" : b.state === "warn" ? "check" : "broken") + "</span>" +
+        '<span class="pill ' + (b.state === "ok" ? "up" : b.state === "warn" ? "warnp" : "bad") + '"><i></i>' + (b.state === "ok" ? "secured" : b.state === "warn" ? "check" : "broken") + "</span>" +
         '<span class="bridge-chev">' + (A.bridgeOpen ? "▴" : "▾") + "</span></button>" +
       (A.bridgeOpen ? '<ul class="bridge-list">' + b.checks.map(function (c) {
         return '<li class="' + c.state + '"><span class="bc-ico">' + ({ ok: "✓", warn: "!", fail: "✕", off: "–" }[c.state]) + "</span>" +

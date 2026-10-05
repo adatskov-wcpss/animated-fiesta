@@ -315,7 +315,8 @@ class UniversalFormatTest(unittest.TestCase):
         make_addon(os.path.join(home, "code", "gizmo"), {"id": "gizmo", "name": "Gizmo", "scripts": {
             "install": "install.sh", "detect": "detect.sh", "status": "status.sh"}},
             {"detect.sh": 'echo \'{"version":"0.9"}\'\n', "status.sh": 'echo \'{"state":"stopped"}\'\n'})
-        make_addon(os.path.join(home, "code", "other"), {"id": "other", "platforms": ["burrow"]})
+        make_addon(os.path.join(home, "code", "other"), {"id": "other", "platforms": ["burrow"], "replaces": ["oldgizmo"]})
+        make_addon(os.path.join(home, "code", "oldgizmo"), {"id": "oldgizmo"})      # replaced by "other": hidden
         os.makedirs(os.path.join(home, "code", "broken"))
         with open(os.path.join(home, "code", "broken", "forge-addon.json"), "w") as fh:
             fh.write("{nope")
@@ -328,6 +329,7 @@ class UniversalFormatTest(unittest.TestCase):
             self.assertTrue(by["gizmo"]["compatible"])
             self.assertFalse(by["other"]["compatible"])
             self.assertEqual(len(r["broken"]), 1)
+            self.assertNotIn("oldgizmo", by)
         finally:
             addons._scan_roots = old
             addons.forget_scan()

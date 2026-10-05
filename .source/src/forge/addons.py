@@ -337,6 +337,11 @@ def load_manifest(root):
             raise AddonError("integration.dir must be a folder under ~/ (e.g. ~/.config/myapp/integrations)")
         m["integration"] = {"dir": p}
 
+    rep = d.get("replaces") or []
+    if not isinstance(rep, list) or len(rep) > 8 or not all(isinstance(x, str) and ID_RE.match(x) for x in rep):
+        raise AddonError("\"replaces\" must be a list of addon ids, e.g. [\"old-name\"]")
+    m["replaces"] = [x for x in rep if x != m["id"]]
+
     m["links"] = []
     for ln in (d.get("links") or [])[:6]:
         if isinstance(ln, dict):
@@ -1212,6 +1217,15 @@ def scan(max_age=60.0):
         if m["id"] == "selkies-forge":
             continue                                  # the forge itself (an addon for Burrow)
         by_id.setdefault(m["id"], []).append((d, m))
+    # an addon that replaces older ones (renamed, merged) hides them
+    gone = set()
+    for places in by_id.values():
+        for _, m in places:
+            gone.update(m.get("replaces") or [])
+    for rec in reg.values():
+        gone.update((rec.get("manifest") or {}).get("replaces") or [])
+    for aid in [a for a in by_id if a in gone]:
+        del by_id[aid]
     out = []
     lock = threading.Lock()
 

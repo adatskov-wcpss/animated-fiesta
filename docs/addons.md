@@ -232,6 +232,7 @@ Push it to GitHub and anyone can paste the link. That's a complete addon. Everyt
 | `integration` | no | object | `{"dir": "~/.config/yourapp/integrations"}`: the forge drops a file describing itself there. See [Integrations](#integrations-when-the-forge-plugs-into-your-app). |
 | `links` | no | list, ≤ 6 | `[{"label": "Docs", "url": "https://…"}]`, shown in the card's menu. |
 | `platforms` | no | list | The hosts it is made for: `"selkies-forge"`, `"burrow"`. Leave it out and it runs on both. See below. |
+| `replaces` | no | list, ≤ 8 | Ids of addons this one supersedes (it was renamed, or two became one). The [smart scan](#found-on-this-machine-the-smart-scan) hides old copies of those. Aegis × Burrow lists `["aegis", "burrow"]`. |
 
 Unknown top-level fields are ignored, so a newer manifest still loads in an older forge. Unknown **script names** are an error, because a typo there (`"instal"`) would silently do nothing.
 
