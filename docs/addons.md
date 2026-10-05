@@ -301,6 +301,7 @@ Prints one JSON line (the last JSON line printed wins):
 | `url` | Where **Open** goes. It overrides the URL from `::open`, so it can follow changes (a new port, a linked domain). |
 | `version` | The version actually running, if you know it. |
 | `detail` | A short line under the description ("3 visits so far", "linked to example.com"). |
+| `name` | A name to show instead of the manifest's, while installed. For when the app is more than one thing: Aegis reports "Aegis × Burrow" while its Burrow module is on. |
 | `port` | The port your app's web page listens on. With it, **Open** offers every way in, like a desktop's: see [below](#ways-in-open). |
 
 Without a `status` script the card just says "installed", and **Open** uses the last `::open` URL.

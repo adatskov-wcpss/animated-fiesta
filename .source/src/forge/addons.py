@@ -584,6 +584,8 @@ def status(rec, max_age=8.0):
         st = {"state": str(info.get("state") or ("installed" if rc == 0 else "error"))[:20],
               "url": info.get("url") if re.match(r"^https?://\S+$", str(info.get("url") or "")) else rec.get("open_url"),
               "version": str(info.get("version") or "")[:30], "detail": str(info.get("detail") or "")[:200]}
+        if isinstance(info.get("name"), str) and info["name"].strip():
+            st["name"] = info["name"].strip()[:60]        # e.g. "Aegis × Burrow" while its module is on
         try:
             port = int(info.get("port") or 0)
         except (TypeError, ValueError):
@@ -1008,6 +1010,8 @@ def public(rec, with_status=False):
         out["status"] = st
         if st.get("url"):
             out["open_url"] = st["url"]
+        if st.get("name") and out["installed"]:
+            out["name"] = st["name"]
         if out["installed"]:
             try:
                 out["ways"] = links(rec, st)       # "links" is the manifest's doc links
