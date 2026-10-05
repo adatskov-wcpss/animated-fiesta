@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.9"
+FORGE_VERSION="1.10.10"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -528,11 +528,11 @@ install_extras() {
 
 FORGE_SHA_ENGINE_PY="c19b7564dcce3fe384ef85e99a7d4dff50f59db2d86a94369363ef0f3074ef0d"
 FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa536271ba27889cb1e3"
-FORGE_SHA_FORGE_ADDONS_PY="3078904ce67a88e1322f8657f4e21d613d427a883c26dfbe4b91f335f0ef7a60"
+FORGE_SHA_FORGE_ADDONS_PY="8838b0d65bb5ecb1052421cefb644071318e441be206ae43d6e78b35d4070e21"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_BURROW_PY="f052dd40b14e1ad6e62cf622826f5195481db41af5397f4ea84cfa7040e4f04c"
 FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
-FORGE_SHA_FORGE_CLI_PY="78c8dd8258cee01bacfb22840ed7988d94470d3b0857881749cd39e7c3ca332b"
+FORGE_SHA_FORGE_CLI_PY="45f525a768ca8ffb69008583d2e8ffdae095b7c35ca1b84ff73827108fb3ad59"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
 FORGE_SHA_FORGE_EVENTS_PY="3580b5654e071cb6e59f44c90dcfec9f5ea5d53358190e12722bf6017c497712"
 FORGE_SHA_FORGE_GPU_PY="18d779546907e20d334ca27f331d926c33b480b16c560d4ba265b55e0aca4cb3"
@@ -545,13 +545,13 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="68fb92dd6cd1c32ae00db9025dce2ae60e75eb4848adafd91b97f6f9fb5cc54b"
+FORGE_SHA_FORGE_PATHS_PY="48ea1053763be282f14ce5c7e791006a120f8cafb3a9981ba0be0b81ea7bf7ad"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
 FORGE_SHA_FORGE_RUNNER_PY="49ed1180baa2441188c328fc3af12307a8f33c214b3e9e7d101b0a6d39633ec2"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
-FORGE_SHA_FORGE_SERVER_PY="35e6b6d8344d988d0c960c9cc9e9b1857a1e15a7e077b6ae629e9257534046de"
+FORGE_SHA_FORGE_SERVER_PY="be904c8fc42261e4591c863adb64b59190f6f9a31ec9f799489c880182163e9f"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
 FORGE_SHA_FORGE_SPACE_PY="370c18a74bea1396490ff8a8654f947572e500aa15b2463179630339ace9a37a"
 FORGE_SHA_FORGE_STATS_PY="342e01783512fed766e667e13b3a3acf28ec53ac8395bf96e180b93f749e8fcc"
@@ -562,17 +562,17 @@ FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
 FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
-FORGE_SHA_WEB_ADDONS_JS="26e2821dd5f79b659011a24a48433c1c2356e0d6bae97ef62a0e356e1bb0c443"
+FORGE_SHA_WEB_ADDONS_JS="3669602e5a9d8d2c23cd67826dd40b63cb3972ae7a23cbbe8fdb4da85a3fb74a"
 FORGE_SHA_WEB_APP_CSS="549513b6eb819ca89af71c3da80ba0a0537f3129bafea4d38421b013de5f9561"
 FORGE_SHA_WEB_APP_JS="59954908c608904af7ab61fa8f5fc28d7c704688f029d1cef302e8ccd4f7029a"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_WEB_INDEX_HTML="082dcf8d2f74e75266814e8923213668056486210f4198b2ce192b2f14ecc647"
+FORGE_SHA_WEB_INDEX_HTML="74fcc9c609e562c5fe5bd7a287ba37234ce68317db64aaa3093cbaf7bc48afb2"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="e3df85018306d7420d56e893319653810129edd939a7f1e788bc92bd1abd78b7"
-FORGE_PAYLOAD_SHA="aa3ae5e5510b27b906a0b1d175069a4bcceaa4c62868017d684b73b400ab178d"
+FORGE_SHA_SELKIES_CLI="5bfd8fbeb6c0b3fa9bd4e64c591f096c0dc020e332fba4ff0b64cf060ddecd25"
+FORGE_PAYLOAD_SHA="2f0538cb7b0b9f756c5b903149b301d888ff169f1035b2fc22c97938633cc594"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -709,17 +709,27 @@ class AddonError(RuntimeError):
 
 
 # ------------------------------------------------------------------ sources
+# GitHub and Codeberg: OWNER/REPO/tree|blob/REF[/path]
 _HOSTED_TREE = re.compile(
-    r"^(https://(?:github\.com|gitlab\.com|codeberg\.org)/[^/\s]+/[^/\s#]+?)(?:\.git)?"
-    r"/(?:-/)?tree/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+    r"^(https://(?:github\.com|codeberg\.org)/[^/\s]+/[^/\s#]+?)(?:\.git)?"
+    r"/(?:tree|blob|src/branch)/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+# GitLab, gitlab.com or self-hosted, with subgroups: GROUP/SUB/.../REPO/-/tree|blob/REF[/path]
+_GITLAB_TREE = re.compile(r"^(https://[^/\s]+/[^\s#]+?)(?:\.git)?/-/(?:tree|blob)/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+# a download: .zip, .tar.gz, .tgz (GitHub's and GitLab's archive links included)
+_ARCHIVE = re.compile(r"^https?://[^\s#]+?\.(zip|tar\.gz|tgz)(?:\?[^\s#]*)?$", re.I)
+ARCHIVE_MAX = 200 * 1024 * 1024        # bytes downloaded
+ARCHIVE_UNPACKED = 500 * 1024 * 1024   # bytes once unpacked
+ARCHIVE_FILES = 20000
 
 
 def parse_source(text):
     """Turn what the person pasted into a fetchable source.
 
     https://github.com/OWNER/REPO                       the repository's root
-    https://github.com/OWNER/REPO/tree/BRANCH/a/folder  a folder on a branch
+    https://github.com/OWNER/REPO/tree/BRANCH/a/folder  a folder on a branch (/blob/ links to a file in it too)
+    https://gitlab.com/GROUP/SUB/REPO/-/tree/REF/a/b    GitLab, subgroups and self-hosted instances included
     https://example.com/repo.git#a/folder               any git URL, a folder in it
+    https://example.com/addon.zip#a/folder              a .zip, .tar.gz or .tgz download (inspected before use)
     git@host:owner/repo.git                             ssh, if your keys allow it
     /home/me/my-addon                                   a folder on this machine (development)
     """
@@ -735,10 +745,18 @@ def parse_source(text):
     if "#" in url:
         url, sub = url.split("#", 1)
     ref = None
-    m = _HOSTED_TREE.match(url)
+    if _ARCHIVE.match(url):
+        sub = sub.strip("/")
+        if sub and (".." in sub.split("/") or not re.match(r"^[A-Za-z0-9._/-]+$", sub)):
+            raise AddonError("The folder part of the link is not valid.")
+        fmt = "zip" if url.lower().split("?")[0].endswith(".zip") else "tar"
+        return {"kind": "archive", "url": url, "format": fmt, "ref": None, "subdir": sub, "display": raw}
+    m = _HOSTED_TREE.match(url) or _GITLAB_TREE.match(url)
     if m:
         url, ref = m.group(1), m.group(2)
         sub = sub or (m.group(3) or "")
+        if sub == MANIFEST or sub.endswith("/" + MANIFEST):     # a /blob/ link to the manifest itself
+            sub = sub[:-len(MANIFEST)]
     url = url.rstrip("/")
     if not re.match(r"^(https?://[^\s/]+/\S+|ssh://\S+|git@[^\s:]+:\S+)$", url):
         raise AddonError("That does not look like a git repository link.")
@@ -755,8 +773,91 @@ def _git(args, cwd=None, timeout=240):
     return p.returncode, p.stdout.decode("utf-8", "replace"), p.stderr.decode("utf-8", "replace")
 
 
+def _safe_member(name):
+    n = name.replace("\\", "/")
+    return bool(n) and not n.startswith("/") and ".." not in n.split("/") and not re.match(r"^[A-Za-z]:", n)
+
+
+def fetch_archive(source, dest):
+    """Download a .zip or .tar.gz and unpack it into dest, refusing anything
+    that could escape it (absolute paths, .., links) or that is too big. A
+    single top-level folder (GitHub and GitLab archives have one) is dropped.
+    Returns "sha256:<hex>" of the download, which stands in for a commit."""
+    import hashlib
+    import tarfile
+    import urllib.request
+    import zipfile
+    os.makedirs(dest)
+    blob = os.path.join(dest, ".download")
+    h = hashlib.sha256()
+    req = urllib.request.Request(source["url"], headers={"User-Agent": "selkies-forge/" + VERSION})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r, open(blob, "wb") as fh:
+            got = 0
+            while True:
+                chunk = r.read(1 << 16)
+                if not chunk:
+                    break
+                got += len(chunk)
+                if got > ARCHIVE_MAX:
+                    raise AddonError("The archive is larger than %d MB." % (ARCHIVE_MAX >> 20))
+                h.update(chunk)
+                fh.write(chunk)
+    except AddonError:
+        raise
+    except Exception as ex:
+        raise AddonError("Could not download %s: %s" % (source["display"], ex))
+    out = os.path.join(dest, ".unpacked")
+    os.makedirs(out)
+    total = 0
+    try:
+        if zipfile.is_zipfile(blob):
+            with zipfile.ZipFile(blob) as z:
+                infos = z.infolist()
+                if len(infos) > ARCHIVE_FILES:
+                    raise AddonError("The archive holds more than %d files." % ARCHIVE_FILES)
+                for i in infos:
+                    if not _safe_member(i.filename):
+                        raise AddonError("The archive has an unsafe path: %s" % i.filename[:120])
+                    if (i.external_attr >> 16) & 0o170000 == 0o120000:
+                        continue                                  # links are not unpacked
+                    total += i.file_size
+                    if total > ARCHIVE_UNPACKED:
+                        raise AddonError("The archive unpacks to more than %d MB." % (ARCHIVE_UNPACKED >> 20))
+                    z.extract(i, out)
+        else:
+            with tarfile.open(blob) as t:
+                members = t.getmembers()
+                if len(members) > ARCHIVE_FILES:
+                    raise AddonError("The archive holds more than %d files." % ARCHIVE_FILES)
+                keep = []
+                for mem in members:
+                    if not _safe_member(mem.name):
+                        raise AddonError("The archive has an unsafe path: %s" % mem.name[:120])
+                    if mem.isfile() or mem.isdir():
+                        total += mem.size
+                        keep.append(mem)
+                if total > ARCHIVE_UNPACKED:
+                    raise AddonError("The archive unpacks to more than %d MB." % (ARCHIVE_UNPACKED >> 20))
+                t.extractall(out, members=keep, filter="data")
+    except (zipfile.BadZipFile, tarfile.TarError, EOFError) as ex:
+        raise AddonError("That is not a valid .zip or .tar.gz archive: %s" % ex)
+    os.remove(blob)
+    root = out
+    names = os.listdir(out)
+    if len(names) == 1 and os.path.isdir(os.path.join(out, names[0])) and not os.path.isfile(os.path.join(out, MANIFEST)):
+        root = os.path.join(out, names[0])
+    for n in os.listdir(root):
+        os.rename(os.path.join(root, n), os.path.join(dest, n))
+    shutil.rmtree(out, ignore_errors=True)
+    return "sha256:" + h.hexdigest()
+
+
 def fetch(source, dest):
-    """Put the source's files in dest (a new folder). Returns the commit, if any."""
+    """Put the source's files in dest (a new folder). Returns the commit, if any
+    ("sha256:…" of the download, for an archive)."""
+    if source["kind"] == "archive":
+        return fetch_archive(source, dest)
     if source["kind"] == "local":
         shutil.copytree(source["path"], dest, symlinks=True,
                         ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__"))
@@ -1298,6 +1399,38 @@ def add(text):
     return public(rec)
 
 
+def inspect(text):
+    """Look at an addon without adding it or running anything: fetch it to a
+    scratch folder, validate forge-addon.json, and return its metadata."""
+    import base64
+    source = parse_source(text)
+    ensure_dirs()
+    os.makedirs(ADDONDIR, exist_ok=True)
+    tmp = tempfile.mkdtemp(prefix=".inspect-", dir=ADDONDIR)
+    try:
+        commit = fetch(source, os.path.join(tmp, "repo"))
+        root = os.path.join(tmp, "repo", source.get("subdir") or "")
+        if not os.path.isdir(root):
+            raise AddonError("There is no folder %s in it." % source["subdir"])
+        m = load_manifest(root)
+        logo = None
+        if m.get("logo"):
+            p = os.path.join(root, m["logo"])
+            if os.path.getsize(p) <= 65536:
+                with open(p, "rb") as fh:
+                    logo = "data:%s;base64,%s" % (IMAGE_TYPES[os.path.splitext(p)[1].lower()], base64.b64encode(fh.read()).decode())
+        files = sum(len(f) for _, _, f in os.walk(root))
+        return {"valid": True, "source": {k: source.get(k) for k in ("kind", "url", "ref", "subdir", "display", "format")},
+                "commit": commit, "manifest": {k: m[k] for k in ("id", "name", "version", "description", "author", "license",
+                                                                 "homepage", "platforms", "replaces", "requires", "links")},
+                "scripts": sorted(m["scripts"]), "actions": [a["label"] for a in m["actions"]],
+                "settings": [st["key"] for st in m["settings"]], "integration": m["integration"].get("dir"),
+                "logo": logo, "files": files, "problems": check_requirements(m),
+                "registered": m["id"] in _load()}
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def _clean_settings(rec, given):
     out = {}
     given = given or {}
@@ -1409,6 +1542,25 @@ def check_updates(aid):
     out = {"id": aid, "name": m["name"], "kind": src["kind"], "source": src.get("display"),
            "checked": time.time(), "local": {"commit": rec.get("commit"), "version": m["version"],
                                              "installed_version": rec.get("installed_version")}}
+    if src["kind"] == "archive":
+        # download it again: the same bytes mean nothing changed
+        tmp = tempfile.mkdtemp(prefix=".chk-", dir=ADDONDIR)
+        try:
+            digest = fetch_archive(src, os.path.join(tmp, "x"))
+            same = digest == rec.get("commit")
+            out["remote"] = {"commit": digest, "short": digest[7:14], "subject": "a new archive"}
+            try:
+                out["remote"]["version"] = load_manifest(os.path.join(tmp, "x", rec.get("subdir") or ""))["version"]
+            except AddonError:
+                out["remote"]["version"] = ""
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        out["up_to_date"] = same
+        out["note"] = "Checked by downloading the archive again." if same else "The archive at that link has changed."
+        _update(aid, {"remote": {"checked": out["checked"], "up_to_date": same, "commit": digest,
+                                 "version": out["remote"]["version"], "subject": "a new archive"}})
+        sync_integrations()
+        return out
     if src["kind"] != "git":
         out.update(up_to_date=None, note="This addon was added from a folder on this machine. "
                                          "Update copies the folder again.")
@@ -1960,6 +2112,9 @@ def sync_integrations():
         try:
             old = jload(path, None) or {}
             fresh = dict(forge_descriptor(d), updated=old.get("updated"))
+            mine, was = fresh.get("addon"), old.get("addon") or {}
+            if mine and mine.get("state") is None and was.get("id") == mine["id"]:
+                mine["state"] = was.get("state")      # status not asked lately: keep the last known one
             loose = os.path.exists(path) and os.stat(path).st_mode & 0o022
             if old == fresh and time.time() - float(old.get("updated") or 0) < 3600 and not loose:
                 continue
@@ -3404,7 +3559,7 @@ def stream_job(job, work_fn):
 
 def cli_addon(a):
     from . import addons
-    need = {"add": "a repository link", "info": "an addon id", "install": "an addon id",
+    need = {"add": "a repository link", "inspect": "a repository or archive link", "info": "an addon id", "install": "an addon id",
             "update": "an addon id", "uninstall": "an addon id", "remove": "an addon id",
             "action": "an addon id and an action", "status": "an addon id"}
     if a.verb in need and not a.target or a.verb == "action" and not a.extra:
@@ -3434,6 +3589,18 @@ def cli_addon(a):
                 for p_ in r["problems"]:
                     print("! %s" % p_)
                 print("install it: selkies-cli addon install %s" % r["id"])
+            return 0
+        if a.verb == "inspect":
+            r = addons.inspect(a.target)
+            if a.json:
+                print(json.dumps(r))
+            else:
+                m = r["manifest"]
+                print("valid addon: %s %s (%s)" % (m["name"], m["version"], m["id"]))
+                print("  platforms: %s · scripts: %s" % (", ".join(m["platforms"]), ", ".join(r["scripts"])))
+                print("  %d files · %s" % (r["files"], r["commit"] or "no commit"))
+                for p_ in r["problems"]:
+                    print("! %s" % p_)
             return 0
         if a.verb in ("info", "status"):
             r = addons.public(addons.get(a.target), with_status=True)
@@ -3619,7 +3786,7 @@ def main(argv=None):
 
     p = sub.add_parser("addon", help="addons: apps that install beside the forge (docs/addons.md)")
     p.add_argument("verb", choices=["list", "add", "info", "install", "update", "uninstall",
-                                    "remove", "action", "status", "sync"])
+                                    "remove", "action", "status", "sync", "inspect"])
     p.add_argument("target", nargs="?", help="a repository link (add) or an addon id")
     p.add_argument("extra", nargs="?", help="the action id (action)")
     p.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
@@ -8042,7 +8209,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.9"
+VERSION = "1.10.10"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -9252,6 +9419,11 @@ class Handler(BaseHTTPRequestHandler):
                                                               access="public" if body.get("access") == "public" else "login")})
             except addons.AddonError as ex:
                 return self._err(400, ex)
+        if route == "/api/addons/inspect":
+            try:
+                return self._send(200, addons.inspect(body.get("source") or ""))
+            except addons.AddonError as ex:
+                return self._send(200, {"valid": False, "error": str(ex)})
         if route == "/api/addons/add":
             try:
                 a = addons.add(body.get("source") or "")
@@ -11833,7 +12005,9 @@ __FORGE_FILE_FORGE_WEBUI_PY__
         statePill(a) +
       "</div>" +
       '<p class="ad-desc">' + h(a.description || "No description.") + "</p>" +
-      (a.problems.length ? '<div class="warnbox bad ad-note">This machine ' + h(a.problems.join("; ")) + ".</div>" : "") +
+      (a.problems.length ? '<div class="warnbox bad ad-note">' + h(a.problems.map(function (p) {
+        return (/^is made for/.test(p) ? "It " : "This machine ") + p;     // the first is about the addon, the rest about this machine
+      }).join(". ")) + ".</div>" : "") +
       (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
         ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
       (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +
@@ -16541,13 +16715,14 @@ __FORGE_FILE_WEB_BRANDS_JS__
         <form class="add-row" id="addonForm" autocomplete="off">
           <span class="add-ico" aria-hidden="true">⎘</span>
           <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
-                 placeholder="https://github.com/owner/repo   or a folder in one: …/tree/main/addons/my-addon" aria-label="Addon repository link">
+                 placeholder="https://github.com/owner/repo  ·  …/tree/main/a/folder  ·  a GitLab link  ·  https://…/addon.zip" aria-label="Addon repository link">
           <button class="btn primary" id="addonAdd" type="submit">Add</button>
         </form>
         <div class="add-hint">
-          <span>Addons run as you on this machine, like anything you install. Add the ones you trust.</span>
+          <span>Addons run as you on this machine, like anything you install. Add the ones you trust. Powered by the <a class="linkish" href="https://github.com/alexd-aero/weft" target="_blank" rel="noopener">Weft Architecture</a>.</span>
           <span class="spacer"></span>
           <button class="linkish" type="button" id="addonExample">Try the example addon</button>
+          <a class="linkish" href="https://github.com/alexd-aero/weft#-the-examples" target="_blank" rel="noopener">Weft examples</a>
           <a class="linkish" href="https://github.com/adatskov-wcpss/animated-fiesta/blob/main/docs/addons.md" target="_blank" rel="noopener">Make your own &rarr;</a>
         </div>
         <div id="addonAddMsg"></div>
@@ -18331,7 +18506,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.9"
+FORGE_VERSION="1.10.10"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -20102,7 +20277,7 @@ cmd_addon() {
       ;;
     add|info|status|remove|sync) engine addon "$verb" "$@" | sed 's/^E /  ✘ /; s/^/  /' ;;
     help|-h|--help)
-      printf '  selkies-cli addon list | add LINK | info ID | install ID [--set K=V] | update ID\n'
+      printf '  selkies-cli addon list | add LINK | inspect LINK | info ID | install ID [--set K=V] | update ID\n'
       printf '                    | uninstall ID [--purge] | remove ID | action ID ACTION | status ID\n' ;;
     *) die "unknown addon command: $verb (try: selkies-cli addon help)" ;;
   esac
@@ -21733,7 +21908,7 @@ cmd_addon() {
       ;;
     add|info|status|remove|sync) engine addon "$verb" "$@" | sed 's/^E /  ✘ /; s/^/  /' ;;
     help|-h|--help)
-      printf '  selkies-cli addon list | add LINK | info ID | install ID [--set K=V] | update ID\n'
+      printf '  selkies-cli addon list | add LINK | inspect LINK | info ID | install ID [--set K=V] | update ID\n'
       printf '                    | uninstall ID [--purge] | remove ID | action ID ACTION | status ID\n' ;;
     *) die "unknown addon command: $verb (try: selkies-cli addon help)" ;;
   esac

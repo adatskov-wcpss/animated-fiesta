@@ -2,7 +2,7 @@
   "spec": 1,
   "id": "selkies-forge",
   "name": "Selkies Forge",
-  "version": "1.10.8",
+  "version": "1.10.10",
   "description": "150+ Linux desktops, streamed to your browser: Ubuntu, Debian, Fedora, Arch, Kali, Alpine and more, each in its own container. As a Burrow addon it gets its own HTTPS address, and its desktops a card in Burrow with one-click publishing.",
   "author": "Selkies Forge",
   "homepage": "https://github.com/adatskov-wcpss/animated-fiesta",

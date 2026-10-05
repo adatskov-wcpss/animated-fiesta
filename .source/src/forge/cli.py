@@ -164,7 +164,7 @@ def stream_job(job, work_fn):
 
 def cli_addon(a):
     from . import addons
-    need = {"add": "a repository link", "info": "an addon id", "install": "an addon id",
+    need = {"add": "a repository link", "inspect": "a repository or archive link", "info": "an addon id", "install": "an addon id",
             "update": "an addon id", "uninstall": "an addon id", "remove": "an addon id",
             "action": "an addon id and an action", "status": "an addon id"}
     if a.verb in need and not a.target or a.verb == "action" and not a.extra:
@@ -194,6 +194,18 @@ def cli_addon(a):
                 for p_ in r["problems"]:
                     print("! %s" % p_)
                 print("install it: selkies-cli addon install %s" % r["id"])
+            return 0
+        if a.verb == "inspect":
+            r = addons.inspect(a.target)
+            if a.json:
+                print(json.dumps(r))
+            else:
+                m = r["manifest"]
+                print("valid addon: %s %s (%s)" % (m["name"], m["version"], m["id"]))
+                print("  platforms: %s · scripts: %s" % (", ".join(m["platforms"]), ", ".join(r["scripts"])))
+                print("  %d files · %s" % (r["files"], r["commit"] or "no commit"))
+                for p_ in r["problems"]:
+                    print("! %s" % p_)
             return 0
         if a.verb in ("info", "status"):
             r = addons.public(addons.get(a.target), with_status=True)
@@ -379,7 +391,7 @@ def main(argv=None):
 
     p = sub.add_parser("addon", help="addons: apps that install beside the forge (docs/addons.md)")
     p.add_argument("verb", choices=["list", "add", "info", "install", "update", "uninstall",
-                                    "remove", "action", "status", "sync"])
+                                    "remove", "action", "status", "sync", "inspect"])
     p.add_argument("target", nargs="?", help="a repository link (add) or an addon id")
     p.add_argument("extra", nargs="?", help="the action id (action)")
     p.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",

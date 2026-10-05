@@ -76,7 +76,9 @@
         statePill(a) +
       "</div>" +
       '<p class="ad-desc">' + h(a.description || "No description.") + "</p>" +
-      (a.problems.length ? '<div class="warnbox bad ad-note">This machine ' + h(a.problems.join("; ")) + ".</div>" : "") +
+      (a.problems.length ? '<div class="warnbox bad ad-note">' + h(a.problems.map(function (p) {
+        return (/^is made for/.test(p) ? "It " : "This machine ") + p;     // the first is about the addon, the rest about this machine
+      }).join(". ")) + ".</div>" : "") +
       (found ? '<div class="ad-note found">' + F.I.eye + "<span>Already on this machine" + (a.detected.detail ? ": " + h(a.detected.detail) : "") +
         ". <b>Link it</b> keeps it as it is and brings it under the forge.</span></div>" : "") +
       (a.update_pending ? '<div class="ad-note">' + F.I.upd + "<span>New code (v" + h(a.version) + ") is fetched; <b>Update</b> installs it.</span></div>" : "") +

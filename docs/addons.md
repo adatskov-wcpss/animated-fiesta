@@ -4,6 +4,8 @@ An **addon** is an app that installs beside Selkies Forge. You paste a repositor
 
 This page is the complete guide: how to use addons, and how to write one. The format is small on purpose. An addon is **one JSON file and a few bash scripts**, in any repository, written in any language.
 
+**Everything here is powered by the [Weft Architecture](https://github.com/alexd-aero/weft).** Weft is the name of this format: its [spec](https://github.com/alexd-aero/weft/blob/main/SPEC.md), its [stable examples that link to each other](https://github.com/alexd-aero/weft#-the-examples) (Beacon, Pulse, Relay, Shelf), a validator (`weft-check`), a stand-in host for testing (`weft-run`), and a [strict brief for AI agents](https://github.com/alexd-aero/weft/blob/main/prompt.md).
+
 **One format, two hosts.** [Burrow](https://github.com/alexd-aero/aegis-burrow), the tunnel engine of Aegis × Burrow, reads the very same `forge-addon.json` with the very same rules, runs the same scripts with the same environment, and understands the same `::` lines. Write an addon once and it installs in either. An addon that only makes sense in one of them says so with [`platforms`](#platforms-one-host-or-both).
 
 - [Using addons](#using-addons)
@@ -44,12 +46,14 @@ Open **Addons** in the left rail (or press <kbd>4</kbd>).
    | You paste | The forge fetches |
    |---|---|
    | `https://github.com/OWNER/REPO` | the repository's root, default branch |
-   | `https://github.com/OWNER/REPO/tree/BRANCH/some/folder` | that folder, on that branch (GitLab's `/-/tree/` and Codeberg links work the same) |
+   | `https://github.com/OWNER/REPO/tree/BRANCH/some/folder` | that folder, on that branch (Codeberg links work the same; a `/blob/` link to a file in it works too) |
+   | `https://gitlab.com/GROUP/SUB/REPO/-/tree/BRANCH/some/folder` | GitLab, with subgroups, on gitlab.com or your own instance |
    | `https://example.com/repo.git#some/folder` | any git URL, a folder inside it |
+   | `https://example.com/my-addon.zip` (or `.tar.gz`, `.tgz`, optionally `#some/folder`) | a download, **inspected statically** first: unpacked into a fresh folder (≤ 200 MB, ≤ 500 MB unpacked, ≤ 20 000 files), refused if anything could escape it (absolute paths, `..`, links), one top-level folder dropped, then its manifest validated. Its "commit" is the download's `sha256`; *Check for updates* downloads it again |
    | `git@github.com:OWNER/REPO.git` | over ssh, if your keys allow it |
    | `/home/you/my-addon` | a folder on this machine (for development) |
 
-   Adding only **fetches and checks**. Nothing runs except the addon's quick, read-only `detect` script, which asks "are you already on this machine?".
+   Adding only **fetches and checks**. Nothing runs except the addon's quick, read-only `detect` script, which asks "are you already on this machine?". To look without adding, `selkies-cli addon inspect LINK` (or `POST /api/addons/inspect`) shows a link's manifest, scripts, files and problems and runs nothing at all.
 
 2. The addon appears as a **card**: its logo, name, version, author, where it came from, and its description. If something about this machine rules it out (Selkies Forge too old, wrong CPU, a missing command), the card says so and **Install** stays disabled.
 

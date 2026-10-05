@@ -189,13 +189,14 @@
         <form class="add-row" id="addonForm" autocomplete="off">
           <span class="add-ico" aria-hidden="true">⎘</span>
           <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
-                 placeholder="https://github.com/owner/repo   or a folder in one: …/tree/main/addons/my-addon" aria-label="Addon repository link">
+                 placeholder="https://github.com/owner/repo  ·  …/tree/main/a/folder  ·  a GitLab link  ·  https://…/addon.zip" aria-label="Addon repository link">
           <button class="btn primary" id="addonAdd" type="submit">Add</button>
         </form>
         <div class="add-hint">
-          <span>Addons run as you on this machine, like anything you install. Add the ones you trust.</span>
+          <span>Addons run as you on this machine, like anything you install. Add the ones you trust. Powered by the <a class="linkish" href="https://github.com/alexd-aero/weft" target="_blank" rel="noopener">Weft Architecture</a>.</span>
           <span class="spacer"></span>
           <button class="linkish" type="button" id="addonExample">Try the example addon</button>
+          <a class="linkish" href="https://github.com/alexd-aero/weft#-the-examples" target="_blank" rel="noopener">Weft examples</a>
           <a class="linkish" href="https://github.com/adatskov-wcpss/animated-fiesta/blob/main/docs/addons.md" target="_blank" rel="noopener">Make your own &rarr;</a>
         </div>
         <div id="addonAddMsg"></div>

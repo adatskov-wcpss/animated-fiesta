@@ -387,6 +387,18 @@ def main():
     with open(os.path.join(SRC, "shell", "tail.sh")) as fh:
         tail = fh.read()
     head = head if head.endswith("\n") else head + "\n"
+    # one version everywhere: head.sh, the engine, and the root forge-addon.json
+    # (the forge as a Weft addon for Burrow)
+    want = next((l.split('"')[1] for l in head.splitlines() if l.startswith("FORGE_VERSION=")), "?")
+    with open(os.path.join(SRC, "forge", "paths.py")) as fh:
+        eng = next((l.split('"')[1] for l in fh if l.startswith("VERSION = ")), "?")
+    try:
+        with open(os.path.join(os.path.dirname(HERE), "forge-addon.json")) as fh:
+            addon_v = json.load(fh).get("version")
+    except (OSError, ValueError):
+        addon_v = want
+    if not want == eng == addon_v:
+        fail("versions disagree", "head.sh %s, paths.py %s, forge-addon.json %s" % (want, eng, addon_v))
     tail = tail if tail.endswith("\n") else tail + "\n"
     cli = gen_selkies_cli(head, tail)
     contents = [(p, read_text(s) if s else cli) for p, s in files]

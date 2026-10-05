@@ -1278,7 +1278,7 @@ cmd_addon() {
       ;;
     add|info|status|remove|sync) engine addon "$verb" "$@" | sed 's/^E /  ✘ /; s/^/  /' ;;
     help|-h|--help)
-      printf '  selkies-cli addon list | add LINK | info ID | install ID [--set K=V] | update ID\n'
+      printf '  selkies-cli addon list | add LINK | inspect LINK | info ID | install ID [--set K=V] | update ID\n'
       printf '                    | uninstall ID [--purge] | remove ID | action ID ACTION | status ID\n' ;;
     *) die "unknown addon command: $verb (try: selkies-cli addon help)" ;;
   esac

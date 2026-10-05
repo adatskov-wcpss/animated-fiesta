@@ -17,6 +17,9 @@ os.environ.setdefault("FORGE_AUTO_UPDATE", "0")
 # running the tests: an earlier version did, and published a test port.
 os.environ["BURROW_CONFIG_DIR"] = tempfile.mkdtemp(prefix="forge-tests-burrow-")
 os.environ["AEGIS_CONFIG_DIR"] = tempfile.mkdtemp(prefix="forge-tests-aegis-")   # Aegis carries Burrow too
+# ...nor write into the real ~/.config (the forge's drop-ins go to ~/.config/<app>/integrations)
+os.environ["HOME"] = tempfile.mkdtemp(prefix="forge-tests-home-")
+os.environ["XDG_CONFIG_HOME"] = os.path.join(os.environ["HOME"], ".config")
 
 # A pretend machine, so plans and recommendations do not depend on this one.
 FAKE_HOST = {

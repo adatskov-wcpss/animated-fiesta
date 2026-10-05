@@ -340,6 +340,66 @@ class UniversalFormatTest(unittest.TestCase):
         self.assertEqual(b.health(addons)["state"], "off")
 
 
+class ArchiveSourceTest(unittest.TestCase):
+    """.zip and .tar.gz links: downloaded, unpacked safely, inspected statically."""
+
+    @classmethod
+    def setUpClass(cls):
+        import http.server
+        import threading as th
+        cls.www = tempfile.mkdtemp()
+        handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(*a, directory=cls.www, **k)
+        http.server.SimpleHTTPRequestHandler.log_message = lambda *a: None
+        cls.httpd = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        th.Thread(target=cls.httpd.serve_forever, daemon=True).start()
+        cls.base = "http://127.0.0.1:%d/" % cls.httpd.server_address[1]
+        src = make_addon(os.path.join(tempfile.mkdtemp(), "zippy-main"), {"id": "zippy", "name": "Zippy"})
+        import zipfile
+        import tarfile
+        with zipfile.ZipFile(os.path.join(cls.www, "zippy.zip"), "w") as z:          # GitHub-style: one top folder
+            for n in os.listdir(src):
+                z.write(os.path.join(src, n), "zippy-main/" + n)
+        with tarfile.open(os.path.join(cls.www, "zippy.tar.gz"), "w:gz") as t:
+            t.add(src, "zippy-main")
+        with zipfile.ZipFile(os.path.join(cls.www, "evil.zip"), "w") as z:
+            z.writestr("../../escape.sh", "echo gotcha")
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.httpd.shutdown()
+        cls.httpd.server_close()
+
+    def test_parse(self):
+        s = addons.parse_source("https://example.com/a/b.zip#sub/dir")
+        self.assertEqual((s["kind"], s["format"], s["subdir"]), ("archive", "zip", "sub/dir"))
+        self.assertEqual(addons.parse_source("https://x.org/r.tgz?t=1")["format"], "tar")
+        s = addons.parse_source("https://gitlab.com/grp/sub/repo/-/tree/main/addons/x")
+        self.assertEqual((s["kind"], s["url"], s["ref"], s["subdir"]), ("git", "https://gitlab.com/grp/sub/repo", "main", "addons/x"))
+        s = addons.parse_source("https://git.example.org/g/r/-/blob/dev/forge-addon.json")
+        self.assertEqual((s["url"], s["ref"], s["subdir"]), ("https://git.example.org/g/r", "dev", ""))
+
+    def test_inspect_is_static(self):
+        for name in ("zippy.zip", "zippy.tar.gz"):
+            r = addons.inspect(self.base + name)
+            self.assertEqual((r["valid"], r["manifest"]["id"], r["registered"]), (True, "zippy", False))
+            self.assertTrue(r["commit"].startswith("sha256:"))
+        self.assertNotIn("zippy", addons._load())                   # nothing was added
+
+    def test_add_install_and_check_an_archive(self):
+        try:
+            a = addons.add(self.base + "zippy.zip")
+            self.assertEqual(a["id"], "zippy")
+            self.assertEqual(addons.install("zippy")["name"], "Zippy")
+            self.assertTrue(addons.check_updates("zippy")["up_to_date"])
+        finally:
+            addons.remove("zippy", force=True)
+
+    def test_unsafe_archives_are_refused(self):
+        with self.assertRaises(addons.AddonError) as cm:
+            addons.inspect(self.base + "evil.zip")
+        self.assertIn("unsafe path", str(cm.exception))
+
+
 class RunJobTest(unittest.TestCase):
     def test_work_functions_may_take_job(self):
         # Regression: _run_job's own first parameter was called `job`, so every

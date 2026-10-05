@@ -83,17 +83,27 @@ class AddonError(RuntimeError):
 
 
 # ------------------------------------------------------------------ sources
+# GitHub and Codeberg: OWNER/REPO/tree|blob/REF[/path]
 _HOSTED_TREE = re.compile(
-    r"^(https://(?:github\.com|gitlab\.com|codeberg\.org)/[^/\s]+/[^/\s#]+?)(?:\.git)?"
-    r"/(?:-/)?tree/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+    r"^(https://(?:github\.com|codeberg\.org)/[^/\s]+/[^/\s#]+?)(?:\.git)?"
+    r"/(?:tree|blob|src/branch)/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+# GitLab, gitlab.com or self-hosted, with subgroups: GROUP/SUB/.../REPO/-/tree|blob/REF[/path]
+_GITLAB_TREE = re.compile(r"^(https://[^/\s]+/[^\s#]+?)(?:\.git)?/-/(?:tree|blob)/([^/\s#]+)(?:/([^#\s]*?))?/?$")
+# a download: .zip, .tar.gz, .tgz (GitHub's and GitLab's archive links included)
+_ARCHIVE = re.compile(r"^https?://[^\s#]+?\.(zip|tar\.gz|tgz)(?:\?[^\s#]*)?$", re.I)
+ARCHIVE_MAX = 200 * 1024 * 1024        # bytes downloaded
+ARCHIVE_UNPACKED = 500 * 1024 * 1024   # bytes once unpacked
+ARCHIVE_FILES = 20000
 
 
 def parse_source(text):
     """Turn what the person pasted into a fetchable source.
 
     https://github.com/OWNER/REPO                       the repository's root
-    https://github.com/OWNER/REPO/tree/BRANCH/a/folder  a folder on a branch
+    https://github.com/OWNER/REPO/tree/BRANCH/a/folder  a folder on a branch (/blob/ links to a file in it too)
+    https://gitlab.com/GROUP/SUB/REPO/-/tree/REF/a/b    GitLab, subgroups and self-hosted instances included
     https://example.com/repo.git#a/folder               any git URL, a folder in it
+    https://example.com/addon.zip#a/folder              a .zip, .tar.gz or .tgz download (inspected before use)
     git@host:owner/repo.git                             ssh, if your keys allow it
     /home/me/my-addon                                   a folder on this machine (development)
     """
@@ -109,10 +119,18 @@ def parse_source(text):
     if "#" in url:
         url, sub = url.split("#", 1)
     ref = None
-    m = _HOSTED_TREE.match(url)
+    if _ARCHIVE.match(url):
+        sub = sub.strip("/")
+        if sub and (".." in sub.split("/") or not re.match(r"^[A-Za-z0-9._/-]+$", sub)):
+            raise AddonError("The folder part of the link is not valid.")
+        fmt = "zip" if url.lower().split("?")[0].endswith(".zip") else "tar"
+        return {"kind": "archive", "url": url, "format": fmt, "ref": None, "subdir": sub, "display": raw}
+    m = _HOSTED_TREE.match(url) or _GITLAB_TREE.match(url)
     if m:
         url, ref = m.group(1), m.group(2)
         sub = sub or (m.group(3) or "")
+        if sub == MANIFEST or sub.endswith("/" + MANIFEST):     # a /blob/ link to the manifest itself
+            sub = sub[:-len(MANIFEST)]
     url = url.rstrip("/")
     if not re.match(r"^(https?://[^\s/]+/\S+|ssh://\S+|git@[^\s:]+:\S+)$", url):
         raise AddonError("That does not look like a git repository link.")
@@ -129,8 +147,91 @@ def _git(args, cwd=None, timeout=240):
     return p.returncode, p.stdout.decode("utf-8", "replace"), p.stderr.decode("utf-8", "replace")
 
 
+def _safe_member(name):
+    n = name.replace("\\", "/")
+    return bool(n) and not n.startswith("/") and ".." not in n.split("/") and not re.match(r"^[A-Za-z]:", n)
+
+
+def fetch_archive(source, dest):
+    """Download a .zip or .tar.gz and unpack it into dest, refusing anything
+    that could escape it (absolute paths, .., links) or that is too big. A
+    single top-level folder (GitHub and GitLab archives have one) is dropped.
+    Returns "sha256:<hex>" of the download, which stands in for a commit."""
+    import hashlib
+    import tarfile
+    import urllib.request
+    import zipfile
+    os.makedirs(dest)
+    blob = os.path.join(dest, ".download")
+    h = hashlib.sha256()
+    req = urllib.request.Request(source["url"], headers={"User-Agent": "selkies-forge/" + VERSION})
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r, open(blob, "wb") as fh:
+            got = 0
+            while True:
+                chunk = r.read(1 << 16)
+                if not chunk:
+                    break
+                got += len(chunk)
+                if got > ARCHIVE_MAX:
+                    raise AddonError("The archive is larger than %d MB." % (ARCHIVE_MAX >> 20))
+                h.update(chunk)
+                fh.write(chunk)
+    except AddonError:
+        raise
+    except Exception as ex:
+        raise AddonError("Could not download %s: %s" % (source["display"], ex))
+    out = os.path.join(dest, ".unpacked")
+    os.makedirs(out)
+    total = 0
+    try:
+        if zipfile.is_zipfile(blob):
+            with zipfile.ZipFile(blob) as z:
+                infos = z.infolist()
+                if len(infos) > ARCHIVE_FILES:
+                    raise AddonError("The archive holds more than %d files." % ARCHIVE_FILES)
+                for i in infos:
+                    if not _safe_member(i.filename):
+                        raise AddonError("The archive has an unsafe path: %s" % i.filename[:120])
+                    if (i.external_attr >> 16) & 0o170000 == 0o120000:
+                        continue                                  # links are not unpacked
+                    total += i.file_size
+                    if total > ARCHIVE_UNPACKED:
+                        raise AddonError("The archive unpacks to more than %d MB." % (ARCHIVE_UNPACKED >> 20))
+                    z.extract(i, out)
+        else:
+            with tarfile.open(blob) as t:
+                members = t.getmembers()
+                if len(members) > ARCHIVE_FILES:
+                    raise AddonError("The archive holds more than %d files." % ARCHIVE_FILES)
+                keep = []
+                for mem in members:
+                    if not _safe_member(mem.name):
+                        raise AddonError("The archive has an unsafe path: %s" % mem.name[:120])
+                    if mem.isfile() or mem.isdir():
+                        total += mem.size
+                        keep.append(mem)
+                if total > ARCHIVE_UNPACKED:
+                    raise AddonError("The archive unpacks to more than %d MB." % (ARCHIVE_UNPACKED >> 20))
+                t.extractall(out, members=keep, filter="data")
+    except (zipfile.BadZipFile, tarfile.TarError, EOFError) as ex:
+        raise AddonError("That is not a valid .zip or .tar.gz archive: %s" % ex)
+    os.remove(blob)
+    root = out
+    names = os.listdir(out)
+    if len(names) == 1 and os.path.isdir(os.path.join(out, names[0])) and not os.path.isfile(os.path.join(out, MANIFEST)):
+        root = os.path.join(out, names[0])
+    for n in os.listdir(root):
+        os.rename(os.path.join(root, n), os.path.join(dest, n))
+    shutil.rmtree(out, ignore_errors=True)
+    return "sha256:" + h.hexdigest()
+
+
 def fetch(source, dest):
-    """Put the source's files in dest (a new folder). Returns the commit, if any."""
+    """Put the source's files in dest (a new folder). Returns the commit, if any
+    ("sha256:…" of the download, for an archive)."""
+    if source["kind"] == "archive":
+        return fetch_archive(source, dest)
     if source["kind"] == "local":
         shutil.copytree(source["path"], dest, symlinks=True,
                         ignore=shutil.ignore_patterns(".git", "node_modules", "__pycache__"))
@@ -672,6 +773,38 @@ def add(text):
     return public(rec)
 
 
+def inspect(text):
+    """Look at an addon without adding it or running anything: fetch it to a
+    scratch folder, validate forge-addon.json, and return its metadata."""
+    import base64
+    source = parse_source(text)
+    ensure_dirs()
+    os.makedirs(ADDONDIR, exist_ok=True)
+    tmp = tempfile.mkdtemp(prefix=".inspect-", dir=ADDONDIR)
+    try:
+        commit = fetch(source, os.path.join(tmp, "repo"))
+        root = os.path.join(tmp, "repo", source.get("subdir") or "")
+        if not os.path.isdir(root):
+            raise AddonError("There is no folder %s in it." % source["subdir"])
+        m = load_manifest(root)
+        logo = None
+        if m.get("logo"):
+            p = os.path.join(root, m["logo"])
+            if os.path.getsize(p) <= 65536:
+                with open(p, "rb") as fh:
+                    logo = "data:%s;base64,%s" % (IMAGE_TYPES[os.path.splitext(p)[1].lower()], base64.b64encode(fh.read()).decode())
+        files = sum(len(f) for _, _, f in os.walk(root))
+        return {"valid": True, "source": {k: source.get(k) for k in ("kind", "url", "ref", "subdir", "display", "format")},
+                "commit": commit, "manifest": {k: m[k] for k in ("id", "name", "version", "description", "author", "license",
+                                                                 "homepage", "platforms", "replaces", "requires", "links")},
+                "scripts": sorted(m["scripts"]), "actions": [a["label"] for a in m["actions"]],
+                "settings": [st["key"] for st in m["settings"]], "integration": m["integration"].get("dir"),
+                "logo": logo, "files": files, "problems": check_requirements(m),
+                "registered": m["id"] in _load()}
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def _clean_settings(rec, given):
     out = {}
     given = given or {}
@@ -783,6 +916,25 @@ def check_updates(aid):
     out = {"id": aid, "name": m["name"], "kind": src["kind"], "source": src.get("display"),
            "checked": time.time(), "local": {"commit": rec.get("commit"), "version": m["version"],
                                              "installed_version": rec.get("installed_version")}}
+    if src["kind"] == "archive":
+        # download it again: the same bytes mean nothing changed
+        tmp = tempfile.mkdtemp(prefix=".chk-", dir=ADDONDIR)
+        try:
+            digest = fetch_archive(src, os.path.join(tmp, "x"))
+            same = digest == rec.get("commit")
+            out["remote"] = {"commit": digest, "short": digest[7:14], "subject": "a new archive"}
+            try:
+                out["remote"]["version"] = load_manifest(os.path.join(tmp, "x", rec.get("subdir") or ""))["version"]
+            except AddonError:
+                out["remote"]["version"] = ""
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+        out["up_to_date"] = same
+        out["note"] = "Checked by downloading the archive again." if same else "The archive at that link has changed."
+        _update(aid, {"remote": {"checked": out["checked"], "up_to_date": same, "commit": digest,
+                                 "version": out["remote"]["version"], "subject": "a new archive"}})
+        sync_integrations()
+        return out
     if src["kind"] != "git":
         out.update(up_to_date=None, note="This addon was added from a folder on this machine. "
                                          "Update copies the folder again.")
@@ -1334,6 +1486,9 @@ def sync_integrations():
         try:
             old = jload(path, None) or {}
             fresh = dict(forge_descriptor(d), updated=old.get("updated"))
+            mine, was = fresh.get("addon"), old.get("addon") or {}
+            if mine and mine.get("state") is None and was.get("id") == mine["id"]:
+                mine["state"] = was.get("state")      # status not asked lately: keep the last known one
             loose = os.path.exists(path) and os.stat(path).st_mode & 0o022
             if old == fresh and time.time() - float(old.get("updated") or 0) < 3600 and not loose:
                 continue

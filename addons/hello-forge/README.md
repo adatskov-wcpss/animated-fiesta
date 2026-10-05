@@ -32,3 +32,7 @@ https://github.com/adatskov-wcpss/animated-fiesta/tree/main/addons/hello-forge
 | `SHOW_DESKTOPS` | bool | on | list the forge's desktops |
 
 Needs `python3` and `curl`. Runs as a systemd user service (`forge-addon-hello-forge-<id>.service`, one per install) when there is one, otherwise in the background. MIT licensed, like the forge: copy it as the start of your own addon.
+
+## Credits
+
+Powered by the [Weft Architecture](https://github.com/alexd-aero/weft). Runs on [Selkies Forge](https://github.com/adatskov-wcpss/animated-fiesta) and [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow). For more examples (addons that find each other on the Weft mesh), see [Weft's examples](https://github.com/alexd-aero/weft#-the-examples).

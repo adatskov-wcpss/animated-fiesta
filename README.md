@@ -6,6 +6,7 @@
   <a href="LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-5aa9ff?style=flat-square"></a>
   <img alt="153 desktops" src="https://img.shields.io/badge/desktops-153-7fc4ff?style=flat-square">
   <img alt="x86_64 and arm64" src="https://img.shields.io/badge/runs_on-x86__64%20%C2%B7%20arm64%20%C2%B7%20Raspberry%20Pi-9b8cff?style=flat-square">
+  <a href="https://github.com/alexd-aero/weft"><img alt="Powered by the Weft Architecture" src="https://img.shields.io/badge/powered%20by-Weft%20Architecture-c9b8ff?style=flat-square"></a>
   <img alt="Python 3.8+ standard library" src="https://img.shields.io/badge/engine-Python%203.8%2B%2C%20stdlib%20only-a48bff?style=flat-square">
   <img alt="No telemetry" src="https://img.shields.io/badge/telemetry-none-3ddc97?style=flat-square">
 </p>
@@ -189,7 +190,7 @@ Read the full tour: **[The engine](docs/engine.md)** · **[The forge layer](docs
 ### Addons
 Apps that install beside the forge. **Paste a repository link** under *Addons*: the forge fetches it, checks it, shows its logo, description and settings, and installs it when you say so. You get a live log, a status, an **Open** button, updates, actions and a clean uninstall. If the app is **already on the machine**, the forge offers to **link** it instead.
 
-An addon is one `forge-addon.json` and a few bash scripts, in any repository, in any language. **[The addon guide →](docs/addons.md)** · **[The example addon →](addons/hello-forge/)**
+An addon is one `forge-addon.json` and a few bash scripts, in any repository (GitHub, GitLab, any git) or a `.zip` / `.tar.gz` link, in any language. **Everything is powered by the [Weft Architecture](https://github.com/alexd-aero/weft)**: one addon format for Selkies Forge and Aegis × Burrow, with addons that find each other on the Weft mesh. **[The addon guide →](docs/addons.md)** · **[Weft's examples, linked to each other →](https://github.com/alexd-aero/weft#-the-examples)** · **[The example addon →](addons/hello-forge/)**
 
 **[Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow)** is one: a post-quantum gate and dashboard (Aegis) on a tunnel engine (Burrow). Publish any port, or any desktop, on your own domain, with a Selkies Forge panel and an Addon tab in its dashboard.
 
@@ -267,6 +268,7 @@ It needs only Python 3 and bash. The full guide, including how to add your own d
 
 ## 🙏 Credits
 
+- **Addons are powered by the [Weft Architecture](https://github.com/alexd-aero/weft)**, shared with [Aegis × Burrow](https://github.com/alexd-aero/aegis-burrow)
 - [LinuxServer.io](https://www.linuxserver.io/) for `baseimage-selkies` and the Webtop images, and the [Selkies](https://github.com/selkies-project/selkies) project for the streaming
 - [Kasm Technologies](https://www.kasmweb.com/) for the Kasm Workspaces images
 - [Simple Icons](https://simpleicons.org/) for the distro logos (CC0); the trademarks belong to their owners

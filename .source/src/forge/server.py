@@ -415,6 +415,11 @@ class Handler(BaseHTTPRequestHandler):
                                                               access="public" if body.get("access") == "public" else "login")})
             except addons.AddonError as ex:
                 return self._err(400, ex)
+        if route == "/api/addons/inspect":
+            try:
+                return self._send(200, addons.inspect(body.get("source") or ""))
+            except addons.AddonError as ex:
+                return self._send(200, {"valid": False, "error": str(ex)})
         if route == "/api/addons/add":
             try:
                 a = addons.add(body.get("source") or "")
