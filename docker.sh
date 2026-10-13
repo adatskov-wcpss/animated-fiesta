@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.11"
+FORGE_VERSION="1.10.12"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -545,7 +545,7 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="f97820ebec300eda6e552d5a5128f8aaa8d3a60950e48131c0777f03935c7dbf"
+FORGE_SHA_FORGE_PATHS_PY="cd9697d34143be58d2760b95e1b487082c65de8b68cebaf2be4683ace8e3a11a"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
@@ -561,7 +561,7 @@ FORGE_SHA_FORGE_TUNNELS_PY="a1b9358251897753fd461702446225e47f04830f8f11039760ff
 FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2603212e511a5"
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
 FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
-FORGE_SHA_FORGE_WEBUI_PY="b2ecf5efadf820b9063246e1019d1504181b71b53fc2ef11660b2d8eac2af154"
+FORGE_SHA_FORGE_WEBUI_PY="cb7b69d0d755b37fdea803bc48adf385ea2144408f2d9fb69e4e70f09db606eb"
 FORGE_SHA_WEB_ADDONS_JS="3669602e5a9d8d2c23cd67826dd40b63cb3972ae7a23cbbe8fdb4da85a3fb74a"
 FORGE_SHA_WEB_APP_CSS="549513b6eb819ca89af71c3da80ba0a0537f3129bafea4d38421b013de5f9561"
 FORGE_SHA_WEB_APP_JS="59954908c608904af7ab61fa8f5fc28d7c704688f029d1cef302e8ccd4f7029a"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="6ad82212eea0285b893095249c514b6ae863773fde2983ba7ce55e647d0b030f"
-FORGE_PAYLOAD_SHA="73804fa0bbdbf9645efaef225c50a8017c423ab5ac18f5d8fffe755fe4903ebc"
+FORGE_SHA_SELKIES_CLI="c936ea1fed5d298bc9ea0a06e591c72c244f54349055cae0d185886f4cf806cc"
+FORGE_PAYLOAD_SHA="0d6bdb8831376b9834fd5c3965f1a8addb3b07fdc8ea52ea95f9082e8bdbc821"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -8209,7 +8209,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.11"
+VERSION = "1.10.12"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -11887,7 +11887,12 @@ def webui_status():
         out["why"] = "its process (pid %s) is gone" % info["pid"]
         return out
     try:
-        req = urllib.request.Request("http://127.0.0.1:%d/api/host" % int(info["port"]),
+        # ask where it listens: bound to one address (a Tailscale IP, say), it
+        # never answers on 127.0.0.1 and would look dead while it serves fine
+        bind = str(info.get("bind") or "")
+        host = "127.0.0.1" if bind in ("", "0.0.0.0", "::", "127.0.0.1", "localhost") else bind
+        host = "[%s]" % host if ":" in host else host
+        req = urllib.request.Request("http://%s:%d/api/host" % (host, int(info["port"])),
                                      headers={"User-Agent": "selkies-cli"})
         with urllib.request.urlopen(req, timeout=4) as r:
             ok = r.status < 500
@@ -18506,7 +18511,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.11"
+FORGE_VERSION="1.10.12"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

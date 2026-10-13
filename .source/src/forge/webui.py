@@ -363,7 +363,12 @@ def webui_status():
         out["why"] = "its process (pid %s) is gone" % info["pid"]
         return out
     try:
-        req = urllib.request.Request("http://127.0.0.1:%d/api/host" % int(info["port"]),
+        # ask where it listens: bound to one address (a Tailscale IP, say), it
+        # never answers on 127.0.0.1 and would look dead while it serves fine
+        bind = str(info.get("bind") or "")
+        host = "127.0.0.1" if bind in ("", "0.0.0.0", "::", "127.0.0.1", "localhost") else bind
+        host = "[%s]" % host if ":" in host else host
+        req = urllib.request.Request("http://%s:%d/api/host" % (host, int(info["port"])),
                                      headers={"User-Agent": "selkies-cli"})
         with urllib.request.urlopen(req, timeout=4) as r:
             ok = r.status < 500
