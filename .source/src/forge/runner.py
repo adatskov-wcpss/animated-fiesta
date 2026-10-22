@@ -159,7 +159,8 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
                      "-e", "PASSWORD=%s" % opts["password"]]
         if opts.get("locale"):
             args += ["-e", "LC_ALL=%s" % opts["locale"]]
-    for kv in opts.get("env", []) or []:
+    # the entry's own defaults first, so an option can override them
+    for kv in list(entry.get("env") or []) + list(opts.get("env") or []):
         args += ["-e", kv]
     args.append(image)
     return args, vol

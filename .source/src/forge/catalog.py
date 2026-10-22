@@ -371,6 +371,14 @@ WEBTOP = [
     ("alpine-i3", "alpine", "Alpine", "i3", 718),
 ]
 
+# Single-app images: one program full screen on LinuxServer's Selkies base
+# (openbox underneath), for when the app is the point rather than a desktop.
+# (id, name, image, family, distro, idle MB, download MB, env)
+APPS = [
+    ("app-chromium", "Chromium", "lscr.io/linuxserver/chromium:latest", "debian", "Debian",
+     420, 760, ["CHROME_CLI=--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy"]),
+]
+
 # --------------------------------------------------------------------------
 # Kasm desktop images (KasmVNC, port 6901, https + basic auth).
 # Tags and arches verified against the registry.
@@ -617,6 +625,19 @@ def build_catalog():
             idle=de["idle"] + 40, dl=dl,
             beauty=min(97, de["beauty"] + 8), speed=de["speed"],
             tags=["ready", "verified", family, de_key],
+        ))
+
+    # --- single apps -------------------------------------------------------
+    for aid, name, image, family, distro, idle, dl, env in APPS:
+        de = DESKTOPS["openbox"]
+        out.append(_entry(
+            id=aid, name=name, subtitle="App - ready to run",
+            family=family, distro=distro, de="openbox", de_label=de["label"],
+            glyph=de["glyph"], kind="pull", display="fit", image=image, env=list(env),
+            desc="LinuxServer's %s image: the app on its own, full screen, on %s. "
+                 "Pulls and runs." % (name, distro),
+            idle=idle, dl=dl, beauty=70, speed=92,
+            tags=["ready", "app", family],
         ))
 
     # --- Kasm desktops ----------------------------------------------------

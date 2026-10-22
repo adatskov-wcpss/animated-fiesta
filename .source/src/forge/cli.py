@@ -66,6 +66,12 @@ def cli_launch_stream(args):
         opts["username"], opts["password"] = args.user, args.password
     if args.subdomain:
         opts["subdomain"] = args.subdomain
+    bad = [kv for kv in args.env if "=" not in kv or not kv.split("=", 1)[0]]
+    if bad:
+        print("E --env needs KEY=VALUE: %s" % ", ".join(bad))
+        return 2
+    if args.env:
+        opts["env"] = list(args.env)
 
     job = job_put(Job("launch", args.id, entry["name"]))
     return stream_job(job, lambda: launch(args.id, plan, opts, job=job, name=args.name))
@@ -315,6 +321,8 @@ def main(argv=None):
     p.add_argument("--no-gpu", dest="gpu", action="store_const", const="off")
     p.add_argument("--gpu-device", help="which GPU: a render node, its index, a driver or a vendor")
     p.add_argument("--seccomp", action="store_true")
+    p.add_argument("--env", action="append", default=[], metavar="KEY=VALUE",
+                   help="extra environment for the desktop (repeatable)")
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--autostart", action="store_true",
                    help="start this desktop again whenever Docker starts")

@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.12"
+FORGE_VERSION="1.10.13"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -531,8 +531,8 @@ FORGE_SHA_FORGE___INIT___PY="53965ab6fd730187d3ffa29691f6252f97cc368622d0fa53627
 FORGE_SHA_FORGE_ADDONS_PY="8838b0d65bb5ecb1052421cefb644071318e441be206ae43d6e78b35d4070e21"
 FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe3bc7eaa14003"
 FORGE_SHA_FORGE_BURROW_PY="f052dd40b14e1ad6e62cf622826f5195481db41af5397f4ea84cfa7040e4f04c"
-FORGE_SHA_FORGE_CATALOG_PY="d1430ab0542c2d023bef41cbb3a36575decd26c833a33083e6f226aea3b8d15c"
-FORGE_SHA_FORGE_CLI_PY="45f525a768ca8ffb69008583d2e8ffdae095b7c35ca1b84ff73827108fb3ad59"
+FORGE_SHA_FORGE_CATALOG_PY="bce6dd57a84a38ce62d56271072503f23fd6d54753441153adb265b7cd35decb"
+FORGE_SHA_FORGE_CLI_PY="dde6edb60779641f49c389fc38b3e8eeee7cd0d93e0c45d4dd0bac633b15e2f1"
 FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
 FORGE_SHA_FORGE_EVENTS_PY="3580b5654e071cb6e59f44c90dcfec9f5ea5d53358190e12722bf6017c497712"
 FORGE_SHA_FORGE_GPU_PY="18d779546907e20d334ca27f331d926c33b480b16c560d4ba265b55e0aca4cb3"
@@ -545,11 +545,11 @@ FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="cd9697d34143be58d2760b95e1b487082c65de8b68cebaf2be4683ace8e3a11a"
+FORGE_SHA_FORGE_PATHS_PY="705d3da8cc17391ea2faec72ca5d9b1db73ffad8e497026d623f903dd6a0f251"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
-FORGE_SHA_FORGE_RUNNER_PY="49ed1180baa2441188c328fc3af12307a8f33c214b3e9e7d101b0a6d39633ec2"
+FORGE_SHA_FORGE_RUNNER_PY="547ad356bdb902e14e35f5570abec5e9d85e72f8a22b45fd40cd6a5fe1850cf8"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
 FORGE_SHA_FORGE_SERVER_PY="be904c8fc42261e4591c863adb64b59190f6f9a31ec9f799489c880182163e9f"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
@@ -571,8 +571,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="c936ea1fed5d298bc9ea0a06e591c72c244f54349055cae0d185886f4cf806cc"
-FORGE_PAYLOAD_SHA="0d6bdb8831376b9834fd5c3965f1a8addb3b07fdc8ea52ea95f9082e8bdbc821"
+FORGE_SHA_SELKIES_CLI="3207b25ff3a8f18cc034be84e4b7cddc2b7605b2ce2293e22cdf80c91630dd8d"
+FORGE_PAYLOAD_SHA="babd9ea26a55192347067f508e9cd772d5640f212b988a20acf263715e9291ef"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -3056,6 +3056,14 @@ WEBTOP = [
     ("alpine-i3", "alpine", "Alpine", "i3", 718),
 ]
 
+# Single-app images: one program full screen on LinuxServer's Selkies base
+# (openbox underneath), for when the app is the point rather than a desktop.
+# (id, name, image, family, distro, idle MB, download MB, env)
+APPS = [
+    ("app-chromium", "Chromium", "lscr.io/linuxserver/chromium:latest", "debian", "Debian",
+     420, 760, ["CHROME_CLI=--ignore-gpu-blocklist --enable-gpu-rasterization --enable-zero-copy"]),
+]
+
 # --------------------------------------------------------------------------
 # Kasm desktop images (KasmVNC, port 6901, https + basic auth).
 # Tags and arches verified against the registry.
@@ -3304,6 +3312,19 @@ def build_catalog():
             tags=["ready", "verified", family, de_key],
         ))
 
+    # --- single apps -------------------------------------------------------
+    for aid, name, image, family, distro, idle, dl, env in APPS:
+        de = DESKTOPS["openbox"]
+        out.append(_entry(
+            id=aid, name=name, subtitle="App - ready to run",
+            family=family, distro=distro, de="openbox", de_label=de["label"],
+            glyph=de["glyph"], kind="pull", display="fit", image=image, env=list(env),
+            desc="LinuxServer's %s image: the app on its own, full screen, on %s. "
+                 "Pulls and runs." % (name, distro),
+            idle=idle, dl=dl, beauty=70, speed=92,
+            tags=["ready", "app", family],
+        ))
+
     # --- Kasm desktops ----------------------------------------------------
     for repo, ver, family, distro, de_key, dl, arches in KASM:
         de = DESKTOPS[de_key]
@@ -3461,6 +3482,12 @@ def cli_launch_stream(args):
         opts["username"], opts["password"] = args.user, args.password
     if args.subdomain:
         opts["subdomain"] = args.subdomain
+    bad = [kv for kv in args.env if "=" not in kv or not kv.split("=", 1)[0]]
+    if bad:
+        print("E --env needs KEY=VALUE: %s" % ", ".join(bad))
+        return 2
+    if args.env:
+        opts["env"] = list(args.env)
 
     job = job_put(Job("launch", args.id, entry["name"]))
     return stream_job(job, lambda: launch(args.id, plan, opts, job=job, name=args.name))
@@ -3710,6 +3737,8 @@ def main(argv=None):
     p.add_argument("--no-gpu", dest="gpu", action="store_const", const="off")
     p.add_argument("--gpu-device", help="which GPU: a render node, its index, a driver or a vendor")
     p.add_argument("--seccomp", action="store_true")
+    p.add_argument("--env", action="append", default=[], metavar="KEY=VALUE",
+                   help="extra environment for the desktop (repeatable)")
     p.add_argument("--timeout", type=int, default=300)
     p.add_argument("--autostart", action="store_true",
                    help="start this desktop again whenever Docker starts")
@@ -8209,7 +8238,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.12"
+VERSION = "1.10.13"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8839,7 +8868,8 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
                      "-e", "PASSWORD=%s" % opts["password"]]
         if opts.get("locale"):
             args += ["-e", "LC_ALL=%s" % opts["locale"]]
-    for kv in opts.get("env", []) or []:
+    # the entry's own defaults first, so an option can override them
+    for kv in list(entry.get("env") or []) + list(opts.get("env") or []):
         args += ["-e", kv]
     args.append(image)
     return args, vol
@@ -18511,7 +18541,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.12"
+FORGE_VERSION="1.10.13"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
