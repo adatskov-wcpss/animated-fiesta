@@ -2100,4 +2100,8 @@ input[type="search"] { -webkit-appearance: none; appearance: none; font: inherit
   #modal { padding: 8px; }
   .toasts { right: 10px; left: 10px; bottom: 70px; max-width: none; }
 }
+html[data-theme] .meter { padding: 0; border: 0; background: none; box-shadow: none; }
+.found { margin-bottom: 18px; }
+.found-head { align-items: center; }
+.found-head .sub { margin: 0; }
 html.lite * { animation: none !important; }

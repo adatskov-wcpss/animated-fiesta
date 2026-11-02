@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="2.0.0"
+FORGE_VERSION="2.0.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -546,7 +546,7 @@ FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="f8be377a840b92046f8aecb49e72373600bdab4e68382fc6d36243c2018206c8"
 FORGE_SHA_FORGE_NETWORK_PY="6a6ec4483eef8b52ddb634f0f22530f178551704a5b3fe06b85c970be3491a8f"
-FORGE_SHA_FORGE_PATHS_PY="638393c41441eca9867209b378a8412a92fc4e0e596899913ddd82dbfb7396ba"
+FORGE_SHA_FORGE_PATHS_PY="16348553a689a6e3756943ebb106762523ce53d9f0161a9479ef9dd635b1d863"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="422a2d09de41f5db4e38072b82006503b0d43344950f7d409ad24788729b7bca"
@@ -564,7 +564,7 @@ FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768
 FORGE_SHA_FORGE_WATCHDOG_PY="cf7c3f10ecc3b789071bd10721759ad5cea6d9148e8252dc1427b7fb7a61b5af"
 FORGE_SHA_FORGE_WEBUI_PY="cb7b69d0d755b37fdea803bc48adf385ea2144408f2d9fb69e4e70f09db606eb"
 FORGE_SHA_WEB_ADDONS_JS="3669602e5a9d8d2c23cd67826dd40b63cb3972ae7a23cbbe8fdb4da85a3fb74a"
-FORGE_SHA_WEB_APP_CSS="8df433b0d85e417776e7a0ac75694814ca0e3d08db7032b21a4f7770ec0b5279"
+FORGE_SHA_WEB_APP_CSS="935fc12ac4b82b911a597a05c5577cbd69a4f9b832e825534a9300cbbbd96ac4"
 FORGE_SHA_WEB_APP_JS="972d6c1b67e05a8f710c7587db0ec54c8b1edf03503e1160597c3fda4f8e9dd6"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
 FORGE_SHA_WEB_INDEX_HTML="d8b8d2c5ca0609b63fdd1213cac9ac4a92383fa508fc99566d8e9dcbe07e4ac4"
@@ -572,8 +572,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="3dd06a492f5779c6ad3f4c3d0a96c76eaf8fb213f0fea2bebd2f0f6d0cf55005"
-FORGE_PAYLOAD_SHA="cb9d2910fd7c8c2766655c4260c82ac9e36aacc7a52796402a9dc3138aee49fa"
+FORGE_SHA_SELKIES_CLI="e8631d0086f49d1cc30a5f375267c2825ce706ff1d0f86678e239ce9b1cc73e8"
+FORGE_PAYLOAD_SHA="b01513cd5eedd8fe11aad44364611a67fddcf2deb8f2cf6a35ea3b30d0d90a99"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/network.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -8391,7 +8391,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14730,6 +14730,10 @@ input[type="search"] { -webkit-appearance: none; appearance: none; font: inherit
   #modal { padding: 8px; }
   .toasts { right: 10px; left: 10px; bottom: 70px; max-width: none; }
 }
+html[data-theme] .meter { padding: 0; border: 0; background: none; box-shadow: none; }
+.found { margin-bottom: 18px; }
+.found-head { align-items: center; }
+.found-head .sub { margin: 0; }
 html.lite * { animation: none !important; }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
@@ -19075,7 +19079,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="2.0.0"
+FORGE_VERSION="2.0.1"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
