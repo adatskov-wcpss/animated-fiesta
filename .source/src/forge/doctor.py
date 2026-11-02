@@ -7,7 +7,7 @@ Checks of this machine, for `selkies-cli doctor` and the web UI.
 import socket
 import sys
 
-from . import catalog
+from . import catalog, network
 from .host import docker_ok, host_info
 from .util import have, human_mb
 
@@ -43,6 +43,8 @@ def cli_doctor():
         "%s on %s: caps are advisory only" % (host.get("storage_driver"),
                                              host.get("backing_fs")),
         "use xfs with project quotas if you need hard caps", severity="info")
+    v6 = network.status()
+    add("ipv6", v6["ok"], v6["detail"], v6["fix"], severity="info")
     net_ok = False
     try:
         socket.create_connection(("serveo.net", 22), timeout=6).close()

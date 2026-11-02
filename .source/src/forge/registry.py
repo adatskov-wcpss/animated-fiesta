@@ -5,10 +5,11 @@ The live view of every desktop, read from Docker labels.
 """
 
 import json
+import os
 
-from . import catalog
+from . import catalog, network
 from .info import public_entry
-from .paths import KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
+from .paths import KASM_HTTPS, LABEL, ROOT, SELKIES_HTTP, SELKIES_HTTPS
 from .store import reg_load
 from .tunnels import tunnel_status
 from .watchdog import idle_limit, session_health
@@ -33,6 +34,11 @@ def docker_instances():
     for c in data:
         labels = ((c.get("Config") or {}).get("Labels") or {})
         name = (c.get("Name") or "").lstrip("/")
+        # another forge's desktop on this machine isn't ours to show, stop or remove;
+        # older ones without the label count when our registry knows them
+        home = labels.get("%s.home" % LABEL)
+        if (os.path.realpath(home) != os.path.realpath(ROOT)) if home else name not in reg:
+            continue
         state = c.get("State") or {}
         hostcfg = c.get("HostConfig") or {}
         ports = {}
@@ -75,6 +81,7 @@ def docker_instances():
             "restarts": state.get("RestartCount") or 0,
             "exit_code": state.get("ExitCode"),
             "ports": ports,
+            "ipv6": network.address(c),
             "limits": {
                 "memory_mb": int((hostcfg.get("Memory") or 0) / (1024 * 1024)) or None,
                 "cpus": round((hostcfg.get("NanoCpus") or 0) / 1e9, 2) or None,

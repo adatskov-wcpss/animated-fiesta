@@ -265,6 +265,28 @@ flowchart LR
 
 All of this needs the web UI running. `engine.py watchdog` runs the same loop on its own, in a terminal.
 
+## IPv6
+
+Docker's default bridge has no IPv6, and enabling it means editing `daemon.json` and restarting
+Docker. So every desktop also joins one extra network, `selkies-forge`, which has IPv6: private
+addresses translated on the way out, as Docker does for IPv4 (`forge/network.py`).
+
+A desktop stays on the default bridge, joined with the lowest gateway priority. Its IPv4 address,
+route and published ports don't change, and joining doesn't restart it. New and recreated desktops
+join when they start; the watchdog brings in existing ones. Joining switches a desktop's DNS to
+Docker's built-in resolver, which forwards to the host's.
+
+It stays off, and `selkies-cli doctor` says why, when:
+
+- the host has no IPv6 route, or IPv6 is disabled
+- Docker is older than 28, which has one default gateway for IPv4 and IPv6 together
+- the host learns its IPv6 route from the kernel with `accept_ra=1` and forwarding off. Docker turns
+  forwarding on for this network, which would make the host lose its own route when it expires. The
+  doctor prints the `sysctl` that makes it safe (`accept_ra=2`).
+
+`FORGE_IPV6=0` turns it off. Desktops' addresses are private, so this gives them outbound IPv6;
+it doesn't publish them on the internet.
+
 ## Backups and clones
 
 A desktop's files (its home folder) live in its `/config` volume. The `backups` module copies them out and back. Every container it uses is the desktop's own image, which is already on the machine, with `tar` or `cp` as its entrypoint and no network. The archive streams through the engine's process, so it is owned by you, not root.

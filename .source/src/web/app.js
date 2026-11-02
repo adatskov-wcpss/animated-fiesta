@@ -55,14 +55,21 @@
     var url = path + (path.indexOf("?") < 0 ? "?" : "&") + "_=1";
     var es = new EventSource(url);
     Object.keys(handlers).forEach(function (k) {
-      if (k === "error") return;
+      if (k === "error" || k === "lost") return;
       es.addEventListener(k, function (ev) {
         var d = ev.data;
         try { d = JSON.parse(ev.data); } catch (e) {}
         handlers[k](d, ev);
       });
     });
-    es.onerror = function () { if (handlers.error) handlers.error(); };
+    // A job reports failure as an "error" event with data. EventSource uses the
+    // same name for a dropped connection, which has none, and reconnects by itself.
+    es.addEventListener("error", function (ev) {
+      if (ev.data === undefined) { if (handlers.lost) handlers.lost(); return; }
+      var d = ev.data;
+      try { d = JSON.parse(ev.data); } catch (e) {}
+      if (handlers.error) handlers.error(d, ev);
+    });
     return es;
   }
 
@@ -83,16 +90,17 @@
     }, kind === "bad" ? 7000 : 4200);
   }
 
-  function copy(text) {
+  function copy(text, quiet) {
+    var said = quiet ? "" : text;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { toast("Copied", text, "ok"); },
-        function () { toast("Could not copy", text); });
+      navigator.clipboard.writeText(text).then(function () { toast("Copied", said, "ok"); },
+        function () { toast("Could not copy", said); });
     } else {
       var ta = document.createElement("textarea");
       ta.value = text;
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand("copy"); toast("Copied", text, "ok"); } catch (e) {}
+      try { document.execCommand("copy"); toast("Copied", said, "ok"); } catch (e) {}
       ta.remove();
     }
   }
@@ -179,7 +187,7 @@
     S.lite = !!on;
     document.documentElement.classList.toggle("lite", S.lite);
     var b = $("#liteBtn");
-    if (b) b.textContent = S.lite ? "Lite mode: on" : "Lite mode: off";
+    if (b) b.checked = S.lite;
     try { localStorage.setItem("forge_lite", S.lite ? "1" : "0"); } catch (e) {}
   }
 
@@ -187,7 +195,7 @@
   // The look is a set of CSS variables (app.css); a theme swaps them through
   // html[data-theme]. "stealth" is the tunnel manager's black-and-white look.
   var THEMES = [
-    { id: "forge", label: "Forge", hint: "Blue glass, the default", sw: ["#5aa6ff", "#8b7dff", "#0a1120"] },
+    { id: "forge", label: "Forge", hint: "Deep navy and sky blue, the default", sw: ["#38bdf8", "#0ea5e9", "#0a1019"] },
     { id: "stealth", label: "Stealth", hint: "Black room, white light: the Burrow look", sw: ["#f1f2f3", "#101113", "#030304"] },
     { id: "daylight", label: "Daylight", hint: "Light, for bright rooms", sw: ["#2f6fe4", "#ffffff", "#e9edf4"] },
     { id: "ember", label: "Ember", hint: "Warm amber on charcoal", sw: ["#ffad42", "#ff6a3d", "#16110d"] }
@@ -228,20 +236,19 @@
       renderFilters();
       renderGrid();
       renderRail();
-      renderHost();
       renderSmartControls();
       pollStats();
       setInterval(refreshInstances, 6000);
+      refreshJobs();
       setInterval(refreshHost, 15000);
       pollUpdate();
       pollLife();
       api("/api/burrow").then(function (b) { S.burrow = b; S.instKey = ""; if (S.view === "manager") renderManager(); }).catch(function () {});
       // deep links: #addons, #addons/<id> (other apps link straight to their card)
-      var m = /^#addons(?:\/([a-z0-9-]{1,40}))?$/.exec(location.hash);
-      if (m && window.ForgeAddons) { window.ForgeAddons.focus(m[1]); show("addons"); }
+      route();
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
-        '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
+        '<div class="warnbox bad" style="position:relative;z-index:5;margin:14px">Could not reach the Selkies Forge engine: ' +
         h(e.message) + "</div>");
     });
   }
@@ -267,13 +274,14 @@
       return '<div class="jrow"><span class="jt">' + h(j.title || j.kind) + "</span>" +
         '<span class="jp">' + h(j.label || j.phase || "") + (j.foreign ? " \u00b7 from the terminal" : "") + "</span>" +
         '<span class="jbar"><i style="width:' + pct + '%"></i></span><span class="jn">' + pct + "%</span>" +
+        (S.job && S.job.id === j.id && S.view !== "launch" ? '<button class="btn sm" data-back="launch">Watch</button>' : "") +
         ((!j.foreign || j.owner === "cli") ? '<button class="btn sm ghost" data-jobcancel="' + h(j.id) + '">Cancel</button>' : "") +
         "</div>";
     }).join("") : "";
   }
 
   function refreshInstances() {
-    if (S.view === "manager") refreshJobs();
+    refreshJobs();
     return api("/api/instances").then(function (r) {
       S.instances = r.instances || [];
       S.burrow = r.burrow || null;
@@ -300,7 +308,7 @@
     var diskPct = hst.disk_total_mb ? (1 - hst.disk_free_mb / hst.disk_total_mb) * 100 : 0;
     function m(label, value, pct) {
       var cls = pct > 90 ? "bad" : pct > 72 ? "warn" : "";
-      return '<div class="meter"><b>' + h(label) + '</b><div class="v">' + h(value) +
+      return '<div class="meter"><div class="v"><b>' + h(label) + "</b> " + h(value) +
         '</div><div class="bar ' + cls + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
     }
     var pr = hst.pressure || {};
@@ -310,9 +318,9 @@
     }
     if (!pr.active) S.pressureToast = false;
     $("#meters").innerHTML =
-      m(pr.active ? "RAM LOW" : "RAM FREE", mb(hst.mem_avail_mb) + " of " + mb(hst.mem_total_mb), pr.active ? 100 : memPct) +
-      m("CPU LOAD", (hst.load1 || 0).toFixed(2) + " of " + (hst.cpus || "?") + " cores", cpuPct) +
-      m("DISK FREE", mb(hst.disk_free_mb), diskPct);
+      m(pr.active ? "RAM low" : "RAM", mb(hst.mem_avail_mb) + " free", pr.active ? 100 : memPct) +
+      m("CPU", (hst.load1 || 0).toFixed(1) + " / " + (hst.cpus || "?"), cpuPct) +
+      m("Disk", mb(hst.disk_free_mb) + " free", diskPct);
   }
 
   function renderRail() {
@@ -376,38 +384,38 @@
     return out;
   }
 
+  // Each family gets its own tint for the card's art, from its name.
+  function hue(name) {
+    var x = 0;
+    String(name || "").split("").forEach(function (c) { x = (x * 31 + c.charCodeAt(0)) % 360; });
+    return x;
+  }
+
   function cardHtml(e) {
     var ready = e.kind === "pull";
-    return '<article class="card" tabindex="0" data-id="' + h(e.id) + '">' +
-      '<div class="top"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
-      '<div style="min-width:0"><div class="name">' + h(e.name) + "</div>" +
-      '<div class="meta">' + h(e.family_label) + " · " + h(e.de_label) + "</div></div></div>" +
-      '<div class="badges">' +
+    return '<article class="card" tabindex="0" data-id="' + h(e.id) + '" style="--h:' + hue(e.family) + '">' +
+      '<div class="card-art"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
       '<span class="badge ' + h(e.weight) + '">' + h(e.weight) + "</span>" +
-      '<span class="badge">' + window.forgeGlyph(e.glyph) + h(e.de_label) + "</span>" +
-      (ready ? '<span class="badge ready">ready</span>' : '<span class="badge">builds here</span>') +
-      (e.profile === "kasm" ? '<span class="badge">kasm</span>' : "") +
-      "</div>" +
+      (e.profile === "kasm" ? '<span class="badge">kasm</span>' : "") + "</div>" +
+      '<div class="card-body"><div class="name">' + h(e.name) + "</div>" +
+      '<div class="meta">' + h(e.family_label) + " \u00b7 " + h(e.de_label) + "</div>" +
       '<div class="desc">' + h(e.desc) + "</div>" +
-      '<div class="beauty"><span>look</span><div class="bar"><i style="width:' + e.beauty +
-      '%"></i></div><b>' + e.beauty + "</b></div>" +
-      '<div class="specs">' +
-      "<div><b>" + mb(e.dl_mb) + "</b><span>download</span></div>" +
-      "<div><b>" + mb(e.disk_mb) + "</b><span>on disk</span></div>" +
-      "<div><b>" + mb(e.ram_rec) + "</b><span>ram</span></div>" +
-      "<div><b>" + e.cpu_rec + "</b><span>cores</span></div>" +
-      "</div></article>";
+      '<div class="specs"><span><b>' + mb(e.dl_mb) + "</b> download</span><span><b>" + mb(e.ram_rec) +
+      "</b> RAM</span><span><b>" + e.cpu_rec + "</b> " + (e.cpu_rec === 1 ? "core" : "cores") + "</span></div>" +
+      '<div class="card-foot"><span class="how' + (ready ? " ready" : "") + '"><i></i>' +
+      (ready ? "Ready to run" : "Builds here") + '</span><span class="look" title="How good it looks, out of 100">' +
+      "Look " + e.beauty + "</span></div></div></article>";
   }
 
   function renderGrid() {
     var list = filtered();
     var hidden = S.catalog.filter(function (e) { return !runnable(e); }).length;
-    $("#count").textContent = list.length + " shown" +
-      (hidden ? " · " + hidden + " more need a different CPU" : "");
+    $("#count").textContent = list.length + (list.length === 1 ? " desktop" : " desktops") +
+      (hidden ? " \u00b7 " + hidden + " more need a different CPU" : "");
     var grid = $("#grid");
     if (!list.length) {
-      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">∅</div>' +
-        "Nothing matches that. Try clearing a filter.</div>";
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>Nothing matches that.</p>' +
+        '<button class="btn" type="button" id="clearFilters">Clear search and filters</button></div>';
       return;
     }
     grid.innerHTML = list.map(cardHtml).join("");
@@ -435,7 +443,6 @@
             "this machine right now. Free some memory or disk and try again.</div>";
           return;
         }
-        var fl = ["ram", "cpu", "disk", "beauty", "speed", "ready", "small"];
         box.innerHTML = '<p class="sub" style="margin:16px 0 10px">Weighed <b>' + r.considered +
           "</b> candidates against this machine, aiming for <b>" + h(r.taste) + "</b>.</p>" +
           '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">' +
@@ -450,14 +457,9 @@
               '<span class="score">' + p.score.toFixed(0) + "</span></div>" +
               '<ul class="why">' + p.why.map(function (w) { return "<li>" + h(w) + "</li>"; }).join("") +
               "</ul>" +
-              '<div class="factors">' + fl.map(function (k) {
-                var v = (p.factors[k] || 0) * 100;
-                return '<div class="factor"><span>' + k + '</span><div class="bar"><i style="width:' +
-                  v.toFixed(0) + '%"></i></div><b>' + v.toFixed(0) + "</b></div>";
-              }).join("") + "</div>" +
               '<div class="row" style="margin-top:4px"><button class="btn primary sm" data-use="' +
               h(e.id) + '">See details</button><button class="btn sm" data-go="' + h(e.id) +
-              '">Forge it now</button></div></div>';
+              '">Launch now</button></div></div>';
           }).join("") + "</div>";
       }).catch(function (e) {
         box.innerHTML = '<div class="warnbox bad" style="margin-top:14px">' + h(e.message) + "</div>";
@@ -465,8 +467,9 @@
   }
 
   /* -------------------------------------------------------------- detail */
-  function openDetail(id, autostart) {
+  function openDetail(id, autostart, fromRoute) {
     show("configure");
+    if (!fromRoute) location.hash = "desktop/" + id;
     $("#dHero").innerHTML = '<div class="skel" style="height:96px"></div>';
     $("#dGallery").hidden = true;
     ["cfgTune", "cfgAuth", "cfgOpts", "dAbout", "cfgSpecs"].forEach(function (k) {
@@ -484,7 +487,7 @@
       renderDetail();
       if (autostart) startLaunch();
     }).catch(function (err) {
-      $("#dHero").innerHTML = '<div class="warnbox bad">Could not open that entry: ' + h(err.message) + "</div>";
+      $("#dHero").innerHTML = '<div class="warnbox bad">Could not open that desktop: ' + h(err.message) + "</div>";
     });
   }
 
@@ -520,8 +523,7 @@
       '<p class="about">' + h(trimText(aboutText, 400)) +
       (aboutLink && aboutLink.url ? ' <a href="' + h(aboutLink.url) + '" target="_blank" rel="noopener">' +
         "Read on Wikipedia ↗</a>" : "") + "</p></div>" +
-      '<div class="go"><button class="btn primary" id="goBtn"' + (noArch ? " disabled" : "") +
-      ">Forge " + h(e.name) + '</button><div class="sum" id="goSum"></div></div></div>' +
+      "</div>" +
       (noArch ? '<div class="warnbox bad" style="margin:14px 0 0">This image has no ' + h(hst.arch) +
         " build, so it cannot run on this machine.</div>" : "");
 
@@ -635,14 +637,15 @@
     $("#cfgOpts").innerHTML = '<h3><span class="num">3</span>Options</h3>' +
       '<label class="field"><span>Name (optional)</span><input type="text" id="oName" placeholder="' +
       h(e.id) + '"></label>' +
-      toggle("oTunnel", true, "Public link through serveo",
-        kasm ? "https image, so a short-lived TCP tunnel" : "an https link that works from anywhere") +
+      toggle("oTunnel", false, "Public link through serveo",
+        "an https link anyone can reach; a password is made for you if you didn't set one") +
       toggle("oAuto", false, "Start with Docker",
         "off: it only runs when you start it, not after a reboot") +
+      '<details class="more"><summary>Advanced</summary>' +
       gpuField("oGpu", "auto") +
-      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
+      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; Selkies Forge tries this by itself") +
       idleField("oIdle", null) +
-      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
+      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080")) + "</details>";
 
     /* -- dockerfile */
     var dd = $("#dDocker");
@@ -656,22 +659,28 @@
     }
 
     $("#goBar").innerHTML = '<div class="what" id="goWhat"></div>' +
-      '<button class="btn sm ghost" data-back="browse">Cancel</button>' +
-      '<button class="btn primary" id="goBtn2"' + (noArch ? " disabled" : "") + ">Forge it</button>";
+      '<button class="btn primary" id="goBtn2"' + (noArch ? " disabled" : "") + ">" + I.play + "Launch</button>";
 
     $$("#cfgTune input[type=range]").forEach(syncRange);
+    S.plan.memory_mb = Number($("#sMem").value);
+    S.plan.cpus = Number($("#sCpu").value);
+    S.plan.shm_mb = Number($("#sShm").value);
+    S.plan.disk_mb = Number($("#sDisk").value);
     updateGoSummary();
 
     $("#genPass").onclick = function () {
-      var abc = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      var buf = new Uint32Array(16), out = "";
-      if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(buf);
-      else for (var j = 0; j < 16; j++) buf[j] = Math.floor(Math.random() * 1e9);
-      for (var i = 0; i < 16; i++) out += abc.charAt(buf[i] % abc.length);
-      $("#oPass").value = out;
+      $("#oPass").value = newPassword();
       $("#oAuth").checked = true;
       $("#authFields").style.display = "block";
     };
+  }
+
+  function newPassword() {
+    var abc = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var buf = new Uint32Array(16), out = "";
+    window.crypto.getRandomValues(buf);
+    for (var i = 0; i < 16; i++) out += abc.charAt(buf[i] % abc.length);
+    return out;
   }
 
   function sideArticle(title, art) {
@@ -717,7 +726,7 @@
       opt("off", "Off · draw and encode in software") +
       "</select></label>" +
       '<p class="sub" style="margin:2px 0 14px;font-size:12px">' + h(g.summary || "Detecting…") +
-      (found ? ". Checked once inside the image; if the desktop misbehaves with it, the forge steps back to software by itself." : "") +
+      (found ? ". Checked once inside the image; if the desktop misbehaves with it, it steps back to software by itself." : "") +
       "</p>";
   }
 
@@ -750,10 +759,8 @@
     var txt = mb(S.plan.memory_mb) + " RAM · " + Number(S.plan.cpus).toFixed(1) + " cores · " +
       mb(S.plan.shm_mb) + " shared · " + mb(S.plan.disk_mb) + " storage";
     var w = $("#goWhat");
-    if (w) w.innerHTML = "<b>" + h(S.sel.name) + "</b> · " + h(txt);
-    var s = $("#goSum");
-    if (s) s.textContent = S.sel.kind === "pull" ? "About " + mb(S.sel.dl_mb) + " to download"
-      : "Builds here · about " + mb(S.sel.dl_mb) + " to fetch";
+    if (w) w.innerHTML = "<b>" + h(S.sel.name) + "</b><span>" + h(txt) + " \u00b7 " +
+      h(S.sel.kind === "pull" ? "about " + mb(S.sel.dl_mb) + " to download" : "builds here, about " + mb(S.sel.dl_mb) + " to fetch") + "</span>";
   }
 
   function syncRange(r) {
@@ -794,15 +801,17 @@
     if ($("#oIdle") && $("#oIdle").value !== "") opts.idle_stop = parseInt($("#oIdle").value, 10);
     var nm = $("#oName") && $("#oName").value.trim();
     if (nm) opts.name = nm;
-    if ($("#oAuth") && $("#oAuth").checked) {
+    // A public link with no sign-in would hand the whole desktop to anyone who finds it.
+    if ($("#oAuth") && ($("#oAuth").checked || opts.tunnel)) {
       opts.username = ($("#oUser").value || "forge").trim();
-      opts.password = $("#oPass").value || Math.random().toString(36).slice(2, 10);
+      opts.password = $("#oPass").value || newPassword();
     }
     if (e.profile === "kasm" && !opts.password) opts.password = "forge";
 
     show("launch");
+    $("#v-launch").classList.remove("finished");
     $("#lTitle").innerHTML = '<div class="hero"><div class="logo">' + window.forgeLogo(e.family) +
-      "</div><div><h2>Forging " + h(e.name) + "</h2><p>" + h(e.subtitle) +
+      "</div><div><h2>Launching " + h(e.name) + "</h2><p>" + h(e.subtitle) +
       " &middot; " + mb(S.plan.memory_mb) + " RAM &middot; " + S.plan.cpus + " cores</p></div></div>";
     $("#lResult").innerHTML = "";
     $("#lSteps").innerHTML = "";
@@ -826,13 +835,16 @@
       S.job = r.job;
       cancelBtn.hidden = false;
       cancelBtn.onclick = function () {
-        if (!confirm("Stop forging " + e.name + "?\n\nWhatever is downloading or building stops, and a half-made desktop is removed.")) return;
-        cancelBtn.disabled = true;
-        cancelBtn.textContent = "Cancelling\u2026";
-        api("/api/job/" + r.job.id + "/cancel", { body: {} }).catch(function (x) {
-          toast("Could not cancel", x.message, "bad");
-          cancelBtn.disabled = false;
-          cancelBtn.textContent = "Cancel";
+        ask({ title: "Stop launching " + e.name + "?", text: "Whatever is downloading or building stops, and a half-made desktop is removed.",
+              ok: "Stop it", danger: true, no: "Keep going" }).then(function (a) {
+          if (!a) return;
+          cancelBtn.disabled = true;
+          cancelBtn.textContent = "Cancelling\u2026";
+          api("/api/job/" + r.job.id + "/cancel", { body: {} }).catch(function (x) {
+            toast("Could not cancel", x.message, "bad");
+            cancelBtn.disabled = false;
+            cancelBtn.textContent = "Cancel";
+          });
         });
       };
       if (S.jobES) S.jobES.close();
@@ -871,6 +883,10 @@
           term.line("");
           term.line(">> ready: " + (res.local_url || ""), "g");
           renderResult(res);
+          $("#v-launch").classList.add("finished");
+          var ttl = $("#lTitle h2");
+          if (ttl) ttl.textContent = e.name;
+          $(".main").scrollTop = 0;
           refreshInstances();
           toast("Desktop is up", res.name, "ok");
         },
@@ -965,8 +981,8 @@
       '<div class="row" style="margin-top:14px">' +
       '<a class="btn primary" href="' + h(res.local_url) + '" target="_blank" rel="noopener">Open the desktop</a>' +
       '<button class="btn" data-term="' + h(res.name) + '">' + I.term + "Open a shell</button>" +
-      '<button class="btn" data-back="manager">Go to the manager</button>' +
-      '<button class="btn ghost" data-back="browse">Forge another</button></div></div>';
+      '<button class="btn" data-back="manager">See all desktops</button>' +
+      '<button class="btn ghost" data-back="browse">Launch another</button></div></div>';
   }
 
   function linkRow(what, url, cls, note) {
@@ -983,7 +999,7 @@
     return S.instances.map(function (i) {
       var l = i.limits || {};
       return [i.name, i.running ? 1 : 0, (i.tunnel && i.tunnel.url) || "",
-        (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
+        (i.tunnel && i.tunnel.alive) ? 1 : 0, i.ipv6 || "", l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
         i.autostart ? 1 : 0, i.auth ? i.auth.user : "",
         i.session ? [i.session.wm, i.session.mode, i.session.screen, i.session.viewers,
           Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min,
@@ -995,13 +1011,14 @@
     var box = $("#instList");
     if (!S.instances.length) {
       $("#instStats").innerHTML = "";
-      box.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">\u25A6</div>' +
-        "Nothing forged yet.<br>Pick a desktop in <b>Browse</b> and it shows up here.</div>";
+      box.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>No desktops yet.</p>' +
+        '<button class="btn primary" type="button" data-back="browse">Pick one from the catalog</button></div>';
       S.instKey = "";
       return;
     }
     var key = instKey();
-    if (key !== S.instKey) {
+    // Rebuilding would snap shut a menu you have open: wait until it's closed.
+    if (key !== S.instKey && !$("#instList .menu:not([hidden])")) {
       var keepDrawer = S.drawerName && S.instances.some(function (i) {
         return i.name === S.drawerName && i.running;
       });
@@ -1140,12 +1157,17 @@
       rows += arow("lock", "Burrow", '<span>' + h(bh.head) + '</span><span class="muted">' + h(bh.tail) + "</span>",
         bt.url, bt.url, "pub", bt.access === "public" ? "published through Burrow, public" : "published through Burrow, behind its login");
     }
+    if (i.ipv6) {
+      rows += '<div class="arow"><span class="ic">' + I.globe + '</span><span class="lab">IPv6</span>' +
+        '<span class="val">' + h(i.ipv6) + '</span><div class="acts"><button class="iconbtn" data-copy="' + h(i.ipv6) +
+        '" title="Copy">' + I.copy + "</button></div></div>";
+    }
     if (i.auth) {
       rows += '<div class="arow"><span class="ic">' + I.lock + '</span><span class="lab">Sign-in</span>' +
         '<span class="val" data-secret="' + h(i.name) + '"><span>' + h(i.auth.user) +
         '</span><span class="muted"> / \u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022</span></span>' +
         '<div class="acts"><button class="iconbtn" data-reveal="' + h(i.name) + '" title="Show password">' +
-        I.eye + '</button><button class="iconbtn" data-copy="' + h(i.auth.password) +
+        I.eye + '</button><button class="iconbtn" data-quiet="1" data-copy="' + h(i.auth.password) +
         '" title="Copy password">' + I.copy + "</button></div></div>";
     }
 
@@ -1185,7 +1207,7 @@
           (running ? (tun ? '<button data-act="untunnel">' + I.unplug + "Drop public link</button>"
                           : '<button data-act="tunnel">' + I.plug + "Open public link</button>") : "") +
           '<button data-logs="' + h(i.name) + '">' + I.logs + "Container logs</button>" +
-          (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest forge layer; files are kept">' +
+          (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest layer; files are kept">' +
             I.restart + "Repair</button>") +
           '<button data-tune="' + h(i.name) + '">' + I.tune + "Edit limits</button>" +
           '<button data-act="idle" title="Stop it when nobody has it open">' + I.stop + "Stop when idle\u2026</button>" +
@@ -1276,7 +1298,7 @@
         return;
       }
       set(i.name, "cpu", st.cpu != null ? st.cpu.toFixed(1) + "<small> %</small>" : "\u2014");
-      set(i.name, "mem", st.mem_mb != null ? Math.round(st.mem_mb) + "<small> of " +
+      set(i.name, "mem", st.mem_mb != null ? mb(st.mem_mb) + "<small> of " +
         mb(st.mem_limit_mb || 0) + "</small>" : "\u2014");
       set(i.name, "net", bytes((st.rx_total || 0) + (st.tx_total || 0)) +
         (st.rx_rate || st.tx_rate ? "<small> \u00b7 " + bytes((st.rx_rate || 0) + (st.tx_rate || 0)) + "/s</small>" : ""));
@@ -1309,6 +1331,26 @@
   function stat(k, v, s) {
     return '<div class="stat"><div class="k">' + h(k) + '</div><div class="v">' + h(v) +
       '</div><div class="s">' + h(s) + "</div></div>";
+  }
+
+  // A menu floats above everything, so a card's rounded corners can't clip it:
+  // above its button when there's room, else below, and it scrolls if it must.
+  function placeMenu(menu, btn) {
+    var r = btn.getBoundingClientRect(), gap = 8;
+    menu.style.position = "fixed";
+    menu.style.right = Math.max(8, window.innerWidth - r.right) + "px";
+    menu.style.left = "auto";
+    menu.style.maxHeight = "";
+    var hgt = menu.offsetHeight, above = r.top - gap - 8, below = window.innerHeight - r.bottom - gap - 8;
+    if (hgt <= above || above >= below) {
+      menu.style.top = "auto";
+      menu.style.bottom = (window.innerHeight - r.top + gap) + "px";
+      menu.style.maxHeight = above + "px";
+    } else {
+      menu.style.bottom = "auto";
+      menu.style.top = (r.bottom + gap) + "px";
+      menu.style.maxHeight = below + "px";
+    }
   }
 
   function closeMenus(except) {
@@ -1366,19 +1408,23 @@
         b.onclick = function () {
           var f = b.dataset.file, k = b.dataset.bk;
           if (k === "new") { closeModal(); startJob("/api/instance/" + encodeURIComponent(name) + "/backup", {}, "Backup of " + name); }
-          if (k === "restore" && confirm("Replace " + name + "\u2019s files with this backup?\n\n" + f +
-              "\n\nA safety backup of the current files is taken first. A running desktop restarts.")) {
-            closeModal(); startJob("/api/backups/restore", { name: name, file: f }, "Restore of " + name);
-          }
-          if (k === "fork") {
-            var nn = prompt("Name for the new desktop (optional)", "");
-            if (nn === null) return;
-            closeModal(); startJob("/api/backups/clone", { file: f, name: nn.trim() }, "New desktop from backup");
-          }
-          if (k === "del" && confirm("Delete this backup for good?\n\n" + f)) {
-            api("/api/backups/delete", { body: { file: f } }).then(function () { showBackups(name); })
-              .catch(function (e) { toast("Delete failed", e.message, "bad"); });
-          }
+          if (k === "restore") ask({ title: "Replace " + name + "\u2019s files with this backup?",
+              text: f + ". A safety backup of the current files is taken first. A running desktop restarts.", ok: "Restore", danger: true })
+            .then(function (a) {
+              if (a) startJob("/api/backups/restore", { name: name, file: f }, "Restore of " + name);
+              else showBackups(name);
+            });
+          if (k === "fork") ask({ title: "New desktop from this backup", input: "Name (optional)", ok: "Create" })
+            .then(function (a) {
+              if (a) startJob("/api/backups/clone", { file: f, name: a.value.trim() }, "New desktop from backup");
+              else showBackups(name);
+            });
+          if (k === "del") ask({ title: "Delete this backup for good?", text: f, ok: "Delete", danger: true })
+            .then(function (a) {
+              if (!a) return showBackups(name);
+              api("/api/backups/delete", { body: { file: f } }).then(function () { showBackups(name); })
+                .catch(function (e) { toast("Delete failed", e.message, "bad"); });
+            });
         };
       });
     }).catch(function (e) { $("#modalBody").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>"; });
@@ -1390,28 +1436,46 @@
     if (act === "backup") return startJob("/api/instance/" + enc + "/backup", {}, "Backup of " + name);
     if (act === "backups") return showBackups(name);
     if (act === "clone") {
-      var nn = prompt("Clone " + name + "\n\nA second desktop with a copy of all its files, the same limits " +
-        "and options. Name for the copy (optional):", "");
-      if (nn === null) return;
-      return startJob("/api/instance/" + enc + "/clone", { name: nn.trim() }, "Clone of " + name);
+      return ask({ title: "Clone " + name, text: "A second desktop with a copy of all its files, the same limits and options.",
+                   input: "Name for the copy (optional)", ok: "Clone" }).then(function (a) {
+        if (a) startJob("/api/instance/" + enc + "/clone", { name: a.value.trim() }, "Clone of " + name);
+      });
     }
     if (act === "idle") {
       var cur = (S.instances.filter(function (x) { return x.name === name; })[0] || {}).idle_stop_min || 0;
-      var mins = prompt("Stop " + name + " after how many minutes with nobody watching?\n\n" +
-        "0 = never. Leave empty for the forge default. Files are always kept.", cur ? String(cur) : "");
-      if (mins === null) return;
-      return api("/api/instance/" + enc + "/idle", { body: { minutes: mins.trim() === "" ? null : parseInt(mins, 10) || 0 } })
-        .then(function (r) {
-          toast("Idle stop " + (r.idle_stop_min ? "after " + r.idle_stop_min + " min" : r.idle_stop_min === 0 ? "off" : "default"), name, "ok");
-          S.instKey = ""; refreshInstances();
-        }).catch(function (e) { toast("Could not set it", e.message, "bad"); });
+      return ask({ title: "Stop " + name + " when nobody\u2019s watching",
+                   text: "Minutes with no browser tab open. 0 = never, empty = the default. Files are always kept.",
+                   input: "Minutes", value: cur ? String(cur) : "", ok: "Save" }).then(function (a) {
+        if (!a) return;
+        var mins = a.value.trim();
+        api("/api/instance/" + enc + "/idle", { body: { minutes: mins === "" ? null : parseInt(mins, 10) || 0 } })
+          .then(function (r) {
+            toast("Idle stop " + (r.idle_stop_min ? "after " + r.idle_stop_min + " min" : r.idle_stop_min === 0 ? "off" : "default"), name, "ok");
+            S.instKey = ""; refreshInstances();
+          }).catch(function (e) { toast("Could not set it", e.message, "bad"); });
+      });
     }
-    if (act === "repair" && !confirm("Repair " + name + "?\n\nIt is recreated on the newest forge layer " +
-        "(first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.")) return;
+    if (act === "repair") {
+      return ask({ title: "Repair " + name + "?", text: "It\u2019s recreated on the newest Selkies Forge layer (first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.", ok: "Repair" })
+        .then(function (a) { if (a) runAction(name, act, {}); });
+    }
+    if (act === "tunnel") {
+      var inst = S.instances.filter(function (x) { return x.name === name; })[0];
+      if (inst && !inst.auth) {
+        return ask({ title: "Open " + name + " to the internet?", text: "This desktop has no sign-in, so anyone who gets the link can use it, with your files. Set a password first unless you\u2019re sure.", ok: "Make the link anyway", danger: true })
+          .then(function (a) { if (a) runAction(name, act, {}); });
+      }
+    }
     if (act === "remove") {
-      if (!confirm("Remove " + name + "?")) return;
-      body.purge = confirm("Also delete its saved files (the /config volume)?\n\nOK deletes them, Cancel keeps them.");
+      return ask({ title: "Remove " + name + "?", text: "The desktop is deleted. Its files stay unless you tick the box.", ok: "Remove", danger: true,
+                   check: "Also delete its saved files (the /config volume)" }).then(function (a) {
+        if (a) runAction(name, act, { purge: a.checked });
+      });
     }
+    runAction(name, act, body);
+  }
+
+  function runAction(name, act, body) {
     var card = document.querySelector('.mc[data-name="' + cssq(name) + '"]');
     if (card) card.classList.add("busy");
     toast(cap(act) + "\u2026", name);
@@ -1428,14 +1492,47 @@
 
   /* ---------------------------------------------------------------- modal */
   function openModal(title, html) {
+    var body = $("#modalBody");
+    if (S.askDone) { var d = S.askDone; S.askDone = null; d(null); }
+    // handlers a previous dialog left here would run against fields that are gone
+    body.oninput = null;
+    body.onchange = null;
     $("#modalTitle").textContent = title;
-    $("#modalBody").innerHTML = html;
+    body.innerHTML = html;
     $("#modal").style.display = "grid";
+  }
+
+  /* A question in the page's own dialog. Resolves to null when dismissed, else
+     {value, checked}. o: title, text, ok, no, danger, input (label), value, check (label). */
+  function ask(o) {
+    return new Promise(function (done) {
+      openModal(o.title, (o.text ? '<p class="sub ask-t">' + h(o.text) + "</p>" : "") +
+        (o.input ? '<label class="field"><span>' + h(o.input) + '</span><input type="text" id="askIn" value="' + h(o.value || "") + '"></label>' : "") +
+        (o.check ? '<label class="toggle ask-c"><input type="checkbox" id="askCk"><i></i><span>' + h(o.check) + "</span></label>" : "") +
+        '<div class="row end"><button class="btn ghost" type="button" id="askNo">' + h(o.no || "Cancel") + "</button>" +
+        '<button class="btn ' + (o.danger ? "danger" : "primary") + '" type="button" id="askOk">' + h(o.ok || "OK") + "</button></div>");
+      S.askDone = done;
+      var finish = function (v) {
+        S.askDone = null;
+        closeModal();
+        done(v);
+      };
+      $("#askNo").onclick = function () { finish(null); };
+      $("#askOk").onclick = function () {
+        finish({ value: $("#askIn") ? $("#askIn").value : "", checked: !!($("#askCk") && $("#askCk").checked) });
+      };
+      var inp = $("#askIn");
+      if (inp) {
+        inp.focus();
+        inp.onkeydown = function (ev) { if (ev.key === "Enter") { ev.preventDefault(); $("#askOk").click(); } };
+      } else $("#askOk").focus();
+    });
   }
 
   // Every close path hides first and tidies up after, so nothing that goes
   // wrong while tidying can leave a panel stuck open.
   function closeModal() {
+    if (S.askDone) { var d = S.askDone; S.askDone = null; d(null); }
     $("#modal").style.display = "none";
     try { $("#modalBody").innerHTML = ""; } catch (e) { console.error(e); }
   }
@@ -1731,22 +1828,17 @@
       var hst = d.host;
       $("#hostChecks").innerHTML = d.checks.map(function (c) {
         var bad = !c.ok && c.severity !== "info";
-        return '<div class="link-row' + (bad ? "" : "") + '" style="' +
-          (bad ? "border-color:rgba(255,107,126,.4)" : "") + '">' +
-          '<span class="ico">' + (c.ok ? "✅" : (c.severity === "info" ? "ℹ️" : "⚠️")) + "</span>" +
-          '<div style="flex:1;min-width:0"><div class="what">' + h(c.name) + "</div>" +
-          '<div style="font-size:13px">' + h(c.detail) + "</div>" +
-          (!c.ok && c.fix ? '<div style="font-size:12px;color:var(--dim-2)">fix: ' + h(c.fix) + "</div>" : "") +
-          "</div></div>";
+        return '<div class="check ' + (c.ok ? "ok" : bad ? "bad" : "info") + '"><i></i><b>' + h(({ ssh: "SSH", ipv6: "IPv6" })[c.name] || c.name) + "</b>" +
+          "<span>" + h(c.detail) + (!c.ok && c.fix ? '<code>' + h(c.fix) + "</code>" : "") + "</span></div>";
       }).join("");
+      var FACT = [["hostname", "Hostname"], ["os_pretty", "System"], ["kernel", "Kernel"], ["arch", "Architecture"],
+        ["cpus", "CPU cores"], ["docker_version", "Docker"], ["storage_driver", "Storage driver"],
+        ["backing_fs", "Backing filesystem"], ["cgroup", "cgroup version"], ["python", "Python"]];
       $("#hostFacts").innerHTML = "<dl class=\"kv\">" +
-        ["hostname", "os_pretty", "kernel", "arch", "cpus", "docker_version", "storage_driver",
-         "backing_fs", "cgroup", "python"].map(function (k) {
-          return "<dt>" + h(k.replace(/_/g, " ")) + "</dt><dd>" + h(hst[k]) + "</dd>";
-        }).join("") +
-        "<dt>memory</dt><dd>" + mb(hst.mem_avail_mb) + " free of " + mb(hst.mem_total_mb) + "</dd>" +
-        "<dt>disk</dt><dd>" + mb(hst.disk_free_mb) + " free of " + mb(hst.disk_total_mb) + "</dd>" +
-        "<dt>docker root</dt><dd>" + h(hst.docker_root) + "</dd></dl>";
+        FACT.map(function (k) { return "<dt>" + k[1] + "</dt><dd>" + h(hst[k[0]]) + "</dd>"; }).join("") +
+        "<dt>Memory</dt><dd>" + mb(hst.mem_avail_mb) + " free of " + mb(hst.mem_total_mb) + "</dd>" +
+        "<dt>Disk</dt><dd>" + mb(hst.disk_free_mb) + " free of " + mb(hst.disk_total_mb) + "</dd>" +
+        "<dt>Docker root</dt><dd>" + h(hst.docker_root) + "</dd></dl>";
     }).catch(function (e) {
       $("#hostChecks").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
     });
@@ -1822,8 +1914,6 @@
         '<p class="sub" style="font-size:12px;margin:8px 0 0">Nothing a desktop uses is ever removed. ' +
         "Kept files of removed desktops stay unless you delete them from the terminal (selkies-cli clean).</p>";
       var go = function (all) {
-        if (all && !confirm("Remove every desktop image no desktop uses, and Docker's build cache?\n\n" +
-            "They download or rebuild again if you forge those desktops later.")) return;
         el.querySelectorAll("button").forEach(function (b) { b.disabled = true; });
         api("/api/space/clean", { body: { all: all } }).then(function (x) {
           toast("Cleaned up", (x.removed_images || []).length + " images removed", "ok");
@@ -1831,7 +1921,10 @@
         }).catch(function (x) { toast("Clean-up failed", x.message, "bad"); renderSpace(); });
       };
       $("#spClean").onclick = function () { go(false); };
-      $("#spCleanAll").onclick = function () { go(true); };
+      $("#spCleanAll").onclick = function () {
+        ask({ title: "Remove everything unused?", text: "Every desktop image no desktop uses, and Docker\u2019s build cache. They download or rebuild again if you launch those desktops later.", ok: "Remove", danger: true })
+          .then(function (a) { if (a) go(true); });
+      };
     }).catch(function (x) { el.innerHTML = '<div class="warnbox bad">' + h(x.message) + "</div>"; });
   }
 
@@ -1930,18 +2023,44 @@
   }
 
   /* ------------------------------------------------------------ routing */
-  function show(view) {
+  var ROUTES = { browse: 1, manager: 1, host: 1, addons: 1 };
+
+  function show(view, opts) {
     S.view = view;
+    if (view !== "shell" && S.shell) closeShell();
     $$(".view").forEach(function (v) { v.classList.toggle("on", v.id === "v-" + view); });
     $$("#rail button[data-view]").forEach(function (b) {
-      var on = b.dataset.view === view || (view === "configure" && b.dataset.view === "browse");
+      var on = b.dataset.view === view || ((view === "configure" || view === "launch") && b.dataset.view === "browse") ||
+        (view === "shell" && b.dataset.view === "manager");
       b.classList.toggle("on", on);
     });
     closeMenus();
+    setPrefs(false);
     if (view === "manager") { S.instKey = ""; refreshInstances(); }
     if (view === "host") renderHost();
     if (view === "addons" && window.ForgeAddons) window.ForgeAddons.show();
+    renderJobStrip();
     $(".main").scrollTop = 0;
+    if (ROUTES[view] && !(opts && opts.noHash) && location.hash.slice(1) !== view) {
+      S.hashSet = "#" + view;
+      location.hash = view;
+    }
+  }
+
+  function route() {
+    var m = location.hash.slice(1);
+    var ad = /^addons(?:\/([a-z0-9-]{1,40}))?$/.exec(m);
+    if (ad && window.ForgeAddons) { window.ForgeAddons.focus(ad[1]); return show("addons", { noHash: true }); }
+    var dk = /^desktop\/([a-z0-9._-]{1,80})$/i.exec(m);
+    if (dk) return openDetail(dk[1], false, true);
+    show(ROUTES[m] ? m : "browse", { noHash: true });
+  }
+
+  function setPrefs(open) {
+    var p = $("#prefs");
+    if (!p) return;
+    p.hidden = !open;
+    $("#prefsBtn").setAttribute("aria-expanded", String(open));
   }
 
   /* ------------------------------------------------------------- events */
@@ -1950,7 +2069,11 @@
       var b = ev.target.closest("button[data-view]");
       if (b) show(b.dataset.view);
     });
-    $("#liteBtn").addEventListener("click", function () { applyLite(!S.lite); });
+    $("#liteBtn").addEventListener("change", function () { applyLite(this.checked); });
+    $("#prefsBtn").addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      setPrefs($("#prefs").hidden);
+    });
     $("#themes").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-theme-id]");
       if (b) applyTheme(b.dataset.themeId);
@@ -1963,7 +2086,7 @@
       clearTimeout(qTimer);
       qTimer = setTimeout(function () {
         S.filters.q = v;
-        if (S.view !== "browse") show("browse");
+        if (S.view !== "browse" && v) show("browse");
         renderGrid();
       }, 120);
     });
@@ -1982,6 +2105,12 @@
       renderFilters(); renderGrid();
     });
     $("#grid").addEventListener("click", function (ev) {
+      if (ev.target.id === "clearFilters") {
+        S.filters.q = S.filters.family = S.filters.weight = S.filters.kind = "";
+        $("#q").value = "";
+        renderFilters(); renderGrid();
+        return;
+      }
       var c = ev.target.closest(".card");
       if (c) openDetail(c.dataset.id);
     });
@@ -2004,6 +2133,12 @@
       runSmart();
     });
     $("#smartBtn").addEventListener("click", runSmart);
+    $("#smartToggle").addEventListener("click", function () {
+      var p = $("#smartPanel");
+      p.hidden = !p.hidden;
+      this.setAttribute("aria-expanded", String(!p.hidden));
+      this.classList.toggle("on", !p.hidden);
+    });
     $("#smartOut").addEventListener("click", function (ev) {
       var u = ev.target.closest("[data-use]");
       if (u) return openDetail(u.dataset.use);
@@ -2054,23 +2189,18 @@
         closeMenus();
         if (!wasOpen) {
           menu.hidden = false;
-          // The card clips its contents (rounded corners), so fit the menu in
-          // the room above the button and let it scroll if it is longer.
-          var card = mbtn.closest(".mc");
-          if (card) {
-            var room = mbtn.getBoundingClientRect().top - card.getBoundingClientRect().top - 14;
-            menu.style.maxHeight = Math.max(160, room) + "px";
-          }
+          placeMenu(menu, mbtn);
           closeMenus(menu);
         }
         return;
       }
       if (!t.closest(".menu")) closeMenus();
+      if (!t.closest("#prefs")) setPrefs(false);
 
       var x;
       if ((x = t.closest("[data-open]"))) { openDesktop(x.dataset.open); return; }
       if ((x = t.closest("[data-drawer]"))) { toggleDrawer(x.dataset.drawer); return; }
-      if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy); return; }
+      if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy, x.dataset.quiet === "1"); return; }
       if ((x = t.closest("[data-back]"))) { show(x.dataset.back); return; }
       if ((x = t.closest("[data-term]"))) { openTerm(x.dataset.term); return; }
       if ((x = t.closest("[data-logs]"))) { closeMenus(); showLogs(x.dataset.logs); return; }
@@ -2139,7 +2269,17 @@
 
 
     var rsz = null;
+    window.addEventListener("hashchange", function () {
+      if (location.hash === S.hashSet) { S.hashSet = null; return; }
+      S.hashSet = null;
+      route();
+    });
+    window.addEventListener("scroll", function (ev) {
+      if (ev.target.closest && ev.target.closest(".menu")) return;
+      closeMenus();
+    }, true);
     window.addEventListener("resize", function () {
+      closeMenus();
       clearTimeout(rsz);
       rsz = setTimeout(function () {
         if (S.shell && S.view === "shell") S.shell.refit();
@@ -2157,8 +2297,16 @@
       if (ev.key === "Escape") {
         if ($("#modal").style.display === "grid") { closeModal(); return; }
         closeMenus();
+        setPrefs(false);
+        if (ev.target.id === "q" && ev.target.value) {
+          ev.target.value = "";
+          S.filters.q = "";
+          renderGrid();
+        }
       }
-      // A page shortcut must never eat a keystroke meant for a shell or a field.
+      // A page shortcut must never eat a keystroke meant for a shell, a field or
+      // the browser (Ctrl+1 switches tabs), or move the page behind a dialog.
+      if (ev.ctrlKey || ev.metaKey || ev.altKey || $("#modal").style.display === "grid") return;
       var tag = ev.target.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       if (ev.target.closest && ev.target.closest(".term")) return;
@@ -2174,7 +2322,7 @@
   window.Forge = {
     api: api, sse: sse, h: h, toast: toast, copy: copy, ago: ago, I: I,
     openModal: openModal, closeModal: closeModal, show: show,
-    linkChooser: linkChooser, networkUrl: networkUrl,
+    linkChooser: linkChooser, networkUrl: networkUrl, ask: ask,
     view: function () { return S.view; }
   };
 

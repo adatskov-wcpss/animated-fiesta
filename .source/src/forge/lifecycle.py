@@ -12,7 +12,7 @@ knows a desktop that just exited was stopped on purpose, not crashed.
 import json
 import re
 
-from . import catalog, events
+from . import catalog, events, network
 from .health import LaunchProblem, wait_healthy, wait_http, wait_session
 from .host import host_info, image_present
 from .images import ensure_layer
@@ -234,6 +234,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     rc, out, err = run(args, timeout=180)
     if rc != 0:
         raise RuntimeError("recreate failed: %s" % (err or out).strip())
+    network.attach(name)
     reg_update(name, {"plan": plan, "image": image})
     if not was_running and not repair:
         run(["docker", "stop", name], timeout=120)

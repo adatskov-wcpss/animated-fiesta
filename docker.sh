@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.13"
+FORGE_VERSION="2.0.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -533,7 +533,7 @@ FORGE_SHA_FORGE_BACKUPS_PY="a7dbe4d9d15202209a1526774f2e42c493285cd429409ebd98fe
 FORGE_SHA_FORGE_BURROW_PY="f052dd40b14e1ad6e62cf622826f5195481db41af5397f4ea84cfa7040e4f04c"
 FORGE_SHA_FORGE_CATALOG_PY="bce6dd57a84a38ce62d56271072503f23fd6d54753441153adb265b7cd35decb"
 FORGE_SHA_FORGE_CLI_PY="dde6edb60779641f49c389fc38b3e8eeee7cd0d93e0c45d4dd0bac633b15e2f1"
-FORGE_SHA_FORGE_DOCTOR_PY="b21dfbda03d710f244312df3283a8988b40d4ac2ab4c48ed252f3c3d7a839210"
+FORGE_SHA_FORGE_DOCTOR_PY="332006e52cd215696281fbea03eeca553dcdb59fae06f761d878fcd972cead9c"
 FORGE_SHA_FORGE_EVENTS_PY="3580b5654e071cb6e59f44c90dcfec9f5ea5d53358190e12722bf6017c497712"
 FORGE_SHA_FORGE_GPU_PY="18d779546907e20d334ca27f331d926c33b480b16c560d4ba265b55e0aca4cb3"
 FORGE_SHA_FORGE_HEALTH_PY="ee292cbf761b40ae09b5a7689ff4b5dd6699d5ba6147a7d0dabdbda0ca94788f"
@@ -544,12 +544,13 @@ FORGE_SHA_FORGE_JOBS_PY="a78f564dadd53f11560bea39907245a2332f9c35402bc1ebe92dd36
 FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83b0031e53c5a"
 FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
-FORGE_SHA_FORGE_LIFECYCLE_PY="32da83d5c07d9f795702a45c9a6c2cabbb4a6974cf6045905f123b0418e7dd9f"
-FORGE_SHA_FORGE_PATHS_PY="705d3da8cc17391ea2faec72ca5d9b1db73ffad8e497026d623f903dd6a0f251"
+FORGE_SHA_FORGE_LIFECYCLE_PY="f8be377a840b92046f8aecb49e72373600bdab4e68382fc6d36243c2018206c8"
+FORGE_SHA_FORGE_NETWORK_PY="6a6ec4483eef8b52ddb634f0f22530f178551704a5b3fe06b85c970be3491a8f"
+FORGE_SHA_FORGE_PATHS_PY="638393c41441eca9867209b378a8412a92fc4e0e596899913ddd82dbfb7396ba"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
-FORGE_SHA_FORGE_REGISTRY_PY="fcbd775bec6d7dcfdde38ba55f675443e307576140cff75e9fe6c53ed02b780b"
-FORGE_SHA_FORGE_RUNNER_PY="547ad356bdb902e14e35f5570abec5e9d85e72f8a22b45fd40cd6a5fe1850cf8"
+FORGE_SHA_FORGE_REGISTRY_PY="422a2d09de41f5db4e38072b82006503b0d43344950f7d409ad24788729b7bca"
+FORGE_SHA_FORGE_RUNNER_PY="b0a05b6675aa339a65992969cc0914fde34972e62c2c45ffd041b4af0e3d696b"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
 FORGE_SHA_FORGE_SERVER_PY="be904c8fc42261e4591c863adb64b59190f6f9a31ec9f799489c880182163e9f"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
@@ -560,20 +561,20 @@ FORGE_SHA_FORGE_TERMINAL_PY="befcf471ac7032b93bb187cc51159667ab9cf5531251938cc92
 FORGE_SHA_FORGE_TUNNELS_PY="a1b9358251897753fd461702446225e47f04830f8f11039760ffc1040d8743d5"
 FORGE_SHA_FORGE_UPDATES_PY="0e13cce414f7b6b85847eff0849152576f6d6b3ba78e1eec97f2603212e511a5"
 FORGE_SHA_FORGE_UTIL_PY="11a06e6537ba2417f08ceb9dc2c833915b3e1d2029dae7442c92768ebb12d5a7"
-FORGE_SHA_FORGE_WATCHDOG_PY="3302718569a0359c8845ad7eb6d08b8bea9f98c8c7349520ea22974e179c26a7"
+FORGE_SHA_FORGE_WATCHDOG_PY="cf7c3f10ecc3b789071bd10721759ad5cea6d9148e8252dc1427b7fb7a61b5af"
 FORGE_SHA_FORGE_WEBUI_PY="cb7b69d0d755b37fdea803bc48adf385ea2144408f2d9fb69e4e70f09db606eb"
 FORGE_SHA_WEB_ADDONS_JS="3669602e5a9d8d2c23cd67826dd40b63cb3972ae7a23cbbe8fdb4da85a3fb74a"
-FORGE_SHA_WEB_APP_CSS="549513b6eb819ca89af71c3da80ba0a0537f3129bafea4d38421b013de5f9561"
-FORGE_SHA_WEB_APP_JS="59954908c608904af7ab61fa8f5fc28d7c704688f029d1cef302e8ccd4f7029a"
+FORGE_SHA_WEB_APP_CSS="8df433b0d85e417776e7a0ac75694814ca0e3d08db7032b21a4f7770ec0b5279"
+FORGE_SHA_WEB_APP_JS="972d6c1b67e05a8f710c7587db0ec54c8b1edf03503e1160597c3fda4f8e9dd6"
 FORGE_SHA_WEB_BRANDS_JS="41940af3caeb272b1ba91030ffece7783bdd9ed7eb83f193d1d39f10d5ecca5f"
-FORGE_SHA_WEB_INDEX_HTML="74fcc9c609e562c5fe5bd7a287ba37234ce68317db64aaa3093cbaf7bc48afb2"
+FORGE_SHA_WEB_INDEX_HTML="d8b8d2c5ca0609b63fdd1213cac9ac4a92383fa508fc99566d8e9dcbe07e4ac4"
 FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea12a07fb7"
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="3207b25ff3a8f18cc034be84e4b7cddc2b7605b2ce2293e22cdf80c91630dd8d"
-FORGE_PAYLOAD_SHA="babd9ea26a55192347067f508e9cd772d5640f212b988a20acf263715e9291ef"
-FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
+FORGE_SHA_SELKIES_CLI="3dd06a492f5779c6ad3f4c3d0a96c76eaf8fb213f0fea2bebd2f0f6d0cf55005"
+FORGE_PAYLOAD_SHA="cb9d2910fd7c8c2766655c4260c82ac9e36aacc7a52796402a9dc3138aee49fa"
+FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/network.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
 extract_payload() {
@@ -4061,7 +4062,7 @@ Checks of this machine, for `selkies-cli doctor` and the web UI.
 import socket
 import sys
 
-from . import catalog
+from . import catalog, network
 from .host import docker_ok, host_info
 from .util import have, human_mb
 
@@ -4097,6 +4098,8 @@ def cli_doctor():
         "%s on %s: caps are advisory only" % (host.get("storage_driver"),
                                              host.get("backing_fs")),
         "use xfs with project quotas if you need hard caps", severity="info")
+    v6 = network.status()
+    add("ipv6", v6["ok"], v6["detail"], v6["fix"], severity="info")
     net_ok = False
     try:
         socket.create_connection(("serveo.net", 22), timeout=6).close()
@@ -7948,7 +7951,7 @@ knows a desktop that just exited was stopped on purpose, not crashed.
 import json
 import re
 
-from . import catalog, events
+from . import catalog, events, network
 from .health import LaunchProblem, wait_healthy, wait_http, wait_session
 from .host import host_info, image_present
 from .images import ensure_layer
@@ -8170,6 +8173,7 @@ def _reconfigure(name, memory_mb=None, cpus=None, shm_mb=None, disk_mb=None,
     rc, out, err = run(args, timeout=180)
     if rc != 0:
         raise RuntimeError("recreate failed: %s" % (err or out).strip())
+    network.attach(name)
     reg_update(name, {"plan": plan, "image": image})
     if not was_running and not repair:
         run(["docker", "stop", name], timeout=120)
@@ -8218,6 +8222,155 @@ def set_idle(name, minutes):
                   else ("never stopped for being idle" if value == 0 else "the forge default"))
     return {"name": name, "idle_stop_min": value}
 __FORGE_FILE_FORGE_LIFECYCLE_PY__
+  cat > "$FORGE_APP/forge/network.py" <<'__FORGE_FILE_FORGE_NETWORK_PY__'
+"""
+Selkies Forge engine - IPv6 for desktops
+
+Docker's default bridge has no IPv6, and turning it on means editing daemon.json
+and restarting Docker. So every desktop also joins one extra network that has
+IPv6 (private addresses, translated on the way out, like Docker does for IPv4).
+
+A desktop stays on the default bridge: its IPv4 address, route and published
+ports don't change, and joining works on a running desktop without restarting it.
+"""
+
+import os
+import time
+
+from .util import run
+
+NET = "selkies-forge"
+SUBNET = "fd53:6b66:6f72::/64"
+MIN_DOCKER = 28      # older Docker keeps one default gateway for IPv4 and IPv6 together
+RTF_REJECT = 0x200
+RECHECK = 600.0      # a machine that can't do it now may be able to later
+SYNC_EVERY = 60.0
+
+_state = {"ok": None, "reason": "", "fix": None, "at": 0.0}
+_synced = {"names": None, "at": 0.0}
+
+
+def _read(path):
+    try:
+        with open(path) as fh:
+            return fh.read().strip()
+    except OSError:
+        return None
+
+
+def default_routes(text=None):
+    """Interfaces holding an IPv6 default route, from /proc/net/ipv6_route."""
+    text = _read("/proc/net/ipv6_route") if text is None else text
+    out = []
+    for line in (text or "").splitlines():
+        p = line.split()
+        if len(p) < 10 or p[0] != "0" * 32 or p[1] != "00" or p[9] == "lo":
+            continue
+        if int(p[8], 16) & RTF_REJECT:
+            continue
+        if p[9] not in out:
+            out.append(p[9])
+    return out
+
+
+def host_problem(routes=None, read=_read):
+    """Why this machine shouldn't get the network: (reason, fix), or None if it's fine."""
+    if read("/proc/sys/net/ipv6/conf/all/disable_ipv6") in (None, "1"):
+        return "IPv6 is turned off on this machine", None
+    routes = default_routes() if routes is None else routes
+    if not routes:
+        return "this machine has no IPv6 route to the internet", None
+    # Docker turns on IPv6 forwarding for this network, and with forwarding on the
+    # kernel stops listening to router advertisements on an interface set to
+    # accept_ra=1. The machine would lose its own IPv6 when its route expires.
+    if read("/proc/sys/net/ipv6/conf/all/forwarding") != "1":
+        risky = [i for i in routes if read("/proc/sys/net/ipv6/conf/%s/accept_ra" % i) == "1"]
+        if risky:
+            return ("left off so this machine keeps its own IPv6 route (%s)" % ", ".join(risky),
+                    "; ".join("sudo sysctl -w net.ipv6.conf.%s.accept_ra=2" % i for i in risky))
+    return None
+
+
+def _docker_major():
+    rc, out, _ = run(["docker", "version", "--format", "{{.Server.Version}}"], timeout=20)
+    try:
+        return int(out.strip().split(".")[0]) if rc == 0 else 0
+    except ValueError:
+        return 0
+
+
+def _set(ok, reason="", fix=None):
+    _state.update(ok=ok, reason=reason, fix=fix, at=time.time())
+    return ok
+
+
+def ensure():
+    """Make sure the network exists. True when desktops can join it."""
+    if os.environ.get("FORGE_IPV6", "1") == "0":
+        return _set(False, "turned off with FORGE_IPV6=0")
+    if _state["ok"]:
+        return True
+    if _state["ok"] is False and time.time() - _state["at"] < RECHECK:
+        return False
+    rc, out, _ = run(["docker", "network", "inspect", NET, "--format", "{{.EnableIPv6}}"], timeout=20)
+    if rc == 0:
+        if out.strip() == "true":
+            return _set(True)
+        return _set(False, "a Docker network called %s exists without IPv6" % NET,
+                    "docker network rm %s" % NET)
+    major = _docker_major()
+    if major < MIN_DOCKER:
+        return _set(False, "needs Docker %d or newer" % MIN_DOCKER)
+    problem = host_problem()
+    if problem:
+        return _set(False, problem[0], problem[1])
+    rc, out, err = run(["docker", "network", "create", "--ipv6", "--subnet", SUBNET, NET], timeout=40)
+    if rc != 0:
+        return _set(False, "Docker refused: %s" % ((err or out).strip().splitlines() or ["unknown error"])[-1])
+    return _set(True)
+
+
+def attach(name):
+    """Join a desktop to the network. Never raises: a desktop without IPv6 still works."""
+    if not ensure():
+        return False
+    # the lowest gateway priority: IPv4 keeps going out through the default bridge
+    rc, out, err = run(["docker", "network", "connect", "--gw-priority", "-1", NET, name], timeout=40)
+    return rc == 0 or "already exists" in (err or out)
+
+
+def sync(names):
+    """Join any of these desktops that aren't on the network yet (a recent check is enough)."""
+    names = sorted(names)
+    now = time.time()
+    if names == _synced["names"] and now - _synced["at"] < SYNC_EVERY:
+        return []
+    _synced.update(names=names, at=now)
+    if not names or not ensure():
+        return []
+    rc, out, _ = run(["docker", "network", "inspect", NET, "--format",
+                      "{{range .Containers}}{{.Name}} {{end}}"], timeout=20)
+    if rc != 0:
+        return []
+    joined = set(out.split())
+    return [n for n in names if n not in joined and attach(n)]
+
+
+def status():
+    """For the doctor: {ok, detail, fix}."""
+    ok = ensure()
+    return {"ok": ok, "detail": "desktops get IPv6 through the %s network" % NET if ok else _state["reason"],
+            "fix": _state["fix"]}
+
+
+def address(container):
+    """A docker inspect result's IPv6 address, if it has one."""
+    nets = ((container.get("NetworkSettings") or {}).get("Networks") or {})
+    for net in nets.values():
+        if net.get("GlobalIPv6Address"):
+            return net["GlobalIPv6Address"]
+    return None
+__FORGE_FILE_FORGE_NETWORK_PY__
   cat > "$FORGE_APP/forge/paths.py" <<'__FORGE_FILE_FORGE_PATHS_PY__'
 """
 Selkies Forge engine - paths
@@ -8238,7 +8391,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "1.10.13"
+VERSION = "2.0.0"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8595,10 +8748,11 @@ The live view of every desktop, read from Docker labels.
 """
 
 import json
+import os
 
-from . import catalog
+from . import catalog, network
 from .info import public_entry
-from .paths import KASM_HTTPS, LABEL, SELKIES_HTTP, SELKIES_HTTPS
+from .paths import KASM_HTTPS, LABEL, ROOT, SELKIES_HTTP, SELKIES_HTTPS
 from .store import reg_load
 from .tunnels import tunnel_status
 from .watchdog import idle_limit, session_health
@@ -8623,6 +8777,11 @@ def docker_instances():
     for c in data:
         labels = ((c.get("Config") or {}).get("Labels") or {})
         name = (c.get("Name") or "").lstrip("/")
+        # another forge's desktop on this machine isn't ours to show, stop or remove;
+        # older ones without the label count when our registry knows them
+        home = labels.get("%s.home" % LABEL)
+        if (os.path.realpath(home) != os.path.realpath(ROOT)) if home else name not in reg:
+            continue
         state = c.get("State") or {}
         hostcfg = c.get("HostConfig") or {}
         ports = {}
@@ -8665,6 +8824,7 @@ def docker_instances():
             "restarts": state.get("RestartCount") or 0,
             "exit_code": state.get("ExitCode"),
             "ports": ports,
+            "ipv6": network.address(c),
             "limits": {
                 "memory_mb": int((hostcfg.get("Memory") or 0) / (1024 * 1024)) or None,
                 "cpus": round((hostcfg.get("NanoCpus") or 0) / 1e9, 2) or None,
@@ -8719,7 +8879,7 @@ import shlex
 import time
 import uuid
 
-from . import gpu
+from . import gpu, network
 from .host import tz_name
 from .paths import CPREFIX, KASM_HTTPS, LABEL, ROOT, SELKIES_HTTP, SELKIES_HTTPS, VERSION
 from .ports import alloc_ports, release_port_reservation
@@ -8892,6 +9052,7 @@ def docker_run_resilient(entry, cname, plan, opts, image, host, job, want_ports=
         job.log("$ " + " ".join(shlex.quote(a) for a in args))
         rc, out, err = run(args, timeout=180)
         if rc == 0:
+            network.attach(cname)
             return cname, ports, vol, out.strip()
         msg = (err.strip() or out.strip())
         job.log("docker run refused: %s" % msg.splitlines()[-1] if msg else "docker run refused",
@@ -11144,6 +11305,7 @@ import threading
 import time
 
 from . import events, ledger
+from . import network
 from .health import container_logs
 from .jobs import mark_job_state, read_job_states
 from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, ROOT, SELKIES_WS
@@ -11296,6 +11458,7 @@ class Watchdog(object):
         everything = set(cur)
         reg = reg_load()
         cur = {n: i for n, i in cur.items() if is_mine(n, i, reg)}
+        network.sync(cur)
         if self.prev is not None:
             for name, info in cur.items():
                 was = self.prev.get(name)
@@ -12465,7 +12628,7 @@ __FORGE_FILE_FORGE_WEBUI_PY__
 })();
 __FORGE_FILE_WEB_ADDONS_JS__
   cat > "$FORGE_APP/web/app.css" <<'__FORGE_FILE_WEB_APP_CSS__'
-/* Selkies Forge - dark glass, blue tint, cheap to paint.
+/* Selkies Forge - solid surfaces, one accent, cheap to paint.
 
    Every colour is a variable on :root. Themes (html[data-theme=...], at the
    end of this file) redefine the variables, plus a few touches of their own.
@@ -12473,55 +12636,51 @@ __FORGE_FILE_WEB_ADDONS_JS__
    white on dark themes, near-black on light ones. */
 
 :root {
-  --bg: #060a12;
-  --bg-2: #0a1120;
-  --glass: rgba(16, 26, 46, 0.58);
-  --glass-2: rgba(24, 36, 62, 0.46);
-  --glass-3: rgba(10, 17, 32, 0.74);
-  --line: rgba(142, 174, 226, 0.14);
-  --line-2: rgba(142, 174, 226, 0.3);
-  --txt: #e9effd;
-  --dim: #9db2d8;
-  --dim-2: #6a80a8;
-  --acc: #5aa6ff;
-  --acc-2: #8b7dff;
-  --acc-soft: rgba(90, 166, 255, 0.14);
-  --ok: #3ddc97;
-  --warn: #ffc24d;
-  --bad: #ff6b7e;
-  --r-s: 10px;
-  --r-m: 14px;
-  --r-l: 20px;
-  --blur: 16px;
-  --sh: 0 10px 34px rgba(2, 6, 16, 0.46);
+  --bg: #070b12;
+  --bg-2: #0c121c;
+  --glass: #0e1520;
+  --glass-2: #0c121c;
+  --glass-3: #0a1019;
+  --line: rgba(148, 178, 216, 0.13);
+  --line-2: rgba(148, 178, 216, 0.28);
+  --txt: #e8eef7;
+  --dim: #9fb0c6;
+  --dim-2: #71849c;
+  --acc: #38bdf8;
+  --acc-2: #0ea5e9;
+  --acc-soft: rgba(56, 189, 248, 0.13);
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --bad: #fb7185;
+  --r-s: 8px;
+  --r-m: 10px;
+  --r-l: 14px;
+  --blur: 0px;
+  --sh: none;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ink: 255, 255, 255;
-  --acc-rgb: 90, 166, 255;
-  --acc2-rgb: 139, 125, 255;
-  --on-acc: #061020;
+  --acc-rgb: 56, 189, 248;
+  --acc2-rgb: 14, 165, 233;
+  --on-acc: #04121c;
   --txt-hi: #ffffff;
-  --ok-txt: #9bf0cd;
-  --bad-txt: #ffb0bb;
-  --warn-txt: #ffe0ab;
-  --acc-txt: var(--acc-txt);
-  --soft-txt: var(--soft-txt);
-  --field: var(--field);
-  --field-2: var(--field-2);
-  --surface: var(--surface);
-  --term-bg: var(--term-bg);
-  --term-head: var(--term-head);
-  --term-txt: var(--term-txt);
-  --scrim: var(--scrim);
-  --lite-solid: #0b1220;
-  --primary: linear-gradient(135deg, var(--acc), var(--acc-2));
-  --primary-sh: 0 8px 26px rgba(90, 166, 255, 0.3);
-  --bg-paint:
-    radial-gradient(1100px 620px at 12% -8%, rgba(60, 120, 255, 0.20), transparent 60%),
-    radial-gradient(900px 560px at 88% 4%, rgba(130, 110, 255, 0.16), transparent 62%),
-    radial-gradient(1200px 800px at 50% 110%, rgba(40, 90, 190, 0.14), transparent 60%),
-    linear-gradient(180deg, #070c16 0%, #060a12 60%, #05080f 100%);
+  --ok-txt: #a7f3d0;
+  --bad-txt: #fecdd3;
+  --warn-txt: #fde68a;
+  --acc-txt: #bae6fd;
+  --soft-txt: #bae6fd;
+  --field: #080d15;
+  --field-2: #0a1019;
+  --surface: #121a27;
+  --term-bg: #05080d;
+  --term-head: #0a1019;
+  --term-txt: #cfe0f5;
+  --scrim: rgba(2, 5, 10, 0.72);
+  --lite-solid: #0e1520;
+  --primary: var(--acc);
+  --primary-sh: none;
+  --bg-paint: #070b12;
 }
 
 * { box-sizing: border-box; }
@@ -14350,6 +14509,228 @@ html[data-theme="stealth"] #modalPanel { background: linear-gradient(180deg, #12
 .ad-logo.sm img { width: 38px; height: 38px; }
 .pill.warnp { color: #f2c14e; border-color: rgba(242, 193, 78, 0.38); background: rgba(242, 193, 78, 0.1); }
 .pill.warnp i { background: #f2c14e; }
+
+/* Anything with its own display (.btn, .jobstrip...) must still honour hidden. */
+[hidden] { display: none !important; }
+
+/* ================================================================== layout 2
+   One narrow rail, one command bar, and pages that use their width. On phones
+   the rail becomes a tab bar along the bottom. */
+html[data-theme="stealth"], html[data-theme="daylight"], html[data-theme="ember"] { --primary: var(--acc); --primary-sh: none; }
+body { font-size: 14px; }
+a { color: var(--acc); }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+input:focus-visible, select:focus-visible { outline: none; }
+kbd { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; border: 1px solid var(--line-2); color: var(--dim); background: rgba(var(--ink), 0.04); }
+.app { grid-template-columns: 76px minmax(0, 1fr); grid-template-rows: 54px minmax(0, 1fr); }
+.topbar, .rail, .panel, .card, .mc, .stat, .ad, .toolbar, .gobar, .updbar, .toast { backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; }
+.topbar { gap: 18px; padding: 0 16px 0 22px; background: var(--glass-3); }
+.brand { min-width: 0; gap: 12px; font-size: 14.5px; font-weight: 650; letter-spacing: -0.1px; white-space: nowrap; }
+.brand .mark { width: 26px; height: 26px; color: var(--acc); flex: none; }
+.search { display: flex; align-items: center; gap: 9px; flex: 1; max-width: 560px; height: 36px; padding: 0 10px 0 12px; border-radius: var(--r-m); border: 1px solid var(--line); background: var(--field); color: var(--dim-2); cursor: text; }
+.search:focus-within { border-color: var(--acc); box-shadow: 0 0 0 3px var(--acc-soft); }
+.search svg { width: 16px; height: 16px; flex: none; }
+.topbar .search input { flex: 1; min-width: 0; width: auto; height: 100%; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.topbar .search input::-webkit-search-cancel-button { display: none; }
+.meters { gap: 20px; }
+.meter { min-width: 104px; padding: 0; gap: 5px; border: 0; background: none; }
+.meter .v { font-size: 12px; color: var(--dim); white-space: nowrap; }
+.meter .v b { display: inline; font-size: 12px; color: var(--txt); }
+.bar > i, .progress > i, .jrow .jbar i { background: var(--acc); }
+.bar.warn > i { background: var(--warn); }
+.bar.bad > i { background: var(--bad); }
+
+.rail { padding: 8px 8px 10px; gap: 2px; background: var(--glass-3); overflow: visible; align-items: stretch; }
+.rail > button, .rail-end > button { position: relative; flex-direction: column; justify-content: center; gap: 4px; width: 100%; min-height: 58px; padding: 8px 2px 7px; border: 0; border-radius: var(--r-m); font-size: 11px; font-weight: 550; text-align: center; color: var(--dim-2); }
+.rail > button svg, .rail-end > button svg { width: 21px; height: 21px; flex: none; }
+.rail > button:hover, .rail-end > button:hover { background: rgba(var(--ink), 0.05); color: var(--txt); }
+.rail > button.on { background: var(--acc-soft); color: var(--acc); border: 0; }
+.rail .tag { position: absolute; top: 5px; left: calc(50% + 6px); margin: 0; min-width: 17px; padding: 0 4px; font-size: 10px; font-weight: 650; font-style: normal; line-height: 16px; background: var(--surface); border: 1px solid var(--line-2); color: var(--dim); text-align: center; }
+.rail-end { position: relative; margin-top: auto; }
+.prefs { position: absolute; left: calc(100% + 14px); bottom: 0; z-index: 30; width: 268px; padding: 14px; display: grid; gap: 10px; border-radius: var(--r-l); border: 1px solid var(--line-2); background: var(--surface); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); }
+.prefs[hidden] { display: none; }
+.prefs .themes { padding: 0; }
+.rail .themes .theme-sw { min-height: 0; padding: 8px; flex-direction: row; }
+.lite-row { padding: 2px 0; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--dim-2); }
+.toggle input { display: block; position: absolute; width: 1px; height: 1px; opacity: 0; }
+.toggle input:focus-visible + i { outline: 2px solid var(--acc); outline-offset: 2px; }
+
+.main { padding: 26px 30px 70px; }
+.main > * { max-width: 1560px; margin-left: auto; margin-right: auto; }
+.view.on { animation: none; }
+.h1 { font-size: 24px; font-weight: 680; letter-spacing: -0.45px; line-height: 1.2; }
+.sub { font-size: 13.5px; }
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.page-head .btn.on { border-color: var(--acc); color: var(--acc); }
+.back { margin-bottom: 14px; }
+.btn { border-radius: var(--r-m); font-weight: 600; white-space: nowrap; }
+.btn:hover { border-color: var(--line-2); }
+.btn svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.btn.primary { box-shadow: none; }
+.btn.danger { background: rgba(251, 113, 133, 0.1); }
+.iconbtn:focus-visible, .btn:focus-visible { outline-offset: 1px; }
+input[type="search"] { -webkit-appearance: none; appearance: none; font: inherit; color: var(--txt); outline: none; }
+
+.panel { border-radius: var(--r-l); background: var(--glass); margin-bottom: 16px; }
+.panel h3 { font-size: 14.5px; }
+.smart { padding: 16px; }
+.smart-row { align-items: flex-end; }
+.smart-row select { width: auto; min-width: 170px; height: 34px; }
+.smart #smartBtn { margin-left: auto; }
+.pick { border-radius: var(--r-m); }
+
+.toolbar { top: -26px; flex-wrap: wrap; gap: 8px; padding: 10px 0; margin: 0 0 12px; border: 0; border-radius: 0; background: var(--bg); }
+.toolbar select { height: 34px; min-width: 150px; }
+.seg { flex: none; border-radius: var(--r-m); background: var(--glass); }
+.seg button { padding: 0 11px; height: 32px; white-space: nowrap; }
+.seg button.on { background: var(--acc-soft); color: var(--acc); }
+
+.grid { grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 14px; }
+.card { padding: 0; gap: 0; overflow: hidden; border-radius: var(--r-l); background: var(--glass); contain-intrinsic-size: auto 276px; }
+.card:hover { transform: none; box-shadow: none; border-color: hsl(var(--h) 70% 62% / 0.65); }
+.card-art { position: relative; display: flex; align-items: flex-start; justify-content: flex-end; gap: 5px; height: 82px; padding: 10px; background: linear-gradient(120deg, hsl(var(--h) 62% 50% / 0.2), hsl(var(--h) 62% 50% / 0.04) 72%); border-bottom: 1px solid var(--line); }
+.card .logo { position: absolute; left: 14px; bottom: -18px; width: 50px; height: 50px; flex: none; border-radius: 13px; background: var(--surface); border-color: var(--line-2); }
+.card .logo svg { width: 32px; height: 32px; }
+.card-body { display: flex; flex-direction: column; flex: 1; padding: 26px 14px 12px; }
+.card .name { font-size: 15px; font-weight: 650; letter-spacing: -0.15px; }
+.card .meta { margin-top: 1px; font-size: 12px; }
+.card .desc { margin: 8px 0 12px; font-size: 12.8px; color: var(--dim); }
+.badge { text-transform: capitalize; letter-spacing: 0; font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 6px; background: var(--surface); }
+.specs { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: auto; padding: 0 0 10px; border: 0; font-size: 12px; color: var(--dim-2); }
+.specs div { text-align: left; }
+.specs span { font-size: inherit; text-transform: none; letter-spacing: 0; color: inherit; }
+.specs b { display: inline; font-size: inherit; font-weight: 600; color: var(--txt); }
+.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; color: var(--dim-2); }
+.how { display: inline-flex; align-items: center; gap: 7px; }
+.how i { width: 7px; height: 7px; border-radius: 50%; background: var(--dim-2); }
+.how.ready { color: var(--ok-txt); }
+.how.ready i { background: var(--ok); }
+.empty { padding: 56px 20px; color: var(--dim); }
+.empty p { margin: 0 0 14px; font-size: 15px; }
+
+.dhero { grid-template-columns: 72px minmax(0, 1fr); }
+.dhero .about { max-width: 86ch; }
+.dgrid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.panel h3 .num { border-radius: 6px; color: var(--acc); }
+.more { margin-top: 10px; border-top: 1px solid var(--line); }
+.more summary { padding: 11px 0 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--dim); }
+.more summary:hover { color: var(--txt); }
+.gobar { bottom: -70px; margin: 6px -30px -70px; padding: 12px 30px; background: var(--surface); }
+.gobar .what { display: grid; gap: 1px; }
+.gobar .what b { font-size: 14px; }
+.gobar .what span { font-size: 12px; color: var(--dim-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.hero .logo { display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line-2); }
+#lTitle { padding: 14px 18px; }
+#lTitle .hero { align-items: center; }
+#lTitle .hero .logo { width: 52px; height: 52px; flex: 0 0 52px; border-radius: 13px; }
+#lTitle .hero .logo svg { width: 34px; height: 34px; }
+#lTitle .hero h2 { font-size: 18px; }
+#lTitle .hero p { margin-top: 2px; }
+#v-launch.finished .term.tall { height: 24vh; }
+.term-wrap { border-radius: var(--r-m); box-shadow: none; }
+.term { background: var(--term-bg); }
+.stat-strip { gap: 10px; margin-bottom: 16px; }
+.stat { padding: 12px 14px; border-radius: var(--r-m); }
+.stat .v { font-size: 18px; }
+.inst-grid { grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr)); gap: 14px; }
+.mc { border-radius: var(--r-l); background: var(--glass); }
+.mc.up { border-color: var(--line); box-shadow: inset 0 2px 0 var(--ok); }
+.mc > section { padding: 14px 16px; }
+.mc-head { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 12px; }
+.mc-head .logo { width: 46px; height: 46px; border-radius: 12px; }
+.mc-head .logo svg { width: 29px; height: 29px; }
+.mc-head .nm { font-size: 15.5px; }
+.pill { padding: 3px 9px; font-size: 11.5px; }
+.pill.up i { box-shadow: none; }
+.mc-access { gap: 6px; }
+.arow { min-height: 38px; padding: 3px 6px 3px 10px; grid-template-columns: 20px 58px minmax(0, 1fr) auto; border-radius: var(--r-s); }
+.arow.pub { border-color: rgba(var(--acc-rgb), 0.28); }
+.arow .val { font-size: 12.5px; }
+.limits-line { border-radius: var(--r-s); }
+.mc-actions { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) 40px; gap: 8px; padding: 12px 16px 14px !important; }
+.mc-actions .btn { height: 38px; font-size: 13px; }
+.mc-actions .iconbtn { width: 40px; height: 38px; border-radius: var(--r-m); }
+.mc.busy { box-shadow: inset 0 2px 0 var(--acc); }
+.menu { position: fixed; bottom: auto; z-index: 45; min-width: 212px; border-radius: var(--r-m); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55); }
+.ad .menu { top: auto; }
+.jobstrip { margin-bottom: 14px; }
+.updbar { border-radius: var(--r-m); background: var(--acc-soft); }
+.toast { background: var(--surface); }
+.toast.ok { border-color: rgba(52, 211, 153, 0.5); }
+
+.checks { display: grid; }
+.check { display: grid; grid-template-columns: 10px 120px minmax(0, 1fr); gap: 2px 12px; align-items: baseline; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.check:first-child { border-top: 0; padding-top: 0; }
+.check i { width: 8px; height: 8px; border-radius: 50%; background: var(--dim-2); align-self: center; }
+.check.ok i { background: var(--ok); }
+.check.bad i { background: var(--bad); }
+.check b { font-weight: 600; text-transform: capitalize; }
+.check span { color: var(--dim); min-width: 0; overflow-wrap: anywhere; }
+.check code { display: block; margin-top: 3px; font: 12px var(--mono); color: var(--dim-2); }
+.check.bad b, .check.bad span { color: var(--bad-txt); }
+.cfg { gap: 16px; align-items: start; }
+.cfg .panel { margin: 0; }
+
+#modal { padding: 24px; }
+#modalPanel { max-width: 720px; background: var(--surface); border-color: var(--line-2); }
+.modal-head { flex-wrap: nowrap; }
+#modalTitle { font-size: 16px; overflow-wrap: anywhere; }
+.ask-t { margin: 0 0 14px; overflow-wrap: anywhere; }
+.ask-c { margin-bottom: 14px; }
+
+@media (max-width: 1180px) { .meter { min-width: 84px; } .meters { gap: 14px; } }
+@media (max-width: 980px) { .brand span { display: none; } }
+@media (max-width: 760px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 54px minmax(0, 1fr) auto; }
+  .topbar { padding: 0 12px; gap: 12px; }
+  .meters { display: none; }
+  .search kbd { display: none; }
+  .search { max-width: none; }
+  .main { grid-row: 2; padding: 16px 14px 28px; }
+  .rail { grid-row: 3; flex-direction: row; overflow: visible; justify-content: space-around; padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); border-right: 0; border-top: 1px solid var(--line); border-bottom: 0; }
+  .rail > button, .rail-end > button { width: auto; flex: 1; min-height: 50px; padding: 5px 2px; font-size: 10.5px; }
+  .rail > button { min-width: 0; }
+  .rail-end { flex: 1; margin: 0; display: flex; }
+  .prefs { left: auto; right: 2px; bottom: calc(100% + 10px); width: min(300px, calc(100vw - 16px)); }
+  .page-head { flex-direction: column; gap: 0; }
+  .page-head .btn { margin: -6px 0 14px; }
+  .toolbar { top: -16px; flex-wrap: nowrap; margin: 0 -14px 12px; padding: 8px 14px; overflow-x: auto; scrollbar-width: none; }
+  .toolbar::-webkit-scrollbar { display: none; }
+  .toolbar .spacer { display: none; }
+  .toolbar select { flex: none; min-width: 130px; width: auto; }
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .smart-row { align-items: stretch; flex-direction: column; }
+  .smart-row .seg { display: flex; overflow-x: auto; }
+  .smart-row .seg button { flex: 1; }
+  .smart-row select { width: 100%; }
+  .smart #smartBtn { margin: 0; }
+  .dhero { grid-template-columns: 56px minmax(0, 1fr); gap: 14px; }
+  .dhero .logo { width: 56px; height: 56px; border-radius: 14px; }
+  .dhero .logo svg { width: 36px; height: 36px; }
+  .dgrid { grid-template-columns: minmax(0, 1fr); }
+  .gobar { bottom: -28px; margin: 6px -14px -28px; padding: 10px 14px; }
+  .gobar .what span { white-space: normal; }
+  .stat-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mc-metrics { gap: 12px; }
+  .mc-limits { grid-template-columns: minmax(0, 1fr); }
+  .limits-line { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lchip:nth-child(4) { border-left: 0; }
+  .lchip:nth-child(n+4) { border-top: 1px solid var(--line); }
+  .mc-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 40px; }
+  .mc-actions > .btn:first-child { grid-column: 1 / -1; }
+  .mc-actions .menu-wrap { grid-column: 3; grid-row: 2; }
+  .check { grid-template-columns: 10px minmax(0, 1fr); }
+  .check span { grid-column: 2; }
+  .kv { grid-template-columns: 110px minmax(0, 1fr); }
+  .kv dd { overflow-wrap: anywhere; min-width: 0; }
+  .progress-wrap { flex-wrap: wrap; }
+  .progress-wrap .what { flex-basis: 100%; }
+  #modal { padding: 8px; }
+  .toasts { right: 10px; left: 10px; bottom: 70px; max-width: none; }
+}
+html.lite * { animation: none !important; }
 __FORGE_FILE_WEB_APP_CSS__
   cat > "$FORGE_APP/web/app.js" <<'__FORGE_FILE_WEB_APP_JS__'
 /* Selkies Forge - web UI. Vanilla, no build step, no CDN. */
@@ -14409,14 +14790,21 @@ __FORGE_FILE_WEB_APP_CSS__
     var url = path + (path.indexOf("?") < 0 ? "?" : "&") + "_=1";
     var es = new EventSource(url);
     Object.keys(handlers).forEach(function (k) {
-      if (k === "error") return;
+      if (k === "error" || k === "lost") return;
       es.addEventListener(k, function (ev) {
         var d = ev.data;
         try { d = JSON.parse(ev.data); } catch (e) {}
         handlers[k](d, ev);
       });
     });
-    es.onerror = function () { if (handlers.error) handlers.error(); };
+    // A job reports failure as an "error" event with data. EventSource uses the
+    // same name for a dropped connection, which has none, and reconnects by itself.
+    es.addEventListener("error", function (ev) {
+      if (ev.data === undefined) { if (handlers.lost) handlers.lost(); return; }
+      var d = ev.data;
+      try { d = JSON.parse(ev.data); } catch (e) {}
+      if (handlers.error) handlers.error(d, ev);
+    });
     return es;
   }
 
@@ -14437,16 +14825,17 @@ __FORGE_FILE_WEB_APP_CSS__
     }, kind === "bad" ? 7000 : 4200);
   }
 
-  function copy(text) {
+  function copy(text, quiet) {
+    var said = quiet ? "" : text;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { toast("Copied", text, "ok"); },
-        function () { toast("Could not copy", text); });
+      navigator.clipboard.writeText(text).then(function () { toast("Copied", said, "ok"); },
+        function () { toast("Could not copy", said); });
     } else {
       var ta = document.createElement("textarea");
       ta.value = text;
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand("copy"); toast("Copied", text, "ok"); } catch (e) {}
+      try { document.execCommand("copy"); toast("Copied", said, "ok"); } catch (e) {}
       ta.remove();
     }
   }
@@ -14533,7 +14922,7 @@ __FORGE_FILE_WEB_APP_CSS__
     S.lite = !!on;
     document.documentElement.classList.toggle("lite", S.lite);
     var b = $("#liteBtn");
-    if (b) b.textContent = S.lite ? "Lite mode: on" : "Lite mode: off";
+    if (b) b.checked = S.lite;
     try { localStorage.setItem("forge_lite", S.lite ? "1" : "0"); } catch (e) {}
   }
 
@@ -14541,7 +14930,7 @@ __FORGE_FILE_WEB_APP_CSS__
   // The look is a set of CSS variables (app.css); a theme swaps them through
   // html[data-theme]. "stealth" is the tunnel manager's black-and-white look.
   var THEMES = [
-    { id: "forge", label: "Forge", hint: "Blue glass, the default", sw: ["#5aa6ff", "#8b7dff", "#0a1120"] },
+    { id: "forge", label: "Forge", hint: "Deep navy and sky blue, the default", sw: ["#38bdf8", "#0ea5e9", "#0a1019"] },
     { id: "stealth", label: "Stealth", hint: "Black room, white light: the Burrow look", sw: ["#f1f2f3", "#101113", "#030304"] },
     { id: "daylight", label: "Daylight", hint: "Light, for bright rooms", sw: ["#2f6fe4", "#ffffff", "#e9edf4"] },
     { id: "ember", label: "Ember", hint: "Warm amber on charcoal", sw: ["#ffad42", "#ff6a3d", "#16110d"] }
@@ -14582,20 +14971,19 @@ __FORGE_FILE_WEB_APP_CSS__
       renderFilters();
       renderGrid();
       renderRail();
-      renderHost();
       renderSmartControls();
       pollStats();
       setInterval(refreshInstances, 6000);
+      refreshJobs();
       setInterval(refreshHost, 15000);
       pollUpdate();
       pollLife();
       api("/api/burrow").then(function (b) { S.burrow = b; S.instKey = ""; if (S.view === "manager") renderManager(); }).catch(function () {});
       // deep links: #addons, #addons/<id> (other apps link straight to their card)
-      var m = /^#addons(?:\/([a-z0-9-]{1,40}))?$/.exec(location.hash);
-      if (m && window.ForgeAddons) { window.ForgeAddons.focus(m[1]); show("addons"); }
+      route();
     }).catch(function (e) {
       document.body.insertAdjacentHTML("afterbegin",
-        '<div class="warnbox bad" style="margin:14px">Could not reach the forge engine: ' +
+        '<div class="warnbox bad" style="position:relative;z-index:5;margin:14px">Could not reach the Selkies Forge engine: ' +
         h(e.message) + "</div>");
     });
   }
@@ -14621,13 +15009,14 @@ __FORGE_FILE_WEB_APP_CSS__
       return '<div class="jrow"><span class="jt">' + h(j.title || j.kind) + "</span>" +
         '<span class="jp">' + h(j.label || j.phase || "") + (j.foreign ? " \u00b7 from the terminal" : "") + "</span>" +
         '<span class="jbar"><i style="width:' + pct + '%"></i></span><span class="jn">' + pct + "%</span>" +
+        (S.job && S.job.id === j.id && S.view !== "launch" ? '<button class="btn sm" data-back="launch">Watch</button>' : "") +
         ((!j.foreign || j.owner === "cli") ? '<button class="btn sm ghost" data-jobcancel="' + h(j.id) + '">Cancel</button>' : "") +
         "</div>";
     }).join("") : "";
   }
 
   function refreshInstances() {
-    if (S.view === "manager") refreshJobs();
+    refreshJobs();
     return api("/api/instances").then(function (r) {
       S.instances = r.instances || [];
       S.burrow = r.burrow || null;
@@ -14654,7 +15043,7 @@ __FORGE_FILE_WEB_APP_CSS__
     var diskPct = hst.disk_total_mb ? (1 - hst.disk_free_mb / hst.disk_total_mb) * 100 : 0;
     function m(label, value, pct) {
       var cls = pct > 90 ? "bad" : pct > 72 ? "warn" : "";
-      return '<div class="meter"><b>' + h(label) + '</b><div class="v">' + h(value) +
+      return '<div class="meter"><div class="v"><b>' + h(label) + "</b> " + h(value) +
         '</div><div class="bar ' + cls + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
     }
     var pr = hst.pressure || {};
@@ -14664,9 +15053,9 @@ __FORGE_FILE_WEB_APP_CSS__
     }
     if (!pr.active) S.pressureToast = false;
     $("#meters").innerHTML =
-      m(pr.active ? "RAM LOW" : "RAM FREE", mb(hst.mem_avail_mb) + " of " + mb(hst.mem_total_mb), pr.active ? 100 : memPct) +
-      m("CPU LOAD", (hst.load1 || 0).toFixed(2) + " of " + (hst.cpus || "?") + " cores", cpuPct) +
-      m("DISK FREE", mb(hst.disk_free_mb), diskPct);
+      m(pr.active ? "RAM low" : "RAM", mb(hst.mem_avail_mb) + " free", pr.active ? 100 : memPct) +
+      m("CPU", (hst.load1 || 0).toFixed(1) + " / " + (hst.cpus || "?"), cpuPct) +
+      m("Disk", mb(hst.disk_free_mb) + " free", diskPct);
   }
 
   function renderRail() {
@@ -14730,38 +15119,38 @@ __FORGE_FILE_WEB_APP_CSS__
     return out;
   }
 
+  // Each family gets its own tint for the card's art, from its name.
+  function hue(name) {
+    var x = 0;
+    String(name || "").split("").forEach(function (c) { x = (x * 31 + c.charCodeAt(0)) % 360; });
+    return x;
+  }
+
   function cardHtml(e) {
     var ready = e.kind === "pull";
-    return '<article class="card" tabindex="0" data-id="' + h(e.id) + '">' +
-      '<div class="top"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
-      '<div style="min-width:0"><div class="name">' + h(e.name) + "</div>" +
-      '<div class="meta">' + h(e.family_label) + " · " + h(e.de_label) + "</div></div></div>" +
-      '<div class="badges">' +
+    return '<article class="card" tabindex="0" data-id="' + h(e.id) + '" style="--h:' + hue(e.family) + '">' +
+      '<div class="card-art"><div class="logo">' + window.forgeLogo(e.family) + "</div>" +
       '<span class="badge ' + h(e.weight) + '">' + h(e.weight) + "</span>" +
-      '<span class="badge">' + window.forgeGlyph(e.glyph) + h(e.de_label) + "</span>" +
-      (ready ? '<span class="badge ready">ready</span>' : '<span class="badge">builds here</span>') +
-      (e.profile === "kasm" ? '<span class="badge">kasm</span>' : "") +
-      "</div>" +
+      (e.profile === "kasm" ? '<span class="badge">kasm</span>' : "") + "</div>" +
+      '<div class="card-body"><div class="name">' + h(e.name) + "</div>" +
+      '<div class="meta">' + h(e.family_label) + " \u00b7 " + h(e.de_label) + "</div>" +
       '<div class="desc">' + h(e.desc) + "</div>" +
-      '<div class="beauty"><span>look</span><div class="bar"><i style="width:' + e.beauty +
-      '%"></i></div><b>' + e.beauty + "</b></div>" +
-      '<div class="specs">' +
-      "<div><b>" + mb(e.dl_mb) + "</b><span>download</span></div>" +
-      "<div><b>" + mb(e.disk_mb) + "</b><span>on disk</span></div>" +
-      "<div><b>" + mb(e.ram_rec) + "</b><span>ram</span></div>" +
-      "<div><b>" + e.cpu_rec + "</b><span>cores</span></div>" +
-      "</div></article>";
+      '<div class="specs"><span><b>' + mb(e.dl_mb) + "</b> download</span><span><b>" + mb(e.ram_rec) +
+      "</b> RAM</span><span><b>" + e.cpu_rec + "</b> " + (e.cpu_rec === 1 ? "core" : "cores") + "</span></div>" +
+      '<div class="card-foot"><span class="how' + (ready ? " ready" : "") + '"><i></i>' +
+      (ready ? "Ready to run" : "Builds here") + '</span><span class="look" title="How good it looks, out of 100">' +
+      "Look " + e.beauty + "</span></div></div></article>";
   }
 
   function renderGrid() {
     var list = filtered();
     var hidden = S.catalog.filter(function (e) { return !runnable(e); }).length;
-    $("#count").textContent = list.length + " shown" +
-      (hidden ? " · " + hidden + " more need a different CPU" : "");
+    $("#count").textContent = list.length + (list.length === 1 ? " desktop" : " desktops") +
+      (hidden ? " \u00b7 " + hidden + " more need a different CPU" : "");
     var grid = $("#grid");
     if (!list.length) {
-      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">∅</div>' +
-        "Nothing matches that. Try clearing a filter.</div>";
+      grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>Nothing matches that.</p>' +
+        '<button class="btn" type="button" id="clearFilters">Clear search and filters</button></div>';
       return;
     }
     grid.innerHTML = list.map(cardHtml).join("");
@@ -14789,7 +15178,6 @@ __FORGE_FILE_WEB_APP_CSS__
             "this machine right now. Free some memory or disk and try again.</div>";
           return;
         }
-        var fl = ["ram", "cpu", "disk", "beauty", "speed", "ready", "small"];
         box.innerHTML = '<p class="sub" style="margin:16px 0 10px">Weighed <b>' + r.considered +
           "</b> candidates against this machine, aiming for <b>" + h(r.taste) + "</b>.</p>" +
           '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">' +
@@ -14804,14 +15192,9 @@ __FORGE_FILE_WEB_APP_CSS__
               '<span class="score">' + p.score.toFixed(0) + "</span></div>" +
               '<ul class="why">' + p.why.map(function (w) { return "<li>" + h(w) + "</li>"; }).join("") +
               "</ul>" +
-              '<div class="factors">' + fl.map(function (k) {
-                var v = (p.factors[k] || 0) * 100;
-                return '<div class="factor"><span>' + k + '</span><div class="bar"><i style="width:' +
-                  v.toFixed(0) + '%"></i></div><b>' + v.toFixed(0) + "</b></div>";
-              }).join("") + "</div>" +
               '<div class="row" style="margin-top:4px"><button class="btn primary sm" data-use="' +
               h(e.id) + '">See details</button><button class="btn sm" data-go="' + h(e.id) +
-              '">Forge it now</button></div></div>';
+              '">Launch now</button></div></div>';
           }).join("") + "</div>";
       }).catch(function (e) {
         box.innerHTML = '<div class="warnbox bad" style="margin-top:14px">' + h(e.message) + "</div>";
@@ -14819,8 +15202,9 @@ __FORGE_FILE_WEB_APP_CSS__
   }
 
   /* -------------------------------------------------------------- detail */
-  function openDetail(id, autostart) {
+  function openDetail(id, autostart, fromRoute) {
     show("configure");
+    if (!fromRoute) location.hash = "desktop/" + id;
     $("#dHero").innerHTML = '<div class="skel" style="height:96px"></div>';
     $("#dGallery").hidden = true;
     ["cfgTune", "cfgAuth", "cfgOpts", "dAbout", "cfgSpecs"].forEach(function (k) {
@@ -14838,7 +15222,7 @@ __FORGE_FILE_WEB_APP_CSS__
       renderDetail();
       if (autostart) startLaunch();
     }).catch(function (err) {
-      $("#dHero").innerHTML = '<div class="warnbox bad">Could not open that entry: ' + h(err.message) + "</div>";
+      $("#dHero").innerHTML = '<div class="warnbox bad">Could not open that desktop: ' + h(err.message) + "</div>";
     });
   }
 
@@ -14874,8 +15258,7 @@ __FORGE_FILE_WEB_APP_CSS__
       '<p class="about">' + h(trimText(aboutText, 400)) +
       (aboutLink && aboutLink.url ? ' <a href="' + h(aboutLink.url) + '" target="_blank" rel="noopener">' +
         "Read on Wikipedia ↗</a>" : "") + "</p></div>" +
-      '<div class="go"><button class="btn primary" id="goBtn"' + (noArch ? " disabled" : "") +
-      ">Forge " + h(e.name) + '</button><div class="sum" id="goSum"></div></div></div>' +
+      "</div>" +
       (noArch ? '<div class="warnbox bad" style="margin:14px 0 0">This image has no ' + h(hst.arch) +
         " build, so it cannot run on this machine.</div>" : "");
 
@@ -14989,14 +15372,15 @@ __FORGE_FILE_WEB_APP_CSS__
     $("#cfgOpts").innerHTML = '<h3><span class="num">3</span>Options</h3>' +
       '<label class="field"><span>Name (optional)</span><input type="text" id="oName" placeholder="' +
       h(e.id) + '"></label>' +
-      toggle("oTunnel", true, "Public link through serveo",
-        kasm ? "https image, so a short-lived TCP tunnel" : "an https link that works from anywhere") +
+      toggle("oTunnel", false, "Public link through serveo",
+        "an https link anyone can reach; a password is made for you if you didn't set one") +
       toggle("oAuto", false, "Start with Docker",
         "off: it only runs when you start it, not after a reboot") +
+      '<details class="more"><summary>Advanced</summary>' +
       gpuField("oGpu", "auto") +
-      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; the forge tries this by itself") +
+      toggle("oSeccomp", false, "Relax seccomp", "only if the desktop refuses to start; Selkies Forge tries this by itself") +
       idleField("oIdle", null) +
-      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080"));
+      (kasm ? "" : screenField("o", e.display || "fit", "auto", "1920x1080")) + "</details>";
 
     /* -- dockerfile */
     var dd = $("#dDocker");
@@ -15010,22 +15394,28 @@ __FORGE_FILE_WEB_APP_CSS__
     }
 
     $("#goBar").innerHTML = '<div class="what" id="goWhat"></div>' +
-      '<button class="btn sm ghost" data-back="browse">Cancel</button>' +
-      '<button class="btn primary" id="goBtn2"' + (noArch ? " disabled" : "") + ">Forge it</button>";
+      '<button class="btn primary" id="goBtn2"' + (noArch ? " disabled" : "") + ">" + I.play + "Launch</button>";
 
     $$("#cfgTune input[type=range]").forEach(syncRange);
+    S.plan.memory_mb = Number($("#sMem").value);
+    S.plan.cpus = Number($("#sCpu").value);
+    S.plan.shm_mb = Number($("#sShm").value);
+    S.plan.disk_mb = Number($("#sDisk").value);
     updateGoSummary();
 
     $("#genPass").onclick = function () {
-      var abc = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      var buf = new Uint32Array(16), out = "";
-      if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(buf);
-      else for (var j = 0; j < 16; j++) buf[j] = Math.floor(Math.random() * 1e9);
-      for (var i = 0; i < 16; i++) out += abc.charAt(buf[i] % abc.length);
-      $("#oPass").value = out;
+      $("#oPass").value = newPassword();
       $("#oAuth").checked = true;
       $("#authFields").style.display = "block";
     };
+  }
+
+  function newPassword() {
+    var abc = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    var buf = new Uint32Array(16), out = "";
+    window.crypto.getRandomValues(buf);
+    for (var i = 0; i < 16; i++) out += abc.charAt(buf[i] % abc.length);
+    return out;
   }
 
   function sideArticle(title, art) {
@@ -15071,7 +15461,7 @@ __FORGE_FILE_WEB_APP_CSS__
       opt("off", "Off · draw and encode in software") +
       "</select></label>" +
       '<p class="sub" style="margin:2px 0 14px;font-size:12px">' + h(g.summary || "Detecting…") +
-      (found ? ". Checked once inside the image; if the desktop misbehaves with it, the forge steps back to software by itself." : "") +
+      (found ? ". Checked once inside the image; if the desktop misbehaves with it, it steps back to software by itself." : "") +
       "</p>";
   }
 
@@ -15104,10 +15494,8 @@ __FORGE_FILE_WEB_APP_CSS__
     var txt = mb(S.plan.memory_mb) + " RAM · " + Number(S.plan.cpus).toFixed(1) + " cores · " +
       mb(S.plan.shm_mb) + " shared · " + mb(S.plan.disk_mb) + " storage";
     var w = $("#goWhat");
-    if (w) w.innerHTML = "<b>" + h(S.sel.name) + "</b> · " + h(txt);
-    var s = $("#goSum");
-    if (s) s.textContent = S.sel.kind === "pull" ? "About " + mb(S.sel.dl_mb) + " to download"
-      : "Builds here · about " + mb(S.sel.dl_mb) + " to fetch";
+    if (w) w.innerHTML = "<b>" + h(S.sel.name) + "</b><span>" + h(txt) + " \u00b7 " +
+      h(S.sel.kind === "pull" ? "about " + mb(S.sel.dl_mb) + " to download" : "builds here, about " + mb(S.sel.dl_mb) + " to fetch") + "</span>";
   }
 
   function syncRange(r) {
@@ -15148,15 +15536,17 @@ __FORGE_FILE_WEB_APP_CSS__
     if ($("#oIdle") && $("#oIdle").value !== "") opts.idle_stop = parseInt($("#oIdle").value, 10);
     var nm = $("#oName") && $("#oName").value.trim();
     if (nm) opts.name = nm;
-    if ($("#oAuth") && $("#oAuth").checked) {
+    // A public link with no sign-in would hand the whole desktop to anyone who finds it.
+    if ($("#oAuth") && ($("#oAuth").checked || opts.tunnel)) {
       opts.username = ($("#oUser").value || "forge").trim();
-      opts.password = $("#oPass").value || Math.random().toString(36).slice(2, 10);
+      opts.password = $("#oPass").value || newPassword();
     }
     if (e.profile === "kasm" && !opts.password) opts.password = "forge";
 
     show("launch");
+    $("#v-launch").classList.remove("finished");
     $("#lTitle").innerHTML = '<div class="hero"><div class="logo">' + window.forgeLogo(e.family) +
-      "</div><div><h2>Forging " + h(e.name) + "</h2><p>" + h(e.subtitle) +
+      "</div><div><h2>Launching " + h(e.name) + "</h2><p>" + h(e.subtitle) +
       " &middot; " + mb(S.plan.memory_mb) + " RAM &middot; " + S.plan.cpus + " cores</p></div></div>";
     $("#lResult").innerHTML = "";
     $("#lSteps").innerHTML = "";
@@ -15180,13 +15570,16 @@ __FORGE_FILE_WEB_APP_CSS__
       S.job = r.job;
       cancelBtn.hidden = false;
       cancelBtn.onclick = function () {
-        if (!confirm("Stop forging " + e.name + "?\n\nWhatever is downloading or building stops, and a half-made desktop is removed.")) return;
-        cancelBtn.disabled = true;
-        cancelBtn.textContent = "Cancelling\u2026";
-        api("/api/job/" + r.job.id + "/cancel", { body: {} }).catch(function (x) {
-          toast("Could not cancel", x.message, "bad");
-          cancelBtn.disabled = false;
-          cancelBtn.textContent = "Cancel";
+        ask({ title: "Stop launching " + e.name + "?", text: "Whatever is downloading or building stops, and a half-made desktop is removed.",
+              ok: "Stop it", danger: true, no: "Keep going" }).then(function (a) {
+          if (!a) return;
+          cancelBtn.disabled = true;
+          cancelBtn.textContent = "Cancelling\u2026";
+          api("/api/job/" + r.job.id + "/cancel", { body: {} }).catch(function (x) {
+            toast("Could not cancel", x.message, "bad");
+            cancelBtn.disabled = false;
+            cancelBtn.textContent = "Cancel";
+          });
         });
       };
       if (S.jobES) S.jobES.close();
@@ -15225,6 +15618,10 @@ __FORGE_FILE_WEB_APP_CSS__
           term.line("");
           term.line(">> ready: " + (res.local_url || ""), "g");
           renderResult(res);
+          $("#v-launch").classList.add("finished");
+          var ttl = $("#lTitle h2");
+          if (ttl) ttl.textContent = e.name;
+          $(".main").scrollTop = 0;
           refreshInstances();
           toast("Desktop is up", res.name, "ok");
         },
@@ -15319,8 +15716,8 @@ __FORGE_FILE_WEB_APP_CSS__
       '<div class="row" style="margin-top:14px">' +
       '<a class="btn primary" href="' + h(res.local_url) + '" target="_blank" rel="noopener">Open the desktop</a>' +
       '<button class="btn" data-term="' + h(res.name) + '">' + I.term + "Open a shell</button>" +
-      '<button class="btn" data-back="manager">Go to the manager</button>' +
-      '<button class="btn ghost" data-back="browse">Forge another</button></div></div>';
+      '<button class="btn" data-back="manager">See all desktops</button>' +
+      '<button class="btn ghost" data-back="browse">Launch another</button></div></div>';
   }
 
   function linkRow(what, url, cls, note) {
@@ -15337,7 +15734,7 @@ __FORGE_FILE_WEB_APP_CSS__
     return S.instances.map(function (i) {
       var l = i.limits || {};
       return [i.name, i.running ? 1 : 0, (i.tunnel && i.tunnel.url) || "",
-        (i.tunnel && i.tunnel.alive) ? 1 : 0, l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
+        (i.tunnel && i.tunnel.alive) ? 1 : 0, i.ipv6 || "", l.memory_mb, l.cpus, l.shm_mb, i.disk_cap_mb,
         i.autostart ? 1 : 0, i.auth ? i.auth.user : "",
         i.session ? [i.session.wm, i.session.mode, i.session.screen, i.session.viewers,
           Math.floor((i.session.idle_s || 0) / 60)].join("/") : "", i.idle_stop_min,
@@ -15349,13 +15746,14 @@ __FORGE_FILE_WEB_APP_CSS__
     var box = $("#instList");
     if (!S.instances.length) {
       $("#instStats").innerHTML = "";
-      box.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">\u25A6</div>' +
-        "Nothing forged yet.<br>Pick a desktop in <b>Browse</b> and it shows up here.</div>";
+      box.innerHTML = '<div class="empty" style="grid-column:1/-1"><p>No desktops yet.</p>' +
+        '<button class="btn primary" type="button" data-back="browse">Pick one from the catalog</button></div>';
       S.instKey = "";
       return;
     }
     var key = instKey();
-    if (key !== S.instKey) {
+    // Rebuilding would snap shut a menu you have open: wait until it's closed.
+    if (key !== S.instKey && !$("#instList .menu:not([hidden])")) {
       var keepDrawer = S.drawerName && S.instances.some(function (i) {
         return i.name === S.drawerName && i.running;
       });
@@ -15494,12 +15892,17 @@ __FORGE_FILE_WEB_APP_CSS__
       rows += arow("lock", "Burrow", '<span>' + h(bh.head) + '</span><span class="muted">' + h(bh.tail) + "</span>",
         bt.url, bt.url, "pub", bt.access === "public" ? "published through Burrow, public" : "published through Burrow, behind its login");
     }
+    if (i.ipv6) {
+      rows += '<div class="arow"><span class="ic">' + I.globe + '</span><span class="lab">IPv6</span>' +
+        '<span class="val">' + h(i.ipv6) + '</span><div class="acts"><button class="iconbtn" data-copy="' + h(i.ipv6) +
+        '" title="Copy">' + I.copy + "</button></div></div>";
+    }
     if (i.auth) {
       rows += '<div class="arow"><span class="ic">' + I.lock + '</span><span class="lab">Sign-in</span>' +
         '<span class="val" data-secret="' + h(i.name) + '"><span>' + h(i.auth.user) +
         '</span><span class="muted"> / \u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022</span></span>' +
         '<div class="acts"><button class="iconbtn" data-reveal="' + h(i.name) + '" title="Show password">' +
-        I.eye + '</button><button class="iconbtn" data-copy="' + h(i.auth.password) +
+        I.eye + '</button><button class="iconbtn" data-quiet="1" data-copy="' + h(i.auth.password) +
         '" title="Copy password">' + I.copy + "</button></div></div>";
     }
 
@@ -15539,7 +15942,7 @@ __FORGE_FILE_WEB_APP_CSS__
           (running ? (tun ? '<button data-act="untunnel">' + I.unplug + "Drop public link</button>"
                           : '<button data-act="tunnel">' + I.plug + "Open public link</button>") : "") +
           '<button data-logs="' + h(i.name) + '">' + I.logs + "Container logs</button>" +
-          (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest forge layer; files are kept">' +
+          (i.profile === "kasm" ? "" : '<button data-act="repair" title="Recreate it on the newest layer; files are kept">' +
             I.restart + "Repair</button>") +
           '<button data-tune="' + h(i.name) + '">' + I.tune + "Edit limits</button>" +
           '<button data-act="idle" title="Stop it when nobody has it open">' + I.stop + "Stop when idle\u2026</button>" +
@@ -15630,7 +16033,7 @@ __FORGE_FILE_WEB_APP_CSS__
         return;
       }
       set(i.name, "cpu", st.cpu != null ? st.cpu.toFixed(1) + "<small> %</small>" : "\u2014");
-      set(i.name, "mem", st.mem_mb != null ? Math.round(st.mem_mb) + "<small> of " +
+      set(i.name, "mem", st.mem_mb != null ? mb(st.mem_mb) + "<small> of " +
         mb(st.mem_limit_mb || 0) + "</small>" : "\u2014");
       set(i.name, "net", bytes((st.rx_total || 0) + (st.tx_total || 0)) +
         (st.rx_rate || st.tx_rate ? "<small> \u00b7 " + bytes((st.rx_rate || 0) + (st.tx_rate || 0)) + "/s</small>" : ""));
@@ -15663,6 +16066,26 @@ __FORGE_FILE_WEB_APP_CSS__
   function stat(k, v, s) {
     return '<div class="stat"><div class="k">' + h(k) + '</div><div class="v">' + h(v) +
       '</div><div class="s">' + h(s) + "</div></div>";
+  }
+
+  // A menu floats above everything, so a card's rounded corners can't clip it:
+  // above its button when there's room, else below, and it scrolls if it must.
+  function placeMenu(menu, btn) {
+    var r = btn.getBoundingClientRect(), gap = 8;
+    menu.style.position = "fixed";
+    menu.style.right = Math.max(8, window.innerWidth - r.right) + "px";
+    menu.style.left = "auto";
+    menu.style.maxHeight = "";
+    var hgt = menu.offsetHeight, above = r.top - gap - 8, below = window.innerHeight - r.bottom - gap - 8;
+    if (hgt <= above || above >= below) {
+      menu.style.top = "auto";
+      menu.style.bottom = (window.innerHeight - r.top + gap) + "px";
+      menu.style.maxHeight = above + "px";
+    } else {
+      menu.style.bottom = "auto";
+      menu.style.top = (r.bottom + gap) + "px";
+      menu.style.maxHeight = below + "px";
+    }
   }
 
   function closeMenus(except) {
@@ -15720,19 +16143,23 @@ __FORGE_FILE_WEB_APP_CSS__
         b.onclick = function () {
           var f = b.dataset.file, k = b.dataset.bk;
           if (k === "new") { closeModal(); startJob("/api/instance/" + encodeURIComponent(name) + "/backup", {}, "Backup of " + name); }
-          if (k === "restore" && confirm("Replace " + name + "\u2019s files with this backup?\n\n" + f +
-              "\n\nA safety backup of the current files is taken first. A running desktop restarts.")) {
-            closeModal(); startJob("/api/backups/restore", { name: name, file: f }, "Restore of " + name);
-          }
-          if (k === "fork") {
-            var nn = prompt("Name for the new desktop (optional)", "");
-            if (nn === null) return;
-            closeModal(); startJob("/api/backups/clone", { file: f, name: nn.trim() }, "New desktop from backup");
-          }
-          if (k === "del" && confirm("Delete this backup for good?\n\n" + f)) {
-            api("/api/backups/delete", { body: { file: f } }).then(function () { showBackups(name); })
-              .catch(function (e) { toast("Delete failed", e.message, "bad"); });
-          }
+          if (k === "restore") ask({ title: "Replace " + name + "\u2019s files with this backup?",
+              text: f + ". A safety backup of the current files is taken first. A running desktop restarts.", ok: "Restore", danger: true })
+            .then(function (a) {
+              if (a) startJob("/api/backups/restore", { name: name, file: f }, "Restore of " + name);
+              else showBackups(name);
+            });
+          if (k === "fork") ask({ title: "New desktop from this backup", input: "Name (optional)", ok: "Create" })
+            .then(function (a) {
+              if (a) startJob("/api/backups/clone", { file: f, name: a.value.trim() }, "New desktop from backup");
+              else showBackups(name);
+            });
+          if (k === "del") ask({ title: "Delete this backup for good?", text: f, ok: "Delete", danger: true })
+            .then(function (a) {
+              if (!a) return showBackups(name);
+              api("/api/backups/delete", { body: { file: f } }).then(function () { showBackups(name); })
+                .catch(function (e) { toast("Delete failed", e.message, "bad"); });
+            });
         };
       });
     }).catch(function (e) { $("#modalBody").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>"; });
@@ -15744,28 +16171,46 @@ __FORGE_FILE_WEB_APP_CSS__
     if (act === "backup") return startJob("/api/instance/" + enc + "/backup", {}, "Backup of " + name);
     if (act === "backups") return showBackups(name);
     if (act === "clone") {
-      var nn = prompt("Clone " + name + "\n\nA second desktop with a copy of all its files, the same limits " +
-        "and options. Name for the copy (optional):", "");
-      if (nn === null) return;
-      return startJob("/api/instance/" + enc + "/clone", { name: nn.trim() }, "Clone of " + name);
+      return ask({ title: "Clone " + name, text: "A second desktop with a copy of all its files, the same limits and options.",
+                   input: "Name for the copy (optional)", ok: "Clone" }).then(function (a) {
+        if (a) startJob("/api/instance/" + enc + "/clone", { name: a.value.trim() }, "Clone of " + name);
+      });
     }
     if (act === "idle") {
       var cur = (S.instances.filter(function (x) { return x.name === name; })[0] || {}).idle_stop_min || 0;
-      var mins = prompt("Stop " + name + " after how many minutes with nobody watching?\n\n" +
-        "0 = never. Leave empty for the forge default. Files are always kept.", cur ? String(cur) : "");
-      if (mins === null) return;
-      return api("/api/instance/" + enc + "/idle", { body: { minutes: mins.trim() === "" ? null : parseInt(mins, 10) || 0 } })
-        .then(function (r) {
-          toast("Idle stop " + (r.idle_stop_min ? "after " + r.idle_stop_min + " min" : r.idle_stop_min === 0 ? "off" : "default"), name, "ok");
-          S.instKey = ""; refreshInstances();
-        }).catch(function (e) { toast("Could not set it", e.message, "bad"); });
+      return ask({ title: "Stop " + name + " when nobody\u2019s watching",
+                   text: "Minutes with no browser tab open. 0 = never, empty = the default. Files are always kept.",
+                   input: "Minutes", value: cur ? String(cur) : "", ok: "Save" }).then(function (a) {
+        if (!a) return;
+        var mins = a.value.trim();
+        api("/api/instance/" + enc + "/idle", { body: { minutes: mins === "" ? null : parseInt(mins, 10) || 0 } })
+          .then(function (r) {
+            toast("Idle stop " + (r.idle_stop_min ? "after " + r.idle_stop_min + " min" : r.idle_stop_min === 0 ? "off" : "default"), name, "ok");
+            S.instKey = ""; refreshInstances();
+          }).catch(function (e) { toast("Could not set it", e.message, "bad"); });
+      });
     }
-    if (act === "repair" && !confirm("Repair " + name + "?\n\nIt is recreated on the newest forge layer " +
-        "(first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.")) return;
+    if (act === "repair") {
+      return ask({ title: "Repair " + name + "?", text: "It\u2019s recreated on the newest Selkies Forge layer (first-run fixes, screen agent, crash supervisor). Your files in /config are kept; it restarts.", ok: "Repair" })
+        .then(function (a) { if (a) runAction(name, act, {}); });
+    }
+    if (act === "tunnel") {
+      var inst = S.instances.filter(function (x) { return x.name === name; })[0];
+      if (inst && !inst.auth) {
+        return ask({ title: "Open " + name + " to the internet?", text: "This desktop has no sign-in, so anyone who gets the link can use it, with your files. Set a password first unless you\u2019re sure.", ok: "Make the link anyway", danger: true })
+          .then(function (a) { if (a) runAction(name, act, {}); });
+      }
+    }
     if (act === "remove") {
-      if (!confirm("Remove " + name + "?")) return;
-      body.purge = confirm("Also delete its saved files (the /config volume)?\n\nOK deletes them, Cancel keeps them.");
+      return ask({ title: "Remove " + name + "?", text: "The desktop is deleted. Its files stay unless you tick the box.", ok: "Remove", danger: true,
+                   check: "Also delete its saved files (the /config volume)" }).then(function (a) {
+        if (a) runAction(name, act, { purge: a.checked });
+      });
     }
+    runAction(name, act, body);
+  }
+
+  function runAction(name, act, body) {
     var card = document.querySelector('.mc[data-name="' + cssq(name) + '"]');
     if (card) card.classList.add("busy");
     toast(cap(act) + "\u2026", name);
@@ -15782,14 +16227,47 @@ __FORGE_FILE_WEB_APP_CSS__
 
   /* ---------------------------------------------------------------- modal */
   function openModal(title, html) {
+    var body = $("#modalBody");
+    if (S.askDone) { var d = S.askDone; S.askDone = null; d(null); }
+    // handlers a previous dialog left here would run against fields that are gone
+    body.oninput = null;
+    body.onchange = null;
     $("#modalTitle").textContent = title;
-    $("#modalBody").innerHTML = html;
+    body.innerHTML = html;
     $("#modal").style.display = "grid";
+  }
+
+  /* A question in the page's own dialog. Resolves to null when dismissed, else
+     {value, checked}. o: title, text, ok, no, danger, input (label), value, check (label). */
+  function ask(o) {
+    return new Promise(function (done) {
+      openModal(o.title, (o.text ? '<p class="sub ask-t">' + h(o.text) + "</p>" : "") +
+        (o.input ? '<label class="field"><span>' + h(o.input) + '</span><input type="text" id="askIn" value="' + h(o.value || "") + '"></label>' : "") +
+        (o.check ? '<label class="toggle ask-c"><input type="checkbox" id="askCk"><i></i><span>' + h(o.check) + "</span></label>" : "") +
+        '<div class="row end"><button class="btn ghost" type="button" id="askNo">' + h(o.no || "Cancel") + "</button>" +
+        '<button class="btn ' + (o.danger ? "danger" : "primary") + '" type="button" id="askOk">' + h(o.ok || "OK") + "</button></div>");
+      S.askDone = done;
+      var finish = function (v) {
+        S.askDone = null;
+        closeModal();
+        done(v);
+      };
+      $("#askNo").onclick = function () { finish(null); };
+      $("#askOk").onclick = function () {
+        finish({ value: $("#askIn") ? $("#askIn").value : "", checked: !!($("#askCk") && $("#askCk").checked) });
+      };
+      var inp = $("#askIn");
+      if (inp) {
+        inp.focus();
+        inp.onkeydown = function (ev) { if (ev.key === "Enter") { ev.preventDefault(); $("#askOk").click(); } };
+      } else $("#askOk").focus();
+    });
   }
 
   // Every close path hides first and tidies up after, so nothing that goes
   // wrong while tidying can leave a panel stuck open.
   function closeModal() {
+    if (S.askDone) { var d = S.askDone; S.askDone = null; d(null); }
     $("#modal").style.display = "none";
     try { $("#modalBody").innerHTML = ""; } catch (e) { console.error(e); }
   }
@@ -16085,22 +16563,17 @@ __FORGE_FILE_WEB_APP_CSS__
       var hst = d.host;
       $("#hostChecks").innerHTML = d.checks.map(function (c) {
         var bad = !c.ok && c.severity !== "info";
-        return '<div class="link-row' + (bad ? "" : "") + '" style="' +
-          (bad ? "border-color:rgba(255,107,126,.4)" : "") + '">' +
-          '<span class="ico">' + (c.ok ? "✅" : (c.severity === "info" ? "ℹ️" : "⚠️")) + "</span>" +
-          '<div style="flex:1;min-width:0"><div class="what">' + h(c.name) + "</div>" +
-          '<div style="font-size:13px">' + h(c.detail) + "</div>" +
-          (!c.ok && c.fix ? '<div style="font-size:12px;color:var(--dim-2)">fix: ' + h(c.fix) + "</div>" : "") +
-          "</div></div>";
+        return '<div class="check ' + (c.ok ? "ok" : bad ? "bad" : "info") + '"><i></i><b>' + h(({ ssh: "SSH", ipv6: "IPv6" })[c.name] || c.name) + "</b>" +
+          "<span>" + h(c.detail) + (!c.ok && c.fix ? '<code>' + h(c.fix) + "</code>" : "") + "</span></div>";
       }).join("");
+      var FACT = [["hostname", "Hostname"], ["os_pretty", "System"], ["kernel", "Kernel"], ["arch", "Architecture"],
+        ["cpus", "CPU cores"], ["docker_version", "Docker"], ["storage_driver", "Storage driver"],
+        ["backing_fs", "Backing filesystem"], ["cgroup", "cgroup version"], ["python", "Python"]];
       $("#hostFacts").innerHTML = "<dl class=\"kv\">" +
-        ["hostname", "os_pretty", "kernel", "arch", "cpus", "docker_version", "storage_driver",
-         "backing_fs", "cgroup", "python"].map(function (k) {
-          return "<dt>" + h(k.replace(/_/g, " ")) + "</dt><dd>" + h(hst[k]) + "</dd>";
-        }).join("") +
-        "<dt>memory</dt><dd>" + mb(hst.mem_avail_mb) + " free of " + mb(hst.mem_total_mb) + "</dd>" +
-        "<dt>disk</dt><dd>" + mb(hst.disk_free_mb) + " free of " + mb(hst.disk_total_mb) + "</dd>" +
-        "<dt>docker root</dt><dd>" + h(hst.docker_root) + "</dd></dl>";
+        FACT.map(function (k) { return "<dt>" + k[1] + "</dt><dd>" + h(hst[k[0]]) + "</dd>"; }).join("") +
+        "<dt>Memory</dt><dd>" + mb(hst.mem_avail_mb) + " free of " + mb(hst.mem_total_mb) + "</dd>" +
+        "<dt>Disk</dt><dd>" + mb(hst.disk_free_mb) + " free of " + mb(hst.disk_total_mb) + "</dd>" +
+        "<dt>Docker root</dt><dd>" + h(hst.docker_root) + "</dd></dl>";
     }).catch(function (e) {
       $("#hostChecks").innerHTML = '<div class="warnbox bad">' + h(e.message) + "</div>";
     });
@@ -16176,8 +16649,6 @@ __FORGE_FILE_WEB_APP_CSS__
         '<p class="sub" style="font-size:12px;margin:8px 0 0">Nothing a desktop uses is ever removed. ' +
         "Kept files of removed desktops stay unless you delete them from the terminal (selkies-cli clean).</p>";
       var go = function (all) {
-        if (all && !confirm("Remove every desktop image no desktop uses, and Docker's build cache?\n\n" +
-            "They download or rebuild again if you forge those desktops later.")) return;
         el.querySelectorAll("button").forEach(function (b) { b.disabled = true; });
         api("/api/space/clean", { body: { all: all } }).then(function (x) {
           toast("Cleaned up", (x.removed_images || []).length + " images removed", "ok");
@@ -16185,7 +16656,10 @@ __FORGE_FILE_WEB_APP_CSS__
         }).catch(function (x) { toast("Clean-up failed", x.message, "bad"); renderSpace(); });
       };
       $("#spClean").onclick = function () { go(false); };
-      $("#spCleanAll").onclick = function () { go(true); };
+      $("#spCleanAll").onclick = function () {
+        ask({ title: "Remove everything unused?", text: "Every desktop image no desktop uses, and Docker\u2019s build cache. They download or rebuild again if you launch those desktops later.", ok: "Remove", danger: true })
+          .then(function (a) { if (a) go(true); });
+      };
     }).catch(function (x) { el.innerHTML = '<div class="warnbox bad">' + h(x.message) + "</div>"; });
   }
 
@@ -16284,18 +16758,44 @@ __FORGE_FILE_WEB_APP_CSS__
   }
 
   /* ------------------------------------------------------------ routing */
-  function show(view) {
+  var ROUTES = { browse: 1, manager: 1, host: 1, addons: 1 };
+
+  function show(view, opts) {
     S.view = view;
+    if (view !== "shell" && S.shell) closeShell();
     $$(".view").forEach(function (v) { v.classList.toggle("on", v.id === "v-" + view); });
     $$("#rail button[data-view]").forEach(function (b) {
-      var on = b.dataset.view === view || (view === "configure" && b.dataset.view === "browse");
+      var on = b.dataset.view === view || ((view === "configure" || view === "launch") && b.dataset.view === "browse") ||
+        (view === "shell" && b.dataset.view === "manager");
       b.classList.toggle("on", on);
     });
     closeMenus();
+    setPrefs(false);
     if (view === "manager") { S.instKey = ""; refreshInstances(); }
     if (view === "host") renderHost();
     if (view === "addons" && window.ForgeAddons) window.ForgeAddons.show();
+    renderJobStrip();
     $(".main").scrollTop = 0;
+    if (ROUTES[view] && !(opts && opts.noHash) && location.hash.slice(1) !== view) {
+      S.hashSet = "#" + view;
+      location.hash = view;
+    }
+  }
+
+  function route() {
+    var m = location.hash.slice(1);
+    var ad = /^addons(?:\/([a-z0-9-]{1,40}))?$/.exec(m);
+    if (ad && window.ForgeAddons) { window.ForgeAddons.focus(ad[1]); return show("addons", { noHash: true }); }
+    var dk = /^desktop\/([a-z0-9._-]{1,80})$/i.exec(m);
+    if (dk) return openDetail(dk[1], false, true);
+    show(ROUTES[m] ? m : "browse", { noHash: true });
+  }
+
+  function setPrefs(open) {
+    var p = $("#prefs");
+    if (!p) return;
+    p.hidden = !open;
+    $("#prefsBtn").setAttribute("aria-expanded", String(open));
   }
 
   /* ------------------------------------------------------------- events */
@@ -16304,7 +16804,11 @@ __FORGE_FILE_WEB_APP_CSS__
       var b = ev.target.closest("button[data-view]");
       if (b) show(b.dataset.view);
     });
-    $("#liteBtn").addEventListener("click", function () { applyLite(!S.lite); });
+    $("#liteBtn").addEventListener("change", function () { applyLite(this.checked); });
+    $("#prefsBtn").addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      setPrefs($("#prefs").hidden);
+    });
     $("#themes").addEventListener("click", function (ev) {
       var b = ev.target.closest("[data-theme-id]");
       if (b) applyTheme(b.dataset.themeId);
@@ -16317,7 +16821,7 @@ __FORGE_FILE_WEB_APP_CSS__
       clearTimeout(qTimer);
       qTimer = setTimeout(function () {
         S.filters.q = v;
-        if (S.view !== "browse") show("browse");
+        if (S.view !== "browse" && v) show("browse");
         renderGrid();
       }, 120);
     });
@@ -16336,6 +16840,12 @@ __FORGE_FILE_WEB_APP_CSS__
       renderFilters(); renderGrid();
     });
     $("#grid").addEventListener("click", function (ev) {
+      if (ev.target.id === "clearFilters") {
+        S.filters.q = S.filters.family = S.filters.weight = S.filters.kind = "";
+        $("#q").value = "";
+        renderFilters(); renderGrid();
+        return;
+      }
       var c = ev.target.closest(".card");
       if (c) openDetail(c.dataset.id);
     });
@@ -16358,6 +16868,12 @@ __FORGE_FILE_WEB_APP_CSS__
       runSmart();
     });
     $("#smartBtn").addEventListener("click", runSmart);
+    $("#smartToggle").addEventListener("click", function () {
+      var p = $("#smartPanel");
+      p.hidden = !p.hidden;
+      this.setAttribute("aria-expanded", String(!p.hidden));
+      this.classList.toggle("on", !p.hidden);
+    });
     $("#smartOut").addEventListener("click", function (ev) {
       var u = ev.target.closest("[data-use]");
       if (u) return openDetail(u.dataset.use);
@@ -16408,23 +16924,18 @@ __FORGE_FILE_WEB_APP_CSS__
         closeMenus();
         if (!wasOpen) {
           menu.hidden = false;
-          // The card clips its contents (rounded corners), so fit the menu in
-          // the room above the button and let it scroll if it is longer.
-          var card = mbtn.closest(".mc");
-          if (card) {
-            var room = mbtn.getBoundingClientRect().top - card.getBoundingClientRect().top - 14;
-            menu.style.maxHeight = Math.max(160, room) + "px";
-          }
+          placeMenu(menu, mbtn);
           closeMenus(menu);
         }
         return;
       }
       if (!t.closest(".menu")) closeMenus();
+      if (!t.closest("#prefs")) setPrefs(false);
 
       var x;
       if ((x = t.closest("[data-open]"))) { openDesktop(x.dataset.open); return; }
       if ((x = t.closest("[data-drawer]"))) { toggleDrawer(x.dataset.drawer); return; }
-      if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy); return; }
+      if ((x = t.closest("[data-copy]"))) { copy(x.dataset.copy, x.dataset.quiet === "1"); return; }
       if ((x = t.closest("[data-back]"))) { show(x.dataset.back); return; }
       if ((x = t.closest("[data-term]"))) { openTerm(x.dataset.term); return; }
       if ((x = t.closest("[data-logs]"))) { closeMenus(); showLogs(x.dataset.logs); return; }
@@ -16493,7 +17004,17 @@ __FORGE_FILE_WEB_APP_CSS__
 
 
     var rsz = null;
+    window.addEventListener("hashchange", function () {
+      if (location.hash === S.hashSet) { S.hashSet = null; return; }
+      S.hashSet = null;
+      route();
+    });
+    window.addEventListener("scroll", function (ev) {
+      if (ev.target.closest && ev.target.closest(".menu")) return;
+      closeMenus();
+    }, true);
     window.addEventListener("resize", function () {
+      closeMenus();
       clearTimeout(rsz);
       rsz = setTimeout(function () {
         if (S.shell && S.view === "shell") S.shell.refit();
@@ -16511,8 +17032,16 @@ __FORGE_FILE_WEB_APP_CSS__
       if (ev.key === "Escape") {
         if ($("#modal").style.display === "grid") { closeModal(); return; }
         closeMenus();
+        setPrefs(false);
+        if (ev.target.id === "q" && ev.target.value) {
+          ev.target.value = "";
+          S.filters.q = "";
+          renderGrid();
+        }
       }
-      // A page shortcut must never eat a keystroke meant for a shell or a field.
+      // A page shortcut must never eat a keystroke meant for a shell, a field or
+      // the browser (Ctrl+1 switches tabs), or move the page behind a dialog.
+      if (ev.ctrlKey || ev.metaKey || ev.altKey || $("#modal").style.display === "grid") return;
       var tag = ev.target.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
       if (ev.target.closest && ev.target.closest(".term")) return;
@@ -16528,7 +17057,7 @@ __FORGE_FILE_WEB_APP_CSS__
   window.Forge = {
     api: api, sse: sse, h: h, toast: toast, copy: copy, ago: ago, I: I,
     openModal: openModal, closeModal: closeModal, show: show,
-    linkChooser: linkChooser, networkUrl: networkUrl,
+    linkChooser: linkChooser, networkUrl: networkUrl, ask: ask,
     view: function () { return S.view; }
   };
 
@@ -16576,51 +17105,61 @@ __FORGE_FILE_WEB_BRANDS_JS__
 <div class="app">
   <header class="topbar">
     <div class="brand">
-      <span class="spark">▲</span>
-      <span>Selkies Forge<small>desktops on tap</small></span>
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 28 9v14l-12 7L4 23V9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M11.5 22V10h9.5M11.5 16h7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Selkies Forge</span>
     </div>
-    <div class="search">
-      <span class="mag">⌕</span>
-      <input id="q" type="text" placeholder="Search 150+ desktops &mdash; try xfce, kali, tiny, kde  ( / )" autocomplete="off" spellcheck="false">
-    </div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+      <input id="q" type="search" placeholder="Search desktops: xfce, kali, tiny, kde" autocomplete="off" spellcheck="false" aria-label="Search desktops">
+      <kbd>/</kbd>
+    </label>
     <div class="meters" id="meters"></div>
   </header>
 
-  <nav class="rail" id="rail">
-    <button data-view="browse" class="on"><span class="ico">◧</span>Browse<span class="tag" id="tagCat">-</span></button>
-    <button data-view="manager"><span class="ico">▦</span>Manager<span class="tag" id="tagInst">0</span></button>
-    <button data-view="host"><span class="ico">◉</span>This machine</button>
-    <button data-view="addons"><span class="ico">✚</span>Addons<span class="tag" id="tagAddons">0</span></button>
-    <hr>
-    <div class="sec-k rail-k">Theme</div>
-    <div class="themes" id="themes" role="radiogroup" aria-label="Theme"></div>
-    <hr>
-    <button id="liteBtn" class="ghost"><span class="ico">✦</span>Lite mode</button>
-    <div class="note">Lite mode drops the blur and animation. It turns itself on for small devices.</div>
-    <hr>
-    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine &middot; 4 addons</div>
+  <nav class="rail" id="rail" aria-label="Main">
+    <button data-view="browse" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Catalog</span><em class="tag" id="tagCat" hidden>-</em></button>
+    <button data-view="manager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Desktops</span><em class="tag" id="tagInst">0</em></button>
+    <button data-view="host"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg><span>Machine</span></button>
+    <button data-view="addons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span>Addons</span><em class="tag" id="tagAddons">0</em></button>
+    <div class="rail-end">
+      <button type="button" id="prefsBtn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Settings</span></button>
+      <div class="prefs" id="prefs" hidden>
+        <div class="sec-k">Theme</div>
+        <div class="themes" id="themes" role="radiogroup" aria-label="Theme"></div>
+        <label class="toggle lite-row"><input type="checkbox" id="liteBtn"><i></i><span>Lite mode<small>No animation. Turns itself on for small devices.</small></span></label>
+        <div class="sec-k">Shortcuts</div>
+        <div class="keys"><span><kbd>/</kbd> search</span><span><kbd>1</kbd> catalog</span><span><kbd>2</kbd> desktops</span><span><kbd>3</kbd> machine</span><span><kbd>4</kbd> addons</span></div>
+      </div>
+    </div>
   </nav>
 
   <main class="main">
     <div class="updbar" id="updBar" hidden></div>
     <div class="updbar life" id="lifeBar" hidden></div>
+    <div class="jobstrip" id="jobStrip" hidden></div>
 
     <!-- ------------------------------------------------------- browse -->
     <section class="view on" id="v-browse">
-      <h1 class="h1">Pick a desktop</h1>
-      <p class="sub">Real Linux desktops, streamed to your browser. <b id="count">-</b>.
-        Prebuilt ones pull in minutes; the rest are built on this machine.</p>
+      <div class="page-head">
+        <div>
+          <h1 class="h1">Pick a desktop</h1>
+          <p class="sub">Real Linux desktops, streamed to your browser. <b id="count">-</b></p>
+        </div>
+        <button class="btn" id="smartToggle" type="button" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z"/></svg>
+          Help me choose
+        </button>
+      </div>
 
-      <div class="panel">
-        <h3>Not sure? Let it choose <span class="hint">scored against this machine's free memory, cores and disk</span></h3>
+      <div class="panel smart" id="smartPanel" hidden>
         <div class="smart-row">
           <div class="grp">
             <span class="sec-k">What matters most</span>
             <div class="seg" id="tasteSeg"></div>
           </div>
           <div class="grp">
-            <span class="sec-k">What it is for</span>
-            <select id="purposeSel" style="width:auto;min-width:170px">
+            <span class="sec-k">What it's for</span>
+            <select id="purposeSel" aria-label="What it's for">
               <option value="general">Anything</option>
               <option value="dev">Writing code</option>
               <option value="security">Security work</option>
@@ -16628,15 +17167,14 @@ __FORGE_FILE_WEB_BRANDS_JS__
               <option value="media">Media</option>
             </select>
           </div>
-          <div class="spacer"></div>
-          <button class="btn primary" id="smartBtn">Choose for me</button>
+          <button class="btn primary" id="smartBtn" type="button">Choose for me</button>
         </div>
         <div id="smartOut"></div>
       </div>
 
       <div class="toolbar">
         <select id="famSel" aria-label="Distro family"></select>
-        <div class="seg" id="weightSeg">
+        <div class="seg" id="weightSeg" role="group" aria-label="Weight">
           <button data-w="" class="on">Any weight</button>
           <button data-w="feather">Feather</button>
           <button data-w="light">Light</button>
@@ -16644,7 +17182,7 @@ __FORGE_FILE_WEB_BRANDS_JS__
           <button data-w="full">Full</button>
           <button data-w="heavy">Heavy</button>
         </div>
-        <div class="seg" id="kindSeg">
+        <div class="seg" id="kindSeg" role="group" aria-label="How it arrives">
           <button data-kind="" class="on">All</button>
           <button data-kind="pull">Ready to run</button>
           <button data-kind="build">Built here</button>
@@ -16664,7 +17202,7 @@ __FORGE_FILE_WEB_BRANDS_JS__
 
     <!-- ---------------------------------------------------- configure -->
     <section class="view" id="v-configure">
-      <button class="btn sm ghost" data-back="browse" style="margin-bottom:14px">&larr; All desktops</button>
+      <button class="btn sm ghost back" data-back="browse">&larr; Catalog</button>
       <div class="panel" id="dHero"></div>
       <div class="panel" id="dGallery" hidden></div>
       <div class="dgrid">
@@ -16685,6 +17223,7 @@ __FORGE_FILE_WEB_BRANDS_JS__
     <!-- ------------------------------------------------------- launch -->
     <section class="view" id="v-launch">
       <div class="panel" id="lTitle"></div>
+      <div id="lResult"></div>
       <div class="panel">
         <div class="steps" id="lSteps"></div>
         <div class="progress-wrap">
@@ -16695,21 +17234,18 @@ __FORGE_FILE_WEB_BRANDS_JS__
         </div>
         <div class="term-wrap">
           <div class="term-head">
-            <span class="lights"><i></i><i></i><i></i></span>
-            <span>live build and pull output</span>
+            <span>Live output</span>
           </div>
           <pre class="term tall" id="lTerm"></pre>
         </div>
       </div>
-      <div id="lResult"></div>
     </section>
 
     <!-- ------------------------------------------------------ manager -->
     <section class="view" id="v-manager">
-      <h1 class="h1">Running desktops</h1>
+      <h1 class="h1">Your desktops</h1>
       <p class="sub">Live CPU, memory and bandwidth. Open a shell without leaving the card.</p>
       <div class="stat-strip" id="instStats"></div>
-      <div class="jobstrip" id="jobStrip" hidden></div>
       <div class="inst-grid" id="instList"></div>
     </section>
 
@@ -16719,7 +17255,6 @@ __FORGE_FILE_WEB_BRANDS_JS__
       <p class="sub">A real pty inside <b id="shTitle">-</b>. Click the terminal and type.</p>
       <div class="term-wrap">
         <div class="term-head">
-          <span class="lights"><i></i><i></i><i></i></span>
           <span id="shHead">docker exec</span>
           <div class="spacer"></div>
           <button class="btn sm ghost" id="shFit">Fit</button>
@@ -16732,12 +17267,12 @@ __FORGE_FILE_WEB_BRANDS_JS__
     <!-- --------------------------------------------------------- host -->
     <section class="view" id="v-host">
       <h1 class="h1">This machine</h1>
-      <p class="sub">What the forge checked before it offered you anything.</p>
+      <p class="sub">What Selkies Forge checked before it offered you anything.</p>
       <div class="cfg">
-        <div class="panel"><h3>Checks</h3><div class="result" id="hostChecks"></div></div>
+        <div class="panel"><h3>Checks</h3><div class="checks" id="hostChecks"><div class="skel" style="height:260px"></div></div></div>
         <div class="panel"><h3>Facts</h3><div id="hostFacts"></div></div>
         <div class="panel"><h3>Web UI</h3><div id="hostLife"></div></div>
-        <div class="panel"><h3>Disk used by the forge</h3><div id="hostSpace"><div class="skel" style="height:80px"></div></div></div>
+        <div class="panel"><h3>Disk used</h3><div id="hostSpace"><div class="skel" style="height:80px"></div></div></div>
       </div>
     </section>
 
@@ -16748,8 +17283,7 @@ __FORGE_FILE_WEB_BRANDS_JS__
         and shows you what it is before anything is installed.</p>
       <div class="panel addbar">
         <form class="add-row" id="addonForm" autocomplete="off">
-          <span class="add-ico" aria-hidden="true">⎘</span>
-          <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
+                    <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
                  placeholder="https://github.com/owner/repo  ·  …/tree/main/a/folder  ·  a GitLab link  ·  https://…/addon.zip" aria-label="Addon repository link">
           <button class="btn primary" id="addonAdd" type="submit">Add</button>
         </form>
@@ -16771,12 +17305,12 @@ __FORGE_FILE_WEB_BRANDS_JS__
   </main>
 </div>
 
-<div id="modal" style="display:none">
+<div id="modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="panel" id="modalPanel">
     <div class="row modal-head">
       <h3 id="modalTitle" style="margin:0">-</h3>
       <div class="spacer"></div>
-      <button class="btn sm ghost" id="modalClose" type="button">Close</button>
+      <button class="iconbtn" id="modalClose" type="button" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div id="modalBody"></div>
   </div>
@@ -18541,7 +19075,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="1.10.13"
+FORGE_VERSION="2.0.0"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

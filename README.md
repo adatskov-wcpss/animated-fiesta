@@ -164,6 +164,7 @@ flowchart LR
 
 | | |
 |---|---|
+| **IPv6 included** | Every desktop gets outbound IPv6 on its own network, with no Docker settings to change. [How it works](docs/engine.md#ipv6). |
 | **Health that means something** | The web port answering isn't enough. An agent inside every desktop reports its window manager and screen, and the engine waits for one that stays up. |
 | **GPU Smart Passthrough** | Finds any GPU (Intel, AMD, NVIDIA, Raspberry Pi, Mali, Adreno, virtual), proves inside the desktop's own image that it draws and encodes, hands over one render node with settings pinned, and steps back to software by itself. On by default. [How it works](docs/gpu.md) |
 | **Automatic fixes** | Out of memory, more memory. Blocked syscalls, a relaxed seccomp profile. Out of `/dev/shm`, double it. A slow boot, more patience. Ports, names and quotas fix themselves in `docker run`. Every fix is logged. |

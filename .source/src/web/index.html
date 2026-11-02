@@ -15,51 +15,61 @@
 <div class="app">
   <header class="topbar">
     <div class="brand">
-      <span class="spark">▲</span>
-      <span>Selkies Forge<small>desktops on tap</small></span>
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2 28 9v14l-12 7L4 23V9z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M11.5 22V10h9.5M11.5 16h7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Selkies Forge</span>
     </div>
-    <div class="search">
-      <span class="mag">⌕</span>
-      <input id="q" type="text" placeholder="Search 150+ desktops &mdash; try xfce, kali, tiny, kde  ( / )" autocomplete="off" spellcheck="false">
-    </div>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+      <input id="q" type="search" placeholder="Search desktops: xfce, kali, tiny, kde" autocomplete="off" spellcheck="false" aria-label="Search desktops">
+      <kbd>/</kbd>
+    </label>
     <div class="meters" id="meters"></div>
   </header>
 
-  <nav class="rail" id="rail">
-    <button data-view="browse" class="on"><span class="ico">◧</span>Browse<span class="tag" id="tagCat">-</span></button>
-    <button data-view="manager"><span class="ico">▦</span>Manager<span class="tag" id="tagInst">0</span></button>
-    <button data-view="host"><span class="ico">◉</span>This machine</button>
-    <button data-view="addons"><span class="ico">✚</span>Addons<span class="tag" id="tagAddons">0</span></button>
-    <hr>
-    <div class="sec-k rail-k">Theme</div>
-    <div class="themes" id="themes" role="radiogroup" aria-label="Theme"></div>
-    <hr>
-    <button id="liteBtn" class="ghost"><span class="ico">✦</span>Lite mode</button>
-    <div class="note">Lite mode drops the blur and animation. It turns itself on for small devices.</div>
-    <hr>
-    <div class="note">Shortcuts<br>/ search &middot; 1 browse &middot; 2 manager &middot; 3 machine &middot; 4 addons</div>
+  <nav class="rail" id="rail" aria-label="Main">
+    <button data-view="browse" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg><span>Catalog</span><em class="tag" id="tagCat" hidden>-</em></button>
+    <button data-view="manager"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Desktops</span><em class="tag" id="tagInst">0</em></button>
+    <button data-view="host"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg><span>Machine</span></button>
+    <button data-view="addons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span>Addons</span><em class="tag" id="tagAddons">0</em></button>
+    <div class="rail-end">
+      <button type="button" id="prefsBtn" aria-haspopup="true" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>Settings</span></button>
+      <div class="prefs" id="prefs" hidden>
+        <div class="sec-k">Theme</div>
+        <div class="themes" id="themes" role="radiogroup" aria-label="Theme"></div>
+        <label class="toggle lite-row"><input type="checkbox" id="liteBtn"><i></i><span>Lite mode<small>No animation. Turns itself on for small devices.</small></span></label>
+        <div class="sec-k">Shortcuts</div>
+        <div class="keys"><span><kbd>/</kbd> search</span><span><kbd>1</kbd> catalog</span><span><kbd>2</kbd> desktops</span><span><kbd>3</kbd> machine</span><span><kbd>4</kbd> addons</span></div>
+      </div>
+    </div>
   </nav>
 
   <main class="main">
     <div class="updbar" id="updBar" hidden></div>
     <div class="updbar life" id="lifeBar" hidden></div>
+    <div class="jobstrip" id="jobStrip" hidden></div>
 
     <!-- ------------------------------------------------------- browse -->
     <section class="view on" id="v-browse">
-      <h1 class="h1">Pick a desktop</h1>
-      <p class="sub">Real Linux desktops, streamed to your browser. <b id="count">-</b>.
-        Prebuilt ones pull in minutes; the rest are built on this machine.</p>
+      <div class="page-head">
+        <div>
+          <h1 class="h1">Pick a desktop</h1>
+          <p class="sub">Real Linux desktops, streamed to your browser. <b id="count">-</b></p>
+        </div>
+        <button class="btn" id="smartToggle" type="button" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z"/></svg>
+          Help me choose
+        </button>
+      </div>
 
-      <div class="panel">
-        <h3>Not sure? Let it choose <span class="hint">scored against this machine's free memory, cores and disk</span></h3>
+      <div class="panel smart" id="smartPanel" hidden>
         <div class="smart-row">
           <div class="grp">
             <span class="sec-k">What matters most</span>
             <div class="seg" id="tasteSeg"></div>
           </div>
           <div class="grp">
-            <span class="sec-k">What it is for</span>
-            <select id="purposeSel" style="width:auto;min-width:170px">
+            <span class="sec-k">What it's for</span>
+            <select id="purposeSel" aria-label="What it's for">
               <option value="general">Anything</option>
               <option value="dev">Writing code</option>
               <option value="security">Security work</option>
@@ -67,15 +77,14 @@
               <option value="media">Media</option>
             </select>
           </div>
-          <div class="spacer"></div>
-          <button class="btn primary" id="smartBtn">Choose for me</button>
+          <button class="btn primary" id="smartBtn" type="button">Choose for me</button>
         </div>
         <div id="smartOut"></div>
       </div>
 
       <div class="toolbar">
         <select id="famSel" aria-label="Distro family"></select>
-        <div class="seg" id="weightSeg">
+        <div class="seg" id="weightSeg" role="group" aria-label="Weight">
           <button data-w="" class="on">Any weight</button>
           <button data-w="feather">Feather</button>
           <button data-w="light">Light</button>
@@ -83,7 +92,7 @@
           <button data-w="full">Full</button>
           <button data-w="heavy">Heavy</button>
         </div>
-        <div class="seg" id="kindSeg">
+        <div class="seg" id="kindSeg" role="group" aria-label="How it arrives">
           <button data-kind="" class="on">All</button>
           <button data-kind="pull">Ready to run</button>
           <button data-kind="build">Built here</button>
@@ -103,7 +112,7 @@
 
     <!-- ---------------------------------------------------- configure -->
     <section class="view" id="v-configure">
-      <button class="btn sm ghost" data-back="browse" style="margin-bottom:14px">&larr; All desktops</button>
+      <button class="btn sm ghost back" data-back="browse">&larr; Catalog</button>
       <div class="panel" id="dHero"></div>
       <div class="panel" id="dGallery" hidden></div>
       <div class="dgrid">
@@ -124,6 +133,7 @@
     <!-- ------------------------------------------------------- launch -->
     <section class="view" id="v-launch">
       <div class="panel" id="lTitle"></div>
+      <div id="lResult"></div>
       <div class="panel">
         <div class="steps" id="lSteps"></div>
         <div class="progress-wrap">
@@ -134,21 +144,18 @@
         </div>
         <div class="term-wrap">
           <div class="term-head">
-            <span class="lights"><i></i><i></i><i></i></span>
-            <span>live build and pull output</span>
+            <span>Live output</span>
           </div>
           <pre class="term tall" id="lTerm"></pre>
         </div>
       </div>
-      <div id="lResult"></div>
     </section>
 
     <!-- ------------------------------------------------------ manager -->
     <section class="view" id="v-manager">
-      <h1 class="h1">Running desktops</h1>
+      <h1 class="h1">Your desktops</h1>
       <p class="sub">Live CPU, memory and bandwidth. Open a shell without leaving the card.</p>
       <div class="stat-strip" id="instStats"></div>
-      <div class="jobstrip" id="jobStrip" hidden></div>
       <div class="inst-grid" id="instList"></div>
     </section>
 
@@ -158,7 +165,6 @@
       <p class="sub">A real pty inside <b id="shTitle">-</b>. Click the terminal and type.</p>
       <div class="term-wrap">
         <div class="term-head">
-          <span class="lights"><i></i><i></i><i></i></span>
           <span id="shHead">docker exec</span>
           <div class="spacer"></div>
           <button class="btn sm ghost" id="shFit">Fit</button>
@@ -171,12 +177,12 @@
     <!-- --------------------------------------------------------- host -->
     <section class="view" id="v-host">
       <h1 class="h1">This machine</h1>
-      <p class="sub">What the forge checked before it offered you anything.</p>
+      <p class="sub">What Selkies Forge checked before it offered you anything.</p>
       <div class="cfg">
-        <div class="panel"><h3>Checks</h3><div class="result" id="hostChecks"></div></div>
+        <div class="panel"><h3>Checks</h3><div class="checks" id="hostChecks"><div class="skel" style="height:260px"></div></div></div>
         <div class="panel"><h3>Facts</h3><div id="hostFacts"></div></div>
         <div class="panel"><h3>Web UI</h3><div id="hostLife"></div></div>
-        <div class="panel"><h3>Disk used by the forge</h3><div id="hostSpace"><div class="skel" style="height:80px"></div></div></div>
+        <div class="panel"><h3>Disk used</h3><div id="hostSpace"><div class="skel" style="height:80px"></div></div></div>
       </div>
     </section>
 
@@ -187,8 +193,7 @@
         and shows you what it is before anything is installed.</p>
       <div class="panel addbar">
         <form class="add-row" id="addonForm" autocomplete="off">
-          <span class="add-ico" aria-hidden="true">⎘</span>
-          <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
+                    <input id="addonSrc" type="text" spellcheck="false" autocapitalize="none"
                  placeholder="https://github.com/owner/repo  ·  …/tree/main/a/folder  ·  a GitLab link  ·  https://…/addon.zip" aria-label="Addon repository link">
           <button class="btn primary" id="addonAdd" type="submit">Add</button>
         </form>
@@ -210,12 +215,12 @@
   </main>
 </div>
 
-<div id="modal" style="display:none">
+<div id="modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="panel" id="modalPanel">
     <div class="row modal-head">
       <h3 id="modalTitle" style="margin:0">-</h3>
       <div class="spacer"></div>
-      <button class="btn sm ghost" id="modalClose" type="button">Close</button>
+      <button class="iconbtn" id="modalClose" type="button" title="Close" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     </div>
     <div id="modalBody"></div>
   </div>

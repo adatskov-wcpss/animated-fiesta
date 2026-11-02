@@ -43,6 +43,7 @@ import threading
 import time
 
 from . import events, ledger
+from . import network
 from .health import container_logs
 from .jobs import mark_job_state, read_job_states
 from .paths import CPREFIX, KASM_HTTPS, LABEL, PORTS_JSON, ROOT, SELKIES_WS
@@ -195,6 +196,7 @@ class Watchdog(object):
         everything = set(cur)
         reg = reg_load()
         cur = {n: i for n, i in cur.items() if is_mine(n, i, reg)}
+        network.sync(cur)
         if self.prev is not None:
             for name, info in cur.items():
                 was = self.prev.get(name)

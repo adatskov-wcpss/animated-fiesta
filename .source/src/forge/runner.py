@@ -10,7 +10,7 @@ import shlex
 import time
 import uuid
 
-from . import gpu
+from . import gpu, network
 from .host import tz_name
 from .paths import CPREFIX, KASM_HTTPS, LABEL, ROOT, SELKIES_HTTP, SELKIES_HTTPS, VERSION
 from .ports import alloc_ports, release_port_reservation
@@ -183,6 +183,7 @@ def docker_run_resilient(entry, cname, plan, opts, image, host, job, want_ports=
         job.log("$ " + " ".join(shlex.quote(a) for a in args))
         rc, out, err = run(args, timeout=180)
         if rc == 0:
+            network.attach(cname)
             return cname, ports, vol, out.strip()
         msg = (err.strip() or out.strip())
         job.log("docker run refused: %s" % msg.splitlines()[-1] if msg else "docker run refused",
