@@ -4,6 +4,7 @@ Selkies Forge engine - runner
 docker run: arguments, screen modes, and a run that fixes the usual refusals.
 """
 
+import json
 import os
 import re
 import shlex
@@ -84,6 +85,37 @@ def parse_display_label(txt):
     return ("fit" if txt == "fit" else "auto"), None
 
 
+H264 = ("h264enc", "x264enc")   # Selkies' H.264 encoder (new name, old name)
+_ENCODERS = {}
+
+
+def h264_first(items):
+    """An encoder list with H.264 moved to the front (Selkies takes the first item as the default), or None
+    when it already leads or the list has no H.264 at all."""
+    items = [x.strip() for x in items if x and x.strip()]
+    h = next((x for x in items if x in H264), None)
+    if not h or items[0] == h:
+        return None
+    return [h] + [x for x in items if x != h]
+
+
+def encoder_env(image):
+    """["-e", "SELKIES_ENCODER=..."] so the desktop starts on H.264, built from the image's own list (only
+    reordered, so every encoder the image offers stays available); [] when the image already leads with H.264
+    or names no list (Selkies' built-in default is H.264)."""
+    if image not in _ENCODERS:
+        rc, out, _ = run(["docker", "image", "inspect", "-f", "{{json .Config.Env}}", image], timeout=30)
+        lst = None
+        try:
+            for kv in (json.loads(out) if rc == 0 and out.strip() else []) or []:
+                if kv.startswith("SELKIES_ENCODER="):
+                    lst = h264_first(kv.split("=", 1)[1].split(","))
+        except ValueError:
+            lst = None
+        _ENCODERS[image] = ["-e", "SELKIES_ENCODER=" + ",".join(lst)] if lst else []
+    return list(_ENCODERS[image])
+
+
 def docker_run_args(entry, name, ports, plan, opts, image, host):
     prof = entry.get("profile", "selkies")
     args = ["docker", "run", "-d", "--name", name,
@@ -159,6 +191,7 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
                      "-e", "PASSWORD=%s" % opts["password"]]
         if opts.get("locale"):
             args += ["-e", "LC_ALL=%s" % opts["locale"]]
+        args += encoder_env(image)   # H.264 by default (an entry's or launch's own SELKIES_ENCODER still wins)
     # the entry's own defaults first, so an option can override them
     for kv in list(entry.get("env") or []) + list(opts.get("env") or []):
         args += ["-e", kv]

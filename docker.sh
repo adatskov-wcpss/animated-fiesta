@@ -36,7 +36,7 @@
 
 set -uo pipefail
 
-FORGE_VERSION="2.0.1"
+FORGE_VERSION="2.0.2"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"
@@ -542,15 +542,15 @@ FORGE_SHA_FORGE_IMAGES_PY="dc8a0d7f70e43494b1d0e99101c233b92691da41e2c0316321402
 FORGE_SHA_FORGE_INFO_PY="2c7e4c6fb531f111288902458f75491629b546de65301c9613dda0fd5eb3564f"
 FORGE_SHA_FORGE_JOBS_PY="a78f564dadd53f11560bea39907245a2332f9c35402bc1ebe92dd364a1214c86"
 FORGE_SHA_FORGE_LAUNCH_PY="c6eabb9c8db7236c12c2ff05fff228430441c92d7bc23d617af83b0031e53c5a"
-FORGE_SHA_FORGE_LAYER_PY="b804c7ad977d4172ae30077759d94b69ec02c4ab250e372c87df66b860bbe276"
+FORGE_SHA_FORGE_LAYER_PY="61be0e917cefea19fa2d893c13b08c32c58d7951a93bf66e4daed3e6ab537ee8"
 FORGE_SHA_FORGE_LEDGER_PY="56dc82d992d89020ddc2e8a2e0df43b8fc9db160c058f6d180188e745ae45fa6"
 FORGE_SHA_FORGE_LIFECYCLE_PY="f8be377a840b92046f8aecb49e72373600bdab4e68382fc6d36243c2018206c8"
 FORGE_SHA_FORGE_NETWORK_PY="6a6ec4483eef8b52ddb634f0f22530f178551704a5b3fe06b85c970be3491a8f"
-FORGE_SHA_FORGE_PATHS_PY="16348553a689a6e3756943ebb106762523ce53d9f0161a9479ef9dd635b1d863"
+FORGE_SHA_FORGE_PATHS_PY="36ed7a03e87da188b65306f6badc31529137f18e9ef4eec849b0d642879f557a"
 FORGE_SHA_FORGE_PORTS_PY="b6643ed366d355e7ec4825102296af97de25cfd62bb1532598067703b06a870c"
 FORGE_SHA_FORGE_RECIPES_PY="a39d52d1a2ab541784102aa9ad1c505c3dfce2842b9dd94d999710ca1ce4e40a"
 FORGE_SHA_FORGE_REGISTRY_PY="422a2d09de41f5db4e38072b82006503b0d43344950f7d409ad24788729b7bca"
-FORGE_SHA_FORGE_RUNNER_PY="b0a05b6675aa339a65992969cc0914fde34972e62c2c45ffd041b4af0e3d696b"
+FORGE_SHA_FORGE_RUNNER_PY="487911a1fdd2c4eee479138ac9d96c281f0e23cef62895d86902a4d992b1f888"
 FORGE_SHA_FORGE_SCHEDULER_PY="1eecd9e5cc6cce999fa55eb6330710d68ef43b0f6ba711bd9050d93c32025a37"
 FORGE_SHA_FORGE_SERVER_PY="be904c8fc42261e4591c863adb64b59190f6f9a31ec9f799489c880182163e9f"
 FORGE_SHA_FORGE_SMART_PY="938528e24012ad5cc524d07a8bf029c11796f9a04f919a7d6fbf64ef305a6c76"
@@ -572,8 +572,8 @@ FORGE_SHA_WEB_LOGOS_JS="cda14786865a4c35fc30c8a3fe90d1ac945966219c9003fc081414ea
 FORGE_SHA_WEB_TERM_JS="4562ca565db85e10c43c0ca7c7cf33f3726acb2f5b2b1e92f29d6137f7c99e41"
 FORGE_SHA_DATA_INFO_JSON="e49d544627545e1bd1acedddbd5cc3c4932772499efce9da438bb28af9ff9055"
 FORGE_SHA_DATA_SHOTS_JSON="a35b5ab6f311598ba0bf3c350310f60d6cae734af51bf7bc0a2223aee5cfe880"
-FORGE_SHA_SELKIES_CLI="e8631d0086f49d1cc30a5f375267c2825ce706ff1d0f86678e239ce9b1cc73e8"
-FORGE_PAYLOAD_SHA="b01513cd5eedd8fe11aad44364611a67fddcf2deb8f2cf6a35ea3b30d0d90a99"
+FORGE_SHA_SELKIES_CLI="b754ee63f5ffa91a2e447c878977fb78a778d13a529a119449757104dfad44bf"
+FORGE_PAYLOAD_SHA="ad5e4724fe81edef7d2170165bf450c3629792e7a6c08824922b7e67641dd47b"
 FORGE_PAYLOAD_FILES="engine.py forge/__init__.py forge/addons.py forge/backups.py forge/burrow.py forge/catalog.py forge/cli.py forge/doctor.py forge/events.py forge/gpu.py forge/health.py forge/host.py forge/images.py forge/info.py forge/jobs.py forge/launch.py forge/layer.py forge/ledger.py forge/lifecycle.py forge/network.py forge/paths.py forge/ports.py forge/recipes.py forge/registry.py forge/runner.py forge/scheduler.py forge/server.py forge/smart.py forge/space.py forge/stats.py forge/store.py forge/terminal.py forge/tunnels.py forge/updates.py forge/util.py forge/watchdog.py forge/webui.py web/addons.js web/app.css web/app.js web/brands.js web/index.html web/logos.js web/term.js data/info.json data/shots.json selkies-cli"
 
 # Writes the engine and UI into $FORGE_APP, but only when they changed.
@@ -7775,6 +7775,18 @@ def wallpaper_bytes():
 # its own settings back out.
 SCREEN_GUARD = r"""/* Selkies Forge screen guard: see forge/layer.py. */
 (function () {
+  /* H.264 by default: once per browser and desktop, forget a saved encoder that isn't H.264 (an old pick, or
+     Selkies' own JPEG fallback after three failed connects, which it saves and keeps for good). The viewer can
+     still choose another encoder afterwards; it's only reset this one time. */
+  try {
+    var ls0 = window.localStorage;
+    var p0 = (location.origin + location.pathname).replace(/[^a-zA-Z0-9._-]/g, "_") + "_";
+    if (ls0.getItem(p0 + "forge_h264") !== "1") {
+      var enc = ls0.getItem(p0 + "encoder");
+      if (enc !== null && !/^(h264enc|x264enc)$/.test(enc)) { ls0.removeItem(p0 + "encoder"); ls0.removeItem(p0 + "encoder_explicit_choice"); }
+      ls0.setItem(p0 + "forge_h264", "1");
+    }
+  } catch (e) { /* storage blocked: Selkies' own default (H.264) applies */ }
   try {
     var ls = window.localStorage;
     var p = (location.origin + location.pathname).replace(/[^a-zA-Z0-9._-]/g, "_") + "_";
@@ -8391,7 +8403,7 @@ Layout of an install (FORGE_HOME, default ~/.selkies-forge):
 import os
 import re
 
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 
 # app/forge/paths.py -> app/
 APPDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8873,6 +8885,7 @@ Selkies Forge engine - runner
 docker run: arguments, screen modes, and a run that fixes the usual refusals.
 """
 
+import json
 import os
 import re
 import shlex
@@ -8953,6 +8966,37 @@ def parse_display_label(txt):
     return ("fit" if txt == "fit" else "auto"), None
 
 
+H264 = ("h264enc", "x264enc")   # Selkies' H.264 encoder (new name, old name)
+_ENCODERS = {}
+
+
+def h264_first(items):
+    """An encoder list with H.264 moved to the front (Selkies takes the first item as the default), or None
+    when it already leads or the list has no H.264 at all."""
+    items = [x.strip() for x in items if x and x.strip()]
+    h = next((x for x in items if x in H264), None)
+    if not h or items[0] == h:
+        return None
+    return [h] + [x for x in items if x != h]
+
+
+def encoder_env(image):
+    """["-e", "SELKIES_ENCODER=..."] so the desktop starts on H.264, built from the image's own list (only
+    reordered, so every encoder the image offers stays available); [] when the image already leads with H.264
+    or names no list (Selkies' built-in default is H.264)."""
+    if image not in _ENCODERS:
+        rc, out, _ = run(["docker", "image", "inspect", "-f", "{{json .Config.Env}}", image], timeout=30)
+        lst = None
+        try:
+            for kv in (json.loads(out) if rc == 0 and out.strip() else []) or []:
+                if kv.startswith("SELKIES_ENCODER="):
+                    lst = h264_first(kv.split("=", 1)[1].split(","))
+        except ValueError:
+            lst = None
+        _ENCODERS[image] = ["-e", "SELKIES_ENCODER=" + ",".join(lst)] if lst else []
+    return list(_ENCODERS[image])
+
+
 def docker_run_args(entry, name, ports, plan, opts, image, host):
     prof = entry.get("profile", "selkies")
     args = ["docker", "run", "-d", "--name", name,
@@ -9028,6 +9072,7 @@ def docker_run_args(entry, name, ports, plan, opts, image, host):
                      "-e", "PASSWORD=%s" % opts["password"]]
         if opts.get("locale"):
             args += ["-e", "LC_ALL=%s" % opts["locale"]]
+        args += encoder_env(image)   # H.264 by default (an entry's or launch's own SELKIES_ENCODER still wins)
     # the entry's own defaults first, so an option can override them
     for kv in list(entry.get("env") or []) + list(opts.get("env") or []):
         args += ["-e", kv]
@@ -19079,7 +19124,7 @@ FORGE_AS_CLI=1
 
 set -uo pipefail
 
-FORGE_VERSION="2.0.1"
+FORGE_VERSION="2.0.2"
 FORGE_HOME="${FORGE_HOME:-$HOME/.selkies-forge}"
 FORGE_APP="$FORGE_HOME/app"
 FORGE_STATE="$FORGE_HOME/state"

@@ -1029,6 +1029,18 @@ def wallpaper_bytes():
 # its own settings back out.
 SCREEN_GUARD = r"""/* Selkies Forge screen guard: see forge/layer.py. */
 (function () {
+  /* H.264 by default: once per browser and desktop, forget a saved encoder that isn't H.264 (an old pick, or
+     Selkies' own JPEG fallback after three failed connects, which it saves and keeps for good). The viewer can
+     still choose another encoder afterwards; it's only reset this one time. */
+  try {
+    var ls0 = window.localStorage;
+    var p0 = (location.origin + location.pathname).replace(/[^a-zA-Z0-9._-]/g, "_") + "_";
+    if (ls0.getItem(p0 + "forge_h264") !== "1") {
+      var enc = ls0.getItem(p0 + "encoder");
+      if (enc !== null && !/^(h264enc|x264enc)$/.test(enc)) { ls0.removeItem(p0 + "encoder"); ls0.removeItem(p0 + "encoder_explicit_choice"); }
+      ls0.setItem(p0 + "forge_h264", "1");
+    }
+  } catch (e) { /* storage blocked: Selkies' own default (H.264) applies */ }
   try {
     var ls = window.localStorage;
     var p = (location.origin + location.pathname).replace(/[^a-zA-Z0-9._-]/g, "_") + "_";
